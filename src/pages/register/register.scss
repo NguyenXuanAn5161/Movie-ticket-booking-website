@@ -1,0 +1,15 @@
+.register-container {
+    background-color: #f2f4fc;
+    min-height: 100vh;
+    padding-top: 2%;
+    .register-form {
+        padding: 1%;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 5px 5px rgba(0, 0, 0, 0.06);
+        .text-normal {
+            text-decoration: none;
+            font-weight: 700;
+        }
+    }
+}
