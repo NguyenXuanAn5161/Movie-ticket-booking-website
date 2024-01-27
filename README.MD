@@ -10,6 +10,8 @@ React test fresher
 - React-icons 5
 - Moment 2
 - Xlsx 0.18.5
+- Bootstrap 5
+- React-bootstrap 2
 
 ---
 
