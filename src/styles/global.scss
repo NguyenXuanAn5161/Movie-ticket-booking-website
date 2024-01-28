@@ -1,0 +1,84 @@
+// global.scss
+
+// Colors
+$primary-color: #fe4a4b; // Màu chính của trang web
+$secondary-color: #fbf8e5;
+$text-color: #253044; // Màu chữ chính
+$link-color: #3498db; // Màu chữ cho liên kết
+
+// Font sizes
+$base-font-size: 16px; // Kích thước chữ cơ bản - submenu
+$small-font-size: 14px; // Kích thước chữ nhỏ
+$large-font-size: 18px; // Kích thước chữ lớn - menu
+
+// Font family
+$font-family: "Arial", sans-serif;
+
+$font-weight: 500;
+
+// Border radius
+$border-radius: 4px;
+
+// Box shadow
+$box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Hiệu ứng bóng đổ chung
+
+// Z-index
+$z-index-modal: 1000; // Z-index cho các modal hoặc overlay
+
+// Line height
+$line-height: 1.5; // Độ cao dòng chữ chung
+
+// Responsive breakpoints
+$mobile-width: 768px;
+$tablet-width: 992px;
+$desktop-width: 1200px;
+
+// Global styles
+body {
+    font-family: $font-family;
+    font-size: $base-font-size;
+    line-height: $line-height;
+    color: $text-color;
+}
+
+a {
+    color: $link-color;
+    text-decoration: none;
+
+    &:hover {
+        color: darken($link-color, 10%); // Tăng độ sáng khi di chuột qua liên kết
+    }
+}
+
+.custom-link {
+    text-decoration: none;
+}
+
+.custom-menu {
+    font-weight: $font-weight;
+    font-size: $large-font-size;
+    cursor: pointer;
+}
+
+.custom-submenu {
+    font-size: $base-font-size;
+    cursor: pointer;
+}
+
+// .container {
+//     max-width: $container-width; // Giới hạn chiều rộng tối đa của container
+//     margin: 0 auto; // Căn giữa container
+// }
+
+// Responsive styles
+@media screen and (max-width: $mobile-width) {
+    // Mobile styles
+}
+
+@media screen and (min-width: $tablet-width) {
+    // Tablet styles
+}
+
+@media screen and (min-width: $desktop-width) {
+    // Desktop styles
+}
