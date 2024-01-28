@@ -1,4 +1,4 @@
-React test fresher
+Online movie ticket booking system
 - React 18
 - React Router 6
 - Redux Toolkit
@@ -10,7 +10,16 @@ React test fresher
 - React-icons 5
 - Moment 2
 - Xlsx 0.18.5
+- Bootstrap 5
+- React-bootstrap 2
 
 ---
 
 Link deloy Vercel: [(auto update) test nhanh website tại đây -> Link died!!!](https://fe-vite-react-test-git-main-nguyen-xuan-ans-projects.vercel.app/)
+
+---
+
+Bảng màu: 2 màu chủ đạo trắng, đỏ
+- #FE4A4B - đỏ
+- #FBF8E5 - trắng
+- #253044 - đen - màu chữ trên nền trắng
