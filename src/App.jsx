@@ -13,7 +13,7 @@ import AdminPage from "./pages/admin";
 import ContactPage from "./pages/contact";
 import LoginPage from "./pages/login";
 import MoviePage from "./pages/movie";
-import RegisterPage from "./pages/register/index";
+// import RegisterPage from "./pages/register/index";
 import { doGetAccountAction } from "./redux/account/accountSlice";
 import { callFetchAccount } from "./services/api";
 import "./styles/reset.scss";
@@ -96,10 +96,10 @@ export default function App() {
       path: "/login",
       element: <LoginPage />,
     },
-    {
-      path: "/register",
-      element: <RegisterPage />,
-    },
+    // {
+    //   path: "/register",
+    //   element: <RegisterPage />,
+    // },
   ]);
 
   return (
