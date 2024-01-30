@@ -1,117 +1,59 @@
-import { Button, Divider, Form, Input, message, notification } from "antd";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { doLoginAction } from "../../redux/account/accountSlice";
-import { callLogin } from "../../services/api";
-import "./login.scss";
+import React, { useState } from "react";
+import SignInForm from "../../components/SignIn/index";
+import SignUpForm from "../../components/SignUp/index";
+import "./styles.scss";
 
-const LoginPage = () => {
-  const navigate = useNavigate();
-  const [isSubmit, setIsSubmit] = useState(false);
+const LoginRegisterPage = () => {
+  const [type, setType] = useState("signIn");
 
-  const dispatch = useDispatch();
-
-  const onFinish = async (values) => {
-    const { username, password } = values;
-    setIsSubmit(true);
-    const res = await callLogin(username, password);
-    setIsSubmit(false);
-    if (res?.data) {
-      // lưu access token
-      localStorage.setItem("access_token", res.data.access_token);
-      dispatch(doLoginAction(res.data.user));
-      message.success("Đăng nhập thành công!");
-      navigate("/");
-    } else {
-      notification.error({
-        message: "Có lỗi xảy ra!",
-        description:
-          res.message && Array.isArray(res.message.length) > 0
-            ? res.message[0]
-            : res.message,
-        duration: 5,
-      });
+  const handleOnClick = (text) => {
+    if (text !== type) {
+      setType(text);
+      return;
     }
   };
 
+  const containerClass =
+    "container " + (type === "signUp" ? "right-panel-active" : "");
+
   return (
-    <div className="login-container">
-      <div
-        className="login-form"
-        style={{
-          margin: "auto",
-          maxWidth: 500,
-        }}
-      >
-        <div className="register-header">
-          <h1 style={{ textAlign: "center" }}>Đăng nhập tài khoản</h1>
+    <div className="login-register-page">
+      <h1>Cinema</h1>
+      <div className={containerClass} id="container">
+        {type === "signIn" ? (
+          <SignInForm />
+        ) : (
+          <SignUpForm onSuccess={() => handleOnClick("signIn")} />
+        )}
+        <div className="overlay-container">
+          <div className="overlay">
+            <div className="overlay-panel overlay-left">
+              <h1>Chào mừng trở lại!</h1>
+              <p>Để duy trì kết nối với chúng tôi vui lòng đăng nhập</p>
+              <button
+                className="ghost custom-button"
+                id="signIn"
+                onClick={() => handleOnClick("signIn")}
+              >
+                Đăng nhập
+              </button>
+            </div>
+            <div className="overlay-panel overlay-right">
+              <h1>Chào bạn!</h1>
+              <p>Nhập thông tin của bạn và bắt đầu trải nghiệm với chúng tôi</p>
+              <button
+                className="ghost custom-button"
+                id="signUp"
+                onClick={() => handleOnClick("signUp")}
+              >
+                Đăng ký
+              </button>
+            </div>
+          </div>
         </div>
-        <Divider />
-        <Form
-          name="basic"
-          style={{
-            maxWidth: 450,
-            margin: "0 auto",
-          }}
-          onFinish={onFinish}
-          autoComplete="true"
-        >
-          <Form.Item
-            labelCol={{ span: 24 }}
-            label="Email"
-            name="username"
-            rules={[
-              {
-                required: true,
-                message: "Email không được để trống!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            labelCol={{ span: 24 }}
-            label="Mật khẩu"
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Mật khẩu không được để trống!",
-              },
-            ]}
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item
-          // wrapperCol={{ offset: 8, span: 16 }}
-          >
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={isSubmit}
-              style={{ width: "100%" }}
-            >
-              Đăng nhập
-            </Button>
-          </Form.Item>
-        </Form>
-        <Divider>Hoặc</Divider>
-        <p>
-          Chưa có tài khoản?
-          <span className="text-normal">
-            <Link
-              style={{ textDecoration: "none", color: "#1677ff" }}
-              to="/register"
-            >
-              {" "}
-              Đăng ký
-            </Link>
-          </span>
-        </p>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default LoginRegisterPage;

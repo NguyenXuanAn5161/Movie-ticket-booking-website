@@ -142,7 +142,7 @@ const Header = () => {
               </span>
             ) : (
               <Dropdown menu={{ items }} trigger={["hover"]}>
-                <Space className="custom-menu">
+                <Space className="custom-menu" style={{ cursor: "pointer" }}>
                   <Avatar src={urlAvatar} />
                   {user?.fullName}
                 </Space>
