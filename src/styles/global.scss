@@ -3,7 +3,9 @@
 // Colors
 $primary-color: #fe4a4b; // Màu chính của trang web
 $secondary-color: #fbf8e5;
+$third-color: #fff;
 $text-color: #253044; // Màu chữ chính
+$text-color-second: #fff;
 $link-color: #3498db; // Màu chữ cho liên kết
 
 // Font sizes
@@ -14,7 +16,9 @@ $large-font-size: 18px; // Kích thước chữ lớn - menu
 // Font family
 $font-family: "Arial", sans-serif;
 
-$font-weight: 500;
+$font-weight-one: 700;
+$font-weight-two: 500;
+$font-weight-three: 300;
 
 // Border radius
 $border-radius: 4px;
@@ -43,7 +47,7 @@ body {
 
 a {
     color: $link-color;
-    text-decoration: none;
+    text-decoration: none !important;
 
     &:hover {
         color: darken($link-color, 10%); // Tăng độ sáng khi di chuột qua liên kết
@@ -55,14 +59,26 @@ a {
 }
 
 .custom-menu {
-    font-weight: $font-weight;
+    font-weight: $font-weight-one;
     font-size: $large-font-size;
-    cursor: pointer;
 }
 
 .custom-submenu {
     font-size: $base-font-size;
     cursor: pointer;
+}
+
+button,
+.custom-button:active {
+    transform: scale(0.95);
+    // background-color: $primary-color;
+}
+
+button,
+.custom-button:focus {
+    outline: none;
+    color: $text-color-second !important;
+    background-color: $primary-color !important;
 }
 
 // .container {
