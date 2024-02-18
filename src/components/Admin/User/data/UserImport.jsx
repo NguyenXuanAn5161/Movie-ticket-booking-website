@@ -3,6 +3,7 @@ import { Divider, Modal, Table, Upload, message, notification } from "antd";
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import { callBulkCreateUser } from "../../../../services/api";
+import templateFile from "./template.xlsx?url";
 
 const { Dragger } = Upload;
 
@@ -108,6 +109,14 @@ const UserImport = (props) => {
           </p>
           <p className="ant-upload-hint">
             Hỗ trợ tải lên một lần. Chỉ các file có định dạng .csv, .xls, .xlsx
+            or{" "}
+            <a
+              onClick={(e) => e.stopPropagation()} // ngăn click vào event cha
+              href={templateFile}
+              download
+            >
+              Tải file mẫu
+            </a>
           </p>
         </Dragger>
         <div style={{ paddingTop: 20 }}>
