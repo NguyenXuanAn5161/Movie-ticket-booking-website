@@ -12,6 +12,7 @@ Online movie ticket booking system
 - Xlsx 0.18.5
 - Bootstrap 5
 - React-bootstrap 2
+- Uuid 9
 
 ---
 
