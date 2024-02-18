@@ -17,7 +17,7 @@
   padding-left: 16px;
   padding-right: 16px;
   margin-top: 2px;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .button {
@@ -47,6 +47,7 @@
 .button:hover,
 .button:focus {
   border: 2px solid rgba(112, 76, 182, 0.4);
+  cursor: pointer;
 }
 
 .button:active {
@@ -59,7 +60,7 @@
 }
 
 .asyncButton:after {
-  content: '';
+  content: "";
   background-color: rgba(112, 76, 182, 0.15);
   display: block;
   position: absolute;
