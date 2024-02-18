@@ -12,6 +12,7 @@ import { callFetchListUser } from "../../../services/api";
 import InputSearch from "./InputSearch";
 import UserModalCreate from "./UserModalCreate";
 import UserViewDetail from "./UserViewDetal";
+import UserExport from "./data/UserExport";
 import UserImport from "./data/UserImport";
 
 const UserTable = () => {
@@ -26,6 +27,7 @@ const UserTable = () => {
   const [openViewDetail, setOpenViewDetail] = useState(false);
   const [openModalCreate, setOpenModalCreate] = useState(false);
   const [openModalImport, setOpenModalImport] = useState(false);
+  const [openModalExport, setOpenModalExport] = useState(false);
 
   useEffect(() => {
     fetchUser();
@@ -107,7 +109,11 @@ const UserTable = () => {
     <div style={{ display: "flex", justifyContent: "space-between" }}>
       <span>Bảng danh sách người dùng</span>
       <span style={{ display: "flex", gap: 15 }}>
-        <Button icon={<AiOutlineExport />} type="primary">
+        <Button
+          icon={<AiOutlineExport />}
+          type="primary"
+          onClick={() => setOpenModalExport(true)}
+        >
           Export
         </Button>
         <Button
@@ -208,6 +214,12 @@ const UserTable = () => {
         openModalImport={openModalImport}
         setOpenModalImport={setOpenModalImport}
         fetchUser={fetchUser}
+      />
+
+      <UserExport
+        openModalExport={openModalExport}
+        setOpenModalExport={setOpenModalExport}
+        listUser={listUser}
       />
     </>
   );
