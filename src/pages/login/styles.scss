@@ -19,13 +19,14 @@
         background-color: $primary-color;
         color: $text-color-second;
         border-radius: 0;
-        // border-radius: 20px;
+        border-radius: 10px;
         font-weight: $font-weight-one;
         letter-spacing: 1px;
         text-transform: uppercase;
         transition: transform 80ms ease-in;
         height: 50px;
         padding: 10px;
+        min-width: 150px;
     }
 
     .container {
