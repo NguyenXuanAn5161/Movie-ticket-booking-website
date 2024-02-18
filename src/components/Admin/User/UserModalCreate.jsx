@@ -14,7 +14,7 @@ const UserModalCreate = (props) => {
     setIsSubmit(true);
     const res = await callCreateUser(fullName, email, password, phone);
     if (res && res.data) {
-      message.success("Tạo mới user thành công!");
+      message.success("Tạo mới người dùng thành công!");
       form.resetFields();
       setOpenModalCreate(false);
       await props.fetchUser();
