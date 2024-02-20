@@ -38,7 +38,7 @@
             rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
         position: relative;
         overflow: hidden;
-        min-height: 536px;
+        min-height: 565px;
 
         .overlay-container {
             position: absolute;
@@ -153,6 +153,13 @@
             width: 50%;
             opacity: 0;
             z-index: 1;
+        }
+    }
+
+    /* Nếu màn hình bé hơn 1000px */
+    @media (max-width: 1000px) {
+        .container {
+            width: 90vw !important;
         }
     }
 

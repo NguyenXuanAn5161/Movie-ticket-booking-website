@@ -1,5 +1,5 @@
-import { Button, Form, Input, message, notification } from "antd";
-import React, { useState } from "react";
+import { Button, Divider, Form, Input, message, notification } from "antd";
+import React, { useEffect, useState } from "react";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { MdOutlineMailOutline } from "react-icons/md";
@@ -9,9 +9,26 @@ import { useNavigate } from "react-router-dom";
 import { doLoginAction } from "../../redux/account/accountSlice";
 import { callLogin } from "../../services/api";
 
-const SignInForm = () => {
+const SignInForm = (props) => {
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      // Lấy chiều rộng
+      const windowWidth = window.innerWidth;
+      setWidth(windowWidth);
+    };
+
+    // Đăng ký event listener để lắng nghe sự kiện resize
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup: Loại bỏ event listener khi component bị unmount để tránh rò rỉ bộ nhớ
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const dispatch = useDispatch();
 
@@ -39,10 +56,19 @@ const SignInForm = () => {
   };
 
   return (
-    <div className="form-container sign-in-container">
+    <div
+      className="form-container sign-in-container"
+      style={width > 768 ? null : { width: "100%" }}
+    >
       <Form
         name="signInForm"
-        style={{ marginTop: "1em", marginBottom: "1em" }}
+        style={
+          width > 768
+            ? {
+                marginTop: "1em",
+              }
+            : { marginTop: "1em", width: "100%" }
+        }
         onFinish={onFinish}
         autoComplete="true"
       >
@@ -104,6 +130,19 @@ const SignInForm = () => {
           </Button>
         </Form.Item>
       </Form>
+      {width > 768 ? null : (
+        <div className="footer">
+          <Divider orientation="left">
+            Nếu chưa có tài khoản{" "}
+            <span
+              style={{ color: "#3498db", cursor: "pointer" }}
+              onClick={() => props.setType("signUp")}
+            >
+              Đăng ký
+            </span>
+          </Divider>
+        </div>
+      )}
     </div>
   );
 };
