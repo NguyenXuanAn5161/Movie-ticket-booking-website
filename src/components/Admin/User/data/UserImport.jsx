@@ -66,7 +66,7 @@ const UserImport = (props) => {
     });
 
     const res = await callBulkCreateUser(data);
-    console.log(">>> check res: ", res);
+    // console.log(">>> check res: ", res);
     if (res.data) {
       notification.success({
         description: `Thêm dữ liệu thành công: ${res.data.countSuccess}, Thêm dữ liệu thất bại: ${res.data.countError}`,

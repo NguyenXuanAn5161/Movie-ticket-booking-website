@@ -113,7 +113,7 @@ const Header = () => {
   }`;
 
   const onClick = (e) => {
-    console.log("click ", e);
+    // console.log("click ", e);
     setCurrent(e.key);
   };
 
