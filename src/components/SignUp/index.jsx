@@ -86,6 +86,14 @@ const SignUpForm = (props) => {
                 required: true,
                 message: "Không được để trống!",
               },
+              {
+                min: 3,
+                message: "Tên người dùng phải có ít nhất 3 ký tự.",
+              },
+              {
+                max: 20,
+                message: "Tên người dùng không được vượt quá 20 ký tự.",
+              },
             ]}
           >
             <Input
