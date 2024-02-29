@@ -15,6 +15,9 @@ import LoginPage from "./pages/login";
 import MoviePage from "./pages/movie";
 // import RegisterPage from "./pages/register/index";
 import BookTable from "./components/Admin/Book/BookTable";
+import FoodTable from "./components/Admin/ManageFood/Food/FoodTable";
+import FoodCategoriesTable from "./components/Admin/ManageFood/FoodCategories/FoodCategoriesTable";
+import PromotionTable from "./components/Admin/Promotion/PromotionTable";
 import { doGetAccountAction } from "./redux/account/accountSlice";
 import { callFetchAccount } from "./services/api";
 import "./styles/reset.scss";
@@ -88,8 +91,20 @@ export default function App() {
           element: <UserTable />,
         },
         {
-          path: "book",
+          path: "movie",
           element: <BookTable />,
+        },
+        {
+          path: "food",
+          element: <FoodTable />,
+        },
+        {
+          path: "foodCategories",
+          element: <FoodCategoriesTable />,
+        },
+        {
+          path: "promotion",
+          element: <PromotionTable />,
         },
       ],
     },
