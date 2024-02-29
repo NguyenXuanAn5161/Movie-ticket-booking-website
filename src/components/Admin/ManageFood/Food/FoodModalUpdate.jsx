@@ -13,14 +13,16 @@ import {
   notification,
 } from "antd";
 import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import {
-  callCreateBook,
   callFetchCategory,
+  callUpdateBook,
   callUploadBookImg,
-} from "../../../services/api";
+} from "../../../../services/api";
 
-const BookModalCreate = (props) => {
-  const { openModalCreate, setOpenModalCreate } = props;
+const FoodModalUpdate = (props) => {
+  const { openModalUpdate, setOpenModalUpdate, dataUpdate, setDataUpdate } =
+    props;
   const [isSubmit, setIsSubmit] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingSlider, setLoadingSlider] = useState(false);
@@ -31,60 +33,12 @@ const BookModalCreate = (props) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
+  const [initForm, setInitForm] = useState(null);
 
   // https://ant.design/components/form#components-form-demo-control-hooks
   const [form] = Form.useForm();
 
-  const onFinish = async (values) => {
-    console.log(">>> check datathumbnail: ", dataThumbnail.name);
-    if (dataThumbnail.length === 0) {
-      notification.error({
-        message: "Có lỗi xảy ra!",
-        description: "Ảnh bìa sách không được để trống!",
-      });
-      return;
-    }
-
-    if (dataSlider.length === 0) {
-      notification.error({
-        message: "Có lỗi xảy ra!",
-        description: "Ảnh mô tả sách không được để trống!",
-      });
-      return;
-    }
-
-    const { mainText, author, price, category, quantity, sold } = values;
-    const thumbnail = dataThumbnail[0].name;
-    const slider = dataSlider.map((item) => item.name);
-
-    setIsSubmit(true);
-    const res = await callCreateBook(
-      mainText,
-      author,
-      price,
-      category,
-      quantity,
-      sold,
-      thumbnail,
-      slider
-    );
-
-    if (res && res.data) {
-      message.success("Tạo mới sách thành công!");
-      form.resetFields();
-      setOpenModalCreate(false);
-      setDataSlider([]);
-      setDataThumbnail([]);
-      await props.fetchBook();
-    } else {
-      notification.error({
-        message: "Đã có lỗi xảy ra!",
-        description: res.message,
-      });
-    }
-    setIsSubmit(false);
-  };
-
+  // load category
   useEffect(() => {
     const fetchCategory = async () => {
       const res = await callFetchCategory();
@@ -97,6 +51,107 @@ const BookModalCreate = (props) => {
     };
     fetchCategory();
   }, []);
+
+  // load data for form update
+  useEffect(() => {
+    if (dataUpdate?._id) {
+      // load img thumbnail
+      const arrThumbnail = [
+        {
+          uid: uuidv4(),
+          name: dataUpdate.thumbnail,
+          status: "done",
+          url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${
+            dataUpdate.thumbnail
+          }`,
+        },
+      ];
+
+      // load img slider des
+      const arrSlider = dataUpdate?.slider?.map((item) => {
+        return {
+          uid: uuidv4(),
+          name: item,
+          status: "done",
+          url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
+        };
+      });
+
+      // create data init for form update
+      const init = {
+        _id: dataUpdate._id,
+        mainText: dataUpdate.mainText,
+        author: dataUpdate.author,
+        price: dataUpdate.price,
+        category: dataUpdate.category,
+        quantity: dataUpdate.quantity,
+        sold: dataUpdate.sold,
+        thumbnail: { fileList: arrThumbnail },
+        slider: { fileList: arrSlider },
+      };
+      setInitForm(init);
+      setDataThumbnail(arrThumbnail);
+      setDataSlider(arrSlider);
+      // có s là set nhiều field
+      form.setFieldsValue(init);
+    }
+
+    // reset field upload - bug
+    return () => {
+      form.resetFields();
+    };
+  }, [dataUpdate]);
+
+  const onFinish = async (values) => {
+    if (dataThumbnail.length === 0) {
+      notification.error({
+        message: "Có lỗi xảy ra!",
+        description: "Ảnh bìa đồ ăn không được để trống!",
+      });
+      return;
+    }
+
+    if (dataSlider.length === 0) {
+      notification.error({
+        message: "Có lỗi xảy ra!",
+        description: "Ảnh mô tả đồ ăn không được để trống!",
+      });
+      return;
+    }
+
+    const { _id, mainText, author, price, category, quantity, sold } = values;
+    const thumbnail = dataThumbnail[0].name;
+    const slider = dataSlider.map((item) => item.name);
+
+    setIsSubmit(true);
+    const res = await callUpdateBook(
+      _id,
+      mainText,
+      author,
+      price,
+      category,
+      quantity,
+      sold,
+      thumbnail,
+      slider
+    );
+
+    if (res && res.data) {
+      message.success("Cập nhật đồ ăn thành công!");
+      form.resetFields();
+      setOpenModalUpdate(false);
+      setDataSlider([]);
+      setDataThumbnail([]);
+      setInitForm(null);
+      await props.fetchFood();
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: res.message,
+      });
+    }
+    setIsSubmit(false);
+  };
 
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -173,6 +228,16 @@ const BookModalCreate = (props) => {
   };
 
   const handlePreview = async (file) => {
+    // preview img update thi ko can base64, lay luon url ma su dung
+    if (file.url && !file.originFileObj) {
+      setPreviewImage(file.url);
+      setPreviewOpen(true);
+      setPreviewTitle(
+        file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+      );
+      return;
+    }
+
     getBase64(file.originFileObj, (url) => {
       setPreviewImage(url);
       setPreviewOpen(true);
@@ -186,16 +251,18 @@ const BookModalCreate = (props) => {
     <>
       <Modal
         width={750}
-        title="Thêm mới sách"
-        open={openModalCreate}
+        title="Cập nhật đồ ăn"
+        open={openModalUpdate}
         onOk={() => {
           form.submit();
         }}
         onCancel={() => {
-          setOpenModalCreate(false);
+          setInitForm(null);
+          setOpenModalUpdate(false);
+          setDataUpdate(null);
           form.resetFields();
         }}
-        okText={"Tạo mới"}
+        okText={"Cập nhật"}
         cancelText={"Hủy"}
         confirmLoading={isSubmit}
         maskClosable={false}
@@ -203,7 +270,7 @@ const BookModalCreate = (props) => {
         <Divider />
         <Form
           form={form}
-          name="createNewBook"
+          name="updateNewFood"
           style={{
             maxWidth: 750,
             margin: "0 auto",
@@ -212,15 +279,20 @@ const BookModalCreate = (props) => {
           autoComplete="true"
         >
           <Row gutter={15}>
+            <Col hidden>
+              <Form.Item hidden labelCol={{ span: 24 }} label="Id" name="_id">
+                <Input />
+              </Form.Item>
+            </Col>
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tên sách"
+                label="Tên đồ ăn"
                 name="mainText"
                 rules={[
                   {
                     required: true,
-                    message: "Tên sách không được để trống!",
+                    message: "Tên đồ ăn không được để trống!",
                   },
                 ]}
               >
@@ -230,12 +302,12 @@ const BookModalCreate = (props) => {
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tác giả"
+                label="Trạng thái"
                 name="author"
                 rules={[
                   {
                     required: true,
-                    message: "Tác giả không được để trống!",
+                    message: "Trạng thái không được để trống!",
                   },
                 ]}
               >
@@ -305,6 +377,7 @@ const BookModalCreate = (props) => {
             </Col>
             <Col span={6}>
               <Form.Item
+                disabled
                 labelCol={{ span: 24 }}
                 label="Đã bán"
                 name="sold"
@@ -317,6 +390,7 @@ const BookModalCreate = (props) => {
                 initialValue={0}
               >
                 <InputNumber
+                  disabled={true}
                   min={0}
                   // defaultValue={0}
                   style={{ width: "100%" }}
@@ -342,6 +416,7 @@ const BookModalCreate = (props) => {
                   onChange={handleChange}
                   onRemove={(file) => handleRemoveFile(file, "thumbnail")}
                   onPreview={handlePreview}
+                  defaultFileList={initForm?.thumbnail?.fileList ?? []}
                 >
                   <div>
                     {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -366,6 +441,7 @@ const BookModalCreate = (props) => {
                   onChange={(info) => handleChange(info, "slider")}
                   onRemove={(file) => handleRemoveFile(file, "slider")}
                   onPreview={handlePreview}
+                  defaultFileList={initForm?.slider?.fileList ?? []}
                 >
                   <div>
                     {loadingSlider ? <LoadingOutlined /> : <PlusOutlined />}
@@ -389,4 +465,4 @@ const BookModalCreate = (props) => {
   );
 };
 
-export default BookModalCreate;
+export default FoodModalUpdate;

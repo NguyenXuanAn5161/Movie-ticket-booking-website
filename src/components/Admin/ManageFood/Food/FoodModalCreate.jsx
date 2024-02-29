@@ -17,9 +17,9 @@ import {
   callCreateBook,
   callFetchCategory,
   callUploadBookImg,
-} from "../../../services/api";
+} from "../../../../services/api";
 
-const BookModalCreate = (props) => {
+const FoodModalCreate = (props) => {
   const { openModalCreate, setOpenModalCreate } = props;
   const [isSubmit, setIsSubmit] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ const BookModalCreate = (props) => {
     if (dataThumbnail.length === 0) {
       notification.error({
         message: "Có lỗi xảy ra!",
-        description: "Ảnh bìa sách không được để trống!",
+        description: "Ảnh bìa đồ ăn không được để trống!",
       });
       return;
     }
@@ -48,7 +48,7 @@ const BookModalCreate = (props) => {
     if (dataSlider.length === 0) {
       notification.error({
         message: "Có lỗi xảy ra!",
-        description: "Ảnh mô tả sách không được để trống!",
+        description: "Ảnh mô tả đồ ăn không được để trống!",
       });
       return;
     }
@@ -70,12 +70,12 @@ const BookModalCreate = (props) => {
     );
 
     if (res && res.data) {
-      message.success("Tạo mới sách thành công!");
+      message.success("Tạo mới đồ ăn thành công!");
       form.resetFields();
       setOpenModalCreate(false);
       setDataSlider([]);
       setDataThumbnail([]);
-      await props.fetchBook();
+      await props.fetchFood();
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
@@ -139,9 +139,9 @@ const BookModalCreate = (props) => {
           uid: file.uid,
         },
       ]);
-      onSuccess("ok");
+      onSuccess("Up load thành công!");
     } else {
-      onError("Đã có lỗi khi upload file");
+      onError("Đã có lỗi khi upload file!");
     }
   };
 
@@ -156,9 +156,9 @@ const BookModalCreate = (props) => {
           uid: file.uid,
         },
       ]);
-      onSuccess("ok");
+      onSuccess("Up load thành công!");
     } else {
-      onError("Đã có lỗi khi upload file");
+      onError("Đã có lỗi khi upload file!");
     }
   };
 
@@ -186,7 +186,7 @@ const BookModalCreate = (props) => {
     <>
       <Modal
         width={750}
-        title="Thêm mới sách"
+        title="Thêm mới đồ ăn"
         open={openModalCreate}
         onOk={() => {
           form.submit();
@@ -203,7 +203,7 @@ const BookModalCreate = (props) => {
         <Divider />
         <Form
           form={form}
-          name="createNewBook"
+          name="createNewFood"
           style={{
             maxWidth: 750,
             margin: "0 auto",
@@ -215,12 +215,12 @@ const BookModalCreate = (props) => {
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tên sách"
+                label="Tên đồ ăn"
                 name="mainText"
                 rules={[
                   {
                     required: true,
-                    message: "Tên sách không được để trống!",
+                    message: "Tên đồ ăn không được để trống!",
                   },
                 ]}
               >
@@ -230,12 +230,12 @@ const BookModalCreate = (props) => {
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tác giả"
+                label="Trạng thái"
                 name="author"
                 rules={[
                   {
                     required: true,
-                    message: "Tác giả không được để trống!",
+                    message: "Trạng thái không được để trống!",
                   },
                 ]}
               >
@@ -389,4 +389,4 @@ const BookModalCreate = (props) => {
   );
 };
 
-export default BookModalCreate;
+export default FoodModalCreate;

@@ -1,9 +1,11 @@
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
   Popconfirm,
   Row,
   Table,
+  Tag,
   message,
   notification,
 } from "antd";
@@ -16,16 +18,16 @@ import {
   AiOutlineReload,
 } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
-import { callDeleteBook, callFetchListBook } from "../../../services/api";
-import { FORMAT_DATE_DISPLAY } from "../../../utils/constant";
-import BookModalCreate from "./BookModalCreate";
-import BookModalUpdate from "./BookModalUpdate";
-import BookViewDetail from "./BookViewDetal";
+import { callDeleteBook, callFetchListBook } from "../../../../services/api";
+import { FORMAT_DATE_DISPLAY } from "../../../../utils/constant";
+import FoodModalCreate from "./FoodModalCreate";
+import FoodModalUpdate from "./FoodModalUpdate";
+import FoodViewDetail from "./FoodViewDetal";
 import InputSearch from "./InputSearch";
-import BookExport from "./data/BookExport";
+import FoodExport from "./data/FoodExport";
 
-const BookTable = () => {
-  const [listBook, setListBook] = useState([]);
+const FoodTable = () => {
+  const [listFood, setListFood] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [total, setTotal] = useState(0);
@@ -41,11 +43,11 @@ const BookTable = () => {
   const [dataUpdate, setDataUpdate] = useState("");
 
   useEffect(() => {
-    fetchBook();
+    fetchFood();
   }, [current, pageSize, filter, sortQuery]);
 
   // khi thay doi current va pageSize thi search died!
-  const fetchBook = async () => {
+  const fetchFood = async () => {
     setIsLoading(true);
     let query = `current=${current}&pageSize=${pageSize}`;
     if (filter) {
@@ -58,7 +60,7 @@ const BookTable = () => {
 
     const res = await callFetchListBook(query);
     if (res && res.data) {
-      setListBook(res.data.result);
+      setListFood(res.data.result);
       setTotal(res.data.meta.total);
     }
 
@@ -68,8 +70,8 @@ const BookTable = () => {
   const handleDeleteBook = async (bookId) => {
     const res = await callDeleteBook(bookId);
     if (res && res.data) {
-      message.success("Xoá sách thành công!");
-      await fetchBook();
+      message.success("Xoá đồ ăn thành công!");
+      await fetchFood();
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
@@ -86,7 +88,7 @@ const BookTable = () => {
       render: (text, record, index) => {
         return (
           <a
-            href={`movie#${record._id}`}
+            href={`food#${record._id}`}
             onClick={() => {
               setDataViewDetail(record);
               setOpenViewDetail(true);
@@ -98,19 +100,26 @@ const BookTable = () => {
       },
     },
     {
-      title: "Tên sách",
+      title: "Tên đồ ăn",
       dataIndex: "mainText",
       sorter: true,
-    },
-    {
-      title: "Thể loại",
-      dataIndex: "category",
-      sorter: true,
-    },
-    {
-      title: "Tác giả",
-      dataIndex: "author",
-      sorter: true,
+      filters: [
+        {
+          text: "update123",
+          value: "update123",
+        },
+        {
+          text: "Category 1",
+          value: "Category 1",
+        },
+        {
+          text: "Category 2",
+          value: "Category 2",
+        },
+      ],
+      filterMode: "menu",
+      filterSearch: true,
+      onFilter: (value, record) => record.mainText.startsWith(value),
     },
     {
       title: "Giá tiền",
@@ -126,6 +135,57 @@ const BookTable = () => {
         );
       },
       sorter: true,
+    },
+    {
+      title: "Thể loại",
+      dataIndex: "category",
+      sorter: true,
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "author",
+      sorter: true,
+      render: (author) => {
+        let tagText = author;
+        let color = "";
+        let icon = null;
+
+        if (author.length > 10) {
+          color = "success";
+          icon = <CheckCircleOutlined />;
+        } else {
+          color = "default";
+          icon = <CloseCircleOutlined />;
+        }
+
+        return (
+          <span>
+            <Tag icon={icon} color={color} key={tagText}>
+              {tagText.toUpperCase()}
+            </Tag>
+          </span>
+        );
+      },
+      filters: [
+        {
+          text: "Có sẵn",
+          value: "Available",
+        },
+        {
+          text: "Không có sẵn",
+          value: "Unavailable",
+        },
+      ],
+      filterMode: "tree",
+      filterSearch: true,
+      onFilter: (value, record) => {
+        if (value === "Available") {
+          return record.author.length > 10;
+        } else if (value === "Unavailable") {
+          return record.author.length <= 10;
+        }
+      },
+      // onFilter: (value, record) => record.author.startsWith(value),
     },
     {
       title: "Cập nhật ngày",
@@ -144,8 +204,8 @@ const BookTable = () => {
           <>
             <Popconfirm
               placement="leftTop"
-              title={"Xác nhận xóa sách"}
-              description={"Bạn có chắc chắn muốn xóa sách này?"}
+              title={"Xác nhận xóa đồ ăn"}
+              description={"Bạn có chắc chắn muốn xóa đồ ăn này?"}
               okText="Xác nhận"
               cancelText="Hủy"
               onConfirm={() => handleDeleteBook(record._id)}
@@ -172,7 +232,7 @@ const BookTable = () => {
 
   const renderHeader = () => (
     <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span>Bảng danh sách sách</span>
+      <span>Bảng danh sách đồ ăn</span>
       <span style={{ display: "flex", gap: 15 }}>
         <Button
           icon={<AiOutlineExport />}
@@ -225,12 +285,6 @@ const BookTable = () => {
     }
   };
 
-  const title = [
-    { label: "Tên sách", key: "mainText" },
-    { label: "Tác giả", key: "author" },
-    { label: "Thể loại", key: "category" },
-  ];
-
   return (
     <>
       <Row gutter={[20, 20]}>
@@ -242,7 +296,7 @@ const BookTable = () => {
             title={renderHeader}
             loading={isLoading}
             columns={columns}
-            dataSource={listBook}
+            dataSource={listFood}
             onChange={onChange}
             rowKey="_id"
             pagination={{
@@ -262,34 +316,34 @@ const BookTable = () => {
         </Col>
       </Row>
 
-      <BookModalCreate
+      <FoodModalCreate
         openModalCreate={openModalCreate}
         setOpenModalCreate={setOpenModalCreate}
-        fetchBook={fetchBook}
+        fetchFood={fetchFood}
       />
 
-      <BookViewDetail
+      <FoodViewDetail
         openViewDetail={openViewDetail}
         setOpenViewDetail={setOpenViewDetail}
         dataViewDetail={dataViewDetail}
         setDataViewDetail={setDataViewDetail}
       />
 
-      <BookExport
+      <FoodExport
         openModalExport={openModalExport}
         setOpenModalExport={setOpenModalExport}
-        listBook={listBook}
+        listFood={listFood}
       />
 
-      <BookModalUpdate
+      <FoodModalUpdate
         openModalUpdate={openModalUpdate}
         setOpenModalUpdate={setOpenModalUpdate}
         dataUpdate={dataUpdate}
         setDataUpdate={setDataUpdate}
-        fetchBook={fetchBook}
+        fetchFood={fetchFood}
       />
     </>
   );
 };
 
-export default BookTable;
+export default FoodTable;

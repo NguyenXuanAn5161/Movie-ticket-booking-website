@@ -9,7 +9,10 @@ import {
 } from "@ant-design/icons";
 import { Avatar, Dropdown, Layout, Menu, Space, message } from "antd";
 import React, { useState } from "react";
+import { BiCategoryAlt } from "react-icons/bi";
+import { IoFastFoodOutline } from "react-icons/io5";
 import { RiMovie2Line } from "react-icons/ri";
+import { TbDiscount2 } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { doLogoutAction } from "../../redux/account/accountSlice";
@@ -25,12 +28,17 @@ const items = [
     icon: <AppstoreOutlined />,
   },
   {
+    label: <Link to="/admin/order">Quản lý đơn hàng</Link>,
+    key: "order",
+    icon: <DollarCircleOutlined />,
+  },
+  {
     label: <label>Quản lý người dùng</label>,
     icon: <UserOutlined />,
     children: [
       {
-        label: <Link to="/admin/user">CRUD</Link>,
-        key: "crud",
+        label: <Link to="/admin/user">Người dùng</Link>,
+        key: "user",
         icon: <TeamOutlined />,
       },
       {
@@ -46,15 +54,32 @@ const items = [
     icon: <RiMovie2Line />,
   },
   {
-    label: <Link to="/admin/order">Quản lý đơn hàng</Link>,
-    key: "order",
-    icon: <DollarCircleOutlined />,
+    label: <label>Quản lý đồ ăn</label>,
+    icon: <IoFastFoodOutline />,
+    children: [
+      {
+        label: <Link to="/admin/food">Đồ ăn</Link>,
+        key: "food",
+        icon: <IoFastFoodOutline />,
+      },
+      {
+        label: <Link to="/admin/foodCategories">Loại đồ ăn</Link>,
+        key: "foodCategories",
+        icon: <BiCategoryAlt />,
+      },
+    ],
+  },
+  {
+    label: <Link to="/admin/promotion">Khuyến mãi</Link>,
+    key: "promotion",
+    icon: <TbDiscount2 />,
   },
 ];
 
 const LayoutAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [activeMenu, setActiveMenu] = useState("dashboard");
+
   const user = useSelector((state) => state.account.user);
 
   const navigate = useNavigate();
