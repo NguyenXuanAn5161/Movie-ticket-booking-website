@@ -1,16 +1,13 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import LayoutAdmin from "./components/Admin/LayoutAdmin";
 import SeatTable from "./components/Admin/ManageCinema/ManageSeat/Seat/SeatTable";
 import SeatTypeTable from "./components/Admin/ManageCinema/ManageSeat/SeatType/SeatTypeTable";
 import UserTable from "./components/Admin/User/UserTable";
-import Footer from "./components/Footer/index";
-import Header from "./components/Header/index";
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import AdminPage from "./pages/admin";
 import LoginPage from "./pages/login";
 // import RegisterPage from "./pages/register/index";
 import BookTable from "./components/Admin/Book/BookTable";
@@ -20,19 +17,10 @@ import FoodTable from "./components/Admin/ManageFood/Food/FoodTable";
 import FoodCategoriesTable from "./components/Admin/ManageFood/FoodCategories/FoodCategoriesTable";
 import OrderTable from "./components/Admin/Order/OrderTable";
 import PromotionTable from "./components/Admin/Promotion/PromotionTable";
+import DashBoardShow from "./pages/dashboard/Show";
 import { doGetAccountAction } from "./redux/account/accountSlice";
 import { callFetchAccount } from "./services/api";
 import "./styles/reset.scss";
-
-const Layout = () => {
-  return (
-    <div className="layout-app">
-      <Header />
-      <Outlet />
-      <Footer />
-    </div>
-  );
-};
 
 export default function App() {
   const dispatch = useDispatch();
@@ -67,7 +55,7 @@ export default function App() {
           index: true,
           element: (
             <ProtectedRoute>
-              <AdminPage />
+              <DashBoardShow />
             </ProtectedRoute>
           ),
         },
