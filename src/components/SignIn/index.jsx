@@ -38,11 +38,15 @@ const SignInForm = (props) => {
     const res = await callLogin(username, password);
     setIsSubmit(false);
     if (res?.data) {
-      // lưu access token
-      localStorage.setItem("access_token", res.data.access_token);
-      dispatch(doLoginAction(res.data.user));
-      message.success("Đăng nhập thành công!");
-      navigate("/");
+      if (res.data?.user?.role === "ADMIN") {
+        // lưu access token
+        localStorage.setItem("access_token", res.data.access_token);
+        dispatch(doLoginAction(res.data.user));
+        message.success("Đăng nhập thành công!");
+        navigate("/admin");
+      } else {
+        message.error("Tài khoản của bạn không đủ quyền để vào trang này!");
+      }
     } else {
       notification.error({
         message: "Có lỗi xảy ra!",
