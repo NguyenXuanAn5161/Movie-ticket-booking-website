@@ -7,14 +7,11 @@ import SeatTypeTable from "./components/Admin/ManageCinema/ManageSeat/SeatType/S
 import UserTable from "./components/Admin/User/UserTable";
 import Footer from "./components/Footer/index";
 import Header from "./components/Header/index";
-import HomePage from "./components/Home";
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminPage from "./pages/admin";
-import ContactPage from "./pages/contact";
 import LoginPage from "./pages/login";
-import MoviePage from "./pages/movie";
 // import RegisterPage from "./pages/register/index";
 import BookTable from "./components/Admin/Book/BookTable";
 import CinemaTable from "./components/Admin/ManageCinema/CinemaTable";
@@ -60,23 +57,6 @@ export default function App() {
   }, []);
 
   const router = createBrowserRouter([
-    // layout for user
-    {
-      path: "/",
-      element: <Layout />,
-      errorElement: <NotFound />,
-      children: [
-        { index: true, element: <HomePage /> },
-        {
-          path: "contact",
-          element: <ContactPage />,
-        },
-        {
-          path: "movie",
-          element: <MoviePage />,
-        },
-      ],
-    },
     // layout for admin
     {
       path: "/admin",
@@ -136,6 +116,10 @@ export default function App() {
           element: <PromotionTable />,
         },
       ],
+    },
+    {
+      path: "*",
+      element: <NotFound />,
     },
     {
       path: "/login",
