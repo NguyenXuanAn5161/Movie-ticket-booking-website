@@ -16,16 +16,18 @@ import { MdEventSeat } from "react-icons/md";
 import { RiMovie2Line } from "react-icons/ri";
 import { TbDiscount2, TbTheater } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { doLogoutAction } from "../../redux/account/accountSlice";
 import { callLogout } from "../../services/api";
+import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
+import Home from "../Home";
 import "./layout.scss";
 
 const { Content, Footer, Sider } = Layout;
 
 const items = [
   {
-    label: <Link to="/admin">Tổng quan</Link>,
+    label: <Link to="/admin/dashboard">Tổng quan</Link>,
     key: "dashboard",
     icon: <AppstoreOutlined />,
   },
@@ -56,21 +58,21 @@ const items = [
     children: [
       {
         label: <Link to="/admin/cinema">Rạp phim</Link>,
-        key: "food",
+        key: "cinema",
         icon: <GiTheater />,
       },
       {
-        label: <Link to="/admin/room">Phòng chiếu</Link>,
+        label: <Link to="/admin/cinema/room">Phòng chiếu</Link>,
         key: "room",
         icon: <TbTheater />,
       },
       {
-        label: <Link to="/admin/room/seat">Ghế</Link>,
+        label: <Link to="/admin/cinema/room/seat">Ghế</Link>,
         key: "seat",
         icon: <MdEventSeat />,
       },
       {
-        label: <Link to="/admin/room/seatType">Loại ghế</Link>,
+        label: <Link to="/admin/cinema/room/seatType">Loại ghế</Link>,
         key: "seatType",
         icon: <BiCategoryAlt />,
       },
@@ -117,7 +119,13 @@ const items = [
 
 const LayoutAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [activeMenu, setActiveMenu] = useState("dashboard");
+  const [activeMenu, setActiveMenu] = useState("");
+  const location = useLocation();
+  const { pathname } = location;
+  const currentPath = location.pathname;
+  // lastIndexOf('a') lấy vị trí phần tử cuối cùng trong chuỗi
+  // substring lấy chuỗi còn lại từ vị trí đó
+  const lastSegment = pathname.substring(pathname.lastIndexOf("/") + 1);
 
   const user = useSelector((state) => state.account.user);
 
@@ -163,10 +171,10 @@ const LayoutAdmin = () => {
       >
         <div style={{ height: 32, margin: 16, textAlign: "center" }}>Admin</div>
         <Menu
-          defaultSelectedKeys={[activeMenu]}
+          selectedKeys={[lastSegment]}
           mode="inline"
           items={items}
-          onClick={(e) => setActiveMenu(e.key)}
+          onClick={(e) => setCollapsed(collapsed)}
         />
       </Sider>
       <Layout>
@@ -191,6 +199,7 @@ const LayoutAdmin = () => {
           </Dropdown>
         </div>
         <Content style={{ margin: 10 }}>
+          {currentPath === "/admin" ? <Home /> : <CustomBreadcrumb />}
           <Outlet />
         </Content>
         {/* <Footer style={{ padding: 0 }}>
