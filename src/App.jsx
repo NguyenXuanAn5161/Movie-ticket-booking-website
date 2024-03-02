@@ -1,23 +1,22 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import BookTable from "./components/Admin/Book/BookTable";
 import LayoutAdmin from "./components/Admin/LayoutAdmin";
+import CinemaTable from "./components/Admin/ManageCinema/CinemaTable";
 import SeatTable from "./components/Admin/ManageCinema/ManageSeat/Seat/SeatTable";
 import SeatTypeTable from "./components/Admin/ManageCinema/ManageSeat/SeatType/SeatTypeTable";
-import UserTable from "./components/Admin/User/UserTable";
-import Loading from "./components/Loading";
-import NotFound from "./components/NotFound";
-import ProtectedRoute from "./components/ProtectedRoute";
-import LoginPage from "./pages/login";
-// import RegisterPage from "./pages/register/index";
-import BookTable from "./components/Admin/Book/BookTable";
-import CinemaTable from "./components/Admin/ManageCinema/CinemaTable";
 import RoomTable from "./components/Admin/ManageCinema/Room/RoomTable";
 import FoodTable from "./components/Admin/ManageFood/Food/FoodTable";
 import FoodCategoriesTable from "./components/Admin/ManageFood/FoodCategories/FoodCategoriesTable";
 import OrderTable from "./components/Admin/Order/OrderTable";
 import PromotionTable from "./components/Admin/Promotion/PromotionTable";
+import UserTable from "./components/Admin/User/UserTable";
+import Loading from "./components/Loading";
+import NotFound from "./components/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 import DashBoardShow from "./pages/dashboard/Show";
+import LoginPage from "./pages/login";
 import { doGetAccountAction } from "./redux/account/accountSlice";
 import { callFetchAccount } from "./services/api";
 import "./styles/reset.scss";
@@ -52,6 +51,7 @@ export default function App() {
       errorElement: <NotFound />,
       children: [
         {
+          path: "dashboard",
           index: true,
           element: (
             <ProtectedRoute>
@@ -78,18 +78,22 @@ export default function App() {
         {
           path: "cinema",
           element: <CinemaTable />,
-        },
-        {
-          path: "room",
-          element: <RoomTable />,
-        },
-        {
-          path: "room/seat",
-          element: <SeatTable />,
-        },
-        {
-          path: "room/seatType",
-          element: <SeatTypeTable />,
+          children: [
+            {
+              path: "room",
+              element: <RoomTable />,
+              children: [
+                {
+                  path: "seat",
+                  element: <SeatTable />,
+                },
+                {
+                  path: "seatType",
+                  element: <SeatTypeTable />,
+                },
+              ],
+            },
+          ],
         },
         {
           path: "food",
@@ -113,10 +117,6 @@ export default function App() {
       path: "/login",
       element: <LoginPage />,
     },
-    // {
-    //   path: "/register",
-    //   element: <RegisterPage />,
-    // },
   ]);
 
   return (
