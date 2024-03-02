@@ -68,7 +68,7 @@ const BookTable = () => {
   const handleDeleteBook = async (bookId) => {
     const res = await callDeleteBook(bookId);
     if (res && res.data) {
-      message.success("Xoá sách thành công!");
+      message.success("Xoá phim thành công!");
       await fetchBook();
     } else {
       notification.error({
@@ -98,7 +98,7 @@ const BookTable = () => {
       },
     },
     {
-      title: "Tên sách",
+      title: "Tên phim",
       dataIndex: "mainText",
       sorter: true,
     },
@@ -144,8 +144,8 @@ const BookTable = () => {
           <>
             <Popconfirm
               placement="leftTop"
-              title={"Xác nhận xóa sách"}
-              description={"Bạn có chắc chắn muốn xóa sách này?"}
+              title={"Xác nhận xóa phim"}
+              description={"Bạn có chắc chắn muốn xóa phim này?"}
               okText="Xác nhận"
               cancelText="Hủy"
               onConfirm={() => handleDeleteBook(record._id)}
@@ -172,7 +172,7 @@ const BookTable = () => {
 
   const renderHeader = () => (
     <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span>Bảng danh sách sách</span>
+      <span>Bảng danh sách phim</span>
       <span style={{ display: "flex", gap: 15 }}>
         <Button
           icon={<AiOutlineExport />}
@@ -226,7 +226,7 @@ const BookTable = () => {
   };
 
   const title = [
-    { label: "Tên sách", key: "mainText" },
+    { label: "Tên phim", key: "mainText" },
     { label: "Tác giả", key: "author" },
     { label: "Thể loại", key: "category" },
   ];

@@ -83,7 +83,7 @@ const FoodTable = () => {
   // sau này load động cột này
   const columns = [
     {
-      title: "Id",
+      title: "Code",
       dataIndex: "_id",
       render: (text, record, index) => {
         return (
@@ -149,30 +149,33 @@ const FoodTable = () => {
         let tagText = author;
         let color = "";
         let icon = null;
+        let text = "";
 
         if (author.length > 10) {
+          text = "Còn";
           color = "success";
           icon = <CheckCircleOutlined />;
         } else {
-          color = "default";
+          text = "Hết";
+          color = "error";
           icon = <CloseCircleOutlined />;
         }
 
         return (
           <span>
             <Tag icon={icon} color={color} key={tagText}>
-              {tagText.toUpperCase()}
+              <span style={{ fontSize: 16, fontWeight: "500" }}>{text}</span>
             </Tag>
           </span>
         );
       },
       filters: [
         {
-          text: "Có sẵn",
+          text: "Còn hàng",
           value: "Available",
         },
         {
-          text: "Không có sẵn",
+          text: "Hết hàng",
           value: "Unavailable",
         },
       ],

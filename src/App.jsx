@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import LayoutAdmin from "./components/Admin/LayoutAdmin";
+import SeatTable from "./components/Admin/ManageCinema/ManageSeat/Seat/SeatTable";
+import SeatTypeTable from "./components/Admin/ManageCinema/ManageSeat/SeatType/SeatTypeTable";
 import UserTable from "./components/Admin/User/UserTable";
 import Footer from "./components/Footer/index";
 import Header from "./components/Header/index";
@@ -15,8 +17,11 @@ import LoginPage from "./pages/login";
 import MoviePage from "./pages/movie";
 // import RegisterPage from "./pages/register/index";
 import BookTable from "./components/Admin/Book/BookTable";
+import CinemaTable from "./components/Admin/ManageCinema/CinemaTable";
+import RoomTable from "./components/Admin/ManageCinema/Room/RoomTable";
 import FoodTable from "./components/Admin/ManageFood/Food/FoodTable";
 import FoodCategoriesTable from "./components/Admin/ManageFood/FoodCategories/FoodCategoriesTable";
+import OrderTable from "./components/Admin/Order/OrderTable";
 import PromotionTable from "./components/Admin/Promotion/PromotionTable";
 import { doGetAccountAction } from "./redux/account/accountSlice";
 import { callFetchAccount } from "./services/api";
@@ -87,12 +92,36 @@ export default function App() {
           ),
         },
         {
+          path: "order",
+          element: <OrderTable />,
+        },
+        {
           path: "user",
           element: <UserTable />,
         },
         {
           path: "movie",
           element: <BookTable />,
+        },
+        // {
+        //   path: "movieGenre",
+        //   element: <BookTable />,
+        // },
+        {
+          path: "cinema",
+          element: <CinemaTable />,
+        },
+        {
+          path: "room",
+          element: <RoomTable />,
+        },
+        {
+          path: "room/seat",
+          element: <SeatTable />,
+        },
+        {
+          path: "room/seatType",
+          element: <SeatTypeTable />,
         },
         {
           path: "food",

@@ -101,9 +101,7 @@ const FoodViewDetail = (props) => {
           <Descriptions.Item label="Trạng thái">
             {dataViewDetail?.author && (
               <Tag
-                color={
-                  dataViewDetail.author.length > 10 ? "success" : "default"
-                }
+                color={dataViewDetail.author.length > 10 ? "success" : "error"}
                 icon={
                   dataViewDetail.author.length > 10 ? (
                     <CheckCircleOutlined />
@@ -112,7 +110,7 @@ const FoodViewDetail = (props) => {
                   )
                 }
               >
-                {dataViewDetail.author.toUpperCase()}
+                {dataViewDetail.author.length > 10 ? "Còn" : "Hết"}
               </Tag>
             )}
           </Descriptions.Item>

@@ -10,9 +10,11 @@ import {
 import { Avatar, Dropdown, Layout, Menu, Space, message } from "antd";
 import React, { useState } from "react";
 import { BiCategoryAlt } from "react-icons/bi";
+import { GiTheater } from "react-icons/gi";
 import { IoFastFoodOutline } from "react-icons/io5";
+import { MdEventSeat } from "react-icons/md";
 import { RiMovie2Line } from "react-icons/ri";
-import { TbDiscount2 } from "react-icons/tb";
+import { TbDiscount2, TbTheater } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { doLogoutAction } from "../../redux/account/accountSlice";
@@ -49,9 +51,46 @@ const items = [
     ],
   },
   {
-    label: <Link to="/admin/movie">Quản lý phim</Link>,
-    key: "movie",
+    label: <label>Quản lý rạp phim</label>,
+    icon: <GiTheater />,
+    children: [
+      {
+        label: <Link to="/admin/cinema">Rạp phim</Link>,
+        key: "food",
+        icon: <GiTheater />,
+      },
+      {
+        label: <Link to="/admin/room">Phòng chiếu</Link>,
+        key: "room",
+        icon: <TbTheater />,
+      },
+      {
+        label: <Link to="/admin/room/seat">Ghế</Link>,
+        key: "seat",
+        icon: <MdEventSeat />,
+      },
+      {
+        label: <Link to="/admin/room/seatType">Loại ghế</Link>,
+        key: "seatType",
+        icon: <BiCategoryAlt />,
+      },
+    ],
+  },
+  {
+    label: <label>Quản lý phim</label>,
     icon: <RiMovie2Line />,
+    children: [
+      {
+        label: <Link to="/admin/movie">Phim</Link>,
+        key: "movie",
+        icon: <RiMovie2Line />,
+      },
+      {
+        label: <label>Thể loại phim</label>,
+        key: "movieCategories",
+        icon: <BiCategoryAlt />,
+      },
+    ],
   },
   {
     label: <label>Quản lý đồ ăn</label>,
