@@ -129,7 +129,7 @@ const LayoutAdmin = () => {
     if (res && res.data) {
       dispatch(doLogoutAction());
       message.success(res.data);
-      navigate("/");
+      navigate("/login");
     }
   };
 
