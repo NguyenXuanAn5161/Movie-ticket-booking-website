@@ -135,14 +135,6 @@ const LayoutAdmin = () => {
 
   const itemsDropdown = [
     {
-      label: (
-        <Link className="custom-link" to={"/"} style={{ cursor: "pointer" }}>
-          Trang chủ
-        </Link>
-      ),
-      key: "home",
-    },
-    {
       label: <label style={{ cursor: "pointer" }}>Quản lý tài khoản</label>,
       key: "account",
     },
