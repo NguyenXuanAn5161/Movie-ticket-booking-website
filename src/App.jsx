@@ -135,8 +135,7 @@ export default function App() {
     <>
       {isLoading === false ||
       window.location.pathname === "/login" ||
-      window.location.pathname === "/register" ||
-      window.location.pathname === "/" ? (
+      window.location.pathname === "/register" ? (
         <RouterProvider router={router} />
       ) : (
         <Loading />
