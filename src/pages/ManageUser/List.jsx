@@ -87,9 +87,9 @@ const UserList = () => {
 
   const dispatch = useDispatch();
 
-  const handleViewDetail = (user) => {
+  const handleView = (user, url) => {
     dispatch(doSetUser(user));
-    navigate(`show/${user._id}`);
+    navigate(`${url}/${user._id}`);
   };
 
   // sau này load động cột này -> cần có sự hợp tác của backend
@@ -166,7 +166,7 @@ const UserList = () => {
             </Popconfirm>
             <BsEye
               style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={() => handleViewDetail(record)}
+              onClick={() => handleView(record, "show")}
             />
             <CiEdit
               style={{ cursor: "pointer" }}
