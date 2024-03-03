@@ -177,7 +177,7 @@ const LayoutAdmin = () => {
           onClick={(e) => setCollapsed(collapsed)}
         />
       </Sider>
-      <Layout>
+      <Layout style={{ backgroundColor: "white" }}>
         <div className="admin-header">
           <span>
             {React.createElement(
