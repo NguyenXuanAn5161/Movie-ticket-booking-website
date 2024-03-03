@@ -14,6 +14,8 @@ import PromotionTable from "./components/Admin/Promotion/PromotionTable";
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import UserCreate from "./pages/ManageUser/Create";
+import UserEdit from "./pages/ManageUser/Edit";
 import UserList from "./pages/ManageUser/List";
 import UserShow from "./pages/ManageUser/Show";
 import DashBoardShow from "./pages/dashboard/Show";
@@ -71,6 +73,14 @@ export default function App() {
         {
           path: "user/show/:userId",
           element: <UserShow />,
+        },
+        {
+          path: "user/create",
+          element: <UserCreate />,
+        },
+        {
+          path: "user/edit/:userId",
+          element: <UserEdit />,
         },
         {
           path: "movie",
