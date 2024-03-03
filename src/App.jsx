@@ -11,10 +11,11 @@ import FoodTable from "./components/Admin/ManageFood/Food/FoodTable";
 import FoodCategoriesTable from "./components/Admin/ManageFood/FoodCategories/FoodCategoriesTable";
 import OrderTable from "./components/Admin/Order/OrderTable";
 import PromotionTable from "./components/Admin/Promotion/PromotionTable";
-import UserTable from "./components/Admin/User/UserTable";
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import UserList from "./pages/ManageUser/List";
+import UserShow from "./pages/ManageUser/Show";
 import DashBoardShow from "./pages/dashboard/Show";
 import LoginPage from "./pages/login";
 import { doGetAccountAction } from "./redux/account/accountSlice";
@@ -65,7 +66,11 @@ export default function App() {
         },
         {
           path: "user",
-          element: <UserTable />,
+          element: <UserList />,
+        },
+        {
+          path: "user/show/:userId",
+          element: <UserShow />,
         },
         {
           path: "movie",
