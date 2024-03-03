@@ -29,7 +29,7 @@ const UserCreate = () => {
 
   return (
     <div>
-      <PageHeader title="Tạo mới người dùng" numberBack={-1} />
+      <PageHeader title="Tạo mới người dùng" numberBack={-1} type="create" />
       <Divider />
       <Form
         form={form}
