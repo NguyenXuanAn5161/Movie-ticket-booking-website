@@ -24,7 +24,15 @@ function CustomBreadcrumb(props) {
           children: [
             {
               path: "/show",
+              title: "Xem chi tiết người dùng",
+            },
+            {
+              path: "/create",
               title: "Tạo mới người dùng",
+            },
+            {
+              path: "/edit",
+              title: "Cập nhật người dùng",
             },
           ],
         },
@@ -109,10 +117,13 @@ function CustomBreadcrumb(props) {
 
   // Tạo mảng itemsPath dựa trên điều kiện
   let itemsPath;
-  if (currentPath.includes("/show")) {
-    const showIndex = currentPath.indexOf("/show");
-    const showPath = currentPath.substring(0, showIndex + 5); // +5 để bao gồm "/show"
-    itemsPath = showPath;
+  if (currentPath.includes("/show") || currentPath.includes("/edit")) {
+    const showOrEditIndex = Math.max(
+      currentPath.indexOf("/show"),
+      currentPath.indexOf("/edit")
+    );
+    const showOrEditPath = currentPath.substring(0, showOrEditIndex + 5); // +5 để bao gồm "/show"
+    itemsPath = showOrEditPath;
     itemsPath = itemsPath.split("/").map((path) => ({ path: `/${path}` }));
   } else {
     console.log("currentPath: ", currentPath);
