@@ -21,6 +21,12 @@ function CustomBreadcrumb(props) {
         {
           path: "/user",
           title: "Người dùng",
+          children: [
+            {
+              path: "/show",
+              title: "Tạo mới người dùng",
+            },
+          ],
         },
         {
           path: "/movie",
@@ -83,11 +89,15 @@ function CustomBreadcrumb(props) {
   const itemRender = (route, params, routes, paths) => {
     const last = routes.indexOf(route) === routes.length - 1;
     const item = getItemByPath(route.path, items);
-    console.log("item: ", item);
 
     // Không render title cho mục đầu tiên
     if (route.path === "/admin") {
       return null;
+    }
+
+    // Kiểm tra nếu route là 'show', 'edit', hoặc 'create' thì chỉ hiển thị span
+    if (["/show", "/edit", "/create"].includes(route.path)) {
+      return <span>{item ? item.title : null}</span>;
     }
 
     return last ? (
@@ -97,15 +107,20 @@ function CustomBreadcrumb(props) {
     );
   };
 
-  return (
-    <Breadcrumb
-      itemRender={itemRender}
-      items={currentPath.split("/").map((path) => ({
-        path: `/${path}`,
-        title: console.log("return: ", getItemByPath(`/${path}`, items)),
-      }))}
-    />
-  );
+  // Tạo mảng itemsPath dựa trên điều kiện
+  let itemsPath;
+  if (currentPath.includes("/show")) {
+    const showIndex = currentPath.indexOf("/show");
+    const showPath = currentPath.substring(0, showIndex + 5); // +5 để bao gồm "/show"
+    itemsPath = showPath;
+    itemsPath = itemsPath.split("/").map((path) => ({ path: `/${path}` }));
+  } else {
+    console.log("currentPath: ", currentPath);
+    itemsPath = currentPath.split("/").map((path) => ({ path: `/${path}` }));
+  }
+
+  // Trả về phần tử Breadcrumb với itemsPath và itemRender
+  return <Breadcrumb itemRender={itemRender} items={itemsPath} />;
 }
 
 export default CustomBreadcrumb;
