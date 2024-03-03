@@ -164,9 +164,9 @@ const UserList = () => {
             />
             <CiEdit
               style={{ cursor: "pointer" }}
-              onClick={() => {
-                setDataUpdate(record);
-                setOpenModalUpdate(true);
+              onClick={(event) => {
+                // Điều hướng đến trang mới và truyền userId qua URL
+                navigate(`edit/${record._id}`);
               }}
             />
           </>
@@ -198,7 +198,11 @@ const UserList = () => {
         <Button
           icon={<AiOutlinePlus />}
           type="primary"
-          onClick={() => setOpenModalCreate(true)}
+          // onClick={() => setOpenModalCreate(true)}
+          onClick={(event) => {
+            // Điều hướng đến trang mới và truyền userId qua URL
+            navigate(`create`);
+          }}
         >
           Thêm mới
         </Button>
