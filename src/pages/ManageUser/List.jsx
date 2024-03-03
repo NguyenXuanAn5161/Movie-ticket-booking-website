@@ -18,13 +18,14 @@ import {
 } from "react-icons/ai";
 import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../components/Admin/User/InputSearch";
-import UserModalCreate from "../../components/Admin/User/UserModalCreate";
 import UserModalUpdate from "../../components/Admin/User/UserModalUpdate";
 import UserViewDetail from "../../components/Admin/User/UserViewDetal";
 import UserExport from "../../components/Admin/User/data/UserExport";
 import UserImport from "../../components/Admin/User/data/UserImport";
+import { doSetUser } from "../../redux/account/userSlice";
 import { callDeleteUser, callFetchListUser } from "../../services/api";
 
 const UserList = () => {
@@ -36,7 +37,8 @@ const UserList = () => {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
-  const [sortQuery, setSortQuery] = useState("");
+  // const [sortQuery, setSortQuery] = useState("");
+  const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
   const [dataViewDetail, setDataViewDetail] = useState("");
   const [openViewDetail, setOpenViewDetail] = useState(false);
   const [openModalCreate, setOpenModalCreate] = useState(false);
@@ -81,6 +83,13 @@ const UserList = () => {
         description: res.message,
       });
     }
+  };
+
+  const dispatch = useDispatch();
+
+  const handleViewDetail = (user) => {
+    dispatch(doSetUser(user));
+    navigate(`show/${user._id}`);
   };
 
   // sau này load động cột này -> cần có sự hợp tác của backend
@@ -157,10 +166,7 @@ const UserList = () => {
             </Popconfirm>
             <BsEye
               style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={(event) => {
-                // Điều hướng đến trang mới và truyền userId qua URL
-                navigate(`show/${record._id}`);
-              }}
+              onClick={() => handleViewDetail(record)}
             />
             <CiEdit
               style={{ cursor: "pointer" }}
@@ -277,12 +283,6 @@ const UserList = () => {
           />
         </Col>
       </Row>
-
-      <UserModalCreate
-        openModalCreate={openModalCreate}
-        setOpenModalCreate={setOpenModalCreate}
-        fetchUser={fetchUser}
-      />
 
       <UserViewDetail
         openViewDetail={openViewDetail}
