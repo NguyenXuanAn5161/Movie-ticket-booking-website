@@ -10,6 +10,8 @@ const initialState = {
     role: "",
     avatar: "",
     id: "",
+    createdAt: "",
+    updatedAt: "",
   },
 };
 
