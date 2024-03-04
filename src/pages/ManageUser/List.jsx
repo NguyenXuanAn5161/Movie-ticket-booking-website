@@ -160,7 +160,7 @@ const UserList = () => {
             >
               <span>
                 <AiOutlineDelete
-                  style={{ color: "error", cursor: "pointer", marginRight: 10 }}
+                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
                 />
               </span>
             </Popconfirm>
@@ -170,9 +170,9 @@ const UserList = () => {
             />
             <CiEdit
               style={{ cursor: "pointer" }}
-              onClick={(event) => {
-                // Điều hướng đến trang mới và truyền userId qua URL
-                navigate(`edit/${record._id}`);
+              onClick={() => {
+                handleView(record, "edit");
+                // navigate(`edit/${record._id}`);
               }}
             />
           </>
