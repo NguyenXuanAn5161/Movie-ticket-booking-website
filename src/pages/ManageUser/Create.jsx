@@ -1,4 +1,12 @@
-import { Button, Divider, Form, Input, message, notification } from "antd";
+import {
+  Button,
+  Card,
+  Divider,
+  Form,
+  Input,
+  message,
+  notification,
+} from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
@@ -31,56 +39,60 @@ const UserCreate = () => {
     <div>
       <PageHeader title="Tạo mới người dùng" numberBack={-1} type="create" />
       <Divider />
-      <Form
-        form={form}
-        name="basic"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        autoComplete="true"
-        style={{ maxWidth: 450, margin: "0 auto" }}
-      >
-        <Form.Item
-          labelCol={{ span: 24 }}
-          label="Họ và tên"
-          name="fullName"
-          rules={[
-            { required: true, message: "Họ và tên không được để trống!" },
-          ]}
+      <Card title="Tạo mới người dùng" bordered={false}>
+        <Form
+          form={form}
+          name="basic"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          autoComplete="true"
+          style={{ maxWidth: 450, margin: "0 auto" }}
         >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          labelCol={{ span: 24 }}
-          label="Email"
-          name="email"
-          rules={[{ required: true, message: "Email không được để trống!" }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          labelCol={{ span: 24 }}
-          label="Mật khẩu"
-          name="password"
-          rules={[{ required: true, message: "Mật khẩu không được để trống!" }]}
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item
-          labelCol={{ span: 24 }}
-          label="Số điện thoại"
-          name="phone"
-          rules={[
-            { required: true, message: "Số điện thoại không được để trống!" },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={isSubmit}>
-            Tạo mới
-          </Button>
-        </Form.Item>
-      </Form>
+          <Form.Item
+            labelCol={{ span: 24 }}
+            label="Họ và tên"
+            name="fullName"
+            rules={[
+              { required: true, message: "Họ và tên không được để trống!" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            labelCol={{ span: 24 }}
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: "Email không được để trống!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            labelCol={{ span: 24 }}
+            label="Mật khẩu"
+            name="password"
+            rules={[
+              { required: true, message: "Mật khẩu không được để trống!" },
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
+            labelCol={{ span: 24 }}
+            label="Số điện thoại"
+            name="phone"
+            rules={[
+              { required: true, message: "Số điện thoại không được để trống!" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={isSubmit}>
+              Tạo mới
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
     </div>
   );
 };
