@@ -1,5 +1,5 @@
 import { Breadcrumb } from "antd";
-import React, { useEffect } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 function CustomBreadcrumb(props) {
@@ -110,10 +110,6 @@ function CustomBreadcrumb(props) {
 
   let pathChildren = [];
 
-  useEffect(() => {
-    console.log("pathChildren useefect: ", pathChildren);
-  }, [pathChildren]);
-
   const getItemByPath = (path, itemList) => {
     for (let i = 0; i < itemList.length; i++) {
       const item = itemList[i];
@@ -147,16 +143,9 @@ function CustomBreadcrumb(props) {
     // Kiểm tra nếu route là 'show', 'edit', hoặc 'create' thì chỉ hiển thị span
     if (["/show", "/edit", "/create"].includes(route.path)) {
       if (pathChildren.length > 0) {
-        console.log("pathChildren in itemRender: ", pathChildren);
-
         // Kiểm tra xem route.path trùng với bất kỳ đường dẫn nào trong pathChildren
         const matchingPathChild = pathChildren.find(
           (pathChild) => pathChild.path === route.path
-        );
-
-        console.log(
-          "Check route.path cos trung hay khong: ",
-          matchingPathChild
         );
 
         // Nếu tìm thấy đường dẫn trùng khớp, trả về tiêu đề của mục đó
