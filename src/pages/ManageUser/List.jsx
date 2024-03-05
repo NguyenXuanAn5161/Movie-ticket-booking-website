@@ -20,11 +20,11 @@ import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import InputSearch from "../../components/Admin/User/InputSearch";
 import UserModalUpdate from "../../components/Admin/User/UserModalUpdate";
 import UserViewDetail from "../../components/Admin/User/UserViewDetal";
 import UserExport from "../../components/Admin/User/data/UserExport";
 import UserImport from "../../components/Admin/User/data/UserImport";
+import InputSearch from "../../components/InputSearch/InputSearch";
 import { doSetUser } from "../../redux/account/userSlice";
 import { callDeleteUser, callFetchListUser } from "../../services/api";
 
@@ -248,11 +248,20 @@ const UserList = () => {
     }
   };
 
+  const itemSearch = [
+    { field: "fullName", label: "Họ và tên" },
+    { field: "email", label: "Email" },
+    { field: "phone", label: "Số điện thoại" },
+  ];
+
   return (
     <>
       <Row gutter={[20, 20]}>
         <Col span={24}>
-          <InputSearch handleSearch={handleSearch} setFilter={setFilter} />
+          <InputSearch
+            itemSearch={itemSearch}
+            handleSearch={handleSearch} // Hàm xử lý tìm kiếm, truyền vào từ props
+          />
         </Col>
         <Col span={24}>
           <Table
