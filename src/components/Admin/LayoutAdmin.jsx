@@ -39,6 +39,7 @@ const items = [
   {
     label: <label>Quản lý người dùng</label>,
     icon: <UserOutlined />,
+    key: "manageUser",
     children: [
       {
         label: <Link to="/admin/user">Người dùng</Link>,
@@ -55,6 +56,7 @@ const items = [
   {
     label: <label>Quản lý rạp phim</label>,
     icon: <GiTheater />,
+    key: "manageTheater",
     children: [
       {
         label: <Link to="/admin/cinema">Rạp phim</Link>,
@@ -81,6 +83,7 @@ const items = [
   {
     label: <label>Quản lý phim</label>,
     icon: <RiMovie2Line />,
+    key: "manageMovie",
     children: [
       {
         label: <Link to="/admin/movie">Phim</Link>,
@@ -97,6 +100,7 @@ const items = [
   {
     label: <label>Quản lý đồ ăn</label>,
     icon: <IoFastFoodOutline />,
+    key: "manageFood",
     children: [
       {
         label: <Link to="/admin/food">Đồ ăn</Link>,
@@ -174,7 +178,9 @@ const LayoutAdmin = () => {
           selectedKeys={[lastSegment]}
           mode="inline"
           items={items}
-          onClick={(e) => setCollapsed(collapsed)}
+          onClick={(e) => {
+            setCollapsed(collapsed);
+          }}
         />
       </Sider>
       <Layout style={{ backgroundColor: "white" }}>
