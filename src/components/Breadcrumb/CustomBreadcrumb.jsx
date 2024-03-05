@@ -126,7 +126,6 @@ function CustomBreadcrumb(props) {
     itemsPath = showOrEditPath;
     itemsPath = itemsPath.split("/").map((path) => ({ path: `/${path}` }));
   } else {
-    console.log("currentPath: ", currentPath);
     itemsPath = currentPath.split("/").map((path) => ({ path: `/${path}` }));
   }
 
