@@ -14,6 +14,9 @@ import PromotionTable from "./components/Admin/Promotion/PromotionTable";
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import MovieCreate from "./pages/ManageMovie/Movie/Create";
+import MovieEdit from "./pages/ManageMovie/Movie/Edit";
+import MovieShow from "./pages/ManageMovie/Movie/Show";
 import UserCreate from "./pages/ManageUser/Create";
 import UserEdit from "./pages/ManageUser/Edit";
 import UserList from "./pages/ManageUser/List";
@@ -85,6 +88,18 @@ export default function App() {
         {
           path: "movie",
           element: <BookTable />,
+        },
+        {
+          path: "movie/show/:movieId",
+          element: <MovieShow />,
+        },
+        {
+          path: "movie/create",
+          element: <MovieCreate />,
+        },
+        {
+          path: "movie/edit/:movieId",
+          element: <MovieEdit />,
         },
         // {
         //   path: "movieGenre",
