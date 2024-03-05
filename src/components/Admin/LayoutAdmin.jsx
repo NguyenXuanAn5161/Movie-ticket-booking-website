@@ -8,7 +8,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Dropdown, Layout, Menu, Space, message } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BiCategoryAlt } from "react-icons/bi";
 import { GiTheater } from "react-icons/gi";
 import { IoFastFoodOutline } from "react-icons/io5";
@@ -137,10 +137,6 @@ const LayoutAdmin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    console.log("openkeys: ", openKeys);
-  }, [openKeys]);
-
   // Hàm xử lý sự kiện khi một sub-menu được mở
   const handleSubMenuOpen = (key) => {
     setOpenKeys((prevOpenKeys) => {
@@ -221,7 +217,6 @@ const LayoutAdmin = () => {
             }
           }}
           onOpenChange={(keys) => {
-            console.log("keys onchange: ", keys);
             // Xóa các key đã có trong mảng keys
             const newOpenKeys = keys.filter((key) => !openKeys.includes(key));
             // Thêm key hiện tại vào mảng mới
