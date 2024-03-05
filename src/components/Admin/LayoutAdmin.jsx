@@ -8,7 +8,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Dropdown, Layout, Menu, Space, message } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiCategoryAlt } from "react-icons/bi";
 import { GiTheater } from "react-icons/gi";
 import { IoFastFoodOutline } from "react-icons/io5";
@@ -127,6 +127,7 @@ const LayoutAdmin = () => {
   const location = useLocation();
   const { pathname } = location;
   const currentPath = location.pathname;
+  const [openKeys, setOpenKeys] = useState([]);
   // lastIndexOf('a') lấy vị trí phần tử cuối cùng trong chuỗi
   // substring lấy chuỗi còn lại từ vị trí đó
   const lastSegment = pathname.substring(pathname.lastIndexOf("/") + 1);
@@ -135,6 +136,21 @@ const LayoutAdmin = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("openkeys: ", openKeys);
+  }, [openKeys]);
+
+  // Hàm xử lý sự kiện khi một sub-menu được mở
+  const handleSubMenuOpen = (key) => {
+    setOpenKeys((prevOpenKeys) => {
+      if (prevOpenKeys.includes(key)) {
+        return prevOpenKeys.filter((k) => k !== key);
+      } else {
+        return [...prevOpenKeys, key];
+      }
+    });
+  };
 
   const handleLogout = async () => {
     const res = await callLogout();
@@ -174,14 +190,73 @@ const LayoutAdmin = () => {
         onCollapse={(value) => setCollapsed(value)}
       >
         <div style={{ height: 32, margin: 16, textAlign: "center" }}>Admin</div>
-        <Menu
+        {/* <Menu
+          openKeys={openKeys}
           selectedKeys={[lastSegment]}
           mode="inline"
           items={items}
           onClick={(e) => {
             setCollapsed(collapsed);
           }}
-        />
+        /> */}
+        <Menu
+          mode="inline"
+          openKeys={openKeys}
+          selectedKeys={[lastSegment]}
+          onClick={(e) => {
+            const { key } = e;
+            const subMenuKeys = items.map((item) => item.key);
+            if (!subMenuKeys.includes(key)) {
+              // Nếu không phải là sub-menu thì đóng toàn bộ các sub-menu
+              setOpenKeys([]);
+              // Kiểm tra xem key này thuộc subMenuKeys nào
+              items.forEach((item) => {
+                if (
+                  item.children &&
+                  item.children.some((child) => child.key === key)
+                ) {
+                  setOpenKeys([item.key]);
+                }
+              });
+            }
+          }}
+          onOpenChange={(keys) => {
+            console.log("keys onchange: ", keys);
+            // Xóa các key đã có trong mảng keys
+            const newOpenKeys = keys.filter((key) => !openKeys.includes(key));
+            // Thêm key hiện tại vào mảng mới
+            setOpenKeys(newOpenKeys);
+          }}
+        >
+          {items.map((item) => {
+            if (item.children) {
+              return (
+                <Menu.SubMenu
+                  key={item.key}
+                  title={
+                    <span>
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </span>
+                  }
+                  onTitleClick={() => handleSubMenuOpen(item.key)}
+                >
+                  {item.children.map((child) => (
+                    <Menu.Item key={child.key} icon={child.icon}>
+                      {child.label}
+                    </Menu.Item>
+                  ))}
+                </Menu.SubMenu>
+              );
+            } else {
+              return (
+                <Menu.Item key={item.key} icon={item.icon}>
+                  {item.label}
+                </Menu.Item>
+              );
+            }
+          })}
+        </Menu>
       </Sider>
       <Layout style={{ backgroundColor: "white" }}>
         <div className="admin-header">
