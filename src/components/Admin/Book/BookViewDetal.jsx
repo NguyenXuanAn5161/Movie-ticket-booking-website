@@ -89,11 +89,11 @@ const BookViewDetail = (props) => {
         onClose={onClose}
         open={openViewDetail}
       >
-        <Descriptions title="Thông tin sách" bordered column={2}>
+        <Descriptions title="Thông tin phim" bordered column={2}>
           <Descriptions.Item label="Id">
             {dataViewDetail?._id}
           </Descriptions.Item>
-          <Descriptions.Item label="Tên sách">
+          <Descriptions.Item label="Tên phim">
             {dataViewDetail?.mainText}
           </Descriptions.Item>
           <Descriptions.Item label="Tác giả">
@@ -121,7 +121,7 @@ const BookViewDetail = (props) => {
             {moment(dataViewDetail?.updatedAt).format("DD-MM-YYYY HH:mm:ss")}
           </Descriptions.Item>
         </Descriptions>
-        <Divider orientation="left">Ảnh sách</Divider>
+        <Divider orientation="left">Ảnh phim</Divider>
         <Upload
           action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
           listType="picture-card"

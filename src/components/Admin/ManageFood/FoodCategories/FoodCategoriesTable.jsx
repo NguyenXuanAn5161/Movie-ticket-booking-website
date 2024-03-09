@@ -260,6 +260,11 @@ const FoodCategoriesTable = () => {
     },
   ];
 
+  const onClose = () => {
+    setDrawerVisible(false);
+    setSelectedFood(null);
+  };
+
   return (
     <>
       <Row gutter={[20, 20]}>
@@ -275,11 +280,12 @@ const FoodCategoriesTable = () => {
       </Row>
 
       <Drawer
+        width={"40vw"}
         title={selectedFood ? selectedFood.name : ""}
         placement="right"
         closable={true}
-        onClose={() => setDrawerVisible(false)}
-        visible={drawerVisible}
+        onClose={onClose}
+        open={drawerVisible}
       >
         {selectedFood && (
           <div>
@@ -353,13 +359,9 @@ const FoodCategoriesTable = () => {
                 color={selectedFood.status === "available" ? "green" : "red"}
               >
                 {selectedFood.status === "available" ? (
-                  <span style={{ fontSize: 16, fontWeight: "500" }}>
-                    Có sẵn
-                  </span>
+                  <span style={{ fontSize: 16, fontWeight: "500" }}>Còn</span>
                 ) : (
-                  <span style={{ fontSize: 16, fontWeight: "500" }}>
-                    Không có sẵn
-                  </span>
+                  <span style={{ fontSize: 16, fontWeight: "500" }}>Hết</span>
                 )}
               </Tag>
             </p>

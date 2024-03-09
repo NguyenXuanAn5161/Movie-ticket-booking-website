@@ -106,7 +106,7 @@ const BookModalUpdate = (props) => {
     if (dataThumbnail.length === 0) {
       notification.error({
         message: "Có lỗi xảy ra!",
-        description: "Ảnh bìa sách không được để trống!",
+        description: "Ảnh bìa phim không được để trống!",
       });
       return;
     }
@@ -114,7 +114,7 @@ const BookModalUpdate = (props) => {
     if (dataSlider.length === 0) {
       notification.error({
         message: "Có lỗi xảy ra!",
-        description: "Ảnh mô tả sách không được để trống!",
+        description: "Ảnh mô tả phim không được để trống!",
       });
       return;
     }
@@ -137,7 +137,7 @@ const BookModalUpdate = (props) => {
     );
 
     if (res && res.data) {
-      message.success("Cập nhật sách thành công!");
+      message.success("Cập nhật phim thành công!");
       form.resetFields();
       setOpenModalUpdate(false);
       setDataSlider([]);
@@ -251,7 +251,7 @@ const BookModalUpdate = (props) => {
     <>
       <Modal
         width={750}
-        title="Cập nhật sách"
+        title="Cập nhật phim"
         open={openModalUpdate}
         onOk={() => {
           form.submit();
@@ -287,12 +287,12 @@ const BookModalUpdate = (props) => {
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tên sách"
+                label="Tên phim"
                 name="mainText"
                 rules={[
                   {
                     required: true,
-                    message: "Tên sách không được để trống!",
+                    message: "Tên phim không được để trống!",
                   },
                 ]}
               >

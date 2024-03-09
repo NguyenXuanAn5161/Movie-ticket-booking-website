@@ -45,9 +45,9 @@ const InputSearch = (props) => {
           <Form.Item
             labelCol={{ span: 24 }} //whole column
             name={`mainText`}
-            label={`Tên sách`}
+            label={`Tên phim`}
           >
-            <Input type="text" placeholder="Tên sách" />
+            <Input type="text" placeholder="Tên phim" />
           </Form.Item>
         </Col>
         <Col span={8}>

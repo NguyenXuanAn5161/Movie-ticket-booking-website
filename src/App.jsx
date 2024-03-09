@@ -1,36 +1,40 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import LayoutAdmin from "./components/Admin/LayoutAdmin";
-import UserTable from "./components/Admin/User/UserTable";
-import Footer from "./components/Footer/index";
-import Header from "./components/Header/index";
-import HomePage from "./components/Home";
+import FoodTable from "./components/Admin/ManageFood/Food/FoodTable";
+import FoodCategoriesTable from "./components/Admin/ManageFood/FoodCategories/FoodCategoriesTable";
+import OrderTable from "./components/Admin/Order/OrderTable";
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import AdminPage from "./pages/admin";
-import ContactPage from "./pages/contact";
+import CinemaCreate from "./pages/ManageCinema/Create";
+import CinemaList from "./pages/ManageCinema/List";
+import RoomCreate from "./pages/ManageCinema/Room/Create";
+import RoomList from "./pages/ManageCinema/Room/List";
+import SeatList from "./pages/ManageCinema/Room/Seat/List";
+import SeatTypeList from "./pages/ManageCinema/Room/TypeSeat/List";
+import MovieCreate from "./pages/ManageMovie/Movie/Create";
+import MovieEdit from "./pages/ManageMovie/Movie/Edit";
+import MovieList from "./pages/ManageMovie/Movie/List";
+import MovieShow from "./pages/ManageMovie/Movie/Show";
+import MovieGenreCreate from "./pages/ManageMovie/MovieCategories/Create";
+import MovieGenreEdit from "./pages/ManageMovie/MovieCategories/Edit";
+import MovieGenreList from "./pages/ManageMovie/MovieCategories/List";
+import MovieGenreShow from "./pages/ManageMovie/MovieCategories/Show";
+import PromotionCreate from "./pages/ManagePromotion/Create";
+import PromotionEdit from "./pages/ManagePromotion/Edit";
+import PromotionList from "./pages/ManagePromotion/List";
+import PromotionShow from "./pages/ManagePromotion/Show";
+import UserCreate from "./pages/ManageUser/Create";
+import UserEdit from "./pages/ManageUser/Edit";
+import UserList from "./pages/ManageUser/List";
+import UserShow from "./pages/ManageUser/Show";
+import DashBoardShow from "./pages/dashboard/Show";
 import LoginPage from "./pages/login";
-import MoviePage from "./pages/movie";
-// import RegisterPage from "./pages/register/index";
-import BookTable from "./components/Admin/Book/BookTable";
-import FoodTable from "./components/Admin/ManageFood/Food/FoodTable";
-import FoodCategoriesTable from "./components/Admin/ManageFood/FoodCategories/FoodCategoriesTable";
-import PromotionTable from "./components/Admin/Promotion/PromotionTable";
 import { doGetAccountAction } from "./redux/account/accountSlice";
 import { callFetchAccount } from "./services/api";
 import "./styles/reset.scss";
-
-const Layout = () => {
-  return (
-    <div className="layout-app">
-      <Header />
-      <Outlet />
-      <Footer />
-    </div>
-  );
-};
 
 export default function App() {
   const dispatch = useDispatch();
@@ -55,23 +59,6 @@ export default function App() {
   }, []);
 
   const router = createBrowserRouter([
-    // layout for user
-    {
-      path: "/",
-      element: <Layout />,
-      errorElement: <NotFound />,
-      children: [
-        { index: true, element: <HomePage /> },
-        {
-          path: "contact",
-          element: <ContactPage />,
-        },
-        {
-          path: "movie",
-          element: <MoviePage />,
-        },
-      ],
-    },
     // layout for admin
     {
       path: "/admin",
@@ -79,20 +66,129 @@ export default function App() {
       errorElement: <NotFound />,
       children: [
         {
+          path: "dashboard",
           index: true,
           element: (
             <ProtectedRoute>
-              <AdminPage />
+              <DashBoardShow />
             </ProtectedRoute>
           ),
         },
         {
+          path: "order",
+          element: <OrderTable />,
+        },
+        {
           path: "user",
-          element: <UserTable />,
+          element: <UserList />,
+        },
+        {
+          path: "user/show/:userId",
+          element: <UserShow />,
+        },
+        {
+          path: "user/create",
+          element: <UserCreate />,
+        },
+        {
+          path: "user/edit/:userId",
+          element: <UserEdit />,
         },
         {
           path: "movie",
-          element: <BookTable />,
+          element: <MovieList />,
+        },
+        {
+          path: "movie/show/:movieId",
+          element: <MovieShow />,
+        },
+        {
+          path: "movie/create",
+          element: <MovieCreate />,
+        },
+        {
+          path: "movie/edit/:movieId",
+          element: <MovieEdit />,
+        },
+        {
+          path: "movieGenre",
+          element: <MovieGenreList />,
+        },
+        {
+          path: "movieGenre/show/:movieId",
+          element: <MovieGenreShow />,
+        },
+        {
+          path: "movieGenre/create",
+          element: <MovieGenreCreate />,
+        },
+        {
+          path: "movieGenre/edit/:movieId",
+          element: <MovieGenreEdit />,
+        },
+        {
+          path: "cinema",
+          element: <CinemaList />,
+        },
+        {
+          path: "cinema/show/:movieId",
+          element: <MovieShow />,
+        },
+        {
+          path: "cinema/create",
+          element: <CinemaCreate />,
+        },
+        {
+          path: "cinema/edit/:movieId",
+          element: <MovieEdit />,
+        },
+        {
+          path: "cinema/room",
+          element: <RoomList />,
+        },
+        {
+          path: "cinema/room/show/:movieId",
+          element: <MovieShow />,
+        },
+        {
+          path: "cinema/room/create",
+          element: <RoomCreate />,
+        },
+        {
+          path: "cinema/room/edit/:movieId",
+          element: <MovieEdit />,
+        },
+        {
+          path: "cinema/room/seat",
+          element: <SeatList />,
+        },
+        {
+          path: "cinema/room/seat/show/:movieId",
+          element: <MovieShow />,
+        },
+        {
+          path: "cinema/room/seat/create",
+          element: <RoomCreate />,
+        },
+        {
+          path: "cinema/room/seat/edit/:movieId",
+          element: <MovieEdit />,
+        },
+        {
+          path: "cinema/room/seatType",
+          element: <SeatTypeList />,
+        },
+        {
+          path: "cinema/room/seatType/show/:movieId",
+          element: <MovieShow />,
+        },
+        {
+          path: "cinema/room/seatType/create",
+          element: <RoomCreate />,
+        },
+        {
+          path: "cinema/room/seatType/edit/:movieId",
+          element: <MovieEdit />,
         },
         {
           path: "food",
@@ -104,26 +200,37 @@ export default function App() {
         },
         {
           path: "promotion",
-          element: <PromotionTable />,
+          element: <PromotionList />,
+        },
+        {
+          path: "promotion/show/:promotionId",
+          element: <PromotionShow />,
+        },
+        {
+          path: "promotion/create",
+          element: <PromotionCreate />,
+        },
+        {
+          path: "promotion/edit/:promotionId",
+          element: <PromotionEdit />,
         },
       ],
+    },
+    {
+      path: "*",
+      element: <NotFound />,
     },
     {
       path: "/login",
       element: <LoginPage />,
     },
-    // {
-    //   path: "/register",
-    //   element: <RegisterPage />,
-    // },
   ]);
 
   return (
     <>
       {isLoading === false ||
       window.location.pathname === "/login" ||
-      window.location.pathname === "/register" ||
-      window.location.pathname === "/" ? (
+      window.location.pathname === "/register" ? (
         <RouterProvider router={router} />
       ) : (
         <Loading />

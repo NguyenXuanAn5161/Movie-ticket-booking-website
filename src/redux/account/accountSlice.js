@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isAuthenticated: false,
   isLoading: true,
+  // can thay doi
   user: {
     email: "",
     phone: "",
