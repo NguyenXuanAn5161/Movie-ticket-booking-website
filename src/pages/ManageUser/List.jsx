@@ -20,8 +20,6 @@ import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import UserModalUpdate from "../../components/Admin/User/UserModalUpdate";
-import UserViewDetail from "../../components/Admin/User/UserViewDetal";
 import UserExport from "../../components/Admin/User/data/UserExport";
 import UserImport from "../../components/Admin/User/data/UserImport";
 import InputSearch from "../../components/InputSearch/InputSearch";
@@ -37,15 +35,9 @@ const UserList = () => {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
-  // const [sortQuery, setSortQuery] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
-  const [dataViewDetail, setDataViewDetail] = useState("");
-  const [openViewDetail, setOpenViewDetail] = useState(false);
-  const [openModalCreate, setOpenModalCreate] = useState(false);
   const [openModalImport, setOpenModalImport] = useState(false);
   const [openModalExport, setOpenModalExport] = useState(false);
-  const [openModalUpdate, setOpenModalUpdate] = useState(false);
-  const [dataUpdate, setDataUpdate] = useState("");
 
   useEffect(() => {
     fetchUser();
@@ -99,19 +91,6 @@ const UserList = () => {
       dataIndex: "_id",
       width: 100,
       fixed: "left",
-      render: (text, record, index) => {
-        return (
-          <a
-            href={`user#${record._id}`}
-            onClick={() => {
-              setDataViewDetail(record);
-              setOpenViewDetail(true);
-            }}
-          >
-            {record._id}
-          </a>
-        );
-      },
     },
     {
       title: "Họ và tên",
@@ -293,13 +272,6 @@ const UserList = () => {
         </Col>
       </Row>
 
-      <UserViewDetail
-        openViewDetail={openViewDetail}
-        setOpenViewDetail={setOpenViewDetail}
-        dataViewDetail={dataViewDetail}
-        setDataViewDetail={setDataViewDetail}
-      />
-
       <UserImport
         openModalImport={openModalImport}
         setOpenModalImport={setOpenModalImport}
@@ -310,14 +282,6 @@ const UserList = () => {
         openModalExport={openModalExport}
         setOpenModalExport={setOpenModalExport}
         listUser={listUser}
-      />
-
-      <UserModalUpdate
-        openModalUpdate={openModalUpdate}
-        setOpenModalUpdate={setOpenModalUpdate}
-        dataUpdate={dataUpdate}
-        setDataUpdate={setDataUpdate}
-        fetchUser={fetchUser}
       />
     </>
   );
