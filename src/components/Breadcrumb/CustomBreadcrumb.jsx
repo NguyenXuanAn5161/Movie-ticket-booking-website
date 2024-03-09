@@ -66,15 +66,67 @@ function CustomBreadcrumb(props) {
           ],
         },
         {
+          path: "/movieGenre",
+          title: "Thể loại phim",
+          key: "movieGenre",
+          children: [
+            {
+              path: "/show",
+              title: "Xem chi tiết thể loại phim",
+              key: "movieGenreShow",
+            },
+            {
+              path: "/create",
+              title: "Tạo mới thể loại phim",
+              key: "movieGenreCreate",
+            },
+            {
+              path: "/edit",
+              title: "Cập nhật thể loại phim",
+              key: "movieGenreEdit",
+            },
+          ],
+        },
+        {
           path: "/cinema",
           title: "Rạp chiếu",
           key: "cinema",
           children: [
             {
+              path: "/show",
+              title: "Xem chi tiết rạp phim",
+              key: "roomShow",
+            },
+            {
+              path: "/create",
+              title: "Tạo mới rạp phim",
+              key: "roomCreate",
+            },
+            {
+              path: "/edit",
+              title: "Cập nhật rạp phim",
+              key: "roomEdit",
+            },
+            {
               path: "/room",
               title: "Phòng chiếu",
               key: "room",
               children: [
+                {
+                  path: "/show",
+                  title: "Xem chi tiết phòng",
+                  key: "cinemaShow",
+                },
+                {
+                  path: "/create",
+                  title: "Tạo mới phòng",
+                  key: "cinemaCreate",
+                },
+                {
+                  path: "/edit",
+                  title: "Cập nhật phòng",
+                  key: "cinemaEdit",
+                },
                 {
                   path: "/seat",
                   title: "Ghế",
@@ -103,6 +155,23 @@ function CustomBreadcrumb(props) {
           path: "/promotion",
           title: "Khuyến mãi",
           key: "promotion",
+          children: [
+            {
+              path: "/show",
+              title: "Xem chi tiết khuyến mãi",
+              key: "promotionShow",
+            },
+            {
+              path: "/create",
+              title: "Tạo mới khuyến mãi",
+              key: "promotionCreate",
+            },
+            {
+              path: "/edit",
+              title: "Cập nhật khuyến mãi",
+              key: "promotionEdit",
+            },
+          ],
         },
       ],
     },
