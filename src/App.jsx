@@ -1,22 +1,31 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import BookTable from "./components/Admin/Book/BookTable";
 import LayoutAdmin from "./components/Admin/LayoutAdmin";
-import CinemaTable from "./components/Admin/ManageCinema/CinemaTable";
-import SeatTable from "./components/Admin/ManageCinema/ManageSeat/Seat/SeatTable";
-import SeatTypeTable from "./components/Admin/ManageCinema/ManageSeat/SeatType/SeatTypeTable";
-import RoomTable from "./components/Admin/ManageCinema/Room/RoomTable";
 import FoodTable from "./components/Admin/ManageFood/Food/FoodTable";
 import FoodCategoriesTable from "./components/Admin/ManageFood/FoodCategories/FoodCategoriesTable";
 import OrderTable from "./components/Admin/Order/OrderTable";
-import PromotionTable from "./components/Admin/Promotion/PromotionTable";
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import CinemaCreate from "./pages/ManageCinema/Create";
+import CinemaList from "./pages/ManageCinema/List";
+import RoomCreate from "./pages/ManageCinema/Room/Create";
+import RoomList from "./pages/ManageCinema/Room/List";
+import SeatList from "./pages/ManageCinema/Room/Seat/List";
+import SeatTypeList from "./pages/ManageCinema/Room/TypeSeat/List";
 import MovieCreate from "./pages/ManageMovie/Movie/Create";
 import MovieEdit from "./pages/ManageMovie/Movie/Edit";
+import MovieList from "./pages/ManageMovie/Movie/List";
 import MovieShow from "./pages/ManageMovie/Movie/Show";
+import MovieGenreCreate from "./pages/ManageMovie/MovieCategories/Create";
+import MovieGenreEdit from "./pages/ManageMovie/MovieCategories/Edit";
+import MovieGenreList from "./pages/ManageMovie/MovieCategories/List";
+import MovieGenreShow from "./pages/ManageMovie/MovieCategories/Show";
+import PromotionCreate from "./pages/ManagePromotion/Create";
+import PromotionEdit from "./pages/ManagePromotion/Edit";
+import PromotionList from "./pages/ManagePromotion/List";
+import PromotionShow from "./pages/ManagePromotion/Show";
 import UserCreate from "./pages/ManageUser/Create";
 import UserEdit from "./pages/ManageUser/Edit";
 import UserList from "./pages/ManageUser/List";
@@ -87,7 +96,7 @@ export default function App() {
         },
         {
           path: "movie",
-          element: <BookTable />,
+          element: <MovieList />,
         },
         {
           path: "movie/show/:movieId",
@@ -101,29 +110,85 @@ export default function App() {
           path: "movie/edit/:movieId",
           element: <MovieEdit />,
         },
-        // {
-        //   path: "movieGenre",
-        //   element: <BookTable />,
-        // },
+        {
+          path: "movieGenre",
+          element: <MovieGenreList />,
+        },
+        {
+          path: "movieGenre/show/:movieId",
+          element: <MovieGenreShow />,
+        },
+        {
+          path: "movieGenre/create",
+          element: <MovieGenreCreate />,
+        },
+        {
+          path: "movieGenre/edit/:movieId",
+          element: <MovieGenreEdit />,
+        },
         {
           path: "cinema",
-          element: <CinemaTable />,
-          children: [
-            {
-              path: "room",
-              element: <RoomTable />,
-              children: [
-                {
-                  path: "seat",
-                  element: <SeatTable />,
-                },
-                {
-                  path: "seatType",
-                  element: <SeatTypeTable />,
-                },
-              ],
-            },
-          ],
+          element: <CinemaList />,
+        },
+        {
+          path: "cinema/show/:movieId",
+          element: <MovieShow />,
+        },
+        {
+          path: "cinema/create",
+          element: <CinemaCreate />,
+        },
+        {
+          path: "cinema/edit/:movieId",
+          element: <MovieEdit />,
+        },
+        {
+          path: "cinema/room",
+          element: <RoomList />,
+        },
+        {
+          path: "cinema/room/show/:movieId",
+          element: <MovieShow />,
+        },
+        {
+          path: "cinema/room/create",
+          element: <RoomCreate />,
+        },
+        {
+          path: "cinema/room/edit/:movieId",
+          element: <MovieEdit />,
+        },
+        {
+          path: "cinema/room/seat",
+          element: <SeatList />,
+        },
+        {
+          path: "cinema/room/seat/show/:movieId",
+          element: <MovieShow />,
+        },
+        {
+          path: "cinema/room/seat/create",
+          element: <RoomCreate />,
+        },
+        {
+          path: "cinema/room/seat/edit/:movieId",
+          element: <MovieEdit />,
+        },
+        {
+          path: "cinema/room/seatType",
+          element: <SeatTypeList />,
+        },
+        {
+          path: "cinema/room/seatType/show/:movieId",
+          element: <MovieShow />,
+        },
+        {
+          path: "cinema/room/seatType/create",
+          element: <RoomCreate />,
+        },
+        {
+          path: "cinema/room/seatType/edit/:movieId",
+          element: <MovieEdit />,
         },
         {
           path: "food",
@@ -135,7 +200,19 @@ export default function App() {
         },
         {
           path: "promotion",
-          element: <PromotionTable />,
+          element: <PromotionList />,
+        },
+        {
+          path: "promotion/show/:promotionId",
+          element: <PromotionShow />,
+        },
+        {
+          path: "promotion/create",
+          element: <PromotionCreate />,
+        },
+        {
+          path: "promotion/edit/:promotionId",
+          element: <PromotionEdit />,
         },
       ],
     },
