@@ -253,7 +253,7 @@ const MovieEdit = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tổng số phòng!",
+                    message: "Vui lòng chọn hình ảnh!",
                   },
                 ]}
               >
