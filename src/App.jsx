@@ -2,8 +2,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import LayoutAdmin from "./components/Admin/LayoutAdmin";
-import FoodTable from "./components/Admin/ManageFood/Food/FoodTable";
-import FoodCategoriesTable from "./components/Admin/ManageFood/FoodCategories/FoodCategoriesTable";
 import OrderTable from "./components/Admin/Order/OrderTable";
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
@@ -14,6 +12,14 @@ import RoomCreate from "./pages/ManageCinema/Room/Create";
 import RoomList from "./pages/ManageCinema/Room/List";
 import SeatList from "./pages/ManageCinema/Room/Seat/List";
 import SeatTypeList from "./pages/ManageCinema/Room/TypeSeat/List";
+import FoodCategoryCreate from "./pages/ManageFood/CategoriesFood/Create";
+import FoodCategoryEdit from "./pages/ManageFood/CategoriesFood/Edit";
+import FoodCategoryList from "./pages/ManageFood/CategoriesFood/List";
+import FoodCategoryShow from "./pages/ManageFood/CategoriesFood/Show";
+import FoodCreate from "./pages/ManageFood/Food/Create";
+import FoodEdit from "./pages/ManageFood/Food/Edit";
+import FoodList from "./pages/ManageFood/Food/List";
+import FoodShow from "./pages/ManageFood/Food/Show";
 import MovieCreate from "./pages/ManageMovie/Movie/Create";
 import MovieEdit from "./pages/ManageMovie/Movie/Edit";
 import MovieList from "./pages/ManageMovie/Movie/List";
@@ -192,11 +198,35 @@ export default function App() {
         },
         {
           path: "food",
-          element: <FoodTable />,
+          element: <FoodList />,
+        },
+        {
+          path: "food/show/:foodId",
+          element: <FoodShow />,
+        },
+        {
+          path: "food/create",
+          element: <FoodCreate />,
+        },
+        {
+          path: "food/edit/:foodId",
+          element: <FoodEdit />,
         },
         {
           path: "foodCategories",
-          element: <FoodCategoriesTable />,
+          element: <FoodCategoryList />,
+        },
+        {
+          path: "foodCategories/show/:foodCategoryId",
+          element: <FoodCategoryShow />,
+        },
+        {
+          path: "foodCategories/create",
+          element: <FoodCategoryCreate />,
+        },
+        {
+          path: "foodCategories/edit/:foodCategoryId",
+          element: <FoodCategoryEdit />,
         },
         {
           path: "promotion",

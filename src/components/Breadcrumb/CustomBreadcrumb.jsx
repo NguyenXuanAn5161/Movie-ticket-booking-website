@@ -145,11 +145,45 @@ function CustomBreadcrumb(props) {
           path: "/food",
           title: "Đồ ăn",
           key: "food",
+          children: [
+            {
+              path: "/show",
+              title: "Xem chi tiết đồ ăn",
+              key: "foodShow",
+            },
+            {
+              path: "/create",
+              title: "Tạo mới đồ ăn",
+              key: "foodCreate",
+            },
+            {
+              path: "/edit",
+              title: "Cập nhật đồ ăn",
+              key: "foodEdit",
+            },
+          ],
         },
         {
           path: "/foodCategories",
           title: "Loại đồ ăn",
           key: "foodCategories",
+          children: [
+            {
+              path: "/show",
+              title: "Xem chi tiết loại đồ ăn",
+              key: "foodCategoriesShow",
+            },
+            {
+              path: "/create",
+              title: "Tạo mới loại đồ ăn",
+              key: "foodCategoriesCreate",
+            },
+            {
+              path: "/edit",
+              title: "Cập nhật loại đồ ăn",
+              key: "foodCategoriesEdit",
+            },
+          ],
         },
         {
           path: "/promotion",

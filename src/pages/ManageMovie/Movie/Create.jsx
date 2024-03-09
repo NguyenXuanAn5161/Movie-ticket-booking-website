@@ -1,3 +1,4 @@
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -6,24 +7,97 @@ import {
   Form,
   Input,
   InputNumber,
+  Modal,
   Row,
   Select,
+  Upload,
   message,
   notification,
 } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callCreateUser } from "../../../services/api";
+import { callCreateUser, callUploadBookImg } from "../../../services/api";
 
 // thay đổi #1
 const MovieCreate = () => {
   // mặc định #2
-  const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [isSubmit, setIsSubmit] = useState(false);
+  // ???
+  const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [dataThumbnail, setDataThumbnail] = useState([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
+
+  const getBase64 = (img, callback) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => callback(reader.result));
+    reader.readAsDataURL(img);
+  };
+
+  const beforeUpload = (file) => {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPG/PNG file!");
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error("Image must smaller than 2MB!");
+    }
+    return isJpgOrPng && isLt2M;
+  };
+
+  const handleChange = (info) => {
+    if (info.file.status === "done") {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj, (url) => {
+        setLoading(false);
+        setImageUrl(url);
+      });
+    }
+  };
+
+  const handleUploadFileThumbnail = async ({ file, onSuccess, onError }) => {
+    const res = await callUploadBookImg(file);
+    if (res && res.data) {
+      setDataThumbnail([
+        {
+          name: res.data.fileUploaded,
+          uid: file.uid,
+        },
+      ]);
+      onSuccess("ok");
+    } else {
+      onError("Đã có lỗi khi upload file");
+    }
+  };
+
+  const handleRemoveFile = (file) => {
+    setDataThumbnail([]);
+  };
+
+  const handlePreview = async (file) => {
+    getBase64(file.originFileObj, (url) => {
+      setPreviewImage(url);
+      setPreviewOpen(true);
+      setPreviewTitle(
+        file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+      );
+    });
+  };
 
   const onFinish = async (values) => {
+    if (dataThumbnail.length === 0) {
+      notification.error({
+        message: "Có lỗi xảy ra!",
+        description: "Ảnh bìa phim không được để trống!",
+      });
+      return;
+    }
     // thay đổi #1
     const {
       movieName,
@@ -97,7 +171,7 @@ const MovieCreate = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên quốc gia sản xuất phim!",
+                    message: "Vui lòng chọn thể loại!",
                   },
                 ]}
               >
@@ -246,11 +320,27 @@ const MovieCreate = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tổng số phòng!",
+                    message: "Vui lòng nhập chọn hình ảnh!",
                   },
                 ]}
               >
-                <Input style={{ width: "100%" }} />
+                <Upload
+                  name="thumbnail"
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  maxCount={1}
+                  multiple={false}
+                  customRequest={handleUploadFileThumbnail}
+                  beforeUpload={beforeUpload}
+                  onChange={handleChange}
+                  onRemove={(file) => handleRemoveFile(file)}
+                  onPreview={handlePreview}
+                >
+                  <div>
+                    {loading ? <LoadingOutlined /> : <PlusOutlined />}
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                </Upload>
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -278,6 +368,14 @@ const MovieCreate = () => {
           </Row>
         </Form>
       </Card>
+      <Modal
+        open={previewOpen}
+        title={previewTitle}
+        footer={null}
+        onCancel={() => setPreviewOpen(false)}
+      >
+        <img alt="example" style={{ width: "100%" }} src={previewImage} />
+      </Modal>
     </>
   );
 };
