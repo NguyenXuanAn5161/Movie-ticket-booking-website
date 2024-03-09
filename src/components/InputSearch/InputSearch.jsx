@@ -9,7 +9,7 @@ const InputSearch = (props) => {
     maxWidth: "none",
     background: token.colorFillAlter,
     borderRadius: token.borderRadiusLG,
-    padding: 24,
+    padding: 10,
   };
 
   const onFinish = (values) => {
