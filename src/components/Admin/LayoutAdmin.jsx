@@ -72,7 +72,11 @@ const items = [
   ]),
   getItem("Quản lý phim", "manageMovie", <RiMovie2Line />, [
     getItem(<Link to="/admin/movie">Phim</Link>, "movie", <RiMovie2Line />),
-    getItem("Thể loại phim comming soon", "movieCategories", <BiCategoryAlt />),
+    getItem(
+      <Link to="/admin/movieGenre">Thể loại phim</Link>,
+      "movieGenre",
+      <BiCategoryAlt />
+    ),
   ]),
   getItem(<label>Quản lý đồ ăn</label>, "manageFood", <IoFastFoodOutline />, [
     getItem(<Link to="/admin/food">Đồ ăn</Link>, "food", <IoFastFoodOutline />),
