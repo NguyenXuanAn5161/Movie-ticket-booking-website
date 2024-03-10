@@ -1,7 +1,64 @@
-import { Col, Form, Input, InputNumber, Row } from "antd";
-import React from "react";
+import { Col, Form, Input, InputNumber, Row, TreeSelect } from "antd";
+import React, { useEffect, useState } from "react";
+
+const { SHOW_PARENT } = TreeSelect;
+
+const treeData = [
+  {
+    title: "Toàn bộ",
+    value: "all",
+    key: "all",
+    children: [
+      {
+        title: "Thành viên",
+        value: "member",
+        key: "member",
+        children: [
+          {
+            title: "Cấp bậc bạc",
+            value: "level_silver",
+            key: "level_silver",
+          },
+          {
+            title: "Cấp bậc vàng",
+            value: "level_gold",
+            key: "level_gold",
+          },
+          {
+            title: "Cấp bậc bạch kim",
+            value: "level_platinum",
+            key: "level_platinum",
+          },
+        ],
+      },
+      {
+        title: "Không phải là thành viên",
+        value: "notMember",
+        key: "notMember",
+      },
+    ],
+  },
+];
 
 const PromotionUsageConditions = ({ form }) => {
+  const [data, setData] = useState(treeData);
+  const [value, setValue] = useState(["all"]); // Set default value to "Toàn bộ"
+
+  useEffect(() => {
+    setData(treeData);
+  }, []);
+
+  const onChange = (newValue) => {
+    setValue(newValue);
+  };
+
+  useEffect(() => {
+    console.log("applicableObject: ", value);
+    form.setFieldsValue({
+      applicableObject: value,
+    });
+  }, [value]);
+
   return (
     <Form form={form} layout="vertical">
       <Row gutter={16}>
@@ -29,7 +86,15 @@ const PromotionUsageConditions = ({ form }) => {
             name="applicableObject"
             rules={[{ required: true, message: "Không để trống!" }]}
           >
-            <Input />
+            <TreeSelect
+              treeData={data}
+              value={value}
+              onChange={onChange}
+              treeCheckable={true}
+              showCheckedStrategy={SHOW_PARENT}
+              placeholder="Vui lòng chọn ít nhất 1 đối tượng sử dụng"
+              style={{ width: "100%" }}
+            />
           </Form.Item>
         </Col>
         <Col span={12}>
