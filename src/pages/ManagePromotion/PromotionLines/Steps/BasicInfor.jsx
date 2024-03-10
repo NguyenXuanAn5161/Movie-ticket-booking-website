@@ -1,7 +1,5 @@
-import { Col, Form, Input, Row, Select } from "antd";
+import { Col, Form, Input, Radio, Row } from "antd";
 import React from "react";
-
-const { Option } = Select;
 
 const PromotionBasicInfo = ({ form }) => {
   return (
@@ -46,11 +44,12 @@ const PromotionBasicInfo = ({ form }) => {
             rules={[
               { required: true, message: "Vui lòng chọn loại khuyến mãi!" },
             ]}
+            initialValue={"discount"}
           >
-            <Select style={{ width: "100%" }}>
-              <Option value="PERCENT">Phần trăm</Option>
-              <Option value="AMOUNT">Số tiền</Option>
-            </Select>
+            <Radio.Group>
+              <Radio.Button value="discount">Giảm giá</Radio.Button>
+              <Radio.Button value="gift">Quà tặng</Radio.Button>
+            </Radio.Group>
           </Form.Item>
         </Col>
       </Row>
