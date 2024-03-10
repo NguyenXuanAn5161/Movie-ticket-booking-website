@@ -1,15 +1,16 @@
 import { Button, Form, Modal, Steps, message, notification } from "antd";
 import React, { useState } from "react";
 import PromotionBasicInfo from "./StepsCreate/BasicInfor";
-import PromotionDetailsDiscount from "./StepsCreate/DetailsDiscount";
+import PromotionDetails from "./StepsCreate/DetailsDiscount";
 import PromotionDetailsGift from "./StepsCreate/DetailsGift";
 import PromotionUsageConditions from "./StepsCreate/UsageConditions";
 
-const PromotionLineModalCreate = (props) => {
+const PromotionLineModalUpdate = (props) => {
   const [form] = Form.useForm();
 
   const [current, setCurrent] = useState(0);
-  const { openModalCreate, setOpenModalCreate } = props;
+  const { openModalUpdate, setOpenModalUpdate, dataUpdate, setDataUpdate } =
+    props;
   const [isSubmit, setIsSubmit] = useState(false);
   const [formData, setFormData] = useState({});
 
@@ -26,7 +27,7 @@ const PromotionLineModalCreate = (props) => {
       title: "Chi tiết khuyến mãi",
       formComponent:
         formData?.type === "discount" ? (
-          <PromotionDetailsDiscount form={form} />
+          <PromotionDetails form={form} />
         ) : (
           <PromotionDetailsGift form={form} />
         ),
@@ -52,7 +53,7 @@ const PromotionLineModalCreate = (props) => {
   const prev = () => setCurrent(current - 1);
 
   const handleCancel = () => {
-    setOpenModalCreate(false);
+    setOpenModalUpdate(false);
     form.resetFields();
     setCurrent(0);
   };
@@ -61,12 +62,13 @@ const PromotionLineModalCreate = (props) => {
     form
       .validateFields()
       .then((values) => {
+        setFormData({ ...formData, ...values });
         setIsSubmit(true);
         // api
-        console.log("formData trong then: ", { ...formData, ...values });
+        console.log("formData: ", formData);
         setTimeout(() => {
           setIsSubmit(false);
-          setOpenModalCreate(false);
+          setOpenModalUpdate(false);
           setCurrent(0);
           form.resetFields();
           message.success("Tạo mới chương trình khuyến mãi thành công");
@@ -88,7 +90,7 @@ const PromotionLineModalCreate = (props) => {
   return (
     <Modal
       title="Tạo chương trình khuyến mãi"
-      open={openModalCreate}
+      open={openModalUpdate}
       width={"50vw"}
       onCancel={handleCancel}
       footer={[
@@ -130,4 +132,4 @@ const PromotionLineModalCreate = (props) => {
   );
 };
 
-export default PromotionLineModalCreate;
+export default PromotionLineModalUpdate;
