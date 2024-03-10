@@ -15,10 +15,11 @@ import {
   AiOutlinePlus,
   AiOutlineReload,
 } from "react-icons/ai";
+import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useSelector } from "react-redux";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import PromotionLineModalCreate from "./PromotionLines/PromotionLineModalCreate";
+import PromotionLineModalForm from "./PromotionLines/PromotionLineForm";
 
 const PromotionShow = () => {
   const promotionHeader = useSelector((state) => state.promotion.promotion);
@@ -205,7 +206,13 @@ const PromotionShow = () => {
                 />
               </span>
             </Popconfirm>
-
+            <BsEye
+              style={{ cursor: "pointer", marginRight: 10 }}
+              onClick={() => {
+                setDataViewDetail(record);
+                setOpenViewDetail(true);
+              }}
+            />
             <CiEdit
               style={{ color: "#f57800", cursor: "pointer" }}
               onClick={() => {
@@ -270,11 +277,34 @@ const PromotionShow = () => {
         </Card>
       </div>
 
-      <PromotionLineModalCreate
+      <PromotionLineModalForm
+        formType={
+          openModalCreate ? "create" : openModalUpdate ? "update" : "view"
+        }
+        data={
+          openModalCreate ? null : openModalUpdate ? dataUpdate : dataViewDetail
+        }
+        setData={
+          openModalCreate
+            ? null
+            : openModalUpdate
+            ? setDataUpdate
+            : setDataViewDetail
+        }
+        openModal={openModalCreate || openModalUpdate || openViewDetail}
+        setOpenModal={
+          openModalCreate
+            ? setOpenModalCreate
+            : openModalUpdate
+            ? setOpenModalUpdate
+            : setOpenViewDetail
+        }
+      />
+
+      {/* <PromotionLineModalCreate
         openModalCreate={openModalCreate}
         setOpenModalCreate={setOpenModalCreate}
-        // addPromotion={handleAddPromotion}
-      />
+      /> */}
     </>
   );
 };

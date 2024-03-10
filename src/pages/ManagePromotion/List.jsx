@@ -22,7 +22,7 @@ import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../components/InputSearch/InputSearch";
-import { doSetPromotion } from "../../redux/account/promotionSlice";
+import { doSetPromotion } from "../../redux/promotion/promotionSlice";
 import { callDeleteUser } from "../../services/api";
 
 const PromotionList = () => {
@@ -46,12 +46,12 @@ const PromotionList = () => {
           start_date: "2024-03-01",
           end_date: "2023-03-10",
           description: "Giảm giá 15% cho tất cả vé xem phim.",
-          applicable_object: "All Customers",
-          type_promotion: "PERCENT",
-          value: 15,
+          applicable_object: "all",
+          type: "discount",
+          type_promotion: "percent",
           uses_per_customer: 1,
           uses_per_promotion: 1000,
-          status: "available",
+          status: "unavailable",
           promotionDetails: {
             id: "10101",
             promotion_line_id: "101",
@@ -67,16 +67,16 @@ const PromotionList = () => {
           start_date: "2024-03-11",
           end_date: "2024-03-15",
           description: "Giảm giá 20% cho tất cả vé xem phim.",
-          applicable_object: "All Customers",
-          type_promotion: "PERCENT",
-          value: 20,
+          applicable_object: "level_silver",
+          type: "discount",
+          type_promotion: "amount",
           uses_per_customer: 1,
           uses_per_promotion: 1000,
           status: "available",
           promotionDetails: {
             id: "10201",
             promotion_line_id: "102",
-            discount_value: 20,
+            discount_value: 20000,
             min_spend: 200000, // Áp dụng giảm giá khi chi tiêu tối thiểu 200,000 VNĐ
             max_spend: Infinity, // Không giới hạn giá trị tối đa cho việc áp dụng giảm giá
           },
@@ -99,18 +99,19 @@ const PromotionList = () => {
           start_date: "2024-04-01",
           end_date: "2024-04-03",
           description: "Combo vé xem phim + bắp nước với giá chỉ 150.000 VNĐ.",
-          applicable_object: "All Customers",
-          type_promotion: "AMOUNT",
-          value: 150000,
+          applicable_object: "all",
+          type: "gift",
+          type_promotion: null,
           uses_per_customer: 1,
           uses_per_promotion: 1000,
           status: "available",
           promotionDetails: {
             id: "20101",
             promotion_line_id: "201",
+            listGift: ["Bánh quy", "Nước ngọt"],
             discount_value: 150000, // Giá trị của ưu đãi là 150.000 VNĐ (giảm giá trực tiếp)
             min_spend: 0, // Không có điều kiện tối thiểu về chi tiêu
-            max_spend: Infinity, // Không giới hạn giá trị tối đa cho việc áp dụng ưu đãi
+            max_spend: 500000,
           },
         },
       ],
@@ -135,7 +136,6 @@ const PromotionList = () => {
             "Thành viên được giảm giá 30% cho tất cả các vé xem phim và nhận thêm 1 bắp nước miễn phí mỗi tuần.",
           applicable_object: "Members Only",
           type_promotion: "PERCENT",
-          value: 30,
           uses_per_customer: 1,
           uses_per_promotion: 1000,
           status: "unavailable",
@@ -162,7 +162,6 @@ const PromotionList = () => {
             "Giảm giá vé xem phim 50% trong khung giờ 14:00 - 16:00 từ Thứ Hai đến Thứ Sáu.",
           applicable_object: "All Customers",
           type_promotion: "PERCENT",
-          value: 50,
           uses_per_customer: 1,
           uses_per_promotion: 1000,
           status: "unavailable",
@@ -189,7 +188,6 @@ const PromotionList = () => {
             "Nhận ngay vé xem phim miễn phí khi tham gia buổi họp fan.",
           applicable_object: "All Attendees",
           type_promotion: "PERCENT",
-          value: 100,
           uses_per_customer: 1,
           uses_per_promotion: 1000,
           status: "unavailable",
@@ -214,7 +212,6 @@ const PromotionList = () => {
           description: "Giảm giá 30% cho tất cả vé xem phim vào mùa hè.",
           applicable_object: "All Customers",
           type_promotion: "PERCENT",
-          value: 30,
           uses_per_customer: 1,
           uses_per_promotion: 1000,
           status: "unavailable",
@@ -241,7 +238,6 @@ const PromotionList = () => {
             "Giảm giá 25% cho tất cả vé xem phim khi đặt trước ít nhất 1 tháng.",
           applicable_object: "All Customers",
           type_promotion: "PERCENT",
-          value: 25,
           uses_per_customer: 1,
           uses_per_promotion: 1000,
           status: "unavailable",
@@ -266,7 +262,6 @@ const PromotionList = () => {
           description: "Giảm giá 35% cho tất cả vé xem phim vào mùa đông.",
           applicable_object: "All Customers",
           type_promotion: "PERCENT",
-          value: 35,
           uses_per_customer: 1,
           uses_per_promotion: 1000,
           status: "unavailable",

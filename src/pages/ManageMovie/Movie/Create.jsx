@@ -221,12 +221,12 @@ const MovieCreate = () => {
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Ngày chiếu"
+                label="Ngày sản xuất"
                 name="releaseDate"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn ngày chiếu của phim!",
+                    message: "Vui lòng chọn ngày sản xuất của phim!",
                   },
                 ]}
               >
