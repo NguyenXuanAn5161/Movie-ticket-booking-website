@@ -2,32 +2,34 @@ import {
   Button,
   Card,
   Col,
-  Divider,
   Form,
   Input,
   InputNumber,
+  Radio,
   Row,
   Select,
   message,
   notification,
 } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callCreateUser } from "../../services/api";
+import { callUpdateUser } from "../../services/api";
 
-const { Option } = Select;
-
-const CinemaCreate = () => {
+const CinemaEdit = () => {
+  // thay đổi #1
+  const cinema = useSelector((state) => state.cinema.cinema);
+  // mặc định #2
   const navigate = useNavigate();
-
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
+
   const [addressData, setAddressData] = useState({
-    nation: "",
-    city: "",
-    district: "",
-    streetAddress: "",
+    nation: cinema?.address?.nation || "",
+    city: cinema?.address?.city || "",
+    district: cinema?.address?.district || "",
+    streetAddress: cinema?.address?.streetAddress || "",
   });
 
   useEffect(() => {
@@ -61,58 +63,81 @@ const CinemaCreate = () => {
     setAddressData({ ...addressData, district: value, streetAddress: "" });
   };
 
+  useEffect(() => {
+    form.resetFields();
+    // thay đổi #1 [], setfields
+    form.setFieldsValue(cinema); // Cập nhật dữ liệu vào form khi userData thay đổi
+  }, [cinema, form]);
+
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setUserData({ ...userData, [name]: value });
+  // };
+
   const onFinish = async (values) => {
-    const { city, district, name, nation, streetAddress, totalRoom } = values;
-    console.log(
-      "values: ",
-      city,
-      district,
-      name,
-      nation,
-      streetAddress,
-      totalRoom
-    );
-
-    const { fullName, email, password, phone } = values;
+    console.log("value check: ", values);
+    // thay đổi #1
+    const { _id, fullName, phone } = values;
     setIsSubmit(true);
-
-    const res = await callCreateUser(fullName, email, password, phone);
-    if (res && res.data) {
-      message.success("Tạo mới rạp phim thành công!");
-      form.resetFields();
-      setIsSubmit(false);
+    // thay đổi #1 api call
+    const res = await callUpdateUser(_id, fullName, phone);
+    // if (res && res.data) {
+    if (true) {
+      // thay đổi #1 message và url
+      message.success("Cập nhật rạp phim thành công!");
       navigate("/admin/cinema");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description: res.message,
       });
-      setIsSubmit(false);
     }
+    setIsSubmit(false);
   };
 
   return (
     <>
-      <PageHeader title="Tạo mới rạp phim" numberBack={-1} type="create" />
-      <Divider />
-      <Card title="Tạo mới rạp phim" bordered={false}>
-        <Form
-          form={form}
-          name="basic"
-          initialValues={{ remember: true }}
-          onFinish={onFinish}
-          autoComplete="true"
-          style={{ margin: "0 auto" }}
-        >
-          <Row gutter={16}>
-            <Col span={16}>
+      <PageHeader
+        title="Cập nhật thông tin rạp phim"
+        numberBack={-1}
+        type="edit"
+      />
+      <Card bordered={false}>
+        <Form form={form} onFinish={onFinish}>
+          <Row gutter={[16]}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tên rạp"
+                label="Tên rạp phim"
                 name="name"
-                rules={[{ required: true, message: "Vui lòng nhập tên rạp!" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên rạp phim!",
+                  },
+                ]}
               >
-                <Input placeholder="Nhập tên rạp" />
+                <Input placeholder="Nhập tên rạp phim" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Trạng thái"
+                name="status"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn trạng thái!",
+                  },
+                ]}
+              >
+                <Radio.Group value={cinema?.status}>
+                  <Radio.Button value="available">Hoạt động</Radio.Button>
+                  <Radio.Button value="unavailable">
+                    Ngưng hoạt động
+                  </Radio.Button>
+                </Radio.Group>
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -137,6 +162,7 @@ const CinemaCreate = () => {
                 label="Quốc gia"
                 name="nation"
                 rules={[{ required: true, message: "Vui lòng nhập quốc gia!" }]}
+                initialValue={addressData.nation}
               >
                 <Select
                   placeholder="Chọn quốc gia"
@@ -154,13 +180,14 @@ const CinemaCreate = () => {
                 rules={[
                   { required: true, message: "Vui lòng nhập thành phố!" },
                 ]}
+                initialValue={addressData.city}
               >
                 <Select
                   disabled={!addressData.nation}
                   placeholder="Chọn thành phố"
                   onChange={handleCityChange}
                 >
-                  {addressData.nation === "Vietnam" && (
+                  {addressData.nation && (
                     <>
                       <Option value="HCMC">Thành phố Hồ Chí Minh</Option>
                       <Option value="Hanoi">Thành phố Hà Nội</Option>
@@ -177,13 +204,14 @@ const CinemaCreate = () => {
                 rules={[
                   { required: true, message: "Vui lòng nhập quận / huyện!" },
                 ]}
+                initialValue={addressData.district}
               >
                 <Select
                   disabled={!addressData.city}
                   placeholder="Chọn quận / huyện"
                   onChange={handleDistrictChange}
                 >
-                  {addressData.city === "HCMC" ? (
+                  {addressData.city === "Thành phố Hồ Chí Minh" ? (
                     <>
                       <Option value="Quan1">Quận 1</Option>
                       <Option value="Quan2">Quận 2</Option>
@@ -205,6 +233,7 @@ const CinemaCreate = () => {
                 rules={[
                   { required: true, message: "Vui lòng nhập số nhà / đường!" },
                 ]}
+                initialValue={addressData.streetAddress}
               >
                 <Input.TextArea
                   disabled={!addressData.district}
@@ -215,8 +244,8 @@ const CinemaCreate = () => {
           </Row>
           <Row style={{ display: "flex", justifyContent: "flex-end" }}>
             <Form.Item>
-              <Button type="primary" htmlType="submit" loading={isSubmit}>
-                Tạo mới
+              <Button loading={isSubmit} type="primary" htmlType="submit">
+                Cập nhật
               </Button>
             </Form.Item>
           </Row>
@@ -226,4 +255,4 @@ const CinemaCreate = () => {
   );
 };
 
-export default CinemaCreate;
+export default CinemaEdit;
