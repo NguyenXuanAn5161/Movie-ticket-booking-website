@@ -7,11 +7,13 @@ import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CinemaCreate from "./pages/ManageCinema/Create";
+import CinemaEdit from "./pages/ManageCinema/Edit";
 import CinemaList from "./pages/ManageCinema/List";
 import RoomCreate from "./pages/ManageCinema/Room/Create";
 import RoomList from "./pages/ManageCinema/Room/List";
 import SeatList from "./pages/ManageCinema/Room/Seat/List";
 import SeatTypeList from "./pages/ManageCinema/Room/TypeSeat/List";
+import CinemaShow from "./pages/ManageCinema/Show";
 import FoodCategoryCreate from "./pages/ManageFood/CategoriesFood/Create";
 import FoodCategoryEdit from "./pages/ManageFood/CategoriesFood/Edit";
 import FoodCategoryList from "./pages/ManageFood/CategoriesFood/List";
@@ -138,7 +140,7 @@ export default function App() {
         },
         {
           path: "cinema/show/:movieId",
-          element: <MovieShow />,
+          element: <CinemaShow />,
         },
         {
           path: "cinema/create",
@@ -146,7 +148,7 @@ export default function App() {
         },
         {
           path: "cinema/edit/:movieId",
-          element: <MovieEdit />,
+          element: <CinemaEdit />,
         },
         {
           path: "cinema/room",

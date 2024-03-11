@@ -4,6 +4,7 @@ import {
   Popconfirm,
   Row,
   Table,
+  Tag,
   message,
   notification,
 } from "antd";
@@ -21,12 +22,78 @@ import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../components/InputSearch/InputSearch";
+import { doSetCinema } from "../../redux/cinema/cinemaSlice";
+import { callFetchListUser } from "../../services/api";
 
 const CinemaList = () => {
+  const addressData = [
+    {
+      id: "1",
+      code: "VN001",
+      streetAddress: "123 Đường Lê Lợi",
+      district: "Quận 1",
+      city: "Thành phố Hồ Chí Minh",
+      nation: "Việt Nam",
+    },
+    {
+      id: "2",
+      code: "VN002",
+      streetAddress: "456 Đường Nguyễn Huệ",
+      district: "Quận 1",
+      city: "Thành phố Hồ Chí Minh",
+      nation: "Việt Nam",
+    },
+    {
+      id: "3",
+      code: "VN003",
+      streetAddress: "789 Đường Hàng Bài",
+      district: "Quận 5",
+      city: "Thành phố Hồ Chí Minh",
+      nation: "Việt Nam",
+    },
+  ];
+
+  const cinemaData = [
+    {
+      id: "1",
+      code: "CIN001",
+      name: "Galaxy Nguyễn Du",
+      totalRoom: 6,
+      address_id: "1",
+      status: "available",
+    },
+    {
+      id: "2",
+      code: "CIN002",
+      name: "CGV Parkson",
+      totalRoom: 8,
+      address_id: "2",
+      status: "unavailable",
+    },
+    {
+      id: "3",
+      code: "CIN003",
+      name: "BHD Quận 5",
+      totalRoom: 4,
+      address_id: "3",
+      status: "available",
+    },
+  ];
+
+  const mergedData = cinemaData.map((cinema) => {
+    const address = addressData.find(
+      (address) => address.id === cinema.address_id
+    );
+    return {
+      ...cinema,
+      address: address,
+    };
+  });
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
-  const [listData, setListData] = useState([]);
+  const [listData, setListData] = useState(mergedData);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(2);
   const [total, setTotal] = useState(0);
@@ -57,8 +124,8 @@ const CinemaList = () => {
     // thay đổi #1 api call
     const res = await callFetchListUser(query);
     if (res && res.data) {
-      setListData(res.data.result);
-      setTotal(res.data.meta.total);
+      // setListData(res.data.result);
+      // setTotal(res.data.meta.total);
     }
 
     setIsLoading(false);
@@ -82,8 +149,8 @@ const CinemaList = () => {
 
   const handleView = (data, url) => {
     // thay đổi #1
-    dispatch(doSetMovie(data));
-    navigate(`${url}/${data._id}`);
+    dispatch(doSetCinema(data));
+    navigate(`${url}/${data.id}`);
   };
 
   // thay đổi #1
@@ -112,6 +179,25 @@ const CinemaList = () => {
       dataIndex: "address",
       width: 150,
       sorter: true,
+      render: (text, record, index) => {
+        return (
+          <span>
+            {record.address.streetAddress}, {record.address.district},{" "}
+            {record.address.city}, {record.address.nation}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      width: 100,
+      sorter: true,
+      render: (status) => (
+        <Tag color={status === "available" ? "green" : "red"}>
+          {status === "available" ? "Hoạt động" : "Ngưng hoạt động"}
+        </Tag>
+      ),
     },
     {
       title: "Cập nhật ngày",
