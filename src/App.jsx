@@ -81,10 +81,12 @@ export default function App() {
             </ProtectedRoute>
           ),
         },
+        // Hóa đơn
         {
           path: "order",
           element: <OrderTable />,
         },
+        // Người dùng
         {
           path: "user",
           element: <UserList />,
@@ -101,6 +103,7 @@ export default function App() {
           path: "user/edit/:userId",
           element: <UserEdit />,
         },
+        // Phim
         {
           path: "movie",
           element: <MovieList />,
@@ -117,6 +120,7 @@ export default function App() {
           path: "movie/edit/:movieId",
           element: <MovieEdit />,
         },
+        // Loại phim
         {
           path: "movieGenre",
           element: <MovieGenreList />,
@@ -133,6 +137,7 @@ export default function App() {
           path: "movieGenre/edit/:movieId",
           element: <MovieGenreEdit />,
         },
+        // Rạp phim
         {
           path: "cinema",
           element: <CinemaList />,
@@ -149,6 +154,7 @@ export default function App() {
           path: "cinema/edit/:movieId",
           element: <CinemaEdit />,
         },
+        // Phòng chiếu phim
         {
           path: "cinema/room",
           element: <RoomList />,
@@ -165,6 +171,7 @@ export default function App() {
           path: "cinema/room/edit/:movieId",
           element: <MovieEdit />,
         },
+        // Ghế trong phòng
         {
           path: "cinema/room/seat",
           element: <SeatList />,
@@ -185,18 +192,19 @@ export default function App() {
         //   path: "cinema/room/seatType",
         //   element: <SeatTypeList />,
         // },
-        {
-          path: "cinema/room/seatType/show/:movieId",
-          element: <MovieShow />,
-        },
-        {
-          path: "cinema/room/seatType/create",
-          element: <RoomCreate />,
-        },
-        {
-          path: "cinema/room/seatType/edit/:movieId",
-          element: <MovieEdit />,
-        },
+        // {
+        //   path: "cinema/room/seatType/show/:movieId",
+        //   element: <MovieShow />,
+        // },
+        // {
+        //   path: "cinema/room/seatType/create",
+        //   element: <RoomCreate />,
+        // },
+        // {
+        //   path: "cinema/room/seatType/edit/:movieId",
+        //   element: <MovieEdit />,
+        // },
+        // Đồ ăn
         {
           path: "food",
           element: <FoodList />,
@@ -213,6 +221,7 @@ export default function App() {
           path: "food/edit/:foodId",
           element: <FoodEdit />,
         },
+        // Loại đồ ăn
         {
           path: "foodCategories",
           element: <FoodCategoryList />,
@@ -229,6 +238,7 @@ export default function App() {
           path: "foodCategories/edit/:foodCategoryId",
           element: <FoodCategoryEdit />,
         },
+        // Khuyến mãi
         {
           path: "promotion",
           element: <PromotionList />,
