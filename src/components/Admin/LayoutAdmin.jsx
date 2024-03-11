@@ -64,11 +64,11 @@ const items = [
       "seat",
       <MdEventSeat />
     ),
-    getItem(
-      <Link to="/admin/cinema/room/seatType">Loại ghế</Link>,
-      "seatType",
-      <BiCategoryAlt />
-    ),
+    // getItem(
+    //   <Link to="/admin/cinema/room/seatType">Loại ghế</Link>,
+    //   "seatType",
+    //   <BiCategoryAlt />
+    // ),
   ]),
   getItem("Quản lý phim", "manageMovie", <RiMovie2Line />, [
     getItem(<Link to="/admin/movie">Phim</Link>, "movie", <RiMovie2Line />),

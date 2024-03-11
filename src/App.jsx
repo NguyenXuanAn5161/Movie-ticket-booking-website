@@ -12,7 +12,6 @@ import CinemaList from "./pages/ManageCinema/List";
 import RoomCreate from "./pages/ManageCinema/Room/Create";
 import RoomList from "./pages/ManageCinema/Room/List";
 import SeatList from "./pages/ManageCinema/Room/Seat/List";
-import SeatTypeList from "./pages/ManageCinema/Room/TypeSeat/List";
 import CinemaShow from "./pages/ManageCinema/Show";
 import FoodCategoryCreate from "./pages/ManageFood/CategoriesFood/Create";
 import FoodCategoryEdit from "./pages/ManageFood/CategoriesFood/Edit";
@@ -182,10 +181,10 @@ export default function App() {
           path: "cinema/room/seat/edit/:movieId",
           element: <MovieEdit />,
         },
-        {
-          path: "cinema/room/seatType",
-          element: <SeatTypeList />,
-        },
+        // {
+        //   path: "cinema/room/seatType",
+        //   element: <SeatTypeList />,
+        // },
         {
           path: "cinema/room/seatType/show/:movieId",
           element: <MovieShow />,
