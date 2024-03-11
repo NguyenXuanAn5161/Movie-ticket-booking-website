@@ -11,7 +11,10 @@ import CinemaEdit from "./pages/ManageCinema/Edit";
 import CinemaList from "./pages/ManageCinema/List";
 import RoomCreate from "./pages/ManageCinema/Room/Create";
 import RoomList from "./pages/ManageCinema/Room/List";
+import SeatCreate from "./pages/ManageCinema/Room/Seat/Create";
+import SeatEdit from "./pages/ManageCinema/Room/Seat/Edit";
 import SeatList from "./pages/ManageCinema/Room/Seat/List";
+import SeatShow from "./pages/ManageCinema/Room/Seat/Show";
 import SeatTypeCreate from "./pages/ManageCinema/Room/TypeSeat/Create";
 import SeatTypeEdit from "./pages/ManageCinema/Room/TypeSeat/Edit";
 import SeatTypeList from "./pages/ManageCinema/Room/TypeSeat/List";
@@ -181,16 +184,16 @@ export default function App() {
           element: <SeatList />,
         },
         {
-          path: "cinema/room/seat/show/:movieId",
-          element: <MovieShow />,
+          path: "cinema/room/seat/show/:seatId",
+          element: <SeatShow />,
         },
         {
           path: "cinema/room/seat/create",
-          element: <RoomCreate />,
+          element: <SeatCreate />,
         },
         {
-          path: "cinema/room/seat/edit/:movieId",
-          element: <MovieEdit />,
+          path: "cinema/room/seat/edit/:seatId",
+          element: <SeatEdit />,
         },
         // Loại ghế
         {
