@@ -20,6 +20,7 @@ import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import InputSearch from "../../../../components/InputSearch/InputSearch";
 import { doSetSeat } from "../../../../redux/seat/seatSlice";
 import { callDeleteUser, callFetchListUser } from "../../../../services/api";
 
@@ -30,8 +31,8 @@ const SeatList = () => {
       code: "A1",
       isBooked: false,
       type_seat: {
-        type_seatName: "Bình thường",
-        price: 40000,
+        name: "Ghế đôi",
+        price: 120000,
       },
       seatRow: 1,
       seatColumn: 1,
@@ -42,8 +43,8 @@ const SeatList = () => {
       code: "A2",
       isBooked: true,
       type_seat: {
-        type_seatName: "Cao cấp",
-        price: 60000,
+        name: "Ghế vip",
+        price: 80000,
       },
       seatRow: 1,
       seatColumn: 2,
@@ -54,7 +55,7 @@ const SeatList = () => {
       code: "B1",
       isBooked: false,
       type_seat: {
-        type_seatName: "Bình thường",
+        name: "Ghế bình thường",
         price: 40000,
       },
       seatRow: 2,
@@ -66,8 +67,8 @@ const SeatList = () => {
       code: "B2",
       isBooked: false,
       type_seat: {
-        type_seatName: "Bình thường",
-        price: 40000,
+        name: "Ghế vip",
+        price: 80000,
       },
       seatRow: 2,
       seatColumn: 2,
@@ -78,7 +79,7 @@ const SeatList = () => {
       code: "C1",
       isBooked: true,
       type_seat: {
-        type_seatName: "Bình thường",
+        name: "Ghế bình thường",
         price: 40000,
       },
       seatRow: 3,
@@ -90,8 +91,8 @@ const SeatList = () => {
       code: "C2",
       isBooked: false,
       type_seat: {
-        type_seatName: "Cao cấp",
-        price: 60000,
+        name: "Ghế bình thường",
+        price: 40000,
       },
       seatRow: 3,
       seatColumn: 2,
@@ -165,19 +166,19 @@ const SeatList = () => {
   // thay đổi #1
   const columns = [
     {
-      title: "Mã loại ghế",
+      title: "Mã ghế",
       dataIndex: "code",
       width: 100,
       fixed: "left",
     },
     {
       title: "Loại ghế",
-      dataIndex: "type_seatName",
+      dataIndex: "name",
       sorter: true,
       width: 100,
       fixed: "left",
       render: (text, record, index) => {
-        return <span>{record.type_seat.type_seatName}</span>;
+        return <span>{record.type_seat.name}</span>;
       },
     },
     {
@@ -208,8 +209,8 @@ const SeatList = () => {
             <Popconfirm
               placement="leftTop"
               // thay đổi #1 sửa title và description
-              title={"Xác nhận xóa loại ghế"}
-              description={"Bạn có chắc chắn muốn xóa loại ghế này?"}
+              title={"Xác nhận xóa ghế"}
+              description={"Bạn có chắc chắn muốn xóa ghế này?"}
               okText="Xác nhận"
               cancelText="Hủy"
               onConfirm={() => handleDeleteData(record._id)}
@@ -239,9 +240,7 @@ const SeatList = () => {
   const renderHeader = () => (
     <div style={{ display: "flex", justifyContent: "space-between" }}>
       {/* thay đổi #1 */}
-      <span style={{ fontWeight: "700", fontSize: "16" }}>
-        Danh sách loại ghế
-      </span>
+      <span style={{ fontWeight: "700", fontSize: "16" }}>Danh sách ghế</span>
       <span style={{ display: "flex", gap: 15 }}>
         <Button
           icon={<AiOutlineExport />}
@@ -307,17 +306,17 @@ const SeatList = () => {
 
   // thay đổi #1
   const itemSearch = [
-    { field: "code", label: "Mã loại ghế" },
-    { field: "name", label: "Loại ghế" },
-    { field: "typeRoom", label: "Loại ghế" },
+    { field: "code", label: "Mã ghế" },
+    { field: "room_id", label: "Ghế thuộc phòng" },
+    { field: "isBooked", label: "Trạng thái" },
   ];
 
   return (
     <>
       <Row gutter={[20, 20]}>
-        {/* <Col span={24}>
+        <Col span={24}>
           <InputSearch itemSearch={itemSearch} handleSearch={handleSearch} />
-        </Col> */}
+        </Col>
         <Col span={24}>
           <Table
             scroll={{
