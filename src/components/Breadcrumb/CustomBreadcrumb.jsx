@@ -131,6 +131,23 @@ function CustomBreadcrumb(props) {
                   path: "/seat",
                   title: "Ghế",
                   key: "seat",
+                  children: [
+                    {
+                      path: "/show",
+                      title: "Xem chi tiết ghế",
+                      key: "seatShow",
+                    },
+                    {
+                      path: "/create",
+                      title: "Tạo mới ghế",
+                      key: "seatCreate",
+                    },
+                    {
+                      path: "/edit",
+                      title: "Cập nhật ghế",
+                      key: "seatEdit",
+                    },
+                  ],
                 },
                 {
                   path: "/seatType",
