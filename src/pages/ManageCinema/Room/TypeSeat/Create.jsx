@@ -6,9 +6,7 @@ import {
   Form,
   Input,
   InputNumber,
-  Radio,
   Row,
-  Select,
   message,
   notification,
 } from "antd";
@@ -18,14 +16,13 @@ import PageHeader from "../../../../components/PageHeader/PageHeader";
 import { callCreateUser } from "../../../../services/api";
 
 // thay đổi #1
-const SeatCreate = () => {
+const SeatTypeCreate = () => {
   // mặc định #2
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    console.log("check values: ", values);
     // thay đổi #1
     const { fullName, email, password, phone } = values;
     setIsSubmit(true);
@@ -34,11 +31,11 @@ const SeatCreate = () => {
     // if (res && res.data) {
     if (true) {
       // thay đổi #1 message
-      message.success("Tạo mới ghế thành công!");
+      message.success("Tạo mới rạp loại ghế thành công!");
       form.resetFields();
       setIsSubmit(false);
       // thay đổi #1 thay đổi url
-      navigate("/admin/cinema/room/seat");
+      navigate("/admin/cinema/room/seatType");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
@@ -51,10 +48,10 @@ const SeatCreate = () => {
   return (
     <>
       {/* // thay đổi #1 title */}
-      <PageHeader title="Tạo mới ghế" numberBack={-1} type="create" />
+      <PageHeader title="Tạo mới loại ghế" numberBack={-1} type="create" />
       <Divider />
       {/* // thay đổi #1 title */}
-      <Card title="Tạo mới ghế" bordered={false}>
+      <Card title="Tạo mới loại ghế" bordered={false}>
         <Form
           form={form}
           name="basic"
@@ -63,76 +60,42 @@ const SeatCreate = () => {
           autoComplete="true"
           style={{ margin: "0 auto" }}
         >
-          <Row gutter={16}>
+          <Row gutter={[20, 20]}>
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Hàng ghế"
-                name="seatRow"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập hàng ghế!",
-                  },
-                ]}
-              >
-                <Input placeholder="Nhập hàng ghế" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Cột ghế"
-                name="seatColumn"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập cột ghế!",
-                  },
-                ]}
-              >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  placeholder="Nhập cột ghế"
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Loại ghế"
+                label="Tên loại ghế"
                 name="name"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn loại ghế!",
+                    message: "Vui lòng nhập tên loại ghế!",
                   },
                 ]}
-                initialValue={"STD"}
               >
-                <Radio.Group>
-                  <Radio.Button value="STD">Ghế thường</Radio.Button>
-                  <Radio.Button value="VIP">Ghế vip</Radio.Button>
-                  <Radio.Button value="SWEET">Ghế đôi</Radio.Button>
-                </Radio.Group>
+                <Input placeholder="Nhập tên loại ghế" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Ghế thuộc phòng"
-                name="room_id"
+                label="Giá"
+                name="price"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn phòng!",
+                    message: "Vui lòng nhập giá!",
                   },
                 ]}
               >
-                <Select placeholder="Chọn phòng">
-                  <Select.Option value="room_1">Phòng 1</Select.Option>
-                  <Select.Option value="room_2">Phòng 2</Select.Option>
-                </Select>
+                <InputNumber
+                  formatter={(value) =>
+                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  min={1000}
+                  style={{ width: "100%" }}
+                  addonAfter={"VND"}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -149,4 +112,4 @@ const SeatCreate = () => {
   );
 };
 
-export default SeatCreate;
+export default SeatTypeCreate;

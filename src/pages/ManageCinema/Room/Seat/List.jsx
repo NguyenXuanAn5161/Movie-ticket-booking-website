@@ -4,10 +4,10 @@ import {
   Popconfirm,
   Row,
   Table,
+  Tag,
   message,
   notification,
 } from "antd";
-import moment from "moment";
 import { useEffect, useState } from "react";
 import {
   AiOutlineDelete,
@@ -21,12 +21,89 @@ import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../../components/InputSearch/InputSearch";
+import { doSetSeat } from "../../../../redux/seat/seatSlice";
+import { callDeleteUser, callFetchListUser } from "../../../../services/api";
 
 const SeatList = () => {
+  const data = [
+    {
+      id: "1",
+      code: "A1",
+      isBooked: false,
+      type_seat: {
+        name: "Ghế đôi",
+        price: 120000,
+      },
+      seatRow: 1,
+      seatColumn: 1,
+      room_id: "phòng 1",
+    },
+    {
+      id: "2",
+      code: "A2",
+      isBooked: true,
+      type_seat: {
+        name: "Ghế vip",
+        price: 80000,
+      },
+      seatRow: 1,
+      seatColumn: 2,
+      room_id: "phòng 1",
+    },
+    {
+      id: "3",
+      code: "B1",
+      isBooked: false,
+      type_seat: {
+        name: "Ghế bình thường",
+        price: 40000,
+      },
+      seatRow: 2,
+      seatColumn: 1,
+      room_id: "phòng 1",
+    },
+    {
+      id: "4",
+      code: "B2",
+      isBooked: false,
+      type_seat: {
+        name: "Ghế vip",
+        price: 80000,
+      },
+      seatRow: 2,
+      seatColumn: 2,
+      room_id: "phòng 1",
+    },
+    {
+      id: "5",
+      code: "C1",
+      isBooked: true,
+      type_seat: {
+        name: "Ghế bình thường",
+        price: 40000,
+      },
+      seatRow: 3,
+      seatColumn: 1,
+      room_id: "phòng 2",
+    },
+    {
+      id: "6",
+      code: "C2",
+      isBooked: false,
+      type_seat: {
+        name: "Ghế bình thường",
+        price: 40000,
+      },
+      seatRow: 3,
+      seatColumn: 2,
+      room_id: "phòng 2",
+    },
+  ];
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
-  const [listData, setListData] = useState([]);
+  const [listData, setListData] = useState(data);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(2);
   const [total, setTotal] = useState(0);
@@ -57,8 +134,8 @@ const SeatList = () => {
     // thay đổi #1 api call
     const res = await callFetchListUser(query);
     if (res && res.data) {
-      setListData(res.data.result);
-      setTotal(res.data.meta.total);
+      // setListData(res.data.result);
+      // setTotal(res.data.meta.total);
     }
 
     setIsLoading(false);
@@ -70,7 +147,7 @@ const SeatList = () => {
     const res = await callDeleteUser(dataId);
     if (res && res.data) {
       // thay đổi #1 message
-      message.success("Xoá ghế thành công!");
+      message.success("Xoá loại ghế thành công!");
       await fetchData();
     } else {
       notification.error({
@@ -82,8 +159,8 @@ const SeatList = () => {
 
   const handleView = (data, url) => {
     // thay đổi #1
-    dispatch(doSetMovie(data));
-    navigate(`${url}/${data._id}`);
+    dispatch(doSetSeat(data));
+    navigate(`${url}/${data.id}`);
   };
 
   // thay đổi #1
@@ -95,38 +172,32 @@ const SeatList = () => {
       fixed: "left",
     },
     {
-      title: "Tên ghế",
+      title: "Loại ghế",
       dataIndex: "name",
       sorter: true,
       width: 100,
       fixed: "left",
-    },
-    {
-      title: "Loại ghế",
-      dataIndex: "typeSeat",
-      width: 150,
+      render: (text, record, index) => {
+        return <span>{record.type_seat.name}</span>;
+      },
     },
     {
       title: "Thuộc phòng",
-      dataIndex: "name",
+      dataIndex: "room_id",
       width: 150,
       sorter: true,
     },
     {
       title: "Trạng thái",
-      dataIndex: "status",
-      width: 150,
-    },
-    {
-      title: "Cập nhật ngày",
-      dataIndex: "updatedAt",
-      width: 150,
+      dataIndex: "isBooked",
+      width: 100,
       render: (text, record, index) => {
         return (
-          <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
+          <Tag color={record?.isBooked ? "success" : "error"}>
+            {record?.isBooked ? "Đã đặt" : "Chưa đặt"}
+          </Tag>
         );
       },
-      sorter: true,
     },
     {
       title: "Thao tác",
@@ -236,8 +307,8 @@ const SeatList = () => {
   // thay đổi #1
   const itemSearch = [
     { field: "code", label: "Mã ghế" },
-    { field: "name", label: "Tên phòng" },
-    { field: "typeRoom", label: "Loại ghế" },
+    { field: "room_id", label: "Ghế thuộc phòng" },
+    { field: "isBooked", label: "Trạng thái" },
   ];
 
   return (

@@ -2,69 +2,68 @@ import {
   Button,
   Card,
   Col,
-  Divider,
   Form,
   Input,
-  InputNumber,
   Radio,
   Row,
   Select,
+  Tag,
   message,
   notification,
 } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../../components/PageHeader/PageHeader";
-import { callCreateUser } from "../../../../services/api";
+import { callUpdateUser } from "../../../../services/api";
 
-// thay đổi #1
-const SeatCreate = () => {
+const SeatEdit = () => {
+  // thay đổi #1
+  const seat = useSelector((state) => state.seat.seat);
   // mặc định #2
+  const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    form.resetFields();
+    // thay đổi #1 [], setfields
+    form.setFieldsValue(seat); // Cập nhật dữ liệu vào form khi userData thay đổi
+  }, [seat, form]);
+
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setUserData({ ...userData, [name]: value });
+  // };
 
   const onFinish = async (values) => {
-    console.log("check values: ", values);
+    console.log("value check: ", values);
     // thay đổi #1
-    const { fullName, email, password, phone } = values;
+    const { _id, fullName, phone } = values;
     setIsSubmit(true);
     // thay đổi #1 api call
-    const res = await callCreateUser(fullName, email, password, phone);
+    const res = await callUpdateUser(_id, fullName, phone);
     // if (res && res.data) {
     if (true) {
-      // thay đổi #1 message
-      message.success("Tạo mới ghế thành công!");
-      form.resetFields();
-      setIsSubmit(false);
-      // thay đổi #1 thay đổi url
+      // thay đổi #1 message và url
+      message.success("Cập nhật ghế thành công!");
       navigate("/admin/cinema/room/seat");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description: res.message,
       });
-      setIsSubmit(false);
     }
+    setIsSubmit(false);
   };
 
   return (
     <>
-      {/* // thay đổi #1 title */}
-      <PageHeader title="Tạo mới ghế" numberBack={-1} type="create" />
-      <Divider />
-      {/* // thay đổi #1 title */}
-      <Card title="Tạo mới ghế" bordered={false}>
-        <Form
-          form={form}
-          name="basic"
-          initialValues={{ remember: true }}
-          onFinish={onFinish}
-          autoComplete="true"
-          style={{ margin: "0 auto" }}
-        >
-          <Row gutter={16}>
-            <Col span={12}>
+      <PageHeader title="Cập nhật thông tin ghế" numberBack={-1} type="edit" />
+      <Card bordered={false}>
+        <Form form={form} onFinish={onFinish}>
+          <Row gutter={[16]}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Hàng ghế"
@@ -79,7 +78,7 @@ const SeatCreate = () => {
                 <Input placeholder="Nhập hàng ghế" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Cột ghế"
@@ -91,10 +90,24 @@ const SeatCreate = () => {
                   },
                 ]}
               >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  placeholder="Nhập cột ghế"
-                />
+                <Input style={{ width: "100%" }} placeholder="Nhập cột ghế" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Trạng thái"
+                name="isBooked"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn trạng thái!",
+                  },
+                ]}
+              >
+                <Tag color={seat?.isBooked ? "success" : "error"}>
+                  {seat?.isBooked ? "Đã đặt" : "Chưa đặt"}
+                </Tag>
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -138,8 +151,8 @@ const SeatCreate = () => {
           </Row>
           <Row style={{ display: "flex", justifyContent: "flex-end" }}>
             <Form.Item>
-              <Button type="primary" htmlType="submit" loading={isSubmit}>
-                Tạo mới
+              <Button loading={isSubmit} type="primary" htmlType="submit">
+                Cập nhật
               </Button>
             </Form.Item>
           </Row>
@@ -149,4 +162,4 @@ const SeatCreate = () => {
   );
 };
 
-export default SeatCreate;
+export default SeatEdit;

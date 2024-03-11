@@ -11,8 +11,14 @@ import CinemaEdit from "./pages/ManageCinema/Edit";
 import CinemaList from "./pages/ManageCinema/List";
 import RoomCreate from "./pages/ManageCinema/Room/Create";
 import RoomList from "./pages/ManageCinema/Room/List";
+import SeatCreate from "./pages/ManageCinema/Room/Seat/Create";
+import SeatEdit from "./pages/ManageCinema/Room/Seat/Edit";
 import SeatList from "./pages/ManageCinema/Room/Seat/List";
+import SeatShow from "./pages/ManageCinema/Room/Seat/Show";
+import SeatTypeCreate from "./pages/ManageCinema/Room/TypeSeat/Create";
+import SeatTypeEdit from "./pages/ManageCinema/Room/TypeSeat/Edit";
 import SeatTypeList from "./pages/ManageCinema/Room/TypeSeat/List";
+import SeatTypeShow from "./pages/ManageCinema/Room/TypeSeat/Show";
 import CinemaShow from "./pages/ManageCinema/Show";
 import FoodCategoryCreate from "./pages/ManageFood/CategoriesFood/Create";
 import FoodCategoryEdit from "./pages/ManageFood/CategoriesFood/Edit";
@@ -82,10 +88,12 @@ export default function App() {
             </ProtectedRoute>
           ),
         },
+        // Hóa đơn
         {
           path: "order",
           element: <OrderTable />,
         },
+        // Người dùng
         {
           path: "user",
           element: <UserList />,
@@ -102,6 +110,7 @@ export default function App() {
           path: "user/edit/:userId",
           element: <UserEdit />,
         },
+        // Phim
         {
           path: "movie",
           element: <MovieList />,
@@ -118,6 +127,7 @@ export default function App() {
           path: "movie/edit/:movieId",
           element: <MovieEdit />,
         },
+        // Loại phim
         {
           path: "movieGenre",
           element: <MovieGenreList />,
@@ -134,6 +144,7 @@ export default function App() {
           path: "movieGenre/edit/:movieId",
           element: <MovieGenreEdit />,
         },
+        // Rạp phim
         {
           path: "cinema",
           element: <CinemaList />,
@@ -150,6 +161,7 @@ export default function App() {
           path: "cinema/edit/:movieId",
           element: <CinemaEdit />,
         },
+        // Phòng chiếu phim
         {
           path: "cinema/room",
           element: <RoomList />,
@@ -166,38 +178,41 @@ export default function App() {
           path: "cinema/room/edit/:movieId",
           element: <MovieEdit />,
         },
+        // Ghế trong phòng
         {
           path: "cinema/room/seat",
           element: <SeatList />,
         },
         {
-          path: "cinema/room/seat/show/:movieId",
-          element: <MovieShow />,
+          path: "cinema/room/seat/show/:seatId",
+          element: <SeatShow />,
         },
         {
           path: "cinema/room/seat/create",
-          element: <RoomCreate />,
+          element: <SeatCreate />,
         },
         {
-          path: "cinema/room/seat/edit/:movieId",
-          element: <MovieEdit />,
+          path: "cinema/room/seat/edit/:seatId",
+          element: <SeatEdit />,
         },
+        // Loại ghế
         {
           path: "cinema/room/seatType",
           element: <SeatTypeList />,
         },
         {
-          path: "cinema/room/seatType/show/:movieId",
-          element: <MovieShow />,
+          path: "cinema/room/seatType/show/:seatTypeId",
+          element: <SeatTypeShow />,
         },
         {
           path: "cinema/room/seatType/create",
-          element: <RoomCreate />,
+          element: <SeatTypeCreate />,
         },
         {
-          path: "cinema/room/seatType/edit/:movieId",
-          element: <MovieEdit />,
+          path: "cinema/room/seatType/edit/:seatTypeId",
+          element: <SeatTypeEdit />,
         },
+        // Đồ ăn
         {
           path: "food",
           element: <FoodList />,
@@ -214,6 +229,7 @@ export default function App() {
           path: "food/edit/:foodId",
           element: <FoodEdit />,
         },
+        // Loại đồ ăn
         {
           path: "foodCategories",
           element: <FoodCategoryList />,
@@ -230,6 +246,7 @@ export default function App() {
           path: "foodCategories/edit/:foodCategoryId",
           element: <FoodCategoryEdit />,
         },
+        // Khuyến mãi
         {
           path: "promotion",
           element: <PromotionList />,

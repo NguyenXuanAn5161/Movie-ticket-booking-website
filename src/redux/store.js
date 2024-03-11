@@ -8,6 +8,8 @@ import movieGenreReducer from "./movie/movieGenreSlice";
 import movieReducer from "./movie/movieSlice";
 import promotionLineReducer from "./promotion/promotionLineSlice";
 import promotionReducer from "./promotion/promotionSlice";
+import seatReducer from "./seat/seatSlice";
+import seatTypeReducer from "./seat/seatTypeSlice";
 
 export const store = configureStore({
   reducer: {
@@ -20,5 +22,7 @@ export const store = configureStore({
     food: foodReducer,
     foodCategory: foodCategoryReducer,
     cinema: cinemaReducer,
+    seat: seatReducer,
+    seatType: seatTypeReducer,
   },
 });

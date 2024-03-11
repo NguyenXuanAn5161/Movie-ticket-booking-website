@@ -131,11 +131,45 @@ function CustomBreadcrumb(props) {
                   path: "/seat",
                   title: "Ghế",
                   key: "seat",
+                  children: [
+                    {
+                      path: "/show",
+                      title: "Xem chi tiết ghế",
+                      key: "seatShow",
+                    },
+                    {
+                      path: "/create",
+                      title: "Tạo mới ghế",
+                      key: "seatCreate",
+                    },
+                    {
+                      path: "/edit",
+                      title: "Cập nhật ghế",
+                      key: "seatEdit",
+                    },
+                  ],
                 },
                 {
                   path: "/seatType",
                   title: "Loại ghế",
                   key: "seatType",
+                  children: [
+                    {
+                      path: "/show",
+                      title: "Xem chi tiết loại ghế",
+                      key: "seatTypeShow",
+                    },
+                    {
+                      path: "/create",
+                      title: "Tạo mới loại ghế",
+                      key: "seatTypeCreate",
+                    },
+                    {
+                      path: "/edit",
+                      title: "Cập nhật loại ghế",
+                      key: "seatTypeEdit",
+                    },
+                  ],
                 },
               ],
             },
