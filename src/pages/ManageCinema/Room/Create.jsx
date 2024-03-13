@@ -14,27 +14,26 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+import Seat from "../../../components/Seat/Seat";
 import { callCreateUser } from "../../../services/api";
 
-// thay đổi #1
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 const RoomCreate = () => {
-  // mặc định #2
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [totalSeats, setTotalSeats] = useState(0);
+  const [selectedSeats, setSelectedSeats] = useState([]);
 
   const onFinish = async (values) => {
-    // thay đổi #1
     const { fullName, email, password, phone } = values;
     setIsSubmit(true);
-    // thay đổi #1 api call
     const res = await callCreateUser(fullName, email, password, phone);
     if (res && res.data) {
-      // thay đổi #1 message
       message.success("Tạo mới phòng chiếu thành công!");
       form.resetFields();
       setIsSubmit(false);
-      // thay đổi #1 thay đổi url
       navigate("/admin/cinema/room");
     } else {
       notification.error({
@@ -45,12 +44,28 @@ const RoomCreate = () => {
     }
   };
 
+  const handleTotalSeatChange = (value) => {
+    setTotalSeats(value);
+    setSelectedSeats(Array.from({ length: value }, () => false));
+  };
+
+  const handleSeatClick = (index) => {
+    const newSelectedSeats = [...selectedSeats];
+    newSelectedSeats[index] = !newSelectedSeats[index];
+    setSelectedSeats(newSelectedSeats);
+
+    // Tính toán seatRow và seatColumn từ index
+    const seatRow = Math.floor(index / 15) + 1;
+    const seatColumn = (index % 15) + 1;
+
+    console.log("seatRow:", seatRow);
+    console.log("seatColumn:", seatColumn);
+  };
+
   return (
     <>
-      {/* // thay đổi #1 title */}
       <PageHeader title="Tạo mới phòng chiếu" numberBack={-1} type="create" />
       <Divider />
-      {/* // thay đổi #1 title */}
       <Card title="Tạo mới phòng chiếu" bordered={false}>
         <Form
           form={form}
@@ -60,23 +75,8 @@ const RoomCreate = () => {
           autoComplete="true"
           style={{ margin: "0 auto" }}
         >
-          <Row gutter={[20, 20]}>
+          <Row gutter={[20]}>
             <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                name="code"
-                label="Mã phòng"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mã phòng!",
-                  },
-                ]}
-              >
-                <Input placeholder="Nhập mã phòng" />
-              </Form.Item>
-            </Col>
-            <Col span={16}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên phòng"
@@ -91,47 +91,92 @@ const RoomCreate = () => {
                 <Input placeholder="Nhập tên phòng" />
               </Form.Item>
             </Col>
-            <Row style={{ width: "100%" }}>
-              <Col span={8}>
-                <Form.Item
-                  labelCol={{ span: 24 }}
-                  label="Loại phòng"
-                  name="typeRoom"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn loại phòng!",
-                    },
-                  ]}
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Loại phòng"
+                name="typeRoom"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn loại phòng!",
+                  },
+                ]}
+              >
+                <Select style={{ width: "100%" }} defaultValue={"2D"}>
+                  <Select.Option value="2D">2D</Select.Option>
+                  <Select.Option value="3D">3D</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Tổng số ghế"
+                name="totalSeat"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tổng số ghế!",
+                  },
+                ]}
+              >
+                <InputNumber
+                  style={{ width: "100%" }}
+                  placeholder="Nhập tổng số ghế"
+                  min={120}
+                  max={390}
+                  addonAfter={"Ghế"}
+                  onChange={handleTotalSeatChange}
+                />
+              </Form.Item>
+            </Col>
+            {totalSeats > 0 ? (
+              <Col span={24}>
+                <h4
+                  style={{
+                    textAlign: "center",
+                    margin: "30px 0",
+                  }}
                 >
-                  <Select style={{ width: "100%" }} defaultValue={"2D"}>
-                    <Select.Option value="2D">2D</Select.Option>
-                    <Select.Option value="3D">3D</Select.Option>
-                  </Select>
-                </Form.Item>
+                  Danh sách ghế trong phòng chiếu
+                </h4>
+
+                {/* Dòng lặp các hàng */}
+                {Array.from(
+                  { length: Math.ceil(totalSeats / 15) },
+                  (_, seatRow) => (
+                    <Row
+                      key={seatRow}
+                      style={{
+                        width: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        padding: 10,
+                        userSelect: "none",
+                      }}
+                    >
+                      {/* Lặp qua mỗi hàng ghế */}
+                      {Array.from({ length: 15 }, (_, seatColumn) => {
+                        const seatNumber = seatRow * 15 + seatColumn + 1;
+                        if (seatNumber > totalSeats) return null; // Không hiển thị ghế vượt quá tổng số ghế
+                        return (
+                          <Seat
+                            key={`${seatRow}-${seatColumn}`} // Sử dụng seatColumn và seatRow làm key
+                            seatRow={alphabet[seatRow]}
+                            seatColumn={seatColumn + 1}
+                            selected={selectedSeats[seatRow * 15 + seatColumn]}
+                            onClick={() =>
+                              handleSeatClick(seatRow * 15 + seatColumn)
+                            }
+                          />
+                        );
+                      })}
+                    </Row>
+                  )
+                )}
               </Col>
-            </Row>
-            <Row style={{ width: "100%" }}>
-              <Col span={8}>
-                <Form.Item
-                  labelCol={{ span: 24 }}
-                  label="Tổng số ghế"
-                  name="totalSeat"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập tổng số ghế!",
-                    },
-                  ]}
-                >
-                  <InputNumber
-                    style={{ width: "100%" }}
-                    placeholder="Nhập tổng số ghế"
-                    min={30}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
+            ) : null}
           </Row>
           <Row style={{ display: "flex", justifyContent: "flex-end" }}>
             <Form.Item>
