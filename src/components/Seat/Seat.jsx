@@ -3,7 +3,7 @@ import React from "react";
 const Seat = ({ selected, onClick, seatColumn, seatRow, seatType }) => {
   // Xác định chiều rộng dựa trên loại ghế
   const seatWidth = seatType === "doi" ? "85px" : "40px";
-  let backgroundColor = "#6959CD"; // Mặc định màu tím là ghế thường
+  let backgroundColor = "#818181"; // Mặc định màu tím là ghế không được có trong phòng
 
   // switch (seatType) {
   //   case "thuong":
