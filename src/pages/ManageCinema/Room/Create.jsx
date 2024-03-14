@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 import Seat from "../../../components/Seat/Seat";
+import SeatLegend from "../../../components/Seat/SeatLegend";
 import { callCreateUser } from "../../../services/api";
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -131,8 +132,28 @@ const RoomCreate = () => {
                 />
               </Form.Item>
             </Col>
-            {totalSeats > 0 ? (
-              <Col span={24}>
+            <Col span={24}>
+              <div
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 1,
+                  backgroundColor: "#ffffff",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                  }}
+                >
+                  <SeatLegend color="#818181" text="Ghế chưa được chọn" />
+                  <SeatLegend color="#FF0066" text="Ghế được chọn" />
+                  <SeatLegend color="#6959CD" text="Ghế thường" />
+                  <SeatLegend color="#FF8247" text="Ghế vip" />
+                  <SeatLegend color="#FF1493" text="Ghế đôi" />
+                </div>
                 <h4
                   style={{
                     textAlign: "center",
@@ -141,28 +162,42 @@ const RoomCreate = () => {
                 >
                   Danh sách ghế trong phòng chiếu
                 </h4>
-
-                {/* Dòng lặp các hàng */}
-                {Array.from(
-                  { length: Math.ceil(totalSeats / 15) },
-                  (_, seatRow) => (
-                    <Row
-                      key={seatRow}
-                      style={{
-                        width: "100%",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        padding: 10,
-                        userSelect: "none",
-                      }}
-                    >
-                      {/* Lặp qua mỗi hàng ghế */}
-                      {Array.from({ length: 15 }, (_, seatColumn) => {
+                <div
+                  style={{
+                    backgroundColor: "#000000",
+                    width: "70%",
+                    margin: "0 auto",
+                    color: "#ffffff",
+                    textAlign: "center",
+                    fontSize: 20,
+                    fontWeight: 600,
+                    marginBottom: 30,
+                    clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
+                  }}
+                >
+                  Màn hình
+                </div>
+              </div>
+              {Array(Math.ceil(390 / 15))
+                .fill(null)
+                .map((_, seatRow) => (
+                  <Row
+                    key={seatRow}
+                    style={{
+                      width: "100%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: 10,
+                      userSelect: "none",
+                    }}
+                  >
+                    {Array(15)
+                      .fill(null)
+                      .map((_, seatColumn) => {
                         const seatNumber = seatRow * 15 + seatColumn + 1;
-                        if (seatNumber > totalSeats) return null; // Không hiển thị ghế vượt quá tổng số ghế
                         return (
                           <Seat
-                            key={`${seatRow}-${seatColumn}`} // Sử dụng seatColumn và seatRow làm key
+                            key={`${seatRow}-${seatColumn}`}
                             seatRow={alphabet[seatRow]}
                             seatColumn={seatColumn + 1}
                             selected={selectedSeats[seatRow * 15 + seatColumn]}
@@ -172,11 +207,9 @@ const RoomCreate = () => {
                           />
                         );
                       })}
-                    </Row>
-                  )
-                )}
-              </Col>
-            ) : null}
+                  </Row>
+                ))}
+            </Col>
           </Row>
           <Row style={{ display: "flex", justifyContent: "flex-end" }}>
             <Form.Item>
