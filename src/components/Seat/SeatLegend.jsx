@@ -12,6 +12,7 @@ const SeatLegend = ({ color, text }) => {
     >
       <div
         style={{
+          border: "1px solid black",
           borderRadius: 5,
           width: 30,
           height: 30,
