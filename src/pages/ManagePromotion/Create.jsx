@@ -25,7 +25,7 @@ const PromotionCreate = () => {
     setIsSubmit(true);
     const res = await callCreateUser(fullName, email, password, phone);
     if (res && res.data) {
-      message.success("Tạo mới người dùng thành công!");
+      message.success("Tạo mới khuyến mãi thành công!");
       form.resetFields();
       setIsSubmit(false);
       navigate("/admin/promotion");
