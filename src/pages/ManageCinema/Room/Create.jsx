@@ -7,17 +7,22 @@ import {
   Card,
   Col,
   Divider,
+  FloatButton,
   Form,
   Input,
   InputNumber,
   Row,
   Select,
+  Tooltip,
   message,
   notification,
 } from "antd";
 import { useEffect, useRef, useState } from "react";
+import { IoOpenOutline } from "react-icons/io5";
+import { MdEventSeat, MdOutlineDelete } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+import ModalTypeSeat from "../../../components/Seat/ModalTypeSeat";
 import SeatComponent from "../../../components/Seat/SeatComponent";
 import SeatLegend from "../../../components/Seat/SeatLegend";
 import { callCreateUser } from "../../../services/api";
@@ -31,8 +36,37 @@ const RoomCreate = () => {
   const navigate = useNavigate();
   const [totalSeats, setTotalSeats] = useState(0);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [openModalTypeSeat, setOpenModalTypeSeat] = useState(false);
+  const [typeSeat, setTypeSeat] = useState("");
 
   const onFinish = async (values) => {
+    const { name, typeRoom, totalSeat } = values;
+    if (selectedSeats.length <= 0) {
+      notification.error({
+        message: "Vui lòng chọn danh sách ghế!",
+        description: "Danh sách ghế không được rỗng!",
+      });
+      return;
+    } else if (selectedSeats.length < totalSeat) {
+      notification.error({
+        message: "Vui lòng chọn đủ danh sách ghế!",
+        description: (
+          <>
+            Tổng số ghế đã chọn:{" "}
+            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
+              {selectedSeats.length}
+            </span>
+            <br />
+            Tổng số ghế đã nhập{" "}
+            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
+              {totalSeat ? totalSeat : 0}
+            </span>
+          </>
+        ),
+      });
+      return;
+    }
+
     const { fullName, email, password, phone } = values;
     setIsSubmit(true);
     const res = await callCreateUser(fullName, email, password, phone);
@@ -52,21 +86,6 @@ const RoomCreate = () => {
 
   const handleTotalSeatChange = (value) => {
     setTotalSeats(value);
-    setSelectedSeats(Array.from({ length: value }, () => false));
-  };
-
-  const handleSeatClick = (index) => {
-    const newSelectedSeats = [...selectedSeats];
-    newSelectedSeats[index] = !newSelectedSeats[index];
-    setSelectedSeats(newSelectedSeats);
-
-    // Tính toán seatRow và seatColumn từ index
-    const seatRow = Math.floor(index / 20) + 1;
-    const seatColumn = (index % 20) + 1;
-
-    console.log("seatRow:", seatRow);
-    console.log("seatColumn:", seatColumn);
-    console.log("index:", index + 1);
   };
 
   // Drag selection
@@ -110,7 +129,6 @@ const RoomCreate = () => {
         top: box.top + window.scrollY,
         left: box.left + window.scrollX,
       };
-
       setSelectionBox(scrollAwareBox);
       const indexesToSelect = [];
       selectableItems.current.forEach((item, index) => {
@@ -153,8 +171,41 @@ const RoomCreate = () => {
   }, []);
 
   useEffect(() => {
-    console.table("selectedItems: ", selectedItems);
-  }, [selectedItems]);
+    if (selectedItems.length > totalSeats) {
+      notification.error({
+        message: "Có lỗi xảy ra!",
+        description: (
+          <>
+            Tổng số ghế đã chọn:{" "}
+            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
+              {selectedItems.length}
+            </span>{" "}
+            không thể lớn hơn tổng số ghế đã nhập{" "}
+            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
+              {totalSeats ? totalSeats : 0}
+            </span>
+          </>
+        ),
+      });
+    }
+  }, [selectedItems, totalSeats]);
+
+  const handleClick = () => {
+    setOpenModalTypeSeat(true);
+  };
+
+  const handleDelete = () => {
+    const remainingSeats = selectedSeats.filter(
+      (seat) => !selectedIndexes.includes(seat.index)
+    );
+    setSelectedSeats(remainingSeats);
+    setSelectedIndexes([]);
+    message.success("Xóa ghế thành công!");
+  };
+
+  useEffect(() => {
+    console.log("Danh sach ghe: ", selectedSeats);
+  }, [selectedSeats]);
 
   return (
     <>
@@ -196,8 +247,9 @@ const RoomCreate = () => {
                     message: "Vui lòng chọn loại phòng!",
                   },
                 ]}
+                initialValue={"2D"}
               >
-                <Select style={{ width: "100%" }} defaultValue={"2D"}>
+                <Select style={{ width: "100%" }}>
                   <Select.Option value="2D">2D</Select.Option>
                   <Select.Option value="3D">3D</Select.Option>
                 </Select>
@@ -242,8 +294,8 @@ const RoomCreate = () => {
                     alignItems: "center",
                   }}
                 >
-                  <SeatLegend color="#818181" text="Ghế chưa được chọn" />
-                  <SeatLegend color="#FF0066" text="Ghế được chọn" />
+                  <SeatLegend color="#ffffff" text="Ghế không được chọn" />
+                  <SeatLegend color="chocolate" text="Ghế được chọn" />
                   <SeatLegend color="#6959CD" text="Ghế thường" />
                   <SeatLegend color="#FF8247" text="Ghế vip" />
                   <SeatLegend color="#FF1493" text="Ghế đôi" />
@@ -278,37 +330,78 @@ const RoomCreate = () => {
                   className="elements-container"
                   ref={elementsContainerRef}
                 >
-                  {gridSeats.map((item, index) => (
-                    <SeatComponent
-                      key={index}
-                      index={index}
-                      id={item.id}
-                      text={item.text}
-                      setSelectedItems={setSelectedItems}
-                      isSelected={selectedIndexes.includes(index)}
-                      checkSelection={(e) => {
-                        // console.log("checkSelection: ", e);
-                      }}
-                      selectionOn={selectionStarted}
-                      setSelectedIndexes={setSelectedIndexes}
-                      ctrlPressed={ctrlPressed}
-                      handleKeyDown={handleKeyDown}
-                      handleKeyUp={handleKeyUp}
-                    />
-                  ))}
+                  {gridSeats.map((item, index) => {
+                    return (
+                      <SeatComponent
+                        key={index}
+                        index={index}
+                        id={item.id}
+                        text={item.text}
+                        isSelected={selectedIndexes.includes(index)}
+                        checkSelection={(e) => {
+                          // console.log("checkSelection: ", e);
+                        }}
+                        selectionOn={selectionStarted}
+                        setSelectedItems={setSelectedItems}
+                        setSelectedIndexes={setSelectedIndexes}
+                        ctrlPressed={ctrlPressed}
+                        handleKeyDown={handleKeyDown}
+                        handleKeyUp={handleKeyUp}
+                        selectedSeats={selectedSeats}
+                      />
+                    );
+                  })}
                 </div>
               </div>
             </Col>
           </Row>
           <Row style={{ display: "flex", justifyContent: "flex-end" }}>
             <Form.Item>
-              <Button type="primary" htmlType="submit" loading={isSubmit}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isSubmit}
+                style={{ marginTop: 10 }}
+              >
                 Tạo mới
               </Button>
             </Form.Item>
           </Row>
         </Form>
+        <FloatButton.Group
+          trigger="hover"
+          type="primary"
+          style={{
+            right: 50,
+            marginBottom: 50,
+          }}
+          icon={<MdEventSeat />}
+        >
+          <Tooltip
+            placement="left"
+            title="Mở bảng điều khiển chọn loại ghế"
+            overlayStyle={{ fontSize: 16 }}
+          >
+            <FloatButton icon={<IoOpenOutline />} onClick={handleClick} />
+          </Tooltip>
+          <Tooltip
+            placement="left"
+            title="Xóa ghế đã chọn"
+            overlayStyle={{ fontSize: 16 }}
+          >
+            <FloatButton icon={<MdOutlineDelete />} onClick={handleDelete} />
+          </Tooltip>
+        </FloatButton.Group>
       </Card>
+
+      <ModalTypeSeat
+        openModal={openModalTypeSeat}
+        setOpenModal={setOpenModalTypeSeat}
+        selectedSeats={selectedSeats}
+        setSelectedSeats={setSelectedSeats}
+        selectedItems={selectedItems}
+        setSelectedIndexes={setSelectedIndexes}
+      />
     </>
   );
 };
