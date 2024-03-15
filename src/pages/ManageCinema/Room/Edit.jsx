@@ -30,7 +30,7 @@ import "./index.scss";
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-const RoomCreate = () => {
+const RoomEdit = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -71,7 +71,7 @@ const RoomCreate = () => {
     setIsSubmit(true);
     const res = await callCreateUser(fullName, email, password, phone);
     if (res && res.data) {
-      message.success("Tạo mới phòng chiếu thành công!");
+      message.success("Cập nhật phòng chiếu thành công!");
       form.resetFields();
       setIsSubmit(false);
       navigate("/admin/cinema/room");
@@ -209,9 +209,9 @@ const RoomCreate = () => {
 
   return (
     <>
-      <PageHeader title="Tạo mới phòng chiếu" numberBack={-1} type="create" />
+      <PageHeader title="Cập nhật phòng chiếu" numberBack={-1} type="create" />
       <Divider />
-      <Card title="Tạo mới phòng chiếu" bordered={false}>
+      <Card title="Cập nhật phòng chiếu" bordered={false}>
         <Form
           form={form}
           name="basic"
@@ -363,7 +363,7 @@ const RoomCreate = () => {
                 loading={isSubmit}
                 style={{ marginTop: 10 }}
               >
-                Tạo mới
+                Cập nhật
               </Button>
             </Form.Item>
           </Row>
@@ -406,4 +406,4 @@ const RoomCreate = () => {
   );
 };
 
-export default RoomCreate;
+export default RoomEdit;
