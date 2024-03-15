@@ -1,4 +1,8 @@
 import {
+  boxesIntersect,
+  useSelectionContainer,
+} from "@air/react-drag-to-select";
+import {
   Button,
   Card,
   Col,
@@ -11,11 +15,13 @@ import {
   message,
   notification,
 } from "antd";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import Seat from "../../../components/Seat/Seat";
+import SeatComponent from "../../../components/Seat/SeatComponent";
+import SeatLegend from "../../../components/Seat/SeatLegend";
 import { callCreateUser } from "../../../services/api";
+import "./index.scss";
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -55,12 +61,100 @@ const RoomCreate = () => {
     setSelectedSeats(newSelectedSeats);
 
     // Tính toán seatRow và seatColumn từ index
-    const seatRow = Math.floor(index / 15) + 1;
-    const seatColumn = (index % 15) + 1;
+    const seatRow = Math.floor(index / 20) + 1;
+    const seatColumn = (index % 20) + 1;
 
     console.log("seatRow:", seatRow);
     console.log("seatColumn:", seatColumn);
+    console.log("index:", index + 1);
   };
+
+  // Drag selection
+  // State và refs để lưu trữ thông tin về khu vực chọn, các phần tử đã được chọn và tham chiếu đến các phần tử DOM.
+  const [selectionBox, setSelectionBox] = useState();
+  const [selectedIndexes, setSelectedIndexes] = useState([]);
+  const selectableItems = useRef([]);
+  const elementsContainerRef = useRef(null);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectionStarted, setSelectionStarted] = useState(false);
+  const [ctrlPressed, setCtrlPressed] = useState(false);
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Control") {
+      setCtrlPressed(true);
+    }
+  };
+
+  const handleKeyUp = (event) => {
+    if (event.key === "Control") {
+      setCtrlPressed(false);
+    }
+  };
+
+  // Render ghế
+  let gridSeats = [];
+  alphabet.split("").forEach((item, index) => {
+    for (let i = 0; i < 20; i++) {
+      gridSeats.push({
+        id: `${item}${i + 1}`,
+        text: `${item}${i + 1}`,
+      });
+    }
+  });
+
+  const { DragSelection } = useSelectionContainer({
+    eventsElement: document.getElementById("root"),
+    onSelectionChange: (box) => {
+      const scrollAwareBox = {
+        ...box,
+        top: box.top + window.scrollY,
+        left: box.left + window.scrollX,
+      };
+
+      setSelectionBox(scrollAwareBox);
+      const indexesToSelect = [];
+      selectableItems.current.forEach((item, index) => {
+        if (boxesIntersect(scrollAwareBox, item)) {
+          indexesToSelect.push(index);
+        }
+      });
+
+      setSelectedIndexes(indexesToSelect);
+    },
+    onSelectionStart: () => {
+      setSelectionStarted(true);
+      setSelectedItems([]);
+    },
+    onSelectionEnd: () => {
+      setSelectionStarted(false);
+    },
+    selectionProps: {
+      style: {
+        border: "5px dashed aqua",
+        borderRadius: 4,
+        opacity: 0.5,
+      },
+    },
+    isEnabled: !ctrlPressed,
+  });
+
+  useEffect(() => {
+    if (elementsContainerRef.current) {
+      Array.from(elementsContainerRef.current.children).forEach((item) => {
+        const { left, top, width, height } = item.getBoundingClientRect();
+        selectableItems.current.push({
+          left,
+          top,
+          width,
+          height,
+        });
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    console.table("selectedItems: ", selectedItems);
+  }, [selectedItems]);
 
   return (
     <>
@@ -131,52 +225,80 @@ const RoomCreate = () => {
                 />
               </Form.Item>
             </Col>
-            {totalSeats > 0 ? (
-              <Col span={24}>
+            <Col span={24}>
+              <div
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 1,
+                  backgroundColor: "#ffffff",
+                  paddingBottom: 10,
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                  }}
+                >
+                  <SeatLegend color="#818181" text="Ghế chưa được chọn" />
+                  <SeatLegend color="#FF0066" text="Ghế được chọn" />
+                  <SeatLegend color="#6959CD" text="Ghế thường" />
+                  <SeatLegend color="#FF8247" text="Ghế vip" />
+                  <SeatLegend color="#FF1493" text="Ghế đôi" />
+                </div>
                 <h4
                   style={{
                     textAlign: "center",
-                    margin: "30px 0",
+                    margin: "15px 0",
                   }}
                 >
                   Danh sách ghế trong phòng chiếu
                 </h4>
-
-                {/* Dòng lặp các hàng */}
-                {Array.from(
-                  { length: Math.ceil(totalSeats / 15) },
-                  (_, seatRow) => (
-                    <Row
-                      key={seatRow}
-                      style={{
-                        width: "100%",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        padding: 10,
-                        userSelect: "none",
+                <div
+                  style={{
+                    backgroundColor: "#000000",
+                    width: "70%",
+                    margin: "0 auto",
+                    color: "#ffffff",
+                    textAlign: "center",
+                    fontSize: 20,
+                    fontWeight: 600,
+                    clipPath: "polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)",
+                  }}
+                >
+                  Màn hình
+                </div>
+              </div>
+              <DragSelection />
+              <div className="container">
+                <div
+                  id="elements-container"
+                  className="elements-container"
+                  ref={elementsContainerRef}
+                >
+                  {gridSeats.map((item, index) => (
+                    <SeatComponent
+                      key={index}
+                      index={index}
+                      id={item.id}
+                      text={item.text}
+                      setSelectedItems={setSelectedItems}
+                      isSelected={selectedIndexes.includes(index)}
+                      checkSelection={(e) => {
+                        // console.log("checkSelection: ", e);
                       }}
-                    >
-                      {/* Lặp qua mỗi hàng ghế */}
-                      {Array.from({ length: 15 }, (_, seatColumn) => {
-                        const seatNumber = seatRow * 15 + seatColumn + 1;
-                        if (seatNumber > totalSeats) return null; // Không hiển thị ghế vượt quá tổng số ghế
-                        return (
-                          <Seat
-                            key={`${seatRow}-${seatColumn}`} // Sử dụng seatColumn và seatRow làm key
-                            seatRow={alphabet[seatRow]}
-                            seatColumn={seatColumn + 1}
-                            selected={selectedSeats[seatRow * 15 + seatColumn]}
-                            onClick={() =>
-                              handleSeatClick(seatRow * 15 + seatColumn)
-                            }
-                          />
-                        );
-                      })}
-                    </Row>
-                  )
-                )}
-              </Col>
-            ) : null}
+                      selectionOn={selectionStarted}
+                      setSelectedIndexes={setSelectedIndexes}
+                      ctrlPressed={ctrlPressed}
+                      handleKeyDown={handleKeyDown}
+                      handleKeyUp={handleKeyUp}
+                    />
+                  ))}
+                </div>
+              </div>
+            </Col>
           </Row>
           <Row style={{ display: "flex", justifyContent: "flex-end" }}>
             <Form.Item>

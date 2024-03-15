@@ -14,6 +14,7 @@ Online movie ticket booking system
 - React-bootstrap 2
 - Uuid 9
 - React MD Editor
+- air/react-drag-to-select
 
 ---
 
