@@ -1,0 +1,27 @@
+.container {
+    padding-top: 50px;
+
+    .elements-container {
+        display: grid;
+        grid-template-columns: repeat(20, minmax(10px, 1fr));
+        gap: 10px 10px;
+    }
+
+    .element {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        border: 1px solid black;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+    }
+
+    .selected {
+        background-color: chocolate;
+    }
+
+    .selection-box-info {
+        margin-top: 10px;
+    }
+}
