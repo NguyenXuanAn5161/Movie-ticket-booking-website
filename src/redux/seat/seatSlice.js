@@ -4,7 +4,7 @@ const initialState = {
   isLoading: true,
   // can thay doi
   // thay đổi #1
-  seat: null,
+  seat: [],
 };
 
 // thay đổi #1 tên slice
