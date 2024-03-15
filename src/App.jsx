@@ -10,6 +10,7 @@ import CinemaCreate from "./pages/ManageCinema/Create";
 import CinemaEdit from "./pages/ManageCinema/Edit";
 import CinemaList from "./pages/ManageCinema/List";
 import RoomCreate from "./pages/ManageCinema/Room/Create";
+import RoomEdit from "./pages/ManageCinema/Room/Edit";
 import RoomList from "./pages/ManageCinema/Room/List";
 import SeatCreate from "./pages/ManageCinema/Room/Seat/Create";
 import SeatEdit from "./pages/ManageCinema/Room/Seat/Edit";
@@ -176,7 +177,7 @@ export default function App() {
         },
         {
           path: "cinema/room/edit/:movieId",
-          element: <MovieEdit />,
+          element: <RoomEdit />,
         },
         // Ghế trong phòng
         {
