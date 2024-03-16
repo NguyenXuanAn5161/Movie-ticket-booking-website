@@ -6,6 +6,8 @@ import foodCategoryReducer from "./food/foodCategorySlice";
 import foodReducer from "./food/foodSlice";
 import movieGenreReducer from "./movie/movieGenreSlice";
 import movieReducer from "./movie/movieSlice";
+import priceDetailReducer from "./price/priceDetailSlice";
+import priceReducer from "./price/priceSlice";
 import promotionLineReducer from "./promotion/promotionLineSlice";
 import promotionReducer from "./promotion/promotionSlice";
 import seatReducer from "./seat/seatSlice";
@@ -24,5 +26,7 @@ export const store = configureStore({
     cinema: cinemaReducer,
     seat: seatReducer,
     seatType: seatTypeReducer,
+    price: priceReducer,
+    priceDetail: priceDetailReducer,
   },
 });
