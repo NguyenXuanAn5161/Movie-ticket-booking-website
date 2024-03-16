@@ -194,8 +194,8 @@ const PromotionShow = () => {
           <>
             <Popconfirm
               placement="leftTop"
-              title={"Xác nhận xóa đồ ăn"}
-              description={"Bạn có chắc chắn muốn xóa đồ ăn này?"}
+              title={"Xác nhận xóa CTKM"}
+              description={"Bạn có chắc chắn muốn xóa CTKM này?"}
               okText="Xác nhận"
               cancelText="Hủy"
               onConfirm={() => handleDeleteBook(record.id)}
