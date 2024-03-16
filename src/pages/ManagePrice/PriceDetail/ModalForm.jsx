@@ -18,9 +18,8 @@ const PriceDetailModalForm = (props) => {
   const { formType, data, setData, openModal, setOpenModal } = props;
   const [current, setCurrent] = useState(0);
   const [isSubmit, setIsSubmit] = useState(false);
-  const [formData, setFormData] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
-  const [priceType, setPriceType] = useState("seat");
+  const [priceType, setPriceType] = useState("");
 
   const isDisabled = formType === "view" ? true : false;
   const radioStyle = {
@@ -40,11 +39,11 @@ const PriceDetailModalForm = (props) => {
     }
   }, [form, data, formType]);
 
-  // useEffect(() => {
-  //   form.setFieldsValue({
-  //     listItems: selectedItems,
-  //   });
-  // }, [selectedItems]);
+  useEffect(() => {
+    form.setFieldsValue({
+      listItems: selectedItems,
+    });
+  }, [selectedItems]);
 
   const options = [
     {
@@ -86,6 +85,8 @@ const PriceDetailModalForm = (props) => {
           : [];
       setSelectedItems(ids);
       setPriceType(data?.type_sale);
+    } else {
+      setPriceType("seat");
     }
   }, [data, formType]);
 
@@ -100,6 +101,7 @@ const PriceDetailModalForm = (props) => {
       message.success("Tạo mới giá sản phẩm thành công!");
       form.resetFields();
       setOpenModal(false);
+      setPriceType("seat");
       // await props.fetchUser();
     } else {
       notification.error({
@@ -165,7 +167,7 @@ const PriceDetailModalForm = (props) => {
                   message: "Không được để trống!",
                 },
               ]}
-              initialValue={priceType}
+              initialValue={"seat"}
             >
               <Radio.Group onChange={handlePriceTypeChange}>
                 <Radio.Button value="seat" style={radioStyle}>
