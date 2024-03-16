@@ -11,8 +11,7 @@ import { Avatar, Dropdown, Layout, Menu, Space, message } from "antd";
 import React, { useState } from "react";
 import { BiCategoryAlt } from "react-icons/bi";
 import { GiTheater } from "react-icons/gi";
-import { IoFastFoodOutline } from "react-icons/io5";
-import { MdEventSeat } from "react-icons/md";
+import { IoFastFoodOutline, IoPricetagsOutline } from "react-icons/io5";
 import { RiMovie2Line } from "react-icons/ri";
 import { TbDiscount2, TbTheater } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
@@ -59,16 +58,16 @@ const items = [
       "room",
       <TbTheater />
     ),
-    getItem(
-      <Link to="/admin/cinema/room/seat">Ghế</Link>,
-      "seat",
-      <MdEventSeat />
-    ),
-    getItem(
-      <Link to="/admin/cinema/room/seatType">Loại ghế</Link>,
-      "seatType",
-      <BiCategoryAlt />
-    ),
+    // getItem(
+    //   <Link to="/admin/cinema/room/seat">Ghế</Link>,
+    //   "seat",
+    //   <MdEventSeat />
+    // ),
+    // getItem(
+    //   <Link to="/admin/cinema/room/seatType">Loại ghế</Link>,
+    //   "seatType",
+    //   <BiCategoryAlt />
+    // ),
   ]),
   getItem("Quản lý phim", "manageMovie", <RiMovie2Line />, [
     getItem(<Link to="/admin/movie">Phim</Link>, "movie", <RiMovie2Line />),
@@ -86,6 +85,11 @@ const items = [
       <BiCategoryAlt />
     ),
   ]),
+  getItem(
+    <Link to="/admin/price">Giá sản phẩm</Link>,
+    "price",
+    <IoPricetagsOutline />
+  ),
   getItem(
     <Link to="/admin/promotion">Khuyến mãi</Link>,
     "promotion",
