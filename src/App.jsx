@@ -12,14 +12,6 @@ import CinemaList from "./pages/ManageCinema/List";
 import RoomCreate from "./pages/ManageCinema/Room/Create";
 import RoomEdit from "./pages/ManageCinema/Room/Edit";
 import RoomList from "./pages/ManageCinema/Room/List";
-import SeatCreate from "./pages/ManageCinema/Room/Seat/Create";
-import SeatEdit from "./pages/ManageCinema/Room/Seat/Edit";
-import SeatList from "./pages/ManageCinema/Room/Seat/List";
-import SeatShow from "./pages/ManageCinema/Room/Seat/Show";
-import SeatTypeCreate from "./pages/ManageCinema/Room/TypeSeat/Create";
-import SeatTypeEdit from "./pages/ManageCinema/Room/TypeSeat/Edit";
-import SeatTypeList from "./pages/ManageCinema/Room/TypeSeat/List";
-import SeatTypeShow from "./pages/ManageCinema/Room/TypeSeat/Show";
 import CinemaShow from "./pages/ManageCinema/Show";
 import FoodCategoryCreate from "./pages/ManageFood/CategoriesFood/Create";
 import FoodCategoryEdit from "./pages/ManageFood/CategoriesFood/Edit";
@@ -37,6 +29,10 @@ import MovieGenreCreate from "./pages/ManageMovie/MovieCategories/Create";
 import MovieGenreEdit from "./pages/ManageMovie/MovieCategories/Edit";
 import MovieGenreList from "./pages/ManageMovie/MovieCategories/List";
 import MovieGenreShow from "./pages/ManageMovie/MovieCategories/Show";
+import PriceCreate from "./pages/ManagePrice/Create";
+import PriceEdit from "./pages/ManagePrice/Edit";
+import PriceList from "./pages/ManagePrice/List";
+import PriceShow from "./pages/ManagePrice/Show";
 import PromotionCreate from "./pages/ManagePromotion/Create";
 import PromotionEdit from "./pages/ManagePromotion/Edit";
 import PromotionList from "./pages/ManagePromotion/List";
@@ -180,39 +176,39 @@ export default function App() {
           element: <RoomEdit />,
         },
         // Ghế trong phòng
-        {
-          path: "cinema/room/seat",
-          element: <SeatList />,
-        },
-        {
-          path: "cinema/room/seat/show/:seatId",
-          element: <SeatShow />,
-        },
-        {
-          path: "cinema/room/seat/create",
-          element: <SeatCreate />,
-        },
-        {
-          path: "cinema/room/seat/edit/:seatId",
-          element: <SeatEdit />,
-        },
+        // {
+        //   path: "cinema/room/seat",
+        //   element: <SeatList />,
+        // },
+        // {
+        //   path: "cinema/room/seat/show/:seatId",
+        //   element: <SeatShow />,
+        // },
+        // {
+        //   path: "cinema/room/seat/create",
+        //   element: <SeatCreate />,
+        // },
+        // {
+        //   path: "cinema/room/seat/edit/:seatId",
+        //   element: <SeatEdit />,
+        // },
         // Loại ghế
-        {
-          path: "cinema/room/seatType",
-          element: <SeatTypeList />,
-        },
-        {
-          path: "cinema/room/seatType/show/:seatTypeId",
-          element: <SeatTypeShow />,
-        },
-        {
-          path: "cinema/room/seatType/create",
-          element: <SeatTypeCreate />,
-        },
-        {
-          path: "cinema/room/seatType/edit/:seatTypeId",
-          element: <SeatTypeEdit />,
-        },
+        // {
+        //   path: "cinema/room/seatType",
+        //   element: <SeatTypeList />,
+        // },
+        // {
+        //   path: "cinema/room/seatType/show/:seatTypeId",
+        //   element: <SeatTypeShow />,
+        // },
+        // {
+        //   path: "cinema/room/seatType/create",
+        //   element: <SeatTypeCreate />,
+        // },
+        // {
+        //   path: "cinema/room/seatType/edit/:seatTypeId",
+        //   element: <SeatTypeEdit />,
+        // },
         // Đồ ăn
         {
           path: "food",
@@ -246,6 +242,23 @@ export default function App() {
         {
           path: "foodCategories/edit/:foodCategoryId",
           element: <FoodCategoryEdit />,
+        },
+        // Giá sản phẩm
+        {
+          path: "price",
+          element: <PriceList />,
+        },
+        {
+          path: "price/show/:priceId",
+          element: <PriceShow />,
+        },
+        {
+          path: "price/create",
+          element: <PriceCreate />,
+        },
+        {
+          path: "price/edit/:priceId",
+          element: <PriceEdit />,
         },
         // Khuyến mãi
         {

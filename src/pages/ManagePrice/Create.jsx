@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { callCreateUser } from "../../services/api";
 
-const PromotionCreate = () => {
+const PriceCreate = () => {
   // mặc định #2
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
@@ -25,10 +25,10 @@ const PromotionCreate = () => {
     setIsSubmit(true);
     const res = await callCreateUser(fullName, email, password, phone);
     if (res && res.data) {
-      message.success("Tạo mới khuyến mãi thành công!");
+      message.success("Tạo mới giá sản phẩm thành công!");
       form.resetFields();
       setIsSubmit(false);
-      navigate("/admin/promotion");
+      navigate("/admin/price");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
@@ -40,9 +40,9 @@ const PromotionCreate = () => {
 
   return (
     <>
-      <PageHeader title="Tạo mới khuyến mãi" numberBack={-1} type="create" />
+      <PageHeader title="Tạo mới giá sản phẩm" numberBack={-1} type="create" />
       <Divider />
-      <Card title="Tạo mới khuyến mãi" bordered={false}>
+      <Card title="Tạo mới giá sản phẩm" bordered={false}>
         <Form
           form={form}
           name="basic"
@@ -56,38 +56,38 @@ const PromotionCreate = () => {
               <Form.Item
                 labelCol={{ span: 24 }}
                 name="code"
-                label="Mã Khuyến Mãi"
+                label="Mã giá sản phẩm"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập mã khuyến mãi!",
+                    message: "Vui lòng nhập mã giá sản phẩm!",
                   },
                 ]}
               >
-                <Input placeholder="Nhập mã khuyến mãi" />
+                <Input placeholder="Nhập mã giá sản phẩm" />
               </Form.Item>
             </Col>
             <Col span={16}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tên khuyến mãi"
+                label="Tên giá sản phẩm"
                 name="name"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên khuyến mãi!",
+                    message: "Vui lòng nhập tên giá sản phẩm!",
                   },
                 ]}
               >
-                <Input placeholder="Nhập tên khuyến mãi" />
+                <Input placeholder="Nhập tên giá sản phẩm" />
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={[20, 20]}>
+          <Row gutter={[20]}>
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                name="start_date"
+                name="startDate"
                 label="Ngày Bắt Đầu"
                 rules={[
                   {
@@ -102,7 +102,7 @@ const PromotionCreate = () => {
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                name="end_date"
+                name="endDate"
                 label="Ngày Kết Thúc"
                 rules={[
                   {
@@ -115,7 +115,7 @@ const PromotionCreate = () => {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={[20, 20]}>
+          <Row gutter={[20]}>
             <Col span={24}>
               <Form.Item
                 labelCol={{ span: 24 }}
@@ -145,4 +145,4 @@ const PromotionCreate = () => {
   );
 };
 
-export default PromotionCreate;
+export default PriceCreate;

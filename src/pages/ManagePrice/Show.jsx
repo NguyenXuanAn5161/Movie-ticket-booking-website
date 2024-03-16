@@ -19,10 +19,10 @@ import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useSelector } from "react-redux";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import PromotionLineModalForm from "./PromotionLines/PromotionLineForm";
+import PriceDetailModalForm from "./PriceDetail/ModalForm";
 
-const PromotionShow = () => {
-  const promotionHeader = useSelector((state) => state.promotion.promotion);
+const PriceShow = () => {
+  const price = useSelector((state) => state.price.price);
 
   const [isLoading, setIsLoading] = useState(false);
   const [openModalCreate, setOpenModalCreate] = useState(false);
@@ -31,9 +31,9 @@ const PromotionShow = () => {
   const [openModalExport, setOpenModalExport] = useState(false);
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
   const [dataUpdate, setDataUpdate] = useState(null);
+  const [total, setTotal] = useState(price?.salePriceDetail.length);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(2);
-  const [total, setTotal] = useState(promotionHeader?.promotionLines.length);
   const [filter, setFilter] = useState(null);
   const [sortQuery, setSortQuery] = useState("");
 
@@ -47,42 +47,38 @@ const PromotionShow = () => {
   // render thông tin promotion header
   const items = [
     {
-      label: "Mã khuyến mãi",
+      label: "Mã giá sản phẩm",
       key: "1",
-      children: promotionHeader?.code,
+      children: price?.code,
     },
     {
-      label: "Tên khuyến mãi",
+      label: "Tên giá sản phẩm",
       key: "2",
-      children: promotionHeader?.name,
+      children: price?.name,
     },
     {
       label: "Ngày bắt đầu",
       key: "3",
-      children: moment(promotionHeader?.start_date).format(
-        "DD-MM-YYYY HH:mm:ss"
-      ),
+      children: moment(price?.startDate).format("DD-MM-YYYY HH:mm:ss"),
     },
     {
       label: "Ngày kết thúc",
       key: "4",
-      children: moment(promotionHeader?.end_date).format("DD-MM-YYYY HH:mm:ss"),
+      children: moment(price?.endDate).format("DD-MM-YYYY HH:mm:ss"),
     },
     {
       label: "Trạng thái",
       key: "5",
       children: (
-        <Tag color={promotionHeader?.status === "available" ? "green" : "red"}>
-          {promotionHeader?.status === "available"
-            ? "Hoạt động"
-            : "Không hoạt động"}
+        <Tag color={price?.status ? "success" : "error"}>
+          {price?.status ? "Hoạt động" : "Không hoạt động"}
         </Tag>
       ),
     },
     {
       label: "Mô tả",
       key: "6",
-      children: promotionHeader?.description,
+      children: price?.description,
       span: {
         xs: 1,
         sm: 2,
@@ -94,9 +90,7 @@ const PromotionShow = () => {
 
   const renderHeader = () => (
     <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span style={{ fontWeight: "500" }}>
-        Danh sách chương trình khuyến mãi (CTKM)
-      </span>
+      <span style={{ fontWeight: "500" }}>Chi tiết giá sản phẩm</span>
       <span style={{ display: "flex", gap: 15 }}>
         <Button
           icon={<AiOutlineExport />}
@@ -128,51 +122,53 @@ const PromotionShow = () => {
 
   const columns = [
     {
-      title: "Mã CTKM",
+      title: "Mã giá sản phẩm",
       dataIndex: "code",
       width: 150,
       fixed: "left",
     },
     {
-      title: "Tên CTKM",
-      dataIndex: "name",
-      key: "name",
-      sorter: true,
-      width: 150,
-      fixed: "left",
-    },
-    {
       title: "Ngày bắt đầu",
-      dataIndex: "start_date",
+      dataIndex: "startDate",
       width: 120,
       render: (text, record, index) => {
-        return <span>{moment(record.start_date).format("DD-MM-YYYY")}</span>;
+        return <span>{moment(record.startDate).format("DD-MM-YYYY")}</span>;
       },
     },
     {
       title: "Ngày kết thúc",
-      dataIndex: "end_date",
+      dataIndex: "endDate",
       width: 130,
       render: (text, record, index) => {
-        return <span>{moment(record.end_date).format("DD-MM-YYYY")}</span>;
+        return <span>{moment(record.endDate).format("DD-MM-YYYY")}</span>;
       },
     },
     {
-      title: "Mô Tả",
-      dataIndex: "description",
-      key: "description",
-      width: 250,
+      title: "Giá cho",
+      dataIndex: "type_sale",
+      key: "type_sale",
+      width: 150,
+      render: (text, record, index) => {
+        return <span>{record.type_sale === "Seat" ? "Ghế" : "Đồ ăn"}</span>;
+      },
     },
     {
-      title: "Trạng Thái",
-      dataIndex: "status",
-      key: "status",
+      title: "Giá",
+      dataIndex: "price",
+      key: "price",
+      sorter: true,
       width: 150,
-      render: (status) => (
-        <Tag color={status === "available" ? "green" : "red"}>
-          {status === "available" ? "Hoạt động" : "Không hoạt động"}
-        </Tag>
-      ),
+      fixed: "right",
+      render: (text, record, index) => {
+        return (
+          <span>
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(record?.price ?? 0)}
+          </span>
+        );
+      },
     },
     // {
     //   title: "Cập nhật ngày",
@@ -194,8 +190,8 @@ const PromotionShow = () => {
           <>
             <Popconfirm
               placement="leftTop"
-              title={"Xác nhận xóa CTKM"}
-              description={"Bạn có chắc chắn muốn xóa CTKM này?"}
+              title={"Xác nhận xóa giá sản phẩm"}
+              description={"Bạn có chắc chắn muốn xóa giá sản phẩm này?"}
               okText="Xác nhận"
               cancelText="Hủy"
               onConfirm={() => handleDeleteBook(record.id)}
@@ -228,10 +224,10 @@ const PromotionShow = () => {
 
   return (
     <>
-      <PageHeader title="Xem chi tiết khuyến mãi" numberBack={-1} type="show" />
+      <PageHeader title="Xem chi tiết giá" numberBack={-1} type="show" />
       <Divider />
       <div style={{ padding: "0 20px" }}>
-        <Card title="Thông tin khyến mãi" bordered={false}>
+        <Card title="Thông tin giá" bordered={false}>
           <Descriptions
             labelStyle={{ color: "#333", fontWeight: "700" }}
             layout="vertical"
@@ -257,9 +253,9 @@ const PromotionShow = () => {
             bordered
             loading={isLoading}
             columns={columns}
-            dataSource={promotionHeader?.promotionLines}
+            dataSource={price?.salePriceDetail || []}
             onChange={onChange}
-            rowKey="id" // Đảm bảo id là trường định danh duy nhất của mỗi chương trình khuyến mãi
+            rowKey="id"
             pagination={{
               current: current,
               pageSize: pageSize,
@@ -277,7 +273,7 @@ const PromotionShow = () => {
         </Card>
       </div>
 
-      <PromotionLineModalForm
+      <PriceDetailModalForm
         formType={
           openModalCreate ? "create" : openModalUpdate ? "update" : "view"
         }
@@ -300,13 +296,8 @@ const PromotionShow = () => {
             : setOpenViewDetail
         }
       />
-
-      {/* <PromotionLineModalCreate
-        openModalCreate={openModalCreate}
-        setOpenModalCreate={setOpenModalCreate}
-      /> */}
     </>
   );
 };
 
-export default PromotionShow;
+export default PriceShow;
