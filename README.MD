@@ -16,6 +16,7 @@ Online movie ticket booking system
 - React MD Editor
 - air/react-drag-to-select
 - Lodash
+- react-infinite-scroll-component
 
 ---
 
