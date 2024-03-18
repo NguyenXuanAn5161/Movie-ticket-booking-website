@@ -29,6 +29,7 @@ import MovieGenreCreate from "./pages/ManageMovie/MovieCategories/Create";
 import MovieGenreEdit from "./pages/ManageMovie/MovieCategories/Edit";
 import MovieGenreList from "./pages/ManageMovie/MovieCategories/List";
 import MovieGenreShow from "./pages/ManageMovie/MovieCategories/Show";
+import ScheduleList from "./pages/ManageMovie/Schedule/List";
 import PriceCreate from "./pages/ManagePrice/Create";
 import PriceEdit from "./pages/ManagePrice/Edit";
 import PriceList from "./pages/ManagePrice/List";
@@ -144,7 +145,7 @@ export default function App() {
         // Lịch chiếu phim
         {
           path: "schedule",
-          element: <MovieList />,
+          element: <ScheduleList />,
         },
         {
           path: "schedule/show/:movieScheduleId",
