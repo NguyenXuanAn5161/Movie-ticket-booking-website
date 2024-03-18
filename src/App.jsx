@@ -29,6 +29,7 @@ import MovieGenreCreate from "./pages/ManageMovie/MovieCategories/Create";
 import MovieGenreEdit from "./pages/ManageMovie/MovieCategories/Edit";
 import MovieGenreList from "./pages/ManageMovie/MovieCategories/List";
 import MovieGenreShow from "./pages/ManageMovie/MovieCategories/Show";
+import ScheduleCreate from "./pages/ManageMovie/Schedule/Create";
 import ScheduleList from "./pages/ManageMovie/Schedule/List";
 import PriceCreate from "./pages/ManagePrice/Create";
 import PriceEdit from "./pages/ManagePrice/Edit";
@@ -153,7 +154,7 @@ export default function App() {
         },
         {
           path: "schedule/create",
-          element: <MovieCreate />,
+          element: <ScheduleCreate />,
         },
         {
           path: "schedule/edit/:movieScheduleId",
