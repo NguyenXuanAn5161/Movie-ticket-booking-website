@@ -17,6 +17,7 @@ Online movie ticket booking system
 - air/react-drag-to-select
 - Lodash
 - react-infinite-scroll-component
+- dayjs
 
 ---
 
