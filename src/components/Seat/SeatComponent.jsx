@@ -79,10 +79,10 @@ const SeatComponent = ({
             )
           : "#FFFFFF",
         cursor: "pointer",
-        borderRadius: 5,
-        width: 40,
+        borderRadius: 2,
+        width: 30,
         // width: isSweetSeat ? 47 : 40,
-        height: 40,
+        height: 30,
         border: "1px solid black",
         display: "flex",
         alignItems: "center",
