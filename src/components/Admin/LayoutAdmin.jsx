@@ -11,6 +11,7 @@ import { Avatar, Dropdown, Layout, Menu, Space, message } from "antd";
 import React, { useState } from "react";
 import { BiCategoryAlt } from "react-icons/bi";
 import { GiTheater } from "react-icons/gi";
+import { GrSchedules } from "react-icons/gr";
 import { IoFastFoodOutline, IoPricetagsOutline } from "react-icons/io5";
 import { RiMovie2Line } from "react-icons/ri";
 import { TbDiscount2, TbTheater } from "react-icons/tb";
@@ -75,6 +76,11 @@ const items = [
       <Link to="/admin/movieGenre">Thể loại phim</Link>,
       "movieGenre",
       <BiCategoryAlt />
+    ),
+    getItem(
+      <Link to="/admin/schedule">Lịch chiếu phim</Link>,
+      "schedule",
+      <GrSchedules />
     ),
   ]),
   getItem(<label>Quản lý đồ ăn</label>, "manageFood", <IoFastFoodOutline />, [
