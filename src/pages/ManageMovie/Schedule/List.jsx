@@ -4,6 +4,7 @@ import {
   Popconfirm,
   Row,
   Table,
+  Tag,
   message,
   notification,
 } from "antd";
@@ -58,6 +59,17 @@ const ScheduleList = () => {
           id: "2",
           code: "ST002",
           show_date: "2024-03-21",
+          startTime: "21:30",
+          endTime: "23:58",
+          room_id: "R001",
+          cinema_id: "C001",
+          seats_booked: 30,
+          status: true,
+        },
+        {
+          id: "3",
+          code: "ST003",
+          show_date: "2024-03-23",
           startTime: "21:30",
           endTime: "23:58",
           room_id: "R001",
@@ -127,28 +139,28 @@ const ScheduleList = () => {
       producer: "Stanley Kubrick",
       status: "Ngưng chiếu",
       showTimes: [
-        {
-          id: "5",
-          code: "ST005",
-          show_date: "2024-03-24",
-          startTime: "17:30",
-          endTime: "19:29",
-          room_id: "R003",
-          cinema_id: "C003",
-          seats_booked: 15,
-          status: true,
-        },
-        {
-          id: "6",
-          code: "ST006",
-          show_date: "2024-03-25",
-          startTime: "19:30",
-          endTime: "21:29",
-          room_id: "R003",
-          cinema_id: "C003",
-          seats_booked: 25,
-          status: true,
-        },
+        // {
+        //   id: "5",
+        //   code: "ST005",
+        //   show_date: "2024-03-24",
+        //   startTime: "17:30",
+        //   endTime: "19:29",
+        //   room_id: "R003",
+        //   cinema_id: "C003",
+        //   seats_booked: 15,
+        //   status: true,
+        // },
+        // {
+        //   id: "6",
+        //   code: "ST006",
+        //   show_date: "2024-03-25",
+        //   startTime: "19:30",
+        //   endTime: "21:29",
+        //   room_id: "R003",
+        //   cinema_id: "C003",
+        //   seats_booked: 25,
+        //   status: true,
+        // },
       ],
     },
   ];
@@ -220,8 +232,8 @@ const ScheduleList = () => {
     {
       title: "Code",
       dataIndex: "code",
-      // width: 100,
-      // fixed: "left",
+      width: 100,
+      fixed: "left",
     },
     {
       title: "Tên phim",
@@ -233,14 +245,22 @@ const ScheduleList = () => {
     {
       title: "Ngày chiếu",
       dataIndex: "showTimes",
-      width: 200,
+      width: 150,
       sorter: true,
       render: (showTimes) => {
         if (showTimes && showTimes.length > 0) {
-          const dates = showTimes.map((time) => time.show_date);
-          return <span>{dates.join(", ")}</span>;
+          const renderShowTimes = showTimes.map((showTime, index) => (
+            <Col
+              key={showTime.id}
+              style={{ marginBottom: showTimes.length > 2 ? 5 : null }}
+            >
+              <Tag>{showTime.show_date}</Tag>
+            </Col>
+          ));
+
+          return <Row gutter={[8, 8]}>{renderShowTimes}</Row>;
         } else {
-          return <span>-</span>; // Trường hợp không có lịch chiếu
+          return <span>Chưa có lịch chiếu</span>; // Trường hợp không có lịch chiếu
         }
       },
     },
@@ -302,7 +322,9 @@ const ScheduleList = () => {
   const renderHeader = () => (
     <div style={{ display: "flex", justifyContent: "space-between" }}>
       {/* thay đổi #1 */}
-      <span style={{ fontWeight: "700", fontSize: "16" }}>Danh sách phim</span>
+      <span style={{ fontWeight: "700", fontSize: "16" }}>
+        Danh sách lịch chiếu theo từng phim
+      </span>
       <span style={{ display: "flex", gap: 15 }}>
         <Button
           icon={<AiOutlineExport />}

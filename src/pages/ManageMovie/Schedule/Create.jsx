@@ -1,4 +1,3 @@
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -6,98 +5,54 @@ import {
   Divider,
   Form,
   Input,
-  InputNumber,
-  Modal,
+  Popconfirm,
   Row,
-  Select,
-  Upload,
+  Space,
+  Table,
+  Tag,
+  TimePicker,
   message,
   notification,
 } from "antd";
+import dayjs from "dayjs";
+import moment from "moment";
 import { useState } from "react";
+import {
+  AiOutlineDelete,
+  AiOutlineExport,
+  AiOutlinePlus,
+  AiOutlineReload,
+} from "react-icons/ai";
+import { BsEye } from "react-icons/bs";
+import { CiEdit } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
+import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callCreateUser, callUploadBookImg } from "../../../services/api";
+import { callCreateUser } from "../../../services/api";
+import ScheduleModalForm from "./ModalForm";
 
 // thay đổi #1
-const MovieCreate = () => {
+const ScheduleCreate = () => {
   // mặc định #2
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
-  // ???
-  const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
-  const [dataThumbnail, setDataThumbnail] = useState([]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [previewTitle, setPreviewTitle] = useState("");
-
-  const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => callback(reader.result));
-    reader.readAsDataURL(img);
-  };
-
-  const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-    if (!isJpgOrPng) {
-      message.error("You can only upload JPG/PNG file!");
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error("Image must smaller than 2MB!");
-    }
-    return isJpgOrPng && isLt2M;
-  };
-
-  const handleChange = (info) => {
-    if (info.file.status === "done") {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (url) => {
-        setLoading(false);
-        setImageUrl(url);
-      });
-    }
-  };
-
-  const handleUploadFileThumbnail = async ({ file, onSuccess, onError }) => {
-    const res = await callUploadBookImg(file);
-    if (res && res.data) {
-      setDataThumbnail([
-        {
-          name: res.data.fileUploaded,
-          uid: file.uid,
-        },
-      ]);
-      onSuccess("ok");
-    } else {
-      onError("Đã có lỗi khi upload file");
-    }
-  };
-
-  const handleRemoveFile = (file) => {
-    setDataThumbnail([]);
-  };
-
-  const handlePreview = async (file) => {
-    getBase64(file.originFileObj, (url) => {
-      setPreviewImage(url);
-      setPreviewOpen(true);
-      setPreviewTitle(
-        file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-      );
-    });
-  };
+  const [value, setValue] = useState([]);
+  const [listData, setListData] = useState([]);
+  const [openModalCreate, setOpenModalCreate] = useState(false);
+  const [openViewDetail, setOpenViewDetail] = useState(false);
+  const [dataViewDetail, setDataViewDetail] = useState(null);
+  const [openModalUpdate, setOpenModalUpdate] = useState(false);
+  const [dataUpdate, setDataUpdate] = useState(null);
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(2);
+  const [total, setTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [filter, setFilter] = useState("");
+  const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
+  const [openModalExport, setOpenModalExport] = useState(false);
 
   const onFinish = async (values) => {
-    if (dataThumbnail.length === 0) {
-      notification.error({
-        message: "Có lỗi xảy ra!",
-        description: "Ảnh bìa phim không được để trống!",
-      });
-      return;
-    }
     // thay đổi #1
     const {
       movieName,
@@ -118,11 +73,11 @@ const MovieCreate = () => {
     const res = await callCreateUser(fullName, email, password, phone);
     if (res && res.data) {
       // thay đổi #1 message
-      message.success("Tạo mới phim thành công!");
+      message.success("Tạo mới lịch chiếu phim thành công!");
       form.resetFields();
       setIsSubmit(false);
       // thay đổi #1 thay đổi url
-      navigate("/admin/movie");
+      navigate("/admin/shedule");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
@@ -132,13 +87,165 @@ const MovieCreate = () => {
     }
   };
 
+  const renderHeader = () => (
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <span style={{ fontWeight: "500" }}>Chi tiết lịch chiếu phim</span>
+      <span style={{ display: "flex", gap: 15 }}>
+        <Button
+          icon={<AiOutlineExport />}
+          type="primary"
+          onClick={() => setOpenModalExport(true)}
+        >
+          Export
+        </Button>
+        <Button
+          icon={<AiOutlinePlus />}
+          type="primary"
+          onClick={() => setOpenModalCreate(true)}
+        >
+          Thêm mới
+        </Button>
+        <Button
+          type="ghost"
+          onClick={() => {
+            setCurrent(1);
+            setFilter("");
+            setSortQuery("");
+          }}
+        >
+          <AiOutlineReload />
+        </Button>
+      </span>
+    </div>
+  );
+
+  const columns = [
+    {
+      title: "Rạp chiếu",
+      dataIndex: "cinemaName",
+      width: 120,
+      render: (text, record, index) => {
+        return <span>{moment(record.show_date).format("DD-MM-YYYY")}</span>;
+      },
+    },
+    {
+      title: "Phòng chiếu",
+      dataIndex: "type_sale",
+      key: "type_sale",
+      width: 150,
+      render: (text, record, index) => {
+        return <span>{record.type_sale === "Seat" ? "Ghế" : "Đồ ăn"}</span>;
+      },
+    },
+    {
+      title: "Ngày chiếu",
+      dataIndex: "show_date",
+      width: 120,
+      render: (text, record, index) => {
+        return <span>{moment(record.show_date).format("DD-MM-YYYY")}</span>;
+      },
+    },
+    {
+      title: "Giờ chiếu",
+      dataIndex: "startTime",
+      width: 120,
+      render: (text, record, index) => {
+        return <span>{moment(record.startDate).format("DD-MM-YYYY")}</span>;
+      },
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      width: 100,
+      sorter: true,
+      render: (status) => (
+        <Tag color={status ? "success" : "error"}>
+          {status ? "Hoạt động" : "Ngưng hoạt động"}
+        </Tag>
+      ),
+    },
+    // {
+    //   title: "Cập nhật ngày",
+    //   dataIndex: "updatedAt",
+    //   width: 150,
+    //   render: (text, record, index) => {
+    //     return (
+    //       <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
+    //     );
+    //   },
+    //   sorter: true,
+    // },
+    {
+      title: "Thao tác",
+      width: 100,
+      fixed: "right",
+      render: (text, record, index) => {
+        return (
+          <>
+            <Popconfirm
+              placement="leftTop"
+              title={"Xác nhận xóa giá sản phẩm"}
+              description={"Bạn có chắc chắn muốn xóa giá sản phẩm này?"}
+              okText="Xác nhận"
+              cancelText="Hủy"
+              onConfirm={() => handleDeleteBook(record.id)}
+            >
+              <span>
+                <AiOutlineDelete
+                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
+                />
+              </span>
+            </Popconfirm>
+            <BsEye
+              style={{ cursor: "pointer", marginRight: 10 }}
+              onClick={() => {
+                setDataViewDetail(record);
+                setOpenViewDetail(true);
+              }}
+            />
+            <CiEdit
+              style={{ color: "#f57800", cursor: "pointer" }}
+              onClick={() => {
+                setDataUpdate(record);
+                setOpenModalUpdate(true);
+              }}
+            />
+          </>
+        );
+      },
+    },
+  ];
+
+  const onChange = (pagination, filters, sorter, extra) => {
+    if (pagination && pagination.current !== current) {
+      setCurrent(pagination.current);
+    }
+
+    if (pagination && pagination.pageSize !== pageSize) {
+      setPageSize(pagination.pageSize);
+      setCurrent(1);
+    }
+
+    if (sorter && sorter.field) {
+      const q =
+        sorter.order === "ascend"
+          ? `sort=${sorter.field}`
+          : `sort=-${sorter.field}`;
+      setSortQuery(q);
+    }
+  };
+
   return (
     <>
       {/* // thay đổi #1 title */}
-      <PageHeader title="Tạo mới phim" numberBack={-1} type="create" />
+      <PageHeader
+        title="Tạo mới lịch chiếu phim"
+        numberBack={-1}
+        type="create"
+      />
       <Divider />
       {/* // thay đổi #1 title */}
-      <Card title="Tạo mới phim" bordered={false}>
+      <Card title="Tạo mới lịch chiếu phim" bordered={false}>
         <Form
           form={form}
           name="basic"
@@ -148,215 +255,148 @@ const MovieCreate = () => {
           style={{ margin: "0 auto" }}
         >
           <Row gutter={[16]}>
-            <Col span={24}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tên phim"
+                label="Chọn phim"
                 name="movieName"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên phim!",
+                    message: "Vui lòng chọn phim!",
                   },
                 ]}
               >
-                <Input placeholder="Nhập tên phim" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Thể loại"
-                name="genre_id"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn thể loại!",
-                  },
-                ]}
-              >
-                <Select
-                  // defaultValue={null}
-                  showSearch
-                  allowClear
-                  // onChange={handleChange}
-                  // options={listCategory}
+                <DebounceSelect
+                  value={value}
+                  onChange={(newValue) => {
+                    setValue(newValue);
+                  }}
+                  placeholder="Chọn phim"
+                  fetchOptions={fetchMovieList}
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Ngôn ngữ của phim"
-                name="language"
+                label="Chọn rạp"
+                name="cinema_id"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập ngôn ngữ của phim!",
+                    message: "Vui lòng chọn rạp!",
                   },
                 ]}
               >
-                <Input style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Thời lượng"
-                name="durationInMins"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập thời lượng của phim!",
-                  },
-                ]}
-              >
-                <InputNumber
-                  min={10}
-                  style={{ width: "100%" }}
-                  addonAfter={"Phút"}
+                <DebounceSelect
+                  value={value}
+                  onChange={(newValue) => {
+                    setValue(newValue);
+                  }}
+                  placeholder="Chọn rạp"
+                  fetchOptions={fetchMovieList}
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Ngày sản xuất"
-                name="releaseDate"
+                label="Chọn phòng chiếu"
+                name="room_id"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn ngày sản xuất của phim!",
+                    message: "Vui lòng chọn phòng chiếu!",
                   },
                 ]}
               >
-                <Input type="date" style={{ width: "100%" }} />
+                <DebounceSelect
+                  value={value}
+                  onChange={(newValue) => {
+                    setValue(newValue);
+                  }}
+                  placeholder="Chọn phòng chiếu"
+                  fetchOptions={fetchMovieList}
+                />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Quốc gia sản xuất phim"
-                name="country"
+                name="show_date"
+                label="Ngày chiếu"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên quốc gia sản xuất phim!",
+                    message: "Vui lòng chọn ngày chiếu!",
                   },
                 ]}
               >
-                <Input style={{ width: "100%" }} />
+                <Input type="date" />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Đạo diễn"
-                name="director"
+                name="startTime"
+                label="Giờ chiếu"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên đạo diễn!",
+                    message: "Vui lòng chọn ngày chiếu!",
                   },
                 ]}
               >
-                <Input style={{ width: "100%" }} />
+                <Space wrap>
+                  <TimePicker defaultValue={dayjs("12:08:23", "HH:mm:ss")} />
+                </Space>
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Diễn viên"
-                name="performer"
+                name="status"
+                label="Trạng thái"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên các diễn viên chính!",
+                    message: "Vui lòng chọn trạng thái!",
                   },
                 ]}
               >
-                <Input style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-
-            <Col span={6}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Nhà sản xuất"
-                name="producer"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập tên nhà sản xuất phim!",
-                  },
-                ]}
-              >
-                <Input style={{ width: "100%" }} />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Mô tả"
-                name="description"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mô tả của phim!",
+              <Table
+                scroll={{
+                  x: "100%",
+                  y: 200,
+                }}
+                title={renderHeader}
+                bordered
+                // thay đổi #1
+                // loading={isLoading}
+                columns={columns}
+                dataSource={listData}
+                onChange={onChange}
+                // thay đổi #1
+                rowKey="_id"
+                pagination={{
+                  current: current,
+                  pageSize: pageSize,
+                  showSizeChanger: true,
+                  total: total,
+                  showTotal: (total, range) => {
+                    return (
+                      <div>
+                        {range[0]} - {range[1]} trên {total} dòng
+                      </div>
+                    );
                   },
-                ]}
-              >
-                <Input.TextArea
-                  style={{ width: "100%" }}
-                  placeholder="Nhập mô tả"
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Hình ảnh"
-                name="image"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập chọn hình ảnh!",
-                  },
-                ]}
-              >
-                <Upload
-                  name="thumbnail"
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  maxCount={1}
-                  multiple={false}
-                  customRequest={handleUploadFileThumbnail}
-                  beforeUpload={beforeUpload}
-                  onChange={handleChange}
-                  onRemove={(file) => handleRemoveFile(file)}
-                  onPreview={handlePreview}
-                >
-                  <div>
-                    {loading ? <LoadingOutlined /> : <PlusOutlined />}
-                    <div style={{ marginTop: 8 }}>Upload</div>
-                  </div>
-                </Upload>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Trailer"
-                name="trailer"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn trailer!",
-                  },
-                ]}
-              >
-                <Input style={{ width: "100%" }} />
-              </Form.Item>
+                }}
+              />
             </Col>
           </Row>
           <Row style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -368,16 +408,75 @@ const MovieCreate = () => {
           </Row>
         </Form>
       </Card>
-      <Modal
-        open={previewOpen}
-        title={previewTitle}
-        footer={null}
-        onCancel={() => setPreviewOpen(false)}
-      >
-        <img alt="example" style={{ width: "100%" }} src={previewImage} />
-      </Modal>
+
+      <ScheduleModalForm
+        formType={
+          openModalCreate ? "create" : openModalUpdate ? "update" : "view"
+        }
+        data={
+          openModalCreate ? null : openModalUpdate ? dataUpdate : dataViewDetail
+        }
+        setData={
+          openModalCreate
+            ? null
+            : openModalUpdate
+            ? setDataUpdate
+            : setDataViewDetail
+        }
+        openModal={openModalCreate || openModalUpdate || openViewDetail}
+        setOpenModal={
+          openModalCreate
+            ? setOpenModalCreate
+            : openModalUpdate
+            ? setOpenModalUpdate
+            : setOpenViewDetail
+        }
+      />
     </>
   );
 };
 
-export default MovieCreate;
+export default ScheduleCreate;
+
+// Hàm fetch danh sách phim
+// async function fetchMovieList(value) {
+//   try {
+//     // Thực hiện gọi API hoặc tìm kiếm dữ liệu từ nguồn dữ liệu có sẵn
+//     // Ví dụ: Gửi yêu cầu tới API để lấy danh sách phim dựa trên giá trị tìm kiếm `value`
+//     const response = await fetch(
+//       `https://example.com/api/movies?search=${value}`
+//     );
+
+//     // Kiểm tra xem kết quả trả về từ API có thành công không
+//     if (!response.ok) {
+//       // Xử lý lỗi nếu cần thiết, ví dụ: throw new Error("Failed to fetch movies");
+//     }
+
+//     // Chuyển đổi dữ liệu nhận được từ API sang định dạng phù hợp để hiển thị trong ô chọn phim
+//     const data = await response.json();
+//     const movies = data.results.map((movie) => ({
+//       label: movie.title, // Label của mỗi phim, có thể là tiêu đề của phim
+//       value: movie.id, // Giá trị của mỗi phim, có thể là ID của phim
+//     }));
+
+//     // Trả về một mảng các đối tượng { label: string, value: any } đại diện cho danh sách phim tìm kiếm được
+//     return movies;
+//   } catch (error) {
+//     // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+//     console.error("Error fetching movies:", error);
+//     // Trả về một mảng trống nếu xảy ra lỗi
+//     return [];
+//   }
+// }
+
+async function fetchMovieList(username) {
+  console.log("fetching user", username);
+  return fetch("https://randomuser.me/api/?results=5")
+    .then((response) => response.json())
+    .then((body) =>
+      body.results.map((user) => ({
+        label: `${user.name.first} ${user.name.last}`,
+        value: user.login.username,
+      }))
+    );
+}
