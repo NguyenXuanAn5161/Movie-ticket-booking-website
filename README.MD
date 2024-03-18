@@ -15,6 +15,7 @@ Online movie ticket booking system
 - Uuid 9
 - React MD Editor
 - air/react-drag-to-select
+- Lodash
 
 ---
 
