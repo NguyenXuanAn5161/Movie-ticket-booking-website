@@ -158,7 +158,7 @@ const MovieList = () => {
       fixed: "left",
     },
     {
-      title: "Ngày chiếu",
+      title: "Ngày sản xuất",
       dataIndex: "releaseDate",
       width: 150,
       sorter: true,
