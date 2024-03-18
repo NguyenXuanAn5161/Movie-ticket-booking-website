@@ -141,6 +141,23 @@ export default function App() {
           path: "movieGenre/edit/:movieId",
           element: <MovieGenreEdit />,
         },
+        // Lịch chiếu phim
+        {
+          path: "schedule",
+          element: <MovieList />,
+        },
+        {
+          path: "schedule/show/:movieScheduleId",
+          element: <MovieShow />,
+        },
+        {
+          path: "schedule/create",
+          element: <MovieCreate />,
+        },
+        {
+          path: "schedule/edit/:movieScheduleId",
+          element: <MovieEdit />,
+        },
         // Rạp phim
         {
           path: "cinema",
