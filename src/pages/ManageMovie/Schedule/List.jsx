@@ -4,6 +4,7 @@ import {
   Popconfirm,
   Row,
   Table,
+  Tag,
   message,
   notification,
 } from "antd";
@@ -23,7 +24,7 @@ import InputSearch from "../../../components/InputSearch/InputSearch";
 import { doSetMovie } from "../../../redux/movie/movieSlice";
 import { callFetchListUser } from "../../../services/api";
 
-const MovieList = () => {
+const ScheduleList = () => {
   const data = [
     {
       id: "1",
@@ -163,6 +164,7 @@ const MovieList = () => {
       ],
     },
   ];
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
@@ -237,20 +239,30 @@ const MovieList = () => {
       title: "Tên phim",
       dataIndex: "movieName",
       sorter: true,
-      width: 100,
+      width: 200,
       fixed: "left",
     },
     {
-      title: "Ngày sản xuất",
-      dataIndex: "releaseDate",
+      title: "Ngày chiếu",
+      dataIndex: "showTimes",
       width: 150,
       sorter: true,
-    },
-    {
-      title: "Thể loại",
-      dataIndex: "genreName",
-      width: 150,
-      sorter: true,
+      render: (showTimes) => {
+        if (showTimes && showTimes.length > 0) {
+          const renderShowTimes = showTimes.map((showTime, index) => (
+            <Col
+              key={showTime.id}
+              style={{ marginBottom: showTimes.length > 2 ? 5 : null }}
+            >
+              <Tag>{showTime.show_date}</Tag>
+            </Col>
+          ));
+
+          return <Row gutter={[8, 8]}>{renderShowTimes}</Row>;
+        } else {
+          return <span>Chưa có lịch chiếu</span>; // Trường hợp không có lịch chiếu
+        }
+      },
     },
     {
       title: "Trạng thái",
@@ -310,7 +322,9 @@ const MovieList = () => {
   const renderHeader = () => (
     <div style={{ display: "flex", justifyContent: "space-between" }}>
       {/* thay đổi #1 */}
-      <span style={{ fontWeight: "700", fontSize: "16" }}>Danh sách phim</span>
+      <span style={{ fontWeight: "700", fontSize: "16" }}>
+        Danh sách lịch chiếu theo từng phim
+      </span>
       <span style={{ display: "flex", gap: 15 }}>
         <Button
           icon={<AiOutlineExport />}
@@ -415,4 +429,4 @@ const MovieList = () => {
   );
 };
 
-export default MovieList;
+export default ScheduleList;

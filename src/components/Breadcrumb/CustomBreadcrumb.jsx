@@ -88,6 +88,28 @@ function CustomBreadcrumb(props) {
           ],
         },
         {
+          path: "/schedule",
+          title: "Lịch chiếu phim",
+          key: "schedule",
+          children: [
+            {
+              path: "/show",
+              title: "Xem chi tiết lịch chiếu phim",
+              key: "scheduleShow",
+            },
+            {
+              path: "/create",
+              title: "Tạo mới lịch chiếu phim",
+              key: "scheduleCreate",
+            },
+            {
+              path: "/edit",
+              title: "Cập nhật lịch chiếu phim",
+              key: "scheduleEdit",
+            },
+          ],
+        },
+        {
           path: "/cinema",
           title: "Rạp chiếu",
           key: "cinema",

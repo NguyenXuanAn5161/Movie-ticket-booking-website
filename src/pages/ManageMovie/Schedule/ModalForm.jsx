@@ -13,7 +13,7 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 
-const PriceDetailModalForm = (props) => {
+const ScheduleModalForm = (props) => {
   const [form] = Form.useForm();
   const { formType, data, setData, openModal, setOpenModal } = props;
   const [current, setCurrent] = useState(0);
@@ -254,4 +254,4 @@ const PriceDetailModalForm = (props) => {
   );
 };
 
-export default PriceDetailModalForm;
+export default ScheduleModalForm;
