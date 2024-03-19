@@ -2,34 +2,25 @@ import {
   Button,
   Card,
   Col,
+  DatePicker,
   Divider,
   Form,
-  Input,
   Popconfirm,
+  Radio,
   Row,
-  Space,
   Table,
   Tag,
   TimePicker,
   message,
   notification,
 } from "antd";
-import dayjs from "dayjs";
 import moment from "moment";
 import { useState } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlineExport,
-  AiOutlinePlus,
-  AiOutlineReload,
-} from "react-icons/ai";
-import { BsEye } from "react-icons/bs";
+import { AiOutlineDelete } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callCreateUser } from "../../../services/api";
-import ScheduleModalForm from "./ModalForm";
 
 // thay đổi #1
 const ScheduleCreate = () => {
@@ -39,11 +30,7 @@ const ScheduleCreate = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [value, setValue] = useState([]);
   const [listData, setListData] = useState([]);
-  const [openModalCreate, setOpenModalCreate] = useState(false);
-  const [openViewDetail, setOpenViewDetail] = useState(false);
-  const [dataViewDetail, setDataViewDetail] = useState(null);
-  const [openModalUpdate, setOpenModalUpdate] = useState(false);
-  const [dataUpdate, setDataUpdate] = useState(null);
+  const [selectedRowData, setSelectedRowData] = useState(null);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(2);
   const [total, setTotal] = useState(0);
@@ -53,36 +40,41 @@ const ScheduleCreate = () => {
   const [openModalExport, setOpenModalExport] = useState(false);
 
   const onFinish = async (values) => {
+    const check = {
+      ...values,
+      startTime: values["startTime"].format("HH:mm:ss"),
+    };
+    console.log("Check values of form: ", check);
     // thay đổi #1
-    const {
-      movieName,
-      Image,
-      trailer,
-      description,
-      durationInMins,
-      genre_id,
-      language,
-      releaseDate,
-      country,
-      director,
-      performer,
-      producer,
-    } = values;
     setIsSubmit(true);
-    // thay đổi #1 api call
-    const res = await callCreateUser(fullName, email, password, phone);
-    if (res && res.data) {
-      // thay đổi #1 message
-      message.success("Tạo mới lịch chiếu phim thành công!");
-      form.resetFields();
-      setIsSubmit(false);
-      // thay đổi #1 thay đổi url
-      navigate("/admin/shedule");
-    } else {
+    // Gọi API để tạo mới hoặc cập nhật dữ liệu với dữ liệu từ Form
+    try {
+      // Nếu có dữ liệu từ hàng được chọn, đó là việc cập nhật
+      if (selectedRowData) {
+        // Gọi API để cập nhật dữ liệu với dữ liệu từ Form
+      } else {
+        // Nếu không có dữ liệu từ hàng được chọn, đó là việc tạo mới
+        // Gọi API để tạo mới dữ liệu với dữ liệu từ Form
+      }
+      // if (res && res.data) {
+      if (true) {
+        // thay đổi #1 message
+        message.success("Tạo mới lịch chiếu phim thành công!");
+        // setIsSubmit(false);
+      } else {
+        notification.error({
+          message: "Đã có lỗi xảy ra!",
+          description: res.message,
+        });
+        setIsSubmit(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: "Xin vui lòng thử lại sau.",
       });
+    } finally {
       setIsSubmit(false);
     }
   };
@@ -90,52 +82,37 @@ const ScheduleCreate = () => {
   const renderHeader = () => (
     <div style={{ display: "flex", justifyContent: "space-between" }}>
       <span style={{ fontWeight: "500" }}>Chi tiết lịch chiếu phim</span>
-      <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          icon={<AiOutlineExport />}
-          type="primary"
-          onClick={() => setOpenModalExport(true)}
-        >
-          Export
-        </Button>
-        <Button
-          icon={<AiOutlinePlus />}
-          type="primary"
-          onClick={() => setOpenModalCreate(true)}
-        >
-          Thêm mới
-        </Button>
-        <Button
-          type="ghost"
-          onClick={() => {
-            setCurrent(1);
-            setFilter("");
-            setSortQuery("");
-          }}
-        >
-          <AiOutlineReload />
-        </Button>
-      </span>
     </div>
   );
 
+  const handleEdit = (record) => {
+    form.setFieldsValue({
+      // movieName: record.movieName,
+      cinema_id: record.cinema_id,
+      room_id: record.room_id,
+      show_date: moment(record.show_date), // Chuyển đổi định dạng ngày nếu cần
+      startTime: moment(record.startTime), // Chuyển đổi định dạng giờ nếu cần
+      status: record.status,
+    });
+    setSelectedRowData(record);
+  };
+
   const columns = [
     {
-      title: "Rạp chiếu",
-      dataIndex: "cinemaName",
+      title: "Tên phim",
+      dataIndex: "movieName",
       width: 120,
-      render: (text, record, index) => {
-        return <span>{moment(record.show_date).format("DD-MM-YYYY")}</span>;
-      },
+    },
+    {
+      title: "Rạp chiếu",
+      dataIndex: "cinema_id",
+      width: 120,
     },
     {
       title: "Phòng chiếu",
-      dataIndex: "type_sale",
-      key: "type_sale",
+      dataIndex: "room_id",
+      key: "room_id",
       width: 150,
-      render: (text, record, index) => {
-        return <span>{record.type_sale === "Seat" ? "Ghế" : "Đồ ăn"}</span>;
-      },
     },
     {
       title: "Ngày chiếu",
@@ -149,9 +126,6 @@ const ScheduleCreate = () => {
       title: "Giờ chiếu",
       dataIndex: "startTime",
       width: 120,
-      render: (text, record, index) => {
-        return <span>{moment(record.startDate).format("DD-MM-YYYY")}</span>;
-      },
     },
     {
       title: "Trạng thái",
@@ -164,17 +138,6 @@ const ScheduleCreate = () => {
         </Tag>
       ),
     },
-    // {
-    //   title: "Cập nhật ngày",
-    //   dataIndex: "updatedAt",
-    //   width: 150,
-    //   render: (text, record, index) => {
-    //     return (
-    //       <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
-    //     );
-    //   },
-    //   sorter: true,
-    // },
     {
       title: "Thao tác",
       width: 100,
@@ -184,8 +147,8 @@ const ScheduleCreate = () => {
           <>
             <Popconfirm
               placement="leftTop"
-              title={"Xác nhận xóa giá sản phẩm"}
-              description={"Bạn có chắc chắn muốn xóa giá sản phẩm này?"}
+              title={"Xác nhận xóa lịch chiếu phim"}
+              description={"Bạn có chắc chắn muốn xóa lịch chiếu phim này?"}
               okText="Xác nhận"
               cancelText="Hủy"
               onConfirm={() => handleDeleteBook(record.id)}
@@ -196,19 +159,9 @@ const ScheduleCreate = () => {
                 />
               </span>
             </Popconfirm>
-            <BsEye
-              style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={() => {
-                setDataViewDetail(record);
-                setOpenViewDetail(true);
-              }}
-            />
             <CiEdit
               style={{ color: "#f57800", cursor: "pointer" }}
-              onClick={() => {
-                setDataUpdate(record);
-                setOpenModalUpdate(true);
-              }}
+              onClick={() => handleEdit(record)}
             />
           </>
         );
@@ -233,6 +186,10 @@ const ScheduleCreate = () => {
           : `sort=-${sorter.field}`;
       setSortQuery(q);
     }
+  };
+
+  const handleClearForm = () => {
+    form.resetFields();
   };
 
   return (
@@ -332,8 +289,9 @@ const ScheduleCreate = () => {
                     message: "Vui lòng chọn ngày chiếu!",
                   },
                 ]}
+                initialValue={moment()}
               >
-                <Input type="date" />
+                <DatePicker format="DD-MM-YYYY" placeholder="Chọn ngày chiếu" />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -344,13 +302,12 @@ const ScheduleCreate = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn ngày chiếu!",
+                    message: "Vui lòng chọn giờ chiếu!",
                   },
                 ]}
+                initialValue={moment()}
               >
-                <Space wrap>
-                  <TimePicker defaultValue={dayjs("12:08:23", "HH:mm:ss")} />
-                </Space>
+                <TimePicker format="HH:mm" />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -364,10 +321,28 @@ const ScheduleCreate = () => {
                     message: "Vui lòng chọn trạng thái!",
                   },
                 ]}
+                initialValue={false}
               >
-                <Input />
+                <Radio.Group>
+                  <Radio value={true}>Hoạt động</Radio>
+                  <Radio value={false}>Ngưng hoạt động</Radio>
+                </Radio.Group>
               </Form.Item>
             </Col>
+          </Row>
+          <Row style={{ display: "flex", justifyContent: "flex-end" }}>
+            <Form.Item>
+              <Button type="primary" onClick={handleClearForm}>
+                Xóa trắng
+              </Button>
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" loading={isSubmit}>
+                Tạo mới
+              </Button>
+            </Form.Item>
+          </Row>
+          <Row>
             <Col span={24}>
               <Table
                 scroll={{
@@ -399,39 +374,8 @@ const ScheduleCreate = () => {
               />
             </Col>
           </Row>
-          <Row style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" loading={isSubmit}>
-                Tạo mới
-              </Button>
-            </Form.Item>
-          </Row>
         </Form>
       </Card>
-
-      <ScheduleModalForm
-        formType={
-          openModalCreate ? "create" : openModalUpdate ? "update" : "view"
-        }
-        data={
-          openModalCreate ? null : openModalUpdate ? dataUpdate : dataViewDetail
-        }
-        setData={
-          openModalCreate
-            ? null
-            : openModalUpdate
-            ? setDataUpdate
-            : setDataViewDetail
-        }
-        openModal={openModalCreate || openModalUpdate || openViewDetail}
-        setOpenModal={
-          openModalCreate
-            ? setOpenModalCreate
-            : openModalUpdate
-            ? setOpenModalUpdate
-            : setOpenViewDetail
-        }
-      />
     </>
   );
 };
@@ -470,7 +414,6 @@ export default ScheduleCreate;
 // }
 
 async function fetchMovieList(username) {
-  console.log("fetching user", username);
   return fetch("https://randomuser.me/api/?results=5")
     .then((response) => response.json())
     .then((body) =>
