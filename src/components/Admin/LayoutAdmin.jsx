@@ -156,7 +156,13 @@ const LayoutAdmin = () => {
       collapsed ? null : "Đặt vé",
       "grpAction",
       null,
-      [getItem("Đặt vé", "booking", <IoTicketOutline />)],
+      [
+        getItem(
+          <Link to="/admin/booking">Đặt vé</Link>,
+          "booking",
+          <IoTicketOutline />
+        ),
+      ],
       "group"
     ),
     { type: "divider" },
