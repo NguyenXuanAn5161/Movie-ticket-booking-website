@@ -10,7 +10,6 @@ import {
   FloatButton,
   Form,
   Input,
-  InputNumber,
   Row,
   Select,
   Tooltip,
@@ -28,7 +27,7 @@ import SeatLegend from "../../../components/Seat/SeatLegend";
 import { callCreateUser } from "../../../services/api";
 import "./index.scss";
 
-const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const alphabet = "ABCDEFGHIJKLMNOPQR";
 
 const RoomCreate = () => {
   const [isSubmit, setIsSubmit] = useState(false);
@@ -44,25 +43,7 @@ const RoomCreate = () => {
     if (selectedSeats.length <= 0) {
       notification.error({
         message: "Vui lòng chọn danh sách ghế!",
-        description: "Danh sách ghế không được rỗng!",
-      });
-      return;
-    } else if (selectedSeats.length < totalSeat) {
-      notification.error({
-        message: "Vui lòng chọn đủ danh sách ghế!",
-        description: (
-          <>
-            Tổng số ghế đã chọn:{" "}
-            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
-              {selectedSeats.length}
-            </span>
-            <br />
-            Tổng số ghế đã nhập{" "}
-            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
-              {totalSeat ? totalSeat : 0}
-            </span>
-          </>
-        ),
+        description: "Chọn danh sách ghế và loại ghế cho ghế đã chọn!",
       });
       return;
     }
@@ -82,10 +63,6 @@ const RoomCreate = () => {
       });
       setIsSubmit(false);
     }
-  };
-
-  const handleTotalSeatChange = (value) => {
-    setTotalSeats(value);
   };
 
   // Drag selection
@@ -170,26 +147,6 @@ const RoomCreate = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (selectedItems.length > totalSeats) {
-      notification.error({
-        message: "Có lỗi xảy ra!",
-        description: (
-          <>
-            Tổng số ghế đã chọn:{" "}
-            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
-              {selectedItems.length}
-            </span>{" "}
-            không thể lớn hơn tổng số ghế đã nhập{" "}
-            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
-              {totalSeats ? totalSeats : 0}
-            </span>
-          </>
-        ),
-      });
-    }
-  }, [selectedItems, totalSeats]);
-
   const handleClick = () => {
     setOpenModalTypeSeat(true);
   };
@@ -221,7 +178,7 @@ const RoomCreate = () => {
           style={{ margin: "0 auto" }}
         >
           <Row gutter={[20]}>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên phòng"
@@ -236,7 +193,7 @@ const RoomCreate = () => {
                 <Input placeholder="Nhập tên phòng" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Loại phòng"
@@ -253,28 +210,6 @@ const RoomCreate = () => {
                   <Select.Option value="2D">2D</Select.Option>
                   <Select.Option value="3D">3D</Select.Option>
                 </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Tổng số ghế"
-                name="totalSeat"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập tổng số ghế!",
-                  },
-                ]}
-              >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  placeholder="Nhập tổng số ghế"
-                  min={120}
-                  max={390}
-                  addonAfter={"Ghế"}
-                  onChange={handleTotalSeatChange}
-                />
               </Form.Item>
             </Col>
             <Col span={24}>

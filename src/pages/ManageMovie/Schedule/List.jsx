@@ -16,12 +16,11 @@ import {
   AiOutlinePlus,
   AiOutlineReload,
 } from "react-icons/ai";
-import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../components/InputSearch/InputSearch";
-import { doSetMovie } from "../../../redux/movie/movieSlice";
+import { doSetSchedule } from "../../../redux/schedule/scheduleSlice";
 import { callFetchListUser } from "../../../services/api";
 
 const ScheduleList = () => {
@@ -223,7 +222,7 @@ const ScheduleList = () => {
 
   const handleView = (data, url) => {
     // thay đổi #1
-    dispatch(doSetMovie(data));
+    dispatch(doSetSchedule(data));
     navigate(`${url}/${data.id}`);
   };
 
@@ -303,10 +302,10 @@ const ScheduleList = () => {
                 />
               </span>
             </Popconfirm>
-            <BsEye
+            {/* <BsEye
               style={{ cursor: "pointer", marginRight: 10 }}
               onClick={() => handleView(record, "show")}
-            />
+            /> */}
             <CiEdit
               style={{ cursor: "pointer" }}
               onClick={() => {

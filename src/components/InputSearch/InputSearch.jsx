@@ -53,6 +53,7 @@ const InputSearch = (props) => {
             Tìm
           </Button>
           <Button
+            type="primary"
             style={{ margin: "0 8px" }}
             onClick={() => {
               form.resetFields();

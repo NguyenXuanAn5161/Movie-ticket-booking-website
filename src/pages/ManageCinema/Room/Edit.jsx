@@ -28,7 +28,7 @@ import SeatLegend from "../../../components/Seat/SeatLegend";
 import { callCreateUser } from "../../../services/api";
 import "./index.scss";
 
-const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const alphabet = "ABCDEFGHIJKLMNOPQR";
 
 const RoomEdit = () => {
   const [isSubmit, setIsSubmit] = useState(false);
