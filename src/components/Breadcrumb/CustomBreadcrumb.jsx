@@ -285,6 +285,11 @@ function CustomBreadcrumb(props) {
             },
           ],
         },
+        {
+          path: "/booking",
+          title: "Đặt vé",
+          key: "booking",
+        },
       ],
     },
   ];
