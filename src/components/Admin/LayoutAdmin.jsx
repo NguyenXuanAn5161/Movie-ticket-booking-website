@@ -60,7 +60,7 @@ const LayoutAdmin = () => {
   // tạo các mục menu
   const items = [
     getItem(
-      "Thông tin cơ bản",
+      collapsed ? null : "Thông tin cơ bản",
       "grpData",
       null,
       [
@@ -153,7 +153,7 @@ const LayoutAdmin = () => {
     ),
     { type: "divider" },
     getItem(
-      "Đặt vé",
+      collapsed ? null : "Đặt vé",
       "grpAction",
       null,
       [getItem("Đặt vé", "booking", <IoTicketOutline />)],
@@ -161,7 +161,7 @@ const LayoutAdmin = () => {
     ),
     { type: "divider" },
     getItem(
-      "Tài khoản",
+      collapsed ? null : "Tài khoản",
       "grpAccount",
       null,
       [
@@ -212,6 +212,8 @@ const LayoutAdmin = () => {
   return (
     <Layout style={{ minHeight: "100vh" }} className="layout-admin">
       <Sider
+        breakpoint="lg"
+        collapsedWidth="50"
         width={230}
         theme="light"
         collapsible
@@ -237,6 +239,7 @@ const LayoutAdmin = () => {
                 cursor: "pointer",
                 fontWeight: 600,
                 fontSize: 18,
+                display: collapsed ? "none" : "",
               }}
             >
               CinE-Tix
