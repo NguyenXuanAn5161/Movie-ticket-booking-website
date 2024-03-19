@@ -26,6 +26,7 @@ import { doLogoutAction } from "../../redux/account/accountSlice";
 import { callLogout } from "../../services/api";
 import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
 import Home from "../Home";
+import LogoApp from "../LogoApp/LogoApp";
 import "./layout.scss";
 
 const { Content, Footer, Sider } = Layout;
@@ -217,7 +218,31 @@ const LayoutAdmin = () => {
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <div style={{ height: 32, margin: 16, textAlign: "center" }}>Admin</div>
+        <div>
+          <Link
+            to="/admin"
+            style={{
+              height: 32,
+              margin: 16,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "black",
+            }}
+          >
+            <LogoApp style={{ cursor: "pointer" }} />
+            <span
+              style={{
+                marginLeft: 10,
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              CinE-Tix
+            </span>
+          </Link>
+        </div>
         <Menu
           openKeys={openKeys}
           selectedKeys={[lastSegment]}
@@ -240,15 +265,10 @@ const LayoutAdmin = () => {
               }
             )}
           </span>
-          {/* <Dropdown menu={{ items: itemsDropdown }} trigger={["hover"]}>
-            <a onClick={(e) => e.preventDefault()}> */}
           <Space>
             <Avatar src={urlAvatar} />
             {user?.fullName}
-            {/* <DownOutlined /> */}
           </Space>
-          {/* </a>
-          </Dropdown> */}
         </div>
         <Content
           style={{
