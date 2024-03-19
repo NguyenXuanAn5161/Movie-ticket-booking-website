@@ -288,7 +288,7 @@ const ScheduleEdit = () => {
                     message: "Vui lòng chọn ngày chiếu!",
                   },
                 ]}
-                initialValue={moment()}
+                // initialValue={moment()}
               >
                 <DatePicker format="DD-MM-YYYY" placeholder="Chọn ngày chiếu" />
               </Form.Item>
