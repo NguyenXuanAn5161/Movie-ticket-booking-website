@@ -30,7 +30,9 @@ import MovieGenreEdit from "./pages/ManageMovie/MovieCategories/Edit";
 import MovieGenreList from "./pages/ManageMovie/MovieCategories/List";
 import MovieGenreShow from "./pages/ManageMovie/MovieCategories/Show";
 import ScheduleCreate from "./pages/ManageMovie/Schedule/Create";
+import ScheduleEdit from "./pages/ManageMovie/Schedule/Edit";
 import ScheduleList from "./pages/ManageMovie/Schedule/List";
+import ScheduleShow from "./pages/ManageMovie/Schedule/Show";
 import PriceCreate from "./pages/ManagePrice/Create";
 import PriceEdit from "./pages/ManagePrice/Edit";
 import PriceList from "./pages/ManagePrice/List";
@@ -150,7 +152,7 @@ export default function App() {
         },
         {
           path: "schedule/show/:movieScheduleId",
-          element: <MovieShow />,
+          element: <ScheduleShow />,
         },
         {
           path: "schedule/create",
@@ -158,7 +160,7 @@ export default function App() {
         },
         {
           path: "schedule/edit/:movieScheduleId",
-          element: <MovieEdit />,
+          element: <ScheduleEdit />,
         },
         // Rạp phim
         {
