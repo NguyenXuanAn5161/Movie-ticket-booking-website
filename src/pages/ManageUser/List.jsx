@@ -24,14 +24,14 @@ import UserExport from "../../components/Admin/User/data/UserExport";
 import UserImport from "../../components/Admin/User/data/UserImport";
 import InputSearch from "../../components/InputSearch/InputSearch";
 import { doSetUser } from "../../redux/account/userSlice";
-import { callDeleteUser, callFetchListUser } from "../../services/api";
+import { callDeleteUser, callFetchListUser } from "../../services/apiMovie";
 
 const UserList = () => {
   const navigate = useNavigate();
 
   const [listUser, setListUser] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
@@ -46,27 +46,38 @@ const UserList = () => {
   // khi thay doi current va pageSize thi search died!
   const fetchUser = async () => {
     setIsLoading(true);
-    let query = `current=${current}&pageSize=${pageSize}`;
-    if (filter) {
-      query += `&${filter}`;
+    const res = await callFetchListUser(current - 1, pageSize);
+    if (res?.content) {
+      console.log("res: ", res);
+      setListUser(res.content);
+      setTotal(res.totalElements);
     }
-
-    if (sortQuery) {
-      query += `&${sortQuery}`;
-    }
-
-    const res = await callFetchListUser(query);
-    if (res && res.data) {
-      setListUser(res.data.result);
-      setTotal(res.data.meta.total);
-    }
-
     setIsLoading(false);
   };
 
+  // const fetchUser = async () => {
+  //   setIsLoading(true);
+  //   let query = `current=${current}&pageSize=${pageSize}`;
+  //   if (filter) {
+  //     query += `&${filter}`;
+  //   }
+
+  //   if (sortQuery) {
+  //     query += `&${sortQuery}`;
+  //   }
+
+  //   const res = await callFetchListUser(query);
+  //   if (res && res.data) {
+  //     setListUser(res.data.result);
+  //     setTotal(res.data.meta.total);
+  //   }
+
+  //   setIsLoading(false);
+  // };
+
   const handleDeleteUser = async (userId) => {
     const res = await callDeleteUser(userId);
-    if (res && res.data) {
+    if (res.status === 200) {
       message.success("Xoá người dùng thành công!");
       await fetchUser();
     } else {
@@ -87,14 +98,8 @@ const UserList = () => {
   // sau này load động cột này -> cần có sự hợp tác của backend
   const columns = [
     {
-      title: "Code",
-      dataIndex: "_id",
-      width: 100,
-      fixed: "left",
-    },
-    {
       title: "Họ và tên",
-      dataIndex: "fullName",
+      dataIndex: "username",
       sorter: true,
       width: 100,
       fixed: "left",
@@ -113,11 +118,13 @@ const UserList = () => {
     },
     {
       title: "Cập nhật ngày",
-      dataIndex: "updatedAt",
+      dataIndex: "createdDate",
       width: 150,
       render: (text, record, index) => {
         return (
-          <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
+          <span>
+            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
+          </span>
         );
       },
       sorter: true,
@@ -135,7 +142,7 @@ const UserList = () => {
               description={"Bạn có chắc chắn muốn xóa người dùng này?"}
               okText="Xác nhận"
               cancelText="Hủy"
-              onConfirm={() => handleDeleteUser(record._id)}
+              onConfirm={() => handleDeleteUser(record.id)}
             >
               <span>
                 <AiOutlineDelete
