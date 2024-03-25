@@ -1,50 +1,59 @@
-import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
   Col,
+  DatePicker,
   Form,
   Input,
   Radio,
   Row,
-  Tag,
   message,
   notification,
 } from "antd";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callUpdateUser } from "../../services/api";
+import { callUpdateUser } from "../../services/apiMovie";
+import { getErrorMessageUser } from "../../utils/errorHandling";
 
 const UserEdit = () => {
   const user = useSelector((state) => state.user.user);
-  const [userData, setUserData] = useState(user);
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
   useEffect(() => {
     form.resetFields();
-    form.setFieldsValue(user); // Cập nhật dữ liệu vào form khi userData thay đổi
+    form.setFieldsValue({
+      ...user,
+      birthday: user?.birthday ? moment(user.birthday, "YYYY-MM-DD") : null,
+    });
   }, [user, form]);
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setUserData({ ...userData, [name]: value });
-  // };
-
   const onFinish = async (values) => {
-    const { _id, fullName, phone } = values;
+    const { id, username, gender, birthday, email, phone, enabled } = values;
+    const bd = birthday.format("YYYY-MM-DD");
     setIsSubmit(true);
-    const res = await callUpdateUser(_id, fullName, phone);
+    const res = await callUpdateUser(
+      id,
+      username,
+      gender,
+      bd,
+      email,
+      phone,
+      enabled
+    );
+    console.log("res", res);
     if (res && res.data) {
       message.success("Cập nhật người dùng thành công!");
       navigate("/admin/user");
     } else {
+      const error = getErrorMessageUser(res.response.data.message, id);
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
     }
     setIsSubmit(false);
@@ -63,7 +72,7 @@ const UserEdit = () => {
             hidden
             labelCol={{ span: 24 }}
             label="Id"
-            name="_id"
+            name="id"
             rules={[
               {
                 required: true,
@@ -76,7 +85,7 @@ const UserEdit = () => {
           <Form.Item
             labelCol={{ span: 24 }}
             label="Họ và tên"
-            name="fullName"
+            name="username"
             rules={[
               {
                 required: true,
@@ -87,38 +96,42 @@ const UserEdit = () => {
             <Input />
           </Form.Item>
           <Row gutter={16}>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Giới tính"
                 name="gender"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: "Không được để trống!",
-                //   },
-                // ]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Không được để trống!",
+                  },
+                ]}
+                initialValue={user?.gender === true ? "true" : "false"}
               >
-                {/* onChange={handleChange} */}
-                <Radio.Group name="gender" defaultValue={"male"}>
-                  <Radio value={"male"}>Nam</Radio>
-                  <Radio value={"female"}>Nữ</Radio>
+                <Radio.Group>
+                  <Radio value={true}>Nam</Radio>
+                  <Radio value={false}>Nữ</Radio>
                 </Radio.Group>
               </Form.Item>
             </Col>
-            <Col span={16}>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 name="birthday"
                 label="Ngày sinh"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: "Không được để trống!",
-                //   },
-                // ]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Không được để trống!",
+                  },
+                ]}
               >
-                <Input type="date" />
+                <DatePicker
+                  picker="date"
+                  format="DD-MM-YYYY"
+                  placeholder="Chọn ngày sinh"
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -156,24 +169,20 @@ const UserEdit = () => {
           </Row>
           <Form.Item
             labelCol={{ span: 24 }}
-            name="status"
+            name="enabled"
             label="Trạng thái"
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: "Không được để trống!",
-            //   },
-            // ]}
+            rules={[
+              {
+                required: true,
+                message: "Không được để trống!",
+              },
+            ]}
+            initialValue={user?.enabled === true ? "true" : "false"}
           >
-            {user?.status === "active" ? (
-              <Tag icon={<CheckCircleOutlined />} color="success">
-                {user.status}
-              </Tag>
-            ) : (
-              <Tag icon={<CloseCircleOutlined />} color="error">
-                {user.status || "Không hoạt động"}
-              </Tag>
-            )}
+            <Radio.Group>
+              <Radio value={true}>Hoạt động</Radio>
+              <Radio value={false}>Không hoạt động</Radio>
+            </Radio.Group>
           </Form.Item>
           <Form.Item>
             <Button loading={isSubmit} type="primary" htmlType="submit">
