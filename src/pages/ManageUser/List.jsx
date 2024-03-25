@@ -4,6 +4,7 @@ import {
   Popconfirm,
   Row,
   Table,
+  Tag,
   message,
   notification,
 } from "antd";
@@ -77,7 +78,7 @@ const UserList = () => {
 
   const handleView = (user, url) => {
     dispatch(doSetUser(user));
-    navigate(`${url}/${user._id}`);
+    navigate(`${url}/${user.id}`);
   };
 
   // sau này load động cột này -> cần có sự hợp tác của backend
@@ -102,17 +103,32 @@ const UserList = () => {
       sorter: true,
     },
     {
-      title: "Cập nhật ngày",
-      dataIndex: "createdDate",
+      title: "Giới tính",
+      dataIndex: "gender",
       width: 150,
       render: (text, record, index) => {
-        return (
-          <span>
-            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
-          </span>
-        );
+        return <span>{record?.gender === true ? "Nam" : "Nữ"}</span>;
+      },
+    },
+    {
+      title: "Ngày sinh",
+      dataIndex: "birthday",
+      width: 150,
+      render: (text, record, index) => {
+        return <span>{moment(record.birthday).format("DD-MM-YYYY")}</span>;
       },
       sorter: true,
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "enabled",
+      width: 150,
+      sorter: true,
+      render: (text, record, index) => (
+        <Tag color={record.enabled === true ? "success" : "error"}>
+          {record.enabled === true ? "Hoạt động" : "Không hoạt động"}
+        </Tag>
+      ),
     },
     {
       title: "Thao tác",
