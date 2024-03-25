@@ -87,6 +87,12 @@ export const callUpdateUser = async (
   }
 };
 
-export const callDeleteUser = (id) => {
-  return api.delete(`/api/users?${id}`);
+export const callDeleteUser = async (id) => {
+  try {
+    const response = await api.delete(`/api/users?id=${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
 };
