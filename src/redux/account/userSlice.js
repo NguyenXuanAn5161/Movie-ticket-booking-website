@@ -3,16 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isLoading: true,
   // can thay doi
-  user: {
-    email: "",
-    phone: "",
-    fullName: "",
-    role: "",
-    avatar: "",
-    id: "",
-    createdAt: "",
-    updatedAt: "",
-  },
+  user: null,
 };
 
 export const userSlice = createSlice({

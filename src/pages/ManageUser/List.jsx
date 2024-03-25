@@ -4,6 +4,7 @@ import {
   Popconfirm,
   Row,
   Table,
+  Tag,
   message,
   notification,
 } from "antd";
@@ -24,14 +25,14 @@ import UserExport from "../../components/Admin/User/data/UserExport";
 import UserImport from "../../components/Admin/User/data/UserImport";
 import InputSearch from "../../components/InputSearch/InputSearch";
 import { doSetUser } from "../../redux/account/userSlice";
-import { callDeleteUser, callFetchListUser } from "../../services/api";
+import { callDeleteUser, callFetchListUser } from "../../services/apiMovie";
 
 const UserList = () => {
   const navigate = useNavigate();
 
   const [listUser, setListUser] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
@@ -46,27 +47,23 @@ const UserList = () => {
   // khi thay doi current va pageSize thi search died!
   const fetchUser = async () => {
     setIsLoading(true);
-    let query = `current=${current}&pageSize=${pageSize}`;
-    if (filter) {
-      query += `&${filter}`;
+    const res = await callFetchListUser(
+      current - 1,
+      pageSize,
+      filter.username || "",
+      filter.phone || "",
+      filter.email || ""
+    );
+    if (res?.content) {
+      setListUser(res.content);
+      setTotal(res.totalElements);
     }
-
-    if (sortQuery) {
-      query += `&${sortQuery}`;
-    }
-
-    const res = await callFetchListUser(query);
-    if (res && res.data) {
-      setListUser(res.data.result);
-      setTotal(res.data.meta.total);
-    }
-
     setIsLoading(false);
   };
 
   const handleDeleteUser = async (userId) => {
     const res = await callDeleteUser(userId);
-    if (res && res.data) {
+    if (res.status === 200) {
       message.success("Xoá người dùng thành công!");
       await fetchUser();
     } else {
@@ -81,46 +78,57 @@ const UserList = () => {
 
   const handleView = (user, url) => {
     dispatch(doSetUser(user));
-    navigate(`${url}/${user._id}`);
+    navigate(`${url}/${user.id}`);
   };
 
   // sau này load động cột này -> cần có sự hợp tác của backend
   const columns = [
     {
-      title: "Code",
-      dataIndex: "_id",
-      width: 100,
-      fixed: "left",
-    },
-    {
       title: "Họ và tên",
-      dataIndex: "fullName",
+      dataIndex: "username",
       sorter: true,
-      width: 100,
+      width: 180,
       fixed: "left",
     },
     {
       title: "Email",
       dataIndex: "email",
-      width: 150,
+      width: 180,
       sorter: true,
     },
     {
       title: "Số điện thoại",
       dataIndex: "phone",
-      width: 150,
+      width: 120,
       sorter: true,
     },
     {
-      title: "Cập nhật ngày",
-      dataIndex: "updatedAt",
-      width: 150,
+      title: "Giới tính",
+      dataIndex: "gender",
+      width: 90,
       render: (text, record, index) => {
-        return (
-          <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
-        );
+        return <span>{record?.gender === true ? "Nam" : "Nữ"}</span>;
+      },
+    },
+    {
+      title: "Ngày sinh",
+      dataIndex: "birthday",
+      width: 120,
+      render: (text, record, index) => {
+        return <span>{moment(record.birthday).format("DD-MM-YYYY")}</span>;
       },
       sorter: true,
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "enabled",
+      width: 150,
+      sorter: true,
+      render: (text, record, index) => (
+        <Tag color={record.enabled === true ? "success" : "error"}>
+          {record.enabled === true ? "Hoạt động" : "Không hoạt động"}
+        </Tag>
+      ),
     },
     {
       title: "Thao tác",
@@ -135,7 +143,7 @@ const UserList = () => {
               description={"Bạn có chắc chắn muốn xóa người dùng này?"}
               okText="Xác nhận"
               cancelText="Hủy"
-              onConfirm={() => handleDeleteUser(record._id)}
+              onConfirm={() => handleDeleteUser(record.id)}
             >
               <span>
                 <AiOutlineDelete
@@ -217,18 +225,10 @@ const UserList = () => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
-
-    if (sorter && sorter.field) {
-      const q =
-        sorter.order === "ascend"
-          ? `sort=${sorter.field}`
-          : `sort=-${sorter.field}`;
-      setSortQuery(q);
-    }
   };
 
   const itemSearch = [
-    { field: "fullName", label: "Họ và tên" },
+    { field: "username", label: "Họ và tên" },
     { field: "email", label: "Email" },
     { field: "phone", label: "Số điện thoại" },
   ];
@@ -240,10 +240,12 @@ const UserList = () => {
           <InputSearch
             itemSearch={itemSearch}
             handleSearch={handleSearch} // Hàm xử lý tìm kiếm, truyền vào từ props
+            setFilter={setFilter}
           />
         </Col>
         <Col span={24}>
           <Table
+            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 200,
@@ -254,7 +256,7 @@ const UserList = () => {
             columns={columns}
             dataSource={listUser}
             onChange={onChange}
-            rowKey="_id"
+            rowKey="id"
             pagination={{
               current: current,
               pageSize: pageSize,

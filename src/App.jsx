@@ -6,6 +6,7 @@ import OrderTable from "./components/Admin/Order/OrderTable";
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import BookingPage from "./pages/Booking/Booking";
 import CinemaCreate from "./pages/ManageCinema/Create";
 import CinemaEdit from "./pages/ManageCinema/Edit";
 import CinemaList from "./pages/ManageCinema/List";
@@ -297,6 +298,10 @@ export default function App() {
         {
           path: "promotion/edit/:promotionId",
           element: <PromotionEdit />,
+        },
+        {
+          path: "booking",
+          element: <BookingPage />,
         },
       ],
     },
