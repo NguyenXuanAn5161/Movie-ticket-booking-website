@@ -61,6 +61,32 @@ export const callCreateUser = async (
   }
 };
 
+export const callUpdateUser = async (
+  id,
+  username,
+  gender,
+  birthday,
+  email,
+  phone,
+  enabled
+) => {
+  try {
+    const response = await api.put(`/api/users/${id}`, {
+      id,
+      username,
+      gender,
+      birthday,
+      email,
+      phone,
+      enabled,
+    });
+    return response;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
 export const callDeleteUser = (id) => {
   return api.delete(`/api/users?${id}`);
 };
