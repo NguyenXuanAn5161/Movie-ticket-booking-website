@@ -13,14 +13,14 @@ const InputSearch = (props) => {
   };
 
   const onFinish = (values) => {
-    let query = "";
-    Object.keys(values).forEach((field) => {
-      if (values[field]) {
-        query += `&${field}=/${values[field]}/i`;
-      }
-    });
-    if (query) {
-      props.handleSearch(query);
+    // Loại bỏ các cặp khóa/giá trị có giá trị là undefined
+    const filteredValues = Object.fromEntries(
+      Object.entries(values).filter(([key, value]) => value !== undefined)
+    );
+
+    if (Object.keys(filteredValues).length !== 0) {
+      console.log("values: ", filteredValues);
+      props.handleSearch(filteredValues);
     }
   };
 
@@ -57,7 +57,7 @@ const InputSearch = (props) => {
             style={{ margin: "0 8px" }}
             onClick={() => {
               form.resetFields();
-              props.resetFields();
+              props.setFilter("");
             }}
           >
             Xóa trắng
