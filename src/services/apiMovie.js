@@ -13,20 +13,12 @@ const api = axios.create({
   },
 });
 
-export const callFetchListUser = async (
-  page,
-  size,
-  code,
-  username,
-  phone,
-  email
-) => {
+export const callFetchListUser = async (page, size, username, phone, email) => {
   try {
     const response = await api.get("/api/users", {
       params: {
         page: page,
         size: size,
-        code: code,
         username: username,
         phone: phone,
         email: email,
@@ -39,8 +31,34 @@ export const callFetchListUser = async (
   }
 };
 
-export const callCreateUser = (data) => {
-  return api.post("/api/users", data);
+export const callCreateUser = async (
+  username,
+  email,
+  gender,
+  birthday,
+  phone,
+  password
+) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("username", username);
+  bodyFormData.append("email", email);
+  bodyFormData.append("gender", gender);
+  bodyFormData.append("birthday", birthday);
+  bodyFormData.append("phone", phone);
+  bodyFormData.append("password", password);
+  try {
+    const response = await api({
+      method: "post",
+      url: "/api/users",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 export const callDeleteUser = (id) => {
