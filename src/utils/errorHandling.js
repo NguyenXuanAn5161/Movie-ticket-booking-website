@@ -1,7 +1,9 @@
 // errorHandling.js
 
-const getErrorMessageUser = (error) => {
+const getErrorMessageUser = (error, id) => {
   switch (error) {
+    case `Not found user with id: ${id ? id : ""}`:
+      return `Không tìm thấy người dùng với id: ${id ? id : ""}`;
     case "Email is already taken!":
       return "Email đã tồn tại!";
     case "Phone is already taken!":
