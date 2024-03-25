@@ -87,25 +87,25 @@ const UserList = () => {
       title: "Họ và tên",
       dataIndex: "username",
       sorter: true,
-      width: 100,
+      width: 180,
       fixed: "left",
     },
     {
       title: "Email",
       dataIndex: "email",
-      width: 150,
+      width: 180,
       sorter: true,
     },
     {
       title: "Số điện thoại",
       dataIndex: "phone",
-      width: 150,
+      width: 120,
       sorter: true,
     },
     {
       title: "Giới tính",
       dataIndex: "gender",
-      width: 150,
+      width: 90,
       render: (text, record, index) => {
         return <span>{record?.gender === true ? "Nam" : "Nữ"}</span>;
       },
@@ -113,7 +113,7 @@ const UserList = () => {
     {
       title: "Ngày sinh",
       dataIndex: "birthday",
-      width: 150,
+      width: 120,
       render: (text, record, index) => {
         return <span>{moment(record.birthday).format("DD-MM-YYYY")}</span>;
       },
