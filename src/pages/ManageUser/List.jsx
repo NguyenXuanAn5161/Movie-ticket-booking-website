@@ -46,34 +46,19 @@ const UserList = () => {
   // khi thay doi current va pageSize thi search died!
   const fetchUser = async () => {
     setIsLoading(true);
-    const res = await callFetchListUser(current - 1, pageSize);
+    const res = await callFetchListUser(
+      current - 1,
+      pageSize,
+      filter.username || "",
+      filter.phone || "",
+      filter.email || ""
+    );
     if (res?.content) {
-      console.log("res: ", res);
       setListUser(res.content);
       setTotal(res.totalElements);
     }
     setIsLoading(false);
   };
-
-  // const fetchUser = async () => {
-  //   setIsLoading(true);
-  //   let query = `current=${current}&pageSize=${pageSize}`;
-  //   if (filter) {
-  //     query += `&${filter}`;
-  //   }
-
-  //   if (sortQuery) {
-  //     query += `&${sortQuery}`;
-  //   }
-
-  //   const res = await callFetchListUser(query);
-  //   if (res && res.data) {
-  //     setListUser(res.data.result);
-  //     setTotal(res.data.meta.total);
-  //   }
-
-  //   setIsLoading(false);
-  // };
 
   const handleDeleteUser = async (userId) => {
     const res = await callDeleteUser(userId);
@@ -224,18 +209,10 @@ const UserList = () => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
-
-    if (sorter && sorter.field) {
-      const q =
-        sorter.order === "ascend"
-          ? `sort=${sorter.field}`
-          : `sort=-${sorter.field}`;
-      setSortQuery(q);
-    }
   };
 
   const itemSearch = [
-    { field: "fullName", label: "Họ và tên" },
+    { field: "username", label: "Họ và tên" },
     { field: "email", label: "Email" },
     { field: "phone", label: "Số điện thoại" },
   ];
@@ -247,10 +224,12 @@ const UserList = () => {
           <InputSearch
             itemSearch={itemSearch}
             handleSearch={handleSearch} // Hàm xử lý tìm kiếm, truyền vào từ props
+            setFilter={setFilter}
           />
         </Col>
         <Col span={24}>
           <Table
+            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 200,
@@ -261,7 +240,7 @@ const UserList = () => {
             columns={columns}
             dataSource={listUser}
             onChange={onChange}
-            rowKey="_id"
+            rowKey="id"
             pagination={{
               current: current,
               pageSize: pageSize,
