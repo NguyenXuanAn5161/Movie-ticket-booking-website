@@ -45,7 +45,9 @@ const CinemaCreate = () => {
       setIsSubmit(false);
       navigate("/admin/cinema");
     } else {
-      const error = getErrorMessageCinema(res.response.data.message, name);
+      const error = getErrorMessageCinema(res.response.data.message, {
+        name: name,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description: error,

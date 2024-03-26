@@ -54,7 +54,7 @@ const CinemaEdit = () => {
       message.success("Cập nhật rạp phim thành công!");
       navigate("/admin/cinema");
     } else {
-      const error = getErrorMessageCinema(res.response.data.message);
+      const error = getErrorMessageCinema(res.message, { id: id });
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description: error,
