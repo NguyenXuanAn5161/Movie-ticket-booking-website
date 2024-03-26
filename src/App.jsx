@@ -43,7 +43,6 @@ import PromotionEdit from "./pages/ManagePromotion/Edit";
 import PromotionList from "./pages/ManagePromotion/List";
 import PromotionShow from "./pages/ManagePromotion/Show";
 import UserCreate from "./pages/ManageUser/Create";
-import UserEdit from "./pages/ManageUser/Edit";
 import UserList from "./pages/ManageUser/List";
 import UserShow from "./pages/ManageUser/Show";
 import DashBoardShow from "./pages/dashboard/Show";
@@ -107,10 +106,6 @@ export default function App() {
         {
           path: "user/create",
           element: <UserCreate />,
-        },
-        {
-          path: "user/edit/:userId",
-          element: <UserEdit />,
         },
         // Phim
         {
