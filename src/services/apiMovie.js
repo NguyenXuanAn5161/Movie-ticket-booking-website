@@ -136,3 +136,36 @@ export const callCreateCinema = async (
     return error;
   }
 };
+
+export const callUpdateCinema = async (
+  id,
+  name,
+  status,
+  city,
+  district,
+  street,
+  totalRoom
+) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("id", id);
+  bodyFormData.append("name", name);
+  bodyFormData.append("status", status);
+  bodyFormData.append("nation", "Việt Nam");
+  bodyFormData.append("city", city);
+  bodyFormData.append("district", district);
+  bodyFormData.append("street", street);
+  bodyFormData.append("totalRoom", totalRoom);
+  try {
+    const response = await api({
+      method: "put",
+      url: "/api/cinema",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
