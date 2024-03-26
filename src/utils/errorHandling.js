@@ -13,4 +13,13 @@ const getErrorMessageUser = (error, id) => {
   }
 };
 
-export { getErrorMessageUser };
+const getErrorMessageCinema = (error, name) => {
+  switch (error) {
+    case `name: ${name ? name : ""} already exists`:
+      return "Tên rạp phim đã tồn tại!";
+    default:
+      return error;
+  }
+};
+
+export { getErrorMessageCinema, getErrorMessageUser };
