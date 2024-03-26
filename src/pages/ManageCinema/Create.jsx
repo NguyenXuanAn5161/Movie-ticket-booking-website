@@ -36,6 +36,7 @@ const CinemaCreate = () => {
       status,
       address[0],
       address[1],
+      // address[2],
       street + " " + address[2]
     );
     if (res?.data) {
