@@ -19,7 +19,6 @@ const InputSearch = (props) => {
     );
 
     if (Object.keys(filteredValues).length !== 0) {
-      console.log("values: ", filteredValues);
       props.handleSearch(filteredValues);
     }
   };
