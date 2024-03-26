@@ -7,7 +7,6 @@ import {
   message,
   notification,
 } from "antd";
-import moment from "moment";
 import { useEffect, useState } from "react";
 import {
   AiOutlineDelete,
@@ -20,12 +19,35 @@ import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { doSetSeatType } from "../../../../redux/seat/seatTypeSlice";
+import { callDeleteUser, callFetchListUser } from "../../../../services/api";
 
 const SeatTypeList = () => {
+  const data = [
+    {
+      id: "1",
+      code: "STD",
+      name: "Ghế bình thường",
+      price: 40000.0,
+    },
+    {
+      id: "2",
+      code: "VIP",
+      name: "Ghế vip",
+      price: 80000.0,
+    },
+    {
+      id: "3",
+      code: "SWEET",
+      name: "Ghế đôi",
+      price: 120000.0,
+    },
+  ];
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
-  const [listData, setListData] = useState([]);
+  const [listData, setListData] = useState(data);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(2);
   const [total, setTotal] = useState(0);
@@ -56,8 +78,8 @@ const SeatTypeList = () => {
     // thay đổi #1 api call
     const res = await callFetchListUser(query);
     if (res && res.data) {
-      setListData(res.data.result);
-      setTotal(res.data.meta.total);
+      // setListData(res.data.result);
+      // setTotal(res.data.meta.total);
     }
 
     setIsLoading(false);
@@ -81,7 +103,7 @@ const SeatTypeList = () => {
 
   const handleView = (data, url) => {
     // thay đổi #1
-    dispatch(doSetMovie(data));
+    dispatch(doSetSeatType(data));
     navigate(`${url}/${data._id}`);
   };
 
@@ -101,15 +123,20 @@ const SeatTypeList = () => {
       fixed: "left",
     },
     {
-      title: "Cập nhật ngày",
-      dataIndex: "updatedAt",
+      title: "Giá",
+      dataIndex: "price",
       width: 150,
+      sorter: true,
       render: (text, record, index) => {
         return (
-          <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
+          <span>
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(record?.price ?? 0)}
+          </span>
         );
       },
-      sorter: true,
     },
     {
       title: "Thao tác",

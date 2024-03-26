@@ -16,7 +16,7 @@ const MovieShow = () => {
       children: movie?.movieName,
     },
     {
-      label: "Ngày chiếu",
+      label: "Ngày sản xuất",
       children: moment(movie?.releaseDate).format("DD-MM-YYYY HH:mm:ss"),
     },
     {

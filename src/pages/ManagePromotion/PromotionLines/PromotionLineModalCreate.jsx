@@ -1,38 +1,83 @@
-import { Button, Form, Modal, Steps } from "antd";
+import { Button, Form, Modal, Steps, message, notification } from "antd";
 import React, { useState } from "react";
-import PromotionBasicInfo from "./Steps/BasicInfor";
-import PromotionDetails from "./Steps/Details";
-import PromotionUsageConditions from "./Steps/UsageConditions";
-
-const steps = [
-  { title: "Thông tin cơ bản", formComponent: <PromotionBasicInfo /> },
-  { title: "Điều kiện sử dụng", formComponent: <PromotionUsageConditions /> },
-  { title: "Chi tiết khuyến mãi", formComponent: <PromotionDetails /> },
-];
+import PromotionBasicInfo from "./StepsCreate/BasicInfor";
+import PromotionDetailsDiscount from "./StepsCreate/DetailsDiscount";
+import PromotionDetailsGift from "./StepsCreate/DetailsGift";
+import PromotionUsageConditions from "./StepsCreate/UsageConditions";
 
 const PromotionLineModalCreate = (props) => {
+  const [form] = Form.useForm();
+
   const [current, setCurrent] = useState(0);
   const { openModalCreate, setOpenModalCreate } = props;
   const [isSubmit, setIsSubmit] = useState(false);
+  const [formData, setFormData] = useState({});
 
-  const [form] = Form.useForm();
+  const steps = [
+    {
+      title: "Thông tin cơ bản",
+      formComponent: <PromotionBasicInfo form={form} />,
+    },
+    {
+      title: "Điều kiện sử dụng",
+      formComponent: <PromotionUsageConditions form={form} />,
+    },
+    {
+      title: "Chi tiết khuyến mãi",
+      formComponent:
+        formData?.type === "discount" ? (
+          <PromotionDetailsDiscount form={form} />
+        ) : (
+          <PromotionDetailsGift form={form} />
+        ),
+    },
+  ];
 
-  const next = () => setCurrent(current + 1);
+  const next = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        setCurrent(current + 1);
+        // Update formData
+        setFormData({ ...formData, ...values });
+      })
+      .catch((error) => {
+        notification.error({
+          message: "Có lỗi xảy ra!",
+          description: "Vui lòng nhập đầy đủ thông tin",
+        });
+      });
+  };
+
   const prev = () => setCurrent(current - 1);
 
   const handleCancel = () => {
     setOpenModalCreate(false);
-    // form.resetFields();
-    // setCurrent(0);
+    form.resetFields();
+    setCurrent(0);
   };
 
   const onFinish = (values) => {
-    setIsSubmit(true);
-    setTimeout(() => {
-      setIsSubmit(false);
-      setOpenModalCreate(false);
-      setCurrent(0);
-    }, 2000);
+    form
+      .validateFields()
+      .then((values) => {
+        setIsSubmit(true);
+        // api
+        console.log("formData trong then: ", { ...formData, ...values });
+        setTimeout(() => {
+          setIsSubmit(false);
+          setOpenModalCreate(false);
+          setCurrent(0);
+          form.resetFields();
+          message.success("Tạo mới chương trình khuyến mãi thành công");
+        }, 2000);
+      })
+      .catch((error) => {
+        notification.error({
+          message: "Có lỗi xảy ra!",
+          description: "Vui lòng nhập đầy đủ thông tin",
+        });
+      });
   };
 
   const items = steps.map((item) => ({

@@ -36,11 +36,6 @@ function CustomBreadcrumb(props) {
               title: "Tạo mới người dùng",
               key: "userCreate",
             },
-            {
-              path: "/edit",
-              title: "Cập nhật người dùng",
-              key: "userEdit",
-            },
           ],
         },
         {
@@ -88,6 +83,28 @@ function CustomBreadcrumb(props) {
           ],
         },
         {
+          path: "/schedule",
+          title: "Lịch chiếu phim",
+          key: "schedule",
+          children: [
+            {
+              path: "/show",
+              title: "Xem chi tiết lịch chiếu phim",
+              key: "scheduleShow",
+            },
+            {
+              path: "/create",
+              title: "Tạo mới lịch chiếu phim",
+              key: "scheduleCreate",
+            },
+            {
+              path: "/edit",
+              title: "Cập nhật lịch chiếu phim",
+              key: "scheduleEdit",
+            },
+          ],
+        },
+        {
           path: "/cinema",
           title: "Rạp chiếu",
           key: "cinema",
@@ -127,16 +144,50 @@ function CustomBreadcrumb(props) {
                   title: "Cập nhật phòng",
                   key: "cinemaEdit",
                 },
-                {
-                  path: "/seat",
-                  title: "Ghế",
-                  key: "seat",
-                },
-                {
-                  path: "/seatType",
-                  title: "Loại ghế",
-                  key: "seatType",
-                },
+                // {
+                //   path: "/seat",
+                //   title: "Ghế",
+                //   key: "seat",
+                //   children: [
+                //     {
+                //       path: "/show",
+                //       title: "Xem chi tiết ghế",
+                //       key: "seatShow",
+                //     },
+                //     {
+                //       path: "/create",
+                //       title: "Tạo mới ghế",
+                //       key: "seatCreate",
+                //     },
+                //     {
+                //       path: "/edit",
+                //       title: "Cập nhật ghế",
+                //       key: "seatEdit",
+                //     },
+                //   ],
+                // },
+                // {
+                //   path: "/seatType",
+                //   title: "Loại ghế",
+                //   key: "seatType",
+                //   children: [
+                //     {
+                //       path: "/show",
+                //       title: "Xem chi tiết loại ghế",
+                //       key: "seatTypeShow",
+                //     },
+                //     {
+                //       path: "/create",
+                //       title: "Tạo mới loại ghế",
+                //       key: "seatTypeCreate",
+                //     },
+                //     {
+                //       path: "/edit",
+                //       title: "Cập nhật loại ghế",
+                //       key: "seatTypeEdit",
+                //     },
+                //   ],
+                // },
               ],
             },
           ],
@@ -145,11 +196,67 @@ function CustomBreadcrumb(props) {
           path: "/food",
           title: "Đồ ăn",
           key: "food",
+          children: [
+            {
+              path: "/show",
+              title: "Xem chi tiết đồ ăn",
+              key: "foodShow",
+            },
+            {
+              path: "/create",
+              title: "Tạo mới đồ ăn",
+              key: "foodCreate",
+            },
+            {
+              path: "/edit",
+              title: "Cập nhật đồ ăn",
+              key: "foodEdit",
+            },
+          ],
         },
         {
           path: "/foodCategories",
           title: "Loại đồ ăn",
           key: "foodCategories",
+          children: [
+            {
+              path: "/show",
+              title: "Xem chi tiết loại đồ ăn",
+              key: "foodCategoriesShow",
+            },
+            {
+              path: "/create",
+              title: "Tạo mới loại đồ ăn",
+              key: "foodCategoriesCreate",
+            },
+            {
+              path: "/edit",
+              title: "Cập nhật loại đồ ăn",
+              key: "foodCategoriesEdit",
+            },
+          ],
+        },
+        {
+          path: "/price",
+          title: "Giá sản phẩm",
+          key: "price",
+          children: [
+            {
+              path: "/show",
+              title: "Xem chi tiết giá sản phẩm",
+              key: "priceShow",
+            },
+            {
+              path: "/create",
+              title: "Tạo mới giá sản phẩm",
+              key: "priceCreate",
+            },
+            {
+              path: "/edit",
+              title: "Cập nhật giá sản phẩm",
+              key: "priceEdit",
+            },
+          ],
         },
         {
           path: "/promotion",
@@ -172,6 +279,11 @@ function CustomBreadcrumb(props) {
               key: "promotionEdit",
             },
           ],
+        },
+        {
+          path: "/booking",
+          title: "Đặt vé",
+          key: "booking",
         },
       ],
     },

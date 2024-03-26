@@ -14,10 +14,14 @@ Online movie ticket booking system
 - React-bootstrap 2
 - Uuid 9
 - React MD Editor
+- air/react-drag-to-select
+- Lodash
+- react-infinite-scroll-component
+- dayjs
 
 ---
 
-Link deloy Vercel: [(auto update) test nhanh website tại đây -> Link died!!!](https://fe-vite-react-test-git-main-nguyen-xuan-ans-projects.vercel.app/)
+Link deloy Vercel: [(auto update) test nhanh website tại đây](https://movie-ticket-booking-website-i9gu7bryg-nguyen-xuan-ans-projects.vercel.app/)
 
 ---
 

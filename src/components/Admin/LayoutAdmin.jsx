@@ -1,18 +1,23 @@
 import {
   AppstoreOutlined,
   DollarCircleOutlined,
-  DownOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Dropdown, Layout, Menu, Space, message } from "antd";
+import { Avatar, Layout, Menu, Space, message } from "antd";
 import React, { useState } from "react";
 import { BiCategoryAlt } from "react-icons/bi";
+import { CiLogout } from "react-icons/ci";
 import { GiTheater } from "react-icons/gi";
-import { IoFastFoodOutline } from "react-icons/io5";
-import { MdEventSeat } from "react-icons/md";
+import { GrSchedules } from "react-icons/gr";
+import {
+  IoFastFoodOutline,
+  IoPricetagsOutline,
+  IoTicketOutline,
+} from "react-icons/io5";
+import { MdOutlineAccountCircle } from "react-icons/md";
 import { RiMovie2Line } from "react-icons/ri";
 import { TbDiscount2, TbTheater } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +26,7 @@ import { doLogoutAction } from "../../redux/account/accountSlice";
 import { callLogout } from "../../services/api";
 import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
 import Home from "../Home";
+import LogoApp from "../LogoApp/LogoApp";
 import "./layout.scss";
 
 const { Content, Footer, Sider } = Layout;
@@ -36,71 +42,6 @@ const getItem = (label, key, icon, children, type) => {
   };
 };
 
-// tạo các mục menu
-const items = [
-  getItem(
-    <Link to="/admin/dashboard">Tổng quan</Link>,
-    "dashboard",
-    <AppstoreOutlined />
-  ),
-  getItem(
-    <Link to="/admin/order">Quản lý đơn hàng</Link>,
-    "order",
-    <DollarCircleOutlined />
-  ),
-  getItem("Quản lý người dùng", "manageUser", <UserOutlined />, [
-    getItem(<Link to="/admin/user">Người dùng</Link>, "user", <TeamOutlined />),
-    getItem("Comming Soon", "commingsoon", <TeamOutlined />),
-  ]),
-  getItem("Quản lý rạp phim", "manageTheater", <GiTheater />, [
-    getItem(<Link to="/admin/cinema">Rạp phim</Link>, "cinema", <GiTheater />),
-    getItem(
-      <Link to="/admin/cinema/room">Phòng chiếu</Link>,
-      "room",
-      <TbTheater />
-    ),
-    getItem(
-      <Link to="/admin/cinema/room/seat">Ghế</Link>,
-      "seat",
-      <MdEventSeat />
-    ),
-    getItem(
-      <Link to="/admin/cinema/room/seatType">Loại ghế</Link>,
-      "seatType",
-      <BiCategoryAlt />
-    ),
-  ]),
-  getItem("Quản lý phim", "manageMovie", <RiMovie2Line />, [
-    getItem(<Link to="/admin/movie">Phim</Link>, "movie", <RiMovie2Line />),
-    getItem(
-      <Link to="/admin/movieGenre">Thể loại phim</Link>,
-      "movieGenre",
-      <BiCategoryAlt />
-    ),
-  ]),
-  getItem(<label>Quản lý đồ ăn</label>, "manageFood", <IoFastFoodOutline />, [
-    getItem(<Link to="/admin/food">Đồ ăn</Link>, "food", <IoFastFoodOutline />),
-    getItem(
-      <Link to="/admin/foodCategories">Loại đồ ăn</Link>,
-      "foodCategories",
-      <BiCategoryAlt />
-    ),
-  ]),
-  getItem(
-    <Link to="/admin/promotion">Khuyến mãi</Link>,
-    "promotion",
-    <TbDiscount2 />
-  ),
-];
-
-// Các keys của submenu cấp 1
-const rootSubmenuKeys = [
-  "manageUser",
-  "manageTheater",
-  "manageMovie",
-  "manageFood",
-];
-
 const LayoutAdmin = () => {
   const [openKeys, setOpenKeys] = useState([]); // State để lưu các keys của submenu đang mở
   const [collapsed, setCollapsed] = useState(false);
@@ -115,6 +56,141 @@ const LayoutAdmin = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // tạo các mục menu
+  const items = [
+    getItem(
+      collapsed ? null : "Thông tin cơ bản",
+      "grpData",
+      null,
+      [
+        getItem(
+          <Link to="/admin/dashboard">Tổng quan</Link>,
+          "dashboard",
+          <AppstoreOutlined />
+        ),
+        getItem(
+          <Link to="/admin/order">Quản lý đơn hàng</Link>,
+          "order",
+          <DollarCircleOutlined />
+        ),
+        getItem("Quản lý người dùng", "manageUser", <UserOutlined />, [
+          getItem(
+            <Link to="/admin/user">Người dùng</Link>,
+            "user",
+            <TeamOutlined />
+          ),
+          getItem("Comming Soon", "commingsoon", <TeamOutlined />),
+        ]),
+        getItem("Quản lý rạp phim", "manageTheater", <GiTheater />, [
+          getItem(
+            <Link to="/admin/cinema">Rạp phim</Link>,
+            "cinema",
+            <GiTheater />
+          ),
+          getItem(
+            <Link to="/admin/cinema/room">Phòng chiếu</Link>,
+            "room",
+            <TbTheater />
+          ),
+          // getItem(
+          //   <Link to="/admin/cinema/room/seat">Ghế</Link>,
+          //   "seat",
+          //   <MdEventSeat />
+          // ),
+          // getItem(
+          //   <Link to="/admin/cinema/room/seatType">Loại ghế</Link>,
+          //   "seatType",
+          //   <BiCategoryAlt />
+          // ),
+        ]),
+        getItem("Quản lý phim", "manageMovie", <RiMovie2Line />, [
+          getItem(
+            <Link to="/admin/movie">Phim</Link>,
+            "movie",
+            <RiMovie2Line />
+          ),
+          getItem(
+            <Link to="/admin/movieGenre">Thể loại phim</Link>,
+            "movieGenre",
+            <BiCategoryAlt />
+          ),
+          getItem(
+            <Link to="/admin/schedule">Lịch chiếu phim</Link>,
+            "schedule",
+            <GrSchedules />
+          ),
+        ]),
+        getItem(
+          <label>Quản lý đồ ăn</label>,
+          "manageFood",
+          <IoFastFoodOutline />,
+          [
+            getItem(
+              <Link to="/admin/food">Đồ ăn</Link>,
+              "food",
+              <IoFastFoodOutline />
+            ),
+            getItem(
+              <Link to="/admin/foodCategories">Loại đồ ăn</Link>,
+              "foodCategories",
+              <BiCategoryAlt />
+            ),
+          ]
+        ),
+        getItem(
+          <Link to="/admin/price">Giá sản phẩm</Link>,
+          "price",
+          <IoPricetagsOutline />
+        ),
+        getItem(
+          <Link to="/admin/promotion">Khuyến mãi</Link>,
+          "promotion",
+          <TbDiscount2 />
+        ),
+      ],
+      "group"
+    ),
+    { type: "divider" },
+    getItem(
+      collapsed ? null : "Đặt vé",
+      "grpAction",
+      null,
+      [
+        getItem(
+          <Link to="/admin/booking">Đặt vé</Link>,
+          "booking",
+          <IoTicketOutline />
+        ),
+      ],
+      "group"
+    ),
+    { type: "divider" },
+    getItem(
+      collapsed ? null : "Tài khoản",
+      "grpAccount",
+      null,
+      [
+        getItem("Tài khoản", "account", <MdOutlineAccountCircle />),
+        getItem(
+          <label style={{ cursor: "pointer" }} onClick={() => handleLogout()}>
+            Đăng xuất
+          </label>,
+          "logout",
+          <CiLogout />
+        ),
+      ],
+      "group"
+    ),
+  ];
+
+  // Các keys của submenu cấp 1
+  const rootSubmenuKeys = [
+    "manageUser",
+    "manageTheater",
+    "manageMovie",
+    "manageFood",
+  ];
 
   // Hàm này xử lý sự kiện khi mở hoặc đóng một submenu
   const onOpenChange = (keys) => {
@@ -135,21 +211,6 @@ const LayoutAdmin = () => {
     }
   };
 
-  const itemsDropdown = [
-    {
-      label: <label style={{ cursor: "pointer" }}>Quản lý tài khoản</label>,
-      key: "account",
-    },
-    {
-      label: (
-        <label style={{ cursor: "pointer" }} onClick={() => handleLogout()}>
-          Đăng xuất
-        </label>
-      ),
-      key: "logout",
-    },
-  ];
-
   const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${
     user?.avatar
   }`;
@@ -157,13 +218,40 @@ const LayoutAdmin = () => {
   return (
     <Layout style={{ minHeight: "100vh" }} className="layout-admin">
       <Sider
+        breakpoint="lg"
+        collapsedWidth="50"
         width={230}
         theme="light"
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <div style={{ height: 32, margin: 16, textAlign: "center" }}>Admin</div>
+        <div>
+          <Link
+            to="/admin"
+            style={{
+              height: 32,
+              margin: 16,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "black",
+            }}
+          >
+            <LogoApp style={{ cursor: "pointer" }} />
+            <span
+              style={{
+                marginLeft: 10,
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: 18,
+                display: collapsed ? "none" : "",
+              }}
+            >
+              CinE-Tix
+            </span>
+          </Link>
+        </div>
         <Menu
           openKeys={openKeys}
           selectedKeys={[lastSegment]}
@@ -186,15 +274,10 @@ const LayoutAdmin = () => {
               }
             )}
           </span>
-          <Dropdown menu={{ items: itemsDropdown }} trigger={["hover"]}>
-            <a onClick={(e) => e.preventDefault()}>
-              <Space>
-                <Avatar src={urlAvatar} />
-                {user?.fullName}
-                <DownOutlined />
-              </Space>
-            </a>
-          </Dropdown>
+          <Space>
+            <Avatar src={urlAvatar} />
+            {user?.fullName}
+          </Space>
         </div>
         <Content
           style={{

@@ -1,11 +1,15 @@
-import { Col, Form, Input, Row, Select } from "antd";
+import { Col, Form, Input, Radio, Row } from "antd";
 import React from "react";
 
-const { Option } = Select;
+const PromotionBasicInfo = ({ form, formType }) => {
+  const isDisabled = formType ? true : false;
+  const radioStyle = {
+    pointerEvents: isDisabled ? "none" : "auto", // Tắt hoặc bật sự kiện click
+    opacity: isDisabled ? 0.5 : 1, // Làm mờ hoặc không làm mờ nút radio
+  };
 
-const PromotionBasicInfo = ({ form }) => {
   return (
-    <Form form={form} layout="vertical">
+    <Form form={form} layout="vertical" disabled={isDisabled}>
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item
@@ -46,11 +50,16 @@ const PromotionBasicInfo = ({ form }) => {
             rules={[
               { required: true, message: "Vui lòng chọn loại khuyến mãi!" },
             ]}
+            initialValue={"discount"}
           >
-            <Select style={{ width: "100%" }}>
-              <Option value="PERCENT">Phần trăm</Option>
-              <Option value="AMOUNT">Số tiền</Option>
-            </Select>
+            <Radio.Group disabled={false}>
+              <Radio.Button value="discount" style={radioStyle}>
+                Giảm giá
+              </Radio.Button>
+              <Radio.Button value="gift" style={radioStyle}>
+                Quà tặng
+              </Radio.Button>
+            </Radio.Group>
           </Form.Item>
         </Col>
       </Row>
