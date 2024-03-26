@@ -107,3 +107,32 @@ export const callFetchListCinema = async (query) => {
     throw error;
   }
 };
+
+export const callCreateCinema = async (
+  name,
+  status,
+  city,
+  district,
+  street
+) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("name", name);
+  bodyFormData.append("status", status);
+  bodyFormData.append("nation", "Việt Nam");
+  bodyFormData.append("city", city);
+  bodyFormData.append("district", district);
+  bodyFormData.append("street", street);
+  try {
+    const response = await api({
+      method: "post",
+      url: "/api/cinema",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
