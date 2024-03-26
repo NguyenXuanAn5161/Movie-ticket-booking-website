@@ -99,13 +99,19 @@ const CinemaCreate = () => {
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Chọn địa chỉ cho rạp"
+                label="Chọn Tỉnh/Thành phố, Quận/Huyện và Phường/Xã"
                 name="address"
-                rules={[{ required: true, message: "Vui lòng chọn địa chỉ!" }]}
+                rules={[
+                  {
+                    required: true,
+                    message:
+                      "Vui lòng chọn Tỉnh/Thành phố, Quận/Huyện và Phường/Xã!",
+                  },
+                ]}
               >
                 <Cascader
                   options={addressOptions}
-                  placeholder="Chọn địa chỉ cho rạp"
+                  placeholder="Chọn Tỉnh/Thành phố, Quận/Huyện và Phường/Xã"
                 />
               </Form.Item>
             </Col>
