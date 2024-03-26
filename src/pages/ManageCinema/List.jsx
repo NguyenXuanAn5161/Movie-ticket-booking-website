@@ -49,9 +49,9 @@ const CinemaList = () => {
   const fetchData = async () => {
     setIsLoading(true);
     let query = `page=${current - 1}&size=${pageSize}`;
-    // if (filter) {
-    //   query += `&${filter}`;
-    // }
+    if (filter) {
+      query += `${filter}`;
+    }
 
     // if (sortQuery) {
     //   query += `&${sortQuery}`;
@@ -59,7 +59,6 @@ const CinemaList = () => {
 
     // thay đổi #1 api call
     const res = await callFetchListCinema(query);
-    console.log("res: ", res);
     if (res?.content) {
       setListData(res.content);
       setTotal(res.totalElements);
@@ -231,7 +230,18 @@ const CinemaList = () => {
 
   // mặc định #2
   const handleSearch = (query) => {
-    setFilter(query);
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+
+    setFilter(q);
   };
 
   // mặc định #2
@@ -257,7 +267,7 @@ const CinemaList = () => {
   // thay đổi #1
   const itemSearch = [
     { field: "code", label: "Mã rạp" },
-    { field: "cinemaName", label: "Tên rạp" },
+    { field: "name", label: "Tên rạp" },
     { field: "address", label: "Địa chỉ" },
   ];
 
