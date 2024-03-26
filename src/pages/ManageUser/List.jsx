@@ -132,8 +132,10 @@ const UserList = () => {
           <>
             <Popconfirm
               placement="leftTop"
-              title={"Xác nhận xóa người dùng"}
-              description={"Bạn có chắc chắn muốn xóa người dùng này?"}
+              title={"Xác nhận tắt hoạt động người dùng"}
+              description={
+                "Bạn có chắc chắn muốn tắt hoạt động người dùng này?"
+              }
               okText="Xác nhận"
               cancelText="Hủy"
               onConfirm={() => handleDeleteUser(record.id)}
