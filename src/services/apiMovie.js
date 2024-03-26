@@ -173,7 +173,7 @@ export const callUpdateCinema = async (
 export const callDeleteCinema = async (id) => {
   try {
     const response = await api.delete(`/api/cinema/${id}`);
-    return response;
+    return response.data;
   } catch (error) {
     console.error("error: ", error);
     return error;
