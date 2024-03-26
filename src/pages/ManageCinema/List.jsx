@@ -23,7 +23,8 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../components/InputSearch/InputSearch";
 import { doSetCinema } from "../../redux/cinema/cinemaSlice";
-import { callFetchListCinema } from "../../services/apiMovie";
+import { callDeleteCinema, callFetchListCinema } from "../../services/apiMovie";
+import { getErrorMessageCinema } from "../../utils/errorHandling";
 
 const CinemaList = () => {
   const navigate = useNavigate();
@@ -70,15 +71,18 @@ const CinemaList = () => {
   // mặc định #2
   const handleDeleteData = async (dataId) => {
     // thay đổi #1 api call
-    const res = await callDeleteUser(dataId);
-    if (res && res.data) {
+    const res = await callDeleteCinema(dataId);
+    if (res?.data.status === 204) {
       // thay đổi #1 message
       message.success("Xoá rạp thành công!");
       await fetchData();
     } else {
+      const error = getErrorMessageCinema(res.data.message, {
+        id: dataId,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
     }
   };
