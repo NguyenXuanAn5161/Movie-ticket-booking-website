@@ -36,11 +36,6 @@ function CustomBreadcrumb(props) {
               title: "Tạo mới người dùng",
               key: "userCreate",
             },
-            {
-              path: "/edit",
-              title: "Cập nhật người dùng",
-              key: "userEdit",
-            },
           ],
         },
         {
