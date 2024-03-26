@@ -169,3 +169,13 @@ export const callUpdateCinema = async (
     return error;
   }
 };
+
+export const callDeleteCinema = async (id) => {
+  try {
+    const response = await api.delete(`/api/cinema/${id}`);
+    return response;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
