@@ -15,7 +15,9 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callUpdateUser } from "../../services/api";
+import { callUpdateCinema } from "../../services/apiMovie";
+import addressOptions from "../../utils/data";
+import { getErrorMessageCinema } from "../../utils/errorHandling";
 
 const CinemaEdit = () => {
   // thay đổi #1
@@ -25,41 +27,37 @@ const CinemaEdit = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
 
-  // const [addressData, setAddressData] = useState({
-  //   nation: cinema?.address?.nation || "",
-  //   city: cinema?.address?.city || "",
-  //   district: cinema?.address?.district || "",
-  //   streetAddress: cinema?.address?.streetAddress || "",
-  // });
-
   useEffect(() => {
     form.resetFields();
     // thay đổi #1 [], setfields
-    console.log("cinema: ", cinema);
     form.setFieldsValue(cinema); // Cập nhật dữ liệu vào form khi userData thay đổi
   }, [cinema, form]);
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setUserData({ ...userData, [name]: value });
-  // };
-
   const onFinish = async (values) => {
-    console.log("value check: ", values);
     // thay đổi #1
-    const { _id, fullName, phone } = values;
+    const { id, name, status, address, street, totalRoom } = values;
     setIsSubmit(true);
     // thay đổi #1 api call
-    const res = await callUpdateUser(_id, fullName, phone);
-    // if (res && res.data) {
-    if (true) {
+    const res = await callUpdateCinema(
+      id,
+      name,
+      status,
+      address[0],
+      address[1],
+      // address[2],
+      street,
+      totalRoom
+    );
+    console.log("res", res);
+    if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật rạp phim thành công!");
       navigate("/admin/cinema");
     } else {
+      const error = getErrorMessageCinema(res.response.data.message);
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
     }
     setIsSubmit(false);
@@ -75,6 +73,9 @@ const CinemaEdit = () => {
       <Card bordered={false}>
         <Form form={form} onFinish={onFinish}>
           <Row gutter={[16]}>
+            <Form.Item labelCol={{ span: 24 }} hidden label="id" name="id">
+              <Input />
+            </Form.Item>
             <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
@@ -129,17 +130,25 @@ const CinemaEdit = () => {
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Chọn Tỉnh/Thành phố, Quận/Huyện và Phường/Xã"
-                name="addressaa"
+                name="address"
                 rules={[
                   {
                     required: true,
                     message: "Chọn Tỉnh/Thành phố, Quận/Huyện và Phường/Xã!",
                   },
                 ]}
-                // initialValue={addressData.nation}
+                initialValue={
+                  cinema?.address
+                    ? [
+                        cinema?.address.city,
+                        cinema?.address.district,
+                        "Phường Tân Định",
+                      ]
+                    : []
+                }
               >
                 <Cascader
-                  options={null}
+                  options={addressOptions}
                   placeholder="Chọn Tỉnh/Thành phố, Quận/Huyện và Phường/Xã"
                 />
               </Form.Item>
@@ -152,6 +161,7 @@ const CinemaEdit = () => {
                 rules={[
                   { required: true, message: "Vui lòng nhập số nhà / đường!" },
                 ]}
+                initialValue={cinema?.address?.street}
               >
                 <Input.TextArea placeholder="Nhập số nhà / đường" />
               </Form.Item>
