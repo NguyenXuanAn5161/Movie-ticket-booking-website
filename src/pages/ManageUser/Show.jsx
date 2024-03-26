@@ -75,7 +75,12 @@ const UserShow = () => {
 
   return (
     <>
-      <PageHeader title="Xem chi tiết người dùng" numberBack={-1} type="show" />
+      <PageHeader
+        title="Xem chi tiết người dùng"
+        numberBack={-1}
+        type="show"
+        hiddenEdit
+      />
       <Divider />
       <div style={{ padding: "0 20px" }}>
         <Card title="Thông tin người dùng" bordered={false}>
