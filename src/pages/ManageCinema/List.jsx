@@ -72,12 +72,13 @@ const CinemaList = () => {
   const handleDeleteData = async (dataId) => {
     // thay đổi #1 api call
     const res = await callDeleteCinema(dataId);
-    if (res?.data.status === 204) {
+    if (res?.status === 204) {
       // thay đổi #1 message
       message.success("Xoá rạp thành công!");
+      setCurrent(1); // reset current page về 1 (để load lại data)
       await fetchData();
     } else {
-      const error = getErrorMessageCinema(res.data.message, {
+      const error = getErrorMessageCinema(res.message, {
         id: dataId,
       });
       notification.error({
