@@ -48,7 +48,6 @@ const CinemaEdit = () => {
       street,
       totalRoom
     );
-    console.log("res", res);
     if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật rạp phim thành công!");
