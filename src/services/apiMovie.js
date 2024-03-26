@@ -96,3 +96,14 @@ export const callDeleteUser = async (id) => {
     return error;
   }
 };
+
+// module cinema
+export const callFetchListCinema = async (query) => {
+  try {
+    const response = await api.get(`/api/cinema?${query}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};
