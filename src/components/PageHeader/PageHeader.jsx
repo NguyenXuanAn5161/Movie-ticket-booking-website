@@ -5,7 +5,7 @@ import { IoArrowBack } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const PageHeader = ({ title, numberBack, type, hiddenEdit }) => {
+const PageHeader = ({ title, numberBack, type, hiddenEdit, handleDelete }) => {
   // numberBack (-1): back 1 page, ...
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.user);
@@ -56,7 +56,11 @@ const PageHeader = ({ title, numberBack, type, hiddenEdit }) => {
             Cập nhật
           </Button>
         )}
-        <Button type="primary" style={{ marginRight: 10 }}>
+        <Button
+          type="primary"
+          style={{ marginRight: 10 }}
+          onClick={() => handleDelete()}
+        >
           Xoá
         </Button>
         <Button type="primary">
