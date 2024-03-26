@@ -10,15 +10,8 @@ import {
 } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlineExport,
-  AiOutlineImport,
-  AiOutlinePlus,
-  AiOutlineReload,
-} from "react-icons/ai";
+import { AiOutlineDelete, AiOutlineReload } from "react-icons/ai";
 import { BsEye } from "react-icons/bs";
-import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import UserExport from "../../components/Admin/User/data/UserExport";
@@ -155,13 +148,6 @@ const UserList = () => {
               style={{ cursor: "pointer", marginRight: 10 }}
               onClick={() => handleView(record, "show")}
             />
-            <CiEdit
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                handleView(record, "edit");
-                // navigate(`edit/${record._id}`);
-              }}
-            />
           </>
         );
       },
@@ -174,31 +160,6 @@ const UserList = () => {
         Danh sách người dùng
       </span>
       <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          icon={<AiOutlineExport />}
-          type="primary"
-          onClick={() => setOpenModalExport(true)}
-        >
-          Export
-        </Button>
-        <Button
-          icon={<AiOutlineImport />}
-          type="primary"
-          onClick={() => setOpenModalImport(true)}
-        >
-          Import
-        </Button>
-        <Button
-          icon={<AiOutlinePlus />}
-          type="primary"
-          // onClick={() => setOpenModalCreate(true)}
-          onClick={(event) => {
-            // Điều hướng đến trang mới và truyền userId qua URL
-            navigate(`create`);
-          }}
-        >
-          Thêm mới
-        </Button>
         <Button
           type="ghost"
           onClick={() => {
