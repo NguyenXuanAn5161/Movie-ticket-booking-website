@@ -1,13 +1,13 @@
 import {
   Button,
   Card,
+  Cascader,
   Col,
   Form,
   Input,
   InputNumber,
   Radio,
   Row,
-  Select,
   message,
   notification,
 } from "antd";
@@ -25,47 +25,17 @@ const CinemaEdit = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
 
-  const [addressData, setAddressData] = useState({
-    nation: cinema?.address?.nation || "",
-    city: cinema?.address?.city || "",
-    district: cinema?.address?.district || "",
-    streetAddress: cinema?.address?.streetAddress || "",
-  });
-
-  useEffect(() => {
-    form.setFieldsValue({
-      city: addressData.city,
-      district: addressData.district,
-      streetAddress: addressData.streetAddress,
-    });
-  }, [addressData]);
-
-  const handleNationChange = (value) => {
-    setAddressData({
-      ...addressData,
-      nation: value,
-      city: "",
-      district: "",
-      streetAddress: "",
-    });
-  };
-
-  const handleCityChange = (value) => {
-    setAddressData({
-      ...addressData,
-      city: value,
-      district: "",
-      streetAddress: "",
-    });
-  };
-
-  const handleDistrictChange = (value) => {
-    setAddressData({ ...addressData, district: value, streetAddress: "" });
-  };
+  // const [addressData, setAddressData] = useState({
+  //   nation: cinema?.address?.nation || "",
+  //   city: cinema?.address?.city || "",
+  //   district: cinema?.address?.district || "",
+  //   streetAddress: cinema?.address?.streetAddress || "",
+  // });
 
   useEffect(() => {
     form.resetFields();
     // thay đổi #1 [], setfields
+    console.log("cinema: ", cinema);
     form.setFieldsValue(cinema); // Cập nhật dữ liệu vào form khi userData thay đổi
   }, [cinema, form]);
 
@@ -133,10 +103,8 @@ const CinemaEdit = () => {
                 ]}
               >
                 <Radio.Group value={cinema?.status}>
-                  <Radio.Button value="available">Hoạt động</Radio.Button>
-                  <Radio.Button value="unavailable">
-                    Ngưng hoạt động
-                  </Radio.Button>
+                  <Radio value={true}>Hoạt động</Radio>
+                  <Radio value={false}>Ngưng hoạt động</Radio>
                 </Radio.Group>
               </Form.Item>
             </Col>
@@ -150,95 +118,42 @@ const CinemaEdit = () => {
                 ]}
               >
                 <InputNumber
+                  disabled
                   style={{ width: "100%" }}
                   placeholder="Nhập tổng số phòng"
-                  min={5}
+                  min={0}
                 />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Quốc gia"
-                name="nation"
-                rules={[{ required: true, message: "Vui lòng nhập quốc gia!" }]}
-                initialValue={addressData.nation}
-              >
-                <Select
-                  placeholder="Chọn quốc gia"
-                  onChange={handleNationChange}
-                >
-                  <Option value="Vietnam">Việt Nam</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Thành phố"
-                name="city"
+                label="Chọn Tỉnh/Thành phố, Quận/Huyện và Phường/Xã"
+                name="addressaa"
                 rules={[
-                  { required: true, message: "Vui lòng nhập thành phố!" },
+                  {
+                    required: true,
+                    message: "Chọn Tỉnh/Thành phố, Quận/Huyện và Phường/Xã!",
+                  },
                 ]}
-                initialValue={addressData.city}
+                // initialValue={addressData.nation}
               >
-                <Select
-                  disabled={!addressData.nation}
-                  placeholder="Chọn thành phố"
-                  onChange={handleCityChange}
-                >
-                  {addressData.nation && (
-                    <>
-                      <Option value="HCMC">Thành phố Hồ Chí Minh</Option>
-                      <Option value="Hanoi">Thành phố Hà Nội</Option>
-                    </>
-                  )}
-                </Select>
+                <Cascader
+                  options={null}
+                  placeholder="Chọn Tỉnh/Thành phố, Quận/Huyện và Phường/Xã"
+                />
               </Form.Item>
             </Col>
-            <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Quận / Huyện"
-                name="district"
-                rules={[
-                  { required: true, message: "Vui lòng nhập quận / huyện!" },
-                ]}
-                initialValue={addressData.district}
-              >
-                <Select
-                  disabled={!addressData.city}
-                  placeholder="Chọn quận / huyện"
-                  onChange={handleDistrictChange}
-                >
-                  {addressData.city === "Thành phố Hồ Chí Minh" ? (
-                    <>
-                      <Option value="Quan1">Quận 1</Option>
-                      <Option value="Quan2">Quận 2</Option>
-                    </>
-                  ) : (
-                    <>
-                      <Option value="BaDinh">Ba Đình</Option>
-                      <Option value="BacTuLiem">Bắc Từ Liêm</Option>
-                    </>
-                  )}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={24}>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Số nhà / Đường"
-                name="streetAddress"
+                name="street"
                 rules={[
                   { required: true, message: "Vui lòng nhập số nhà / đường!" },
                 ]}
-                initialValue={addressData.streetAddress}
               >
-                <Input.TextArea
-                  disabled={!addressData.district}
-                  placeholder="Nhập số nhà / đường"
-                />
+                <Input.TextArea placeholder="Nhập số nhà / đường" />
               </Form.Item>
             </Col>
           </Row>
