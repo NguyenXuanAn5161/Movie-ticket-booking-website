@@ -123,8 +123,9 @@ const CinemaList = () => {
       render: (text, record, index) => {
         return (
           <span>
-            {record.address.street}, {record.address.district},{" "}
-            {record.address.city}, {record.address.nation}
+            {record.address.street}, {record.address.ward},{" "}
+            {record.address.district}, {record.address.city},{" "}
+            {record.address.nation}
           </span>
         );
       },
