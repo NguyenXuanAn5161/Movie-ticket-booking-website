@@ -1,8 +1,6 @@
-import { Card, Col, Descriptions, Divider, Row, Tag, Typography } from "antd";
+import { Card, Col, Descriptions, Divider, Row, Tag } from "antd";
 import { useSelector } from "react-redux";
 import PageHeader from "../../components/PageHeader/PageHeader";
-
-const { Text } = Typography;
 
 const CinemaShow = () => {
   // thay đổi #1
@@ -17,8 +15,8 @@ const CinemaShow = () => {
     {
       label: "Trạng thái",
       children: (
-        <Tag color={cinema?.status === "available" ? "success" : "error"}>
-          {cinema?.status === "available" ? "Hoạt động" : "Ngưng hoạt động"}
+        <Tag color={cinema?.status ? "success" : "error"}>
+          {cinema?.status ? "Hoạt động" : "Ngưng hoạt động"}
         </Tag>
       ),
     },
@@ -30,7 +28,7 @@ const CinemaShow = () => {
       label: "Địa chỉ",
       children: (
         <span>
-          {cinema.address.streetAddress}, {cinema.address.district},{" "}
+          {cinema.address.street}, {cinema.address.district},{" "}
           {cinema.address.city}, {cinema.address.nation}
         </span>
       ),
