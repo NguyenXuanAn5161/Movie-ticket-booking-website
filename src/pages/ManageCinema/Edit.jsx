@@ -44,16 +44,20 @@ const CinemaEdit = () => {
       status,
       address[0],
       address[1],
-      // address[2],
+      address[2],
       street,
       totalRoom
     );
+    console.log("res: ", res);
     if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật rạp phim thành công!");
       navigate("/admin/cinema");
     } else {
-      const error = getErrorMessageCinema(res.message, { id: id });
+      const error = getErrorMessageCinema(res.message, {
+        id: id,
+        name: name,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description: error,
