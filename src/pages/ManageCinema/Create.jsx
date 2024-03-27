@@ -39,7 +39,6 @@ const CinemaCreate = () => {
       address[2], // ward
       street
     );
-    console.log("res: ", res);
     if (res?.status === 201) {
       message.success("Tạo mới rạp phim thành công!");
       form.resetFields();
