@@ -249,6 +249,7 @@ const PromotionShow = () => {
           />
           <br />
           <Table
+            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 200,
