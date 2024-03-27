@@ -145,6 +145,7 @@ export const callUpdateCinema = async (
   status,
   city,
   district,
+  ward,
   street,
   totalRoom
 ) => {
@@ -155,6 +156,7 @@ export const callUpdateCinema = async (
   bodyFormData.append("nation", "Việt Nam");
   bodyFormData.append("city", city);
   bodyFormData.append("district", district);
+  bodyFormData.append("ward", ward);
   bodyFormData.append("street", street);
   bodyFormData.append("totalRoom", totalRoom);
   try {
