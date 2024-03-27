@@ -113,6 +113,7 @@ export const callCreateCinema = async (
   status,
   city,
   district,
+  ward,
   street
 ) => {
   const bodyFormData = new FormData();
@@ -121,6 +122,7 @@ export const callCreateCinema = async (
   bodyFormData.append("nation", "Việt Nam");
   bodyFormData.append("city", city);
   bodyFormData.append("district", district);
+  bodyFormData.append("ward", ward);
   bodyFormData.append("street", street);
   try {
     const response = await api({
@@ -131,7 +133,7 @@ export const callCreateCinema = async (
         "Content-Type": "multipart/form-data",
       },
     });
-    return response;
+    return response.data;
   } catch (error) {
     return error;
   }

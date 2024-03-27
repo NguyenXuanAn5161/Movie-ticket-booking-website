@@ -34,18 +34,19 @@ const CinemaCreate = () => {
     const res = await callCreateCinema(
       name,
       status,
-      address[0],
-      address[1],
-      // address[2],
-      street + " " + address[2]
+      address[0], // city
+      address[1], // district
+      address[2], // ward
+      street
     );
-    if (res?.data) {
+    console.log("res: ", res);
+    if (res?.status === 201) {
       message.success("Tạo mới rạp phim thành công!");
       form.resetFields();
       setIsSubmit(false);
       navigate("/admin/cinema");
     } else {
-      const error = getErrorMessageCinema(res.response.data.message, {
+      const error = getErrorMessageCinema(res?.message, {
         name: name,
       });
       notification.error({
