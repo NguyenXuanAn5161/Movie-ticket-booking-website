@@ -10,34 +10,70 @@ import {
   FloatButton,
   Form,
   Input,
-  InputNumber,
+  Radio,
   Row,
   Select,
   Tooltip,
   message,
   notification,
 } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { IoOpenOutline } from "react-icons/io5";
 import { MdEventSeat, MdOutlineDelete } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 import ModalTypeSeat from "../../../components/Seat/ModalTypeSeat";
 import SeatComponent from "../../../components/Seat/SeatComponent";
 import SeatLegend from "../../../components/Seat/SeatLegend";
+import { doSetRoom } from "../../../redux/cinema/room/roomSlice";
 import { callCreateUser } from "../../../services/api";
+import { callFetchRoomById } from "../../../services/apiMovie";
+import { getErrorMessageRoom } from "../../../utils/errorHandling";
 import "./index.scss";
 
 const alphabet = "ABCDEFGHIJKLMNOPQR";
 
 const RoomEdit = () => {
-  const [isSubmit, setIsSubmit] = useState(false);
-  const [form] = Form.useForm();
+  const { roomId } = useParams();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [form] = Form.useForm();
+
+  const [isSubmit, setIsSubmit] = useState(false);
   const [totalSeats, setTotalSeats] = useState(0);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [openModalTypeSeat, setOpenModalTypeSeat] = useState(false);
-  const [typeSeat, setTypeSeat] = useState("");
+
+  const room = useSelector((state) => state.room.room);
+
+  useEffect(() => {
+    if (!room) {
+      getRoomById();
+    }
+    form.setFieldsValue(room);
+  }, [room]);
+
+  useEffect(() => {
+    if (selectedSeats.length > 0) {
+      form.setFieldsValue({ totalSeats: selectedSeats.length });
+    }
+  }, [selectedSeats]);
+
+  const getRoomById = async () => {
+    const res = await callFetchRoomById(roomId);
+    if (res?.data) {
+      dispatch(doSetRoom(res.data));
+      setSelectedSeats(res.data?.seats);
+      setTotalSeats(res.data?.totalSeats);
+    } else {
+      const error = getErrorMessageRoom(res.response.data.message, roomId);
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
 
   const onFinish = async (values) => {
     const { name, typeRoom, totalSeat } = values;
@@ -45,24 +81,6 @@ const RoomEdit = () => {
       notification.error({
         message: "Vui lòng chọn danh sách ghế!",
         description: "Danh sách ghế không được rỗng!",
-      });
-      return;
-    } else if (selectedSeats.length < totalSeat) {
-      notification.error({
-        message: "Vui lòng chọn đủ danh sách ghế!",
-        description: (
-          <>
-            Tổng số ghế đã chọn:{" "}
-            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
-              {selectedSeats.length}
-            </span>
-            <br />
-            Tổng số ghế đã nhập{" "}
-            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
-              {totalSeat ? totalSeat : 0}
-            </span>
-          </>
-        ),
       });
       return;
     }
@@ -84,9 +102,21 @@ const RoomEdit = () => {
     }
   };
 
-  const handleTotalSeatChange = (value) => {
-    setTotalSeats(value);
-  };
+  // Render ghế
+  const gridSeats = useMemo(() => {
+    let gridSeats = [];
+    alphabet.split("").forEach((item, rowIndex) => {
+      for (let i = 0; i < 20; i++) {
+        gridSeats.push({
+          id: `${item}${i + 1}`,
+          text: `${item}${i + 1}`,
+          seatRow: rowIndex + 1,
+          seatColumn: i + 1,
+        });
+      }
+    });
+    return gridSeats;
+  }, []);
 
   // Drag selection
   // State và refs để lưu trữ thông tin về khu vực chọn, các phần tử đã được chọn và tham chiếu đến các phần tử DOM.
@@ -110,20 +140,9 @@ const RoomEdit = () => {
     }
   };
 
-  // Render ghế
-  let gridSeats = [];
-  alphabet.split("").forEach((item, index) => {
-    for (let i = 0; i < 20; i++) {
-      gridSeats.push({
-        id: `${item}${i + 1}`,
-        text: `${item}${i + 1}`,
-      });
-    }
-  });
-
   const { DragSelection } = useSelectionContainer({
     eventsElement: document.getElementById("root"),
-    onSelectionChange: (box) => {
+    onSelectionChange: useCallback((box) => {
       const scrollAwareBox = {
         ...box,
         top: box.top + window.scrollY,
@@ -136,16 +155,15 @@ const RoomEdit = () => {
           indexesToSelect.push(index);
         }
       });
-
       setSelectedIndexes(indexesToSelect);
-    },
-    onSelectionStart: () => {
+    }, []),
+    onSelectionStart: useCallback(() => {
       setSelectionStarted(true);
       setSelectedItems([]);
-    },
-    onSelectionEnd: () => {
+    }, []),
+    onSelectionEnd: useCallback(() => {
       setSelectionStarted(false);
-    },
+    }, []),
     selectionProps: {
       style: {
         border: "5px dashed aqua",
@@ -170,42 +188,35 @@ const RoomEdit = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (selectedItems.length > totalSeats) {
-      notification.error({
-        message: "Có lỗi xảy ra!",
-        description: (
-          <>
-            Tổng số ghế đã chọn:{" "}
-            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
-              {selectedItems.length}
-            </span>{" "}
-            không thể lớn hơn tổng số ghế đã nhập{" "}
-            <span style={{ color: "red", fontWeight: 600, fontSize: 16 }}>
-              {totalSeats ? totalSeats : 0}
-            </span>
-          </>
-        ),
-      });
-    }
-  }, [selectedItems, totalSeats]);
-
   const handleClick = () => {
     setOpenModalTypeSeat(true);
   };
 
   const handleDelete = () => {
-    const remainingSeats = selectedSeats.filter(
-      (seat) => !selectedIndexes.includes(seat.index)
+    // lấy thông tin ghế từ index trong selectedIndexes
+    const selectedSeatsFromGrid = selectedIndexes.map(
+      (selectedIndex) => gridSeats[selectedIndex]
     );
-    setSelectedSeats(remainingSeats);
-    setSelectedIndexes([]);
-    message.success("Xóa ghế thành công!");
-  };
 
-  useEffect(() => {
-    console.log("Danh sach ghe: ", selectedSeats);
-  }, [selectedSeats]);
+    // Lọc ra các ghế trong selectedSeats có seatRow và seatColumn không tồn tại trong selectedSeatsFromGrid
+    const remainingSeats = selectedSeats.filter((seat) => {
+      return !selectedSeatsFromGrid.some(
+        (selectedSeat) =>
+          selectedSeat.seatRow === seat.seatRow &&
+          selectedSeat.seatColumn === seat.seatColumn
+      );
+    });
+
+    if (remainingSeats.length === selectedSeats.length) {
+      setSelectedIndexes([]);
+      return;
+    } else {
+      // Có ghế được xóa thành công
+      setSelectedSeats(remainingSeats);
+      setSelectedIndexes([]);
+      message.success("Xóa ghế thành công!");
+    }
+  };
 
   return (
     <>
@@ -236,7 +247,7 @@ const RoomEdit = () => {
                 <Input placeholder="Nhập tên phòng" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={4}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Loại phòng"
@@ -255,26 +266,32 @@ const RoomEdit = () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={4}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tổng số ghế"
-                name="totalSeat"
+                name="totalSeats"
+              >
+                <Input disabled />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Trạng thái"
+                name="status"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tổng số ghế!",
+                    message: "Vui lòng chọn trạng thái!",
                   },
                 ]}
+                initialValue={false}
               >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  placeholder="Nhập tổng số ghế"
-                  min={120}
-                  max={390}
-                  addonAfter={"Ghế"}
-                  onChange={handleTotalSeatChange}
-                />
+                <Radio.Group>
+                  <Radio value={true}>Hoạt động</Radio>
+                  <Radio value={false}>Ngưng hoạt động</Radio>
+                </Radio.Group>
               </Form.Item>
             </Col>
             <Col span={24}>
@@ -348,6 +365,8 @@ const RoomEdit = () => {
                         handleKeyDown={handleKeyDown}
                         handleKeyUp={handleKeyUp}
                         selectedSeats={selectedSeats}
+                        seatRow={item.seatRow}
+                        seatColumn={item.seatColumn}
                       />
                     );
                   })}
