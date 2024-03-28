@@ -112,17 +112,17 @@ function CustomBreadcrumb(props) {
             {
               path: "/show",
               title: "Xem chi tiết rạp phim",
-              key: "roomShow",
+              key: "cinemaShow",
             },
             {
               path: "/create",
               title: "Tạo mới rạp phim",
-              key: "roomCreate",
+              key: "cinemaCreate",
             },
             {
               path: "/edit",
               title: "Cập nhật rạp phim",
-              key: "roomEdit",
+              key: "cinemaEdit",
             },
             {
               path: "/room",
