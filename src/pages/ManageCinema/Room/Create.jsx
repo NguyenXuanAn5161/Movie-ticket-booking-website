@@ -17,7 +17,7 @@ import {
   message,
   notification,
 } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { IoOpenOutline } from "react-icons/io5";
 import { MdEventSeat, MdOutlineDelete } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
@@ -37,10 +37,8 @@ const RoomCreate = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const [totalSeats, setTotalSeats] = useState(0);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [openModalTypeSeat, setOpenModalTypeSeat] = useState(false);
-  const [typeSeat, setTypeSeat] = useState("");
 
   const onFinish = async (values) => {
     const { name, type, status } = values;
@@ -112,19 +110,24 @@ const RoomCreate = () => {
   };
 
   // Render ghế
-  let gridSeats = [];
-  alphabet.split("").forEach((item, index) => {
-    for (let i = 0; i < 20; i++) {
-      gridSeats.push({
-        id: `${item}${i + 1}`,
-        text: `${item}${i + 1}`,
-      });
-    }
-  });
+  const gridSeats = useMemo(() => {
+    let gridSeats = [];
+    alphabet.split("").forEach((item, rowIndex) => {
+      for (let i = 0; i < 20; i++) {
+        gridSeats.push({
+          id: `${item}${i + 1}`,
+          text: `${item}${i + 1}`,
+          seatRow: rowIndex + 1,
+          seatColumn: i + 1,
+        });
+      }
+    });
+    return gridSeats;
+  }, []);
 
   const { DragSelection } = useSelectionContainer({
     eventsElement: document.getElementById("root"),
-    onSelectionChange: (box) => {
+    onSelectionChange: useCallback((box) => {
       const scrollAwareBox = {
         ...box,
         top: box.top + window.scrollY,
@@ -137,16 +140,15 @@ const RoomCreate = () => {
           indexesToSelect.push(index);
         }
       });
-
       setSelectedIndexes(indexesToSelect);
-    },
-    onSelectionStart: () => {
+    }, []),
+    onSelectionStart: useCallback(() => {
       setSelectionStarted(true);
       setSelectedItems([]);
-    },
-    onSelectionEnd: () => {
+    }, []),
+    onSelectionEnd: useCallback(() => {
       setSelectionStarted(false);
-    },
+    }, []),
     selectionProps: {
       style: {
         border: "5px dashed aqua",
@@ -176,12 +178,29 @@ const RoomCreate = () => {
   };
 
   const handleDelete = () => {
-    const remainingSeats = selectedSeats.filter(
-      (seat) => !selectedIndexes.includes(seat.index)
+    // lấy thông tin ghế từ index trong selectedIndexes
+    const selectedSeatsFromGrid = selectedIndexes.map(
+      (selectedIndex) => gridSeats[selectedIndex]
     );
-    setSelectedSeats(remainingSeats);
-    setSelectedIndexes([]);
-    message.success("Xóa ghế thành công!");
+
+    // Lọc ra các ghế trong selectedSeats có seatRow và seatColumn không tồn tại trong selectedSeatsFromGrid
+    const remainingSeats = selectedSeats.filter((seat) => {
+      return !selectedSeatsFromGrid.some(
+        (selectedSeat) =>
+          selectedSeat.seatRow === seat.seatRow &&
+          selectedSeat.seatColumn === seat.seatColumn
+      );
+    });
+
+    if (remainingSeats.length === selectedSeats.length) {
+      setSelectedIndexes([]);
+      return;
+    } else {
+      // Có ghế được xóa thành công
+      setSelectedSeats(remainingSeats);
+      setSelectedIndexes([]);
+      message.success("Xóa ghế thành công!");
+    }
   };
 
   return (
@@ -227,8 +246,9 @@ const RoomCreate = () => {
                 initialValue={"2D"}
               >
                 <Select style={{ width: "100%" }}>
-                  <Select.Option value="2D">2D</Select.Option>
-                  <Select.Option value="3D">3D</Select.Option>
+                  <Select.Option value="2D">ROOM2D</Select.Option>
+                  <Select.Option value="3D">ROOM3D</Select.Option>
+                  <Select.Option value="4D">ROOM4D</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -322,6 +342,8 @@ const RoomCreate = () => {
                         handleKeyDown={handleKeyDown}
                         handleKeyUp={handleKeyUp}
                         selectedSeats={selectedSeats}
+                        seatRow={item.seatRow}
+                        seatColumn={item.seatColumn}
                       />
                     );
                   })}
