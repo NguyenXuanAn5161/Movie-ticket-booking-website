@@ -48,7 +48,7 @@ const CinemaShow = () => {
     if (res?.data) {
       dispatch(doSetCinema(res.data));
     } else {
-      const error = getErrorMessageCinema(res.response.data.message, userId);
+      const error = getErrorMessageCinema(res.response.data.message, cinemaId);
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description: error,
