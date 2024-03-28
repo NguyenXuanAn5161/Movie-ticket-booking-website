@@ -26,4 +26,17 @@ const getErrorMessageCinema = (error, { name, id }) => {
   }
 };
 
-export { getErrorMessageCinema, getErrorMessageUser };
+const getErrorMessageRoom = (error, { name, id }) => {
+  switch (error) {
+    case `Room with name: ${name ? name : ""} already exists`:
+      return `Tên phòng đã tồn tại!`;
+    case "The given id must not be null":
+      return "Không tìm thấy rạp để thêm phòng!";
+    case `Cinema not found with id:${id ? id : ""}`:
+      return `Rạp phim không tồn tại!`;
+    default:
+      return error;
+  }
+};
+
+export { getErrorMessageCinema, getErrorMessageRoom, getErrorMessageUser };
