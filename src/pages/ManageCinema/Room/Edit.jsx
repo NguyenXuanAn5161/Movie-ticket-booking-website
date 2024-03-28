@@ -27,21 +27,20 @@ import ModalTypeSeat from "../../../components/Seat/ModalTypeSeat";
 import SeatComponent from "../../../components/Seat/SeatComponent";
 import SeatLegend from "../../../components/Seat/SeatLegend";
 import { doSetRoom } from "../../../redux/cinema/room/roomSlice";
-import { callCreateUser } from "../../../services/api";
-import { callFetchRoomById } from "../../../services/apiMovie";
+import { callFetchRoomById, callUpdateRoom } from "../../../services/apiMovie";
 import { getErrorMessageRoom } from "../../../utils/errorHandling";
 import "./index.scss";
 
 const alphabet = "ABCDEFGHIJKLMNOPQR";
 
 const RoomEdit = () => {
-  const { roomId } = useParams();
+  const { cinemaId, roomId } = useParams();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [form] = Form.useForm();
 
   const [isSubmit, setIsSubmit] = useState(false);
-  const [totalSeats, setTotalSeats] = useState(0);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [openModalTypeSeat, setOpenModalTypeSeat] = useState(false);
 
@@ -71,7 +70,6 @@ const RoomEdit = () => {
     if (res?.data) {
       dispatch(doSetRoom(res.data));
       setSelectedSeats(res.data?.seats);
-      setTotalSeats(res.data?.totalSeats);
     } else {
       const error = getErrorMessageRoom(res.response.data.message, roomId);
       notification.error({
@@ -82,7 +80,26 @@ const RoomEdit = () => {
   };
 
   const onFinish = async (values) => {
-    const { name, typeRoom, totalSeat } = values;
+    const { id, name, type, status } = values;
+
+    // Tạo mảng seats từ selectedSeats
+    const seats = selectedSeats.map((seat) => ({
+      seatRow: seat.seatRow,
+      seatColumn: seat.seatColumn,
+      status: true,
+      seatTypeId: seat.seatTypeId,
+    }));
+    // tạo cấu trúc data để truyền xuống
+    const roomData = {
+      id,
+      name,
+      type,
+      cinemaId,
+      status,
+      seats: seats,
+    };
+
+    console.log("roomData: ", roomData);
     if (selectedSeats.length <= 0) {
       notification.error({
         message: "Vui lòng chọn danh sách ghế!",
@@ -91,18 +108,22 @@ const RoomEdit = () => {
       return;
     }
 
-    const { fullName, email, password, phone } = values;
     setIsSubmit(true);
-    const res = await callCreateUser(fullName, email, password, phone);
-    if (res && res.data) {
+    const res = await callUpdateRoom(roomData);
+    console.log("res: ", res);
+    if (res?.status === 200) {
       message.success("Cập nhật phòng chiếu thành công!");
       form.resetFields();
       setIsSubmit(false);
-      navigate("/admin/cinema/room");
+      navigate("/admin/cinema/show/" + cinemaId);
     } else {
+      const error = getErrorMessageRoom(res.response.data.message, {
+        name: name,
+        id: id,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
       setIsSubmit(false);
     }
@@ -238,6 +259,20 @@ const RoomEdit = () => {
           style={{ margin: "0 auto" }}
         >
           <Row gutter={[20]}>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label="Id phòng"
+              name="id"
+              hidden
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập id phòng!",
+                },
+              ]}
+            >
+              <Input placeholder="Nhập id phòng" />
+            </Form.Item>
             <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
@@ -257,7 +292,7 @@ const RoomEdit = () => {
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Loại phòng"
-                name="typeRoom"
+                name="type"
                 rules={[
                   {
                     required: true,
@@ -267,8 +302,9 @@ const RoomEdit = () => {
                 initialValue={"2D"}
               >
                 <Select style={{ width: "100%" }}>
-                  <Select.Option value="2D">2D</Select.Option>
-                  <Select.Option value="3D">3D</Select.Option>
+                  <Select.Option value="2D">ROOM2D</Select.Option>
+                  <Select.Option value="3D">ROOM3D</Select.Option>
+                  <Select.Option value="4D">ROOM4D</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
