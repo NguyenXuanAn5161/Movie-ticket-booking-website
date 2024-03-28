@@ -169,6 +169,7 @@ const UserList = () => {
           onClick={() => {
             setFilter("");
             setSortQuery("");
+            setCurrent(1);
           }}
         >
           <AiOutlineReload />
