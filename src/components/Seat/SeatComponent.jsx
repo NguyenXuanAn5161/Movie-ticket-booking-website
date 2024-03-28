@@ -12,6 +12,8 @@ const SeatComponent = ({
   handleKeyDown,
   ctrlPressed,
   selectedSeats,
+  seatRow,
+  seatColumn,
 }) => {
   const [rendered, setRendered] = useState(false);
 
@@ -52,15 +54,17 @@ const SeatComponent = ({
     }
   };
 
-  // const isSweetSeat = selectedSeats.find(
-  //   (seat) => seat.index === index && seat.typeSeat === "sweet"
-  // );
+  // Tìm kiếm thông tin ghế dựa trên seatRow và seatColumn
+  const seatData =
+    selectedSeats &&
+    selectedSeats.find(
+      (seat) => seat.seatRow === seatRow && seat.seatColumn === seatColumn
+    );
 
-  // Xác định vị trí của ghế so với danh sách ghế đã chọn
-  // const selectedIndexes = selectedSeats.map((seat) => seat.index);
-  // const prevIndex = selectedIndexes.indexOf(index - 1);
-  // const nextIndex = selectedIndexes.indexOf(index + 1);
-  // const isLeftSeat = prevIndex === -1 || (prevIndex !== -1 && nextIndex !== -1);
+  // Xác định màu cho ghế dựa trên seatData
+  const selectedSeatColor = seatData
+    ? getTypeSeatColor(seatData.seatTypeId)
+    : "#FFFFFF";
 
   return (
     <div
@@ -71,24 +75,15 @@ const SeatComponent = ({
       onKeyUp={handleKeyUp}
       tabIndex={0}
       style={{
-        backgroundColor: isSelected
-          ? "chocolate"
-          : selectedSeats.find((seat) => seat.index === index)
-          ? getTypeSeatColor(
-              selectedSeats.find((seat) => seat.index === index).seatTypeId
-            )
-          : "#FFFFFF",
+        backgroundColor: isSelected ? "chocolate" : selectedSeatColor,
         cursor: "pointer",
         borderRadius: 3,
         width: 30,
-        // width: isSweetSeat ? 47 : 40,
         height: 30,
         border: "1px solid black",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        // marginLeft: isSweetSeat && !isLeftSeat ? -7 : 0, // Điều chỉnh marginLeft cho ghế bên trái
-        // marginRight: isSweetSeat && !isLeftSeat ? -7 : 0, // Điều chỉnh marginRight cho ghế bên phải
       }}
     >
       {text}
