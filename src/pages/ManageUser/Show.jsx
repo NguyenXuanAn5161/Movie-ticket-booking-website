@@ -10,15 +10,38 @@ import {
   notification,
 } from "antd";
 import moment from "moment";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callDeleteUser } from "../../services/apiMovie";
+import { doSetUser } from "../../redux/account/userSlice";
+import { callDeleteUser, callFetchUserById } from "../../services/apiMovie";
 import { getErrorMessageUser } from "../../utils/errorHandling";
 
 const UserShow = () => {
+  const { userId } = useParams();
   const user = useSelector((state) => state.user.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!user) {
+      getUserById();
+    }
+  }, [user]);
+
+  const getUserById = async () => {
+    const res = await callFetchUserById(userId);
+    if (res?.data) {
+      dispatch(doSetUser(res.data));
+    } else {
+      const error = getErrorMessageUser(res.response.data.message, userId);
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
 
   const handleDeleteUser = async () => {
     const res = await callDeleteUser(user?.id);
