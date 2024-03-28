@@ -253,6 +253,15 @@ export const callUpdateRoom = async (data) => {
   }
 };
 
+export const callDeleteRoom = async (id) => {
+  try {
+    const response = await api.delete(`/api/room/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 // ghế
 export const callFetchListTypeSeat = async () => {
   try {
