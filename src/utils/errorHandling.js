@@ -19,6 +19,8 @@ const getErrorMessageCinema = (error, { name, id }) => {
       return "Tên rạp phim đã tồn tại!";
     case `Cinema not found with id: ${id ? id : ""}`:
       return `Rạp phim không tồn tại!`;
+    case "Cinema is active, can't delete":
+      return "Rạp phim đang hoạt động, không thể xoá!";
     default:
       return error;
   }

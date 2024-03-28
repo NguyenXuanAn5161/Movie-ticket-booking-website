@@ -183,3 +183,14 @@ export const callDeleteCinema = async (id) => {
     return error;
   }
 };
+
+// room
+export const callFetchListRoom = async (query) => {
+  try {
+    const response = await api.get(`/api/room?${query}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};

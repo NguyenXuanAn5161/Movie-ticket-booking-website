@@ -145,7 +145,7 @@ const CinemaEdit = () => {
                     ? [
                         cinema?.address.city,
                         cinema?.address.district,
-                        "Phường Tân Định",
+                        cinema?.address.ward,
                       ]
                     : []
                 }
