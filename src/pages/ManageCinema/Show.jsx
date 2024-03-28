@@ -19,9 +19,10 @@ import {
 import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { doSetCinema } from "../../redux/cinema/cinemaSlice";
+import { doSetRoom } from "../../redux/cinema/room/roomSlice";
 import {
   callFetchCinemaById,
   callFetchListRoom,
@@ -31,6 +32,8 @@ import { getErrorMessageCinema } from "../../utils/errorHandling";
 const CinemaShow = () => {
   const { cinemaId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   // thay đổi #1
   const cinema = useSelector((state) => state.cinema.cinema);
   // fetch lai data cinema khi f5
@@ -120,6 +123,13 @@ const CinemaShow = () => {
   ];
 
   // danh sách phòng
+
+  const handleView = (data, url) => {
+    // thay đổi #1
+    dispatch(doSetRoom(data));
+    navigate(`${url}/${data.id}`);
+  };
+
   const columns = [
     {
       title: "Mã phòng",
@@ -199,7 +209,7 @@ const CinemaShow = () => {
             <CiEdit
               style={{ cursor: "pointer" }}
               onClick={() => {
-                handleView(record, "edit");
+                handleView(record, "room/edit");
               }}
             />
           </>
@@ -220,7 +230,7 @@ const CinemaShow = () => {
           type="primary"
           onClick={(event) => {
             // Điều hướng đến trang mới và truyền userId qua URL
-            navigate(`create`);
+            navigate(`room/create`);
           }}
         >
           Thêm mới
