@@ -164,7 +164,7 @@ export default function App() {
           element: <CinemaList />,
         },
         {
-          path: "cinema/show/:movieId",
+          path: "cinema/show/:cinemaId",
           element: <CinemaShow />,
         },
         {
@@ -172,7 +172,7 @@ export default function App() {
           element: <CinemaCreate />,
         },
         {
-          path: "cinema/edit/:movieId",
+          path: "cinema/edit/:cinemaId",
           element: <CinemaEdit />,
         },
         // Phòng chiếu phim
