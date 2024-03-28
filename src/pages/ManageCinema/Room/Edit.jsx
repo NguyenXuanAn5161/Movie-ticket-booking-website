@@ -46,6 +46,12 @@ const RoomEdit = () => {
   const [openModalTypeSeat, setOpenModalTypeSeat] = useState(false);
 
   const room = useSelector((state) => state.room.room);
+  // lần đầu tiên load giao diện setSelectedSeats với giá trị ban đầu của room
+  useEffect(() => {
+    if (room) {
+      setSelectedSeats(room.seats);
+    }
+  }, []);
 
   useEffect(() => {
     if (!room) {
