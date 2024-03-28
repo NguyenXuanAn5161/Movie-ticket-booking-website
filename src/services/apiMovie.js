@@ -243,6 +243,16 @@ export const callCreateRoom = async (data) => {
   }
 };
 
+export const callUpdateRoom = async (data) => {
+  try {
+    const response = await api.put(`/api/room/${data.id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
 // ghế
 export const callFetchListTypeSeat = async () => {
   try {
