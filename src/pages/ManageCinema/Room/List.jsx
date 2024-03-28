@@ -58,7 +58,6 @@ const RoomList = () => {
 
     // thay đổi #1 api call
     const res = await callFetchListRoom(query);
-    console.log("res: ", res);
     if (res?.content) {
       setListData(res.content);
       setTotal(res.totalElements);
@@ -111,7 +110,7 @@ const RoomList = () => {
     },
     {
       title: "Tổng số ghế",
-      dataIndex: "totalSeat",
+      dataIndex: "totalSeats",
       width: 100,
       sorter: true,
     },
