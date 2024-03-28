@@ -18,22 +18,54 @@ import {
 } from "react-icons/ai";
 import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callFetchListRoom } from "../../services/apiMovie";
+import { doSetCinema } from "../../redux/cinema/cinemaSlice";
+import {
+  callFetchCinemaById,
+  callFetchListRoom,
+} from "../../services/apiMovie";
+import { getErrorMessageCinema } from "../../utils/errorHandling";
 
 const CinemaShow = () => {
+  const { cinemaId } = useParams();
+  const dispatch = useDispatch();
+  // thay đổi #1
+  const cinema = useSelector((state) => state.cinema.cinema);
+  // fetch lai data cinema khi f5
+  useEffect(() => {
+    if (!cinema) {
+      getCinemaById();
+    }
+  }, [cinema]);
+
+  const getCinemaById = async () => {
+    const res = await callFetchCinemaById(cinemaId);
+    if (res?.data) {
+      dispatch(doSetCinema(res.data));
+    } else {
+      const error = getErrorMessageCinema(res.response.data.message, userId);
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
+
   const [listDataRoom, setListDataRoom] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(2);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
 
   useEffect(() => {
-    fetchData();
-  }, [current, pageSize, filter, sortQuery]);
+    if (cinema) {
+      fetchData();
+    }
+  }, [current, pageSize, filter, sortQuery, cinema]);
 
   // khi thay doi current va pageSize thi search died!
   // mặc định #2
@@ -57,9 +89,6 @@ const CinemaShow = () => {
 
     setIsLoading(false);
   };
-
-  // thay đổi #1
-  const cinema = useSelector((state) => state.cinema.cinema);
 
   const item = [
     { label: "Mã rạp phim", children: cinema?.code },
@@ -201,6 +230,7 @@ const CinemaShow = () => {
           onClick={() => {
             setFilter("");
             setSortQuery("");
+            setCurrent(1);
           }}
         >
           <AiOutlineReload />
