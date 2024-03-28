@@ -16,11 +16,11 @@ const SeatComponent = ({
   const [rendered, setRendered] = useState(false);
 
   // Ánh xạ giữa typeSeat và backgroundColor
-  const getTypeSeatColor = (typeSeat) => {
-    switch (typeSeat) {
-      case "vip":
+  const getTypeSeatColor = (seatTypeId) => {
+    switch (seatTypeId) {
+      case 3:
         return "#FF8247"; // Màu cam cho ghế vip
-      case "sweet":
+      case 2:
         return "#FF1493"; // Màu hồng cho ghế đôi
       default:
         return "#6959CD"; // Màu tím cho ghế thường (mặc định)
@@ -75,7 +75,7 @@ const SeatComponent = ({
           ? "chocolate"
           : selectedSeats.find((seat) => seat.index === index)
           ? getTypeSeatColor(
-              selectedSeats.find((seat) => seat.index === index).typeSeat
+              selectedSeats.find((seat) => seat.index === index).seatTypeId
             )
           : "#FFFFFF",
         cursor: "pointer",

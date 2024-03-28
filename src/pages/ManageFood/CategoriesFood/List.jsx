@@ -258,9 +258,10 @@ const FoodCategoryList = () => {
         </Col>
         <Col span={24}>
           <Table
+            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
-              y: 200,
+              y: 280,
             }}
             title={renderHeader}
             bordered

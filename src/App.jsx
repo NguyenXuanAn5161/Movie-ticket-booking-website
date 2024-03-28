@@ -164,15 +164,25 @@ export default function App() {
           element: <CinemaList />,
         },
         {
-          path: "cinema/show/:movieId",
+          path: "cinema/show/:cinemaId",
           element: <CinemaShow />,
         },
+        // room trong cinema
+        {
+          path: "cinema/show/:cinemaId/room/create",
+          element: <RoomCreate />,
+        },
+        {
+          path: "cinema/show/:cinemaId/room/edit/:roomId",
+          element: <RoomEdit />,
+        },
+        //------------------------------
         {
           path: "cinema/create",
           element: <CinemaCreate />,
         },
         {
-          path: "cinema/edit/:movieId",
+          path: "cinema/edit/:cinemaId",
           element: <CinemaEdit />,
         },
         // Phòng chiếu phim

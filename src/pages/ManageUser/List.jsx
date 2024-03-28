@@ -19,6 +19,7 @@ import UserImport from "../../components/Admin/User/data/UserImport";
 import InputSearch from "../../components/InputSearch/InputSearch";
 import { doSetUser } from "../../redux/account/userSlice";
 import { callDeleteUser, callFetchListUser } from "../../services/apiMovie";
+import { getErrorMessageUser } from "../../utils/errorHandling";
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -57,12 +58,13 @@ const UserList = () => {
   const handleDeleteUser = async (userId) => {
     const res = await callDeleteUser(userId);
     if (res.status === 200) {
-      message.success("Xoá người dùng thành công!");
+      message.success("Tắt hoạt động người dùng thành công!");
       await fetchUser();
     } else {
+      const error = getErrorMessageUser(res.response.data.message, userId);
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
     }
   };
@@ -167,6 +169,7 @@ const UserList = () => {
           onClick={() => {
             setFilter("");
             setSortQuery("");
+            setCurrent(1);
           }}
         >
           <AiOutlineReload />
@@ -211,7 +214,7 @@ const UserList = () => {
             locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
-              y: 200,
+              y: 280,
             }}
             title={renderHeader}
             bordered

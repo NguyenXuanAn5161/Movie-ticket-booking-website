@@ -1,5 +1,6 @@
-import { Divider, Form, Modal, Radio, message, notification } from "antd";
-import { useState } from "react";
+import { Divider, Form, Modal, Select, message, notification } from "antd";
+import { useEffect, useState } from "react";
+import { callFetchListTypeSeat } from "../../services/apiMovie";
 import { calculateSeatPosition } from "../../utils/seatCalculations";
 
 const ModalTypeSeat = (props) => {
@@ -12,7 +13,32 @@ const ModalTypeSeat = (props) => {
     setSelectedIndexes,
   } = props;
   const [isSubmit, setIsSubmit] = useState(false);
+  const [listData, setListData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    const res = await callFetchListTypeSeat();
+    if (res) {
+      const data = res.map((item) => {
+        return {
+          label:
+            item?.name === "STANDARD"
+              ? "Ghế thường"
+              : item?.name === "VIP"
+              ? "Ghế vip"
+              : "Ghế đôi",
+          value: item.id,
+        };
+      });
+      setListData(data);
+    }
+    setIsLoading(false);
+  };
   const [form] = Form.useForm();
 
   // Hàm kiểm tra xem hai ghế trước hoặc hai ghế sau đã là ghế đôi
@@ -21,7 +47,7 @@ const ModalTypeSeat = (props) => {
     for (let i = 0; i < adjacentIndexes.length; i++) {
       const seatIndex = adjacentIndexes[i]; // 8 10 11
       const seat = selectedSeats.find((seat) => seat.index === seatIndex);
-      if (seat && seat.typeSeat === "sweet") {
+      if (seat && seat.seatTypeId === 2) {
         return true; // Nếu có một ghế đôi trong hai ghế trước hoặc sau, trả về true
       }
     }
@@ -29,11 +55,21 @@ const ModalTypeSeat = (props) => {
   };
 
   const onFinish = async (values) => {
-    const { typeSeat } = values;
+    const { seatTypeId } = values;
+    // kiểm tra xem có ghế được chọn hay không
+    if (selectedItems.length === 0) {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: "Vui lòng chọn ghế cần cập nhật loại!",
+      });
+      setIsSubmit(false);
+      return;
+    }
+
     setIsSubmit(true);
 
     // Kiểm tra nếu loại ghế là "sweet" và số lượng ghế đã chọn lớn hơn 2
-    if (typeSeat === "sweet" && selectedItems.length > 2) {
+    if (seatTypeId === 2 && selectedItems.length > 2) {
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description:
@@ -43,7 +79,7 @@ const ModalTypeSeat = (props) => {
       return;
     }
 
-    if (typeSeat === "sweet") {
+    if (seatTypeId === 2) {
       if (
         selectedItems[0] > selectedItems[1] &&
         selectedItems[0] - 1 !== selectedItems[1]
@@ -69,7 +105,7 @@ const ModalTypeSeat = (props) => {
 
     // Kiểm tra xem hai ghế trước hoặc hai ghế sau đã là ghế đôi
     const currentSeatIndex = selectedItems[0];
-    if (typeSeat === "sweet" && checkAdjacentSeats(currentSeatIndex)) {
+    if (seatTypeId === 2 && checkAdjacentSeats(currentSeatIndex)) {
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description:
@@ -79,10 +115,10 @@ const ModalTypeSeat = (props) => {
       return;
     }
 
-    if (typeSeat) {
+    if (seatTypeId) {
       const seatList = selectedItems.map((index) => {
         const { seatRow, seatColumn } = calculateSeatPosition(index);
-        return { index, seatRow, seatColumn, typeSeat };
+        return { index, seatRow, seatColumn, seatTypeId };
       });
 
       setSelectedSeats((prevSelectedSeats) => {
@@ -101,7 +137,7 @@ const ModalTypeSeat = (props) => {
             // Nếu tìm thấy ghế trùng, cập nhật loại ghế mới
             updatedSelectedSeats[updateSeatIndex] = {
               ...updatedSelectedSeats[updateSeatIndex],
-              typeSeat: newSeat.typeSeat,
+              seatTypeId: newSeat.seatTypeId,
             };
           } else {
             // Nếu không tìm thấy ghế trùng, thêm ghế mới vào mảng
@@ -155,20 +191,23 @@ const ModalTypeSeat = (props) => {
           <Form.Item
             labelCol={{ span: 24 }}
             label="Chọn loại ghế"
-            name="typeSeat"
+            name="seatTypeId"
             rules={[
               {
                 required: true,
                 message: "Loại ghế không được để trống!",
               },
             ]}
-            initialValue={"standard"}
+            initialValue={null}
           >
-            <Radio.Group>
-              <Radio.Button value="standard">Ghế thường</Radio.Button>
-              <Radio.Button value="vip">Ghế vip</Radio.Button>
-              <Radio.Button value="sweet">Ghế đôi</Radio.Button>
-            </Radio.Group>
+            <Select
+              // defaultValue={null}
+              showSearch
+              allowClear
+              // onChange={handleChange}
+              options={listData}
+              placeholder="Chọn loại ghế"
+            />
           </Form.Item>
         </Form>
       </Modal>

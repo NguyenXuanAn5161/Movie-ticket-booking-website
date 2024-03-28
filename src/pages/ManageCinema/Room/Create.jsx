@@ -10,6 +10,7 @@ import {
   FloatButton,
   Form,
   Input,
+  Radio,
   Row,
   Select,
   Tooltip,
@@ -19,17 +20,20 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { IoOpenOutline } from "react-icons/io5";
 import { MdEventSeat, MdOutlineDelete } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 import ModalTypeSeat from "../../../components/Seat/ModalTypeSeat";
 import SeatComponent from "../../../components/Seat/SeatComponent";
 import SeatLegend from "../../../components/Seat/SeatLegend";
-import { callCreateUser } from "../../../services/api";
+import { callCreateRoom } from "../../../services/apiMovie";
+import { getErrorMessageRoom } from "../../../utils/errorHandling";
 import "./index.scss";
 
 const alphabet = "ABCDEFGHIJKLMNOPQR";
 
 const RoomCreate = () => {
+  const { cinemaId } = useParams();
+
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -39,7 +43,23 @@ const RoomCreate = () => {
   const [typeSeat, setTypeSeat] = useState("");
 
   const onFinish = async (values) => {
-    const { name, typeRoom, totalSeat } = values;
+    const { name, type, status } = values;
+    // Tạo mảng seats từ selectedSeats
+    const seats = selectedSeats.map((seat) => ({
+      seatRow: seat.seatRow,
+      seatColumn: seat.seatColumn,
+      status: true,
+      seatTypeId: seat.seatTypeId,
+    }));
+    // tạo cấu trúc data để truyền xuống
+    const roomData = {
+      name,
+      type,
+      cinemaId,
+      status,
+      seats: seats,
+    };
+
     if (selectedSeats.length <= 0) {
       notification.error({
         message: "Vui lòng chọn danh sách ghế!",
@@ -48,18 +68,22 @@ const RoomCreate = () => {
       return;
     }
 
-    const { fullName, email, password, phone } = values;
     setIsSubmit(true);
-    const res = await callCreateUser(fullName, email, password, phone);
-    if (res && res.data) {
+    const res = await callCreateRoom(roomData);
+    if (res?.status === 200) {
       message.success("Tạo mới phòng chiếu thành công!");
       form.resetFields();
       setIsSubmit(false);
-      navigate("/admin/cinema/room");
+      navigate(`/admin/cinema/show/${cinemaId}`);
     } else {
+      console.log("res error: ", res);
+      const error = getErrorMessageRoom(res.response.data.message, {
+        name: name,
+        id: cinemaId,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
       setIsSubmit(false);
     }
@@ -160,10 +184,6 @@ const RoomCreate = () => {
     message.success("Xóa ghế thành công!");
   };
 
-  useEffect(() => {
-    console.log("Danh sach ghe: ", selectedSeats);
-  }, [selectedSeats]);
-
   return (
     <>
       <PageHeader title="Tạo mới phòng chiếu" numberBack={-1} type="create" />
@@ -177,8 +197,8 @@ const RoomCreate = () => {
           autoComplete="true"
           style={{ margin: "0 auto" }}
         >
-          <Row gutter={[20]}>
-            <Col span={12}>
+          <Row gutter={[16]}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên phòng"
@@ -193,11 +213,11 @@ const RoomCreate = () => {
                 <Input placeholder="Nhập tên phòng" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Loại phòng"
-                name="typeRoom"
+                name="type"
                 rules={[
                   {
                     required: true,
@@ -210,6 +230,25 @@ const RoomCreate = () => {
                   <Select.Option value="2D">2D</Select.Option>
                   <Select.Option value="3D">3D</Select.Option>
                 </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Trạng thái"
+                name="status"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn trạng thái!",
+                  },
+                ]}
+                initialValue={false}
+              >
+                <Radio.Group>
+                  <Radio value={true}>Hoạt động</Radio>
+                  <Radio value={false}>Ngưng hoạt động</Radio>
+                </Radio.Group>
               </Form.Item>
             </Col>
             <Col span={24}>

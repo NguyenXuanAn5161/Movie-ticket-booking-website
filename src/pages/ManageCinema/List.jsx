@@ -23,79 +23,16 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../components/InputSearch/InputSearch";
 import { doSetCinema } from "../../redux/cinema/cinemaSlice";
-import { callFetchListUser } from "../../services/api";
+import { callDeleteCinema, callFetchListCinema } from "../../services/apiMovie";
+import { getErrorMessageCinema } from "../../utils/errorHandling";
 
 const CinemaList = () => {
-  const addressData = [
-    {
-      id: "1",
-      code: "VN001",
-      streetAddress: "123 Đường Lê Lợi",
-      district: "Quận 1",
-      city: "Thành phố Hồ Chí Minh",
-      nation: "Việt Nam",
-    },
-    {
-      id: "2",
-      code: "VN002",
-      streetAddress: "456 Đường Nguyễn Huệ",
-      district: "Quận 1",
-      city: "Thành phố Hồ Chí Minh",
-      nation: "Việt Nam",
-    },
-    {
-      id: "3",
-      code: "VN003",
-      streetAddress: "789 Đường Hàng Bài",
-      district: "Quận 5",
-      city: "Thành phố Hồ Chí Minh",
-      nation: "Việt Nam",
-    },
-  ];
-
-  const cinemaData = [
-    {
-      id: "1",
-      code: "CIN001",
-      name: "Galaxy Nguyễn Du",
-      totalRoom: 6,
-      address_id: "1",
-      status: "available",
-    },
-    {
-      id: "2",
-      code: "CIN002",
-      name: "CGV Parkson",
-      totalRoom: 8,
-      address_id: "2",
-      status: "unavailable",
-    },
-    {
-      id: "3",
-      code: "CIN003",
-      name: "BHD Quận 5",
-      totalRoom: 4,
-      address_id: "3",
-      status: "available",
-    },
-  ];
-
-  const mergedData = cinemaData.map((cinema) => {
-    const address = addressData.find(
-      (address) => address.id === cinema.address_id
-    );
-    return {
-      ...cinema,
-      address: address,
-    };
-  });
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
-  const [listData, setListData] = useState(mergedData);
+  const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
@@ -112,20 +49,20 @@ const CinemaList = () => {
   // mặc định #2
   const fetchData = async () => {
     setIsLoading(true);
-    let query = `current=${current}&pageSize=${pageSize}`;
+    let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
-      query += `&${filter}`;
+      query += `${filter}`;
     }
 
-    if (sortQuery) {
-      query += `&${sortQuery}`;
-    }
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
 
     // thay đổi #1 api call
-    const res = await callFetchListUser(query);
-    if (res && res.data) {
-      // setListData(res.data.result);
-      // setTotal(res.data.meta.total);
+    const res = await callFetchListCinema(query);
+    if (res?.content) {
+      setListData(res.content);
+      setTotal(res.totalElements);
     }
 
     setIsLoading(false);
@@ -134,15 +71,18 @@ const CinemaList = () => {
   // mặc định #2
   const handleDeleteData = async (dataId) => {
     // thay đổi #1 api call
-    const res = await callDeleteUser(dataId);
-    if (res && res.data) {
+    const res = await callDeleteCinema(dataId);
+    if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Xoá rạp thành công!");
       await fetchData();
     } else {
+      const error = getErrorMessageCinema(res.message, {
+        id: dataId,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
     }
   };
@@ -158,20 +98,20 @@ const CinemaList = () => {
     {
       title: "Mã rạp",
       dataIndex: "code",
-      width: 100,
+      width: 135,
       fixed: "left",
     },
     {
       title: "Tên rạp",
       dataIndex: "name",
       sorter: true,
-      width: 100,
+      width: 150,
       fixed: "left",
     },
     {
       title: "Tổng số phòng",
       dataIndex: "totalRoom",
-      width: 150,
+      width: 120,
       sorter: true,
     },
     {
@@ -182,8 +122,9 @@ const CinemaList = () => {
       render: (text, record, index) => {
         return (
           <span>
-            {record.address.streetAddress}, {record.address.district},{" "}
-            {record.address.city}, {record.address.nation}
+            {record.address.street}, {record.address.ward},{" "}
+            {record.address.district}, {record.address.city},{" "}
+            {record.address.nation}
           </span>
         );
       },
@@ -194,8 +135,8 @@ const CinemaList = () => {
       width: 100,
       sorter: true,
       render: (status) => (
-        <Tag color={status === "available" ? "green" : "red"}>
-          {status === "available" ? "Hoạt động" : "Ngưng hoạt động"}
+        <Tag color={status ? "success" : "error"}>
+          {status ? "Hoạt động" : "Ngưng hoạt động"}
         </Tag>
       ),
     },
@@ -224,7 +165,7 @@ const CinemaList = () => {
               description={"Bạn có chắc chắn muốn xóa rạp phim này?"}
               okText="Xác nhận"
               cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record._id)}
+              onConfirm={() => handleDeleteData(record.id)}
             >
               <span>
                 <AiOutlineDelete
@@ -284,6 +225,7 @@ const CinemaList = () => {
           onClick={() => {
             setFilter("");
             setSortQuery("");
+            setCurrent(1);
           }}
         >
           <AiOutlineReload />
@@ -294,7 +236,18 @@ const CinemaList = () => {
 
   // mặc định #2
   const handleSearch = (query) => {
-    setFilter(query);
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+
+    setFilter(q);
   };
 
   // mặc định #2
@@ -320,7 +273,7 @@ const CinemaList = () => {
   // thay đổi #1
   const itemSearch = [
     { field: "code", label: "Mã rạp" },
-    { field: "cinemaName", label: "Tên rạp" },
+    { field: "name", label: "Tên rạp" },
     { field: "address", label: "Địa chỉ" },
   ];
 
@@ -332,9 +285,10 @@ const CinemaList = () => {
         </Col>
         <Col span={24}>
           <Table
+            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
-              y: 200,
+              y: 280,
             }}
             title={renderHeader}
             bordered

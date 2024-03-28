@@ -6,16 +6,56 @@ import {
   Divider,
   Row,
   Tag,
-  Typography,
+  message,
+  notification,
 } from "antd";
 import moment from "moment";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
-
-const { Text } = Typography;
+import { doSetUser } from "../../redux/account/userSlice";
+import { callDeleteUser, callFetchUserById } from "../../services/apiMovie";
+import { getErrorMessageUser } from "../../utils/errorHandling";
 
 const UserShow = () => {
+  const { userId } = useParams();
   const user = useSelector((state) => state.user.user);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!user) {
+      getUserById();
+    }
+  }, [user]);
+
+  const getUserById = async () => {
+    const res = await callFetchUserById(userId);
+    if (res?.data) {
+      dispatch(doSetUser(res.data));
+    } else {
+      const error = getErrorMessageUser(res.response.data.message, userId);
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    const res = await callDeleteUser(user?.id);
+    if (res.status === 200) {
+      message.success("Tắt hoạt động người dùng thành công!");
+      navigate(-1);
+    } else {
+      const error = getErrorMessageUser(res.response.data.message, user?.id);
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
 
   const item = [
     { label: "Code", children: user?.code },
@@ -80,6 +120,7 @@ const UserShow = () => {
         numberBack={-1}
         type="show"
         hiddenEdit
+        handleDelete={handleDeleteUser}
       />
       <Divider />
       <div style={{ padding: "0 20px" }}>
