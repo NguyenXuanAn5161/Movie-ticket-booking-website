@@ -214,6 +214,16 @@ export const callGetCinemaById = async (id) => {
 };
 
 // room
+export const callFetchRoomById = async (id) => {
+  try {
+    const response = await api.get(`/api/room/${id}`);
+    return response;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
 export const callFetchListRoom = async (query) => {
   try {
     const response = await api.get(`/api/room?${query}`);
