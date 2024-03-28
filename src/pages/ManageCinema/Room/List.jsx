@@ -4,6 +4,7 @@ import {
   Popconfirm,
   Row,
   Table,
+  Tag,
   message,
   notification,
 } from "antd";
@@ -21,6 +22,7 @@ import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../components/InputSearch/InputSearch";
+import { callFetchListRoom } from "../../../services/apiMovie";
 
 const RoomList = () => {
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ const RoomList = () => {
   // mặc định #2
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
@@ -45,20 +47,21 @@ const RoomList = () => {
   // mặc định #2
   const fetchData = async () => {
     setIsLoading(true);
-    let query = `current=${current}&pageSize=${pageSize}`;
+    let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
       query += `&${filter}`;
     }
 
-    if (sortQuery) {
-      query += `&${sortQuery}`;
-    }
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
 
     // thay đổi #1 api call
-    const res = await callFetchListUser(query);
-    if (res && res.data) {
-      setListData(res.data.result);
-      setTotal(res.data.meta.total);
+    const res = await callFetchListRoom(query);
+    console.log("res: ", res);
+    if (res?.content) {
+      setListData(res.content);
+      setTotal(res.totalElements);
     }
 
     setIsLoading(false);
@@ -103,23 +106,41 @@ const RoomList = () => {
     },
     {
       title: "Loại phòng",
-      dataIndex: "typeRoom",
-      width: 150,
-      sorter: true,
+      dataIndex: "type",
+      width: 80,
     },
     {
       title: "Tổng số ghế",
       dataIndex: "totalSeat",
-      width: 150,
+      width: 100,
       sorter: true,
     },
     {
+      title: "Thuộc Rạp",
+      dataIndex: "cinemaId",
+      width: 80,
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      width: 140,
+      render: (text, record, index) => {
+        return (
+          <Tag color={record.status ? "success" : "error"}>
+            {record.status ? "Hoạt động" : "Ngừng hoạt động"}
+          </Tag>
+        );
+      },
+    },
+    {
       title: "Cập nhật ngày",
-      dataIndex: "updatedAt",
+      dataIndex: "createdDate",
       width: 150,
       render: (text, record, index) => {
         return (
-          <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
+          <span>
+            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
+          </span>
         );
       },
       sorter: true,
