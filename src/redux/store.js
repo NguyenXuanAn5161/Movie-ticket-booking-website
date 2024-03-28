@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import accountReducer from "../redux/account/accountSlice";
 import userReducer from "../redux/account/userSlice";
 import cinemaReducer from "./cinema/cinemaSlice";
+import roomReducer from "./cinema/room/roomSlice";
 import foodCategoryReducer from "./food/foodCategorySlice";
 import foodReducer from "./food/foodSlice";
 import movieGenreReducer from "./movie/movieGenreSlice";
@@ -25,6 +26,7 @@ export const store = configureStore({
     food: foodReducer,
     foodCategory: foodCategoryReducer,
     cinema: cinemaReducer,
+    room: roomReducer,
     seat: seatReducer,
     seatType: seatTypeReducer,
     price: priceReducer,
