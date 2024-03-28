@@ -49,7 +49,7 @@ const RoomList = () => {
     setIsLoading(true);
     let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
-      query += `&${filter}`;
+      query += `${filter}`;
     }
 
     // if (sortQuery) {
@@ -229,7 +229,19 @@ const RoomList = () => {
 
   // mặc định #2
   const handleSearch = (query) => {
-    setFilter(query);
+    console.log("query: ", query);
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+
+    setFilter(q);
   };
 
   // mặc định #2
@@ -256,7 +268,7 @@ const RoomList = () => {
   const itemSearch = [
     { field: "code", label: "Mã phòng" },
     { field: "name", label: "Tên phòng" },
-    { field: "typeRoom", label: "Loại phòng" },
+    { field: "cinemaId", label: "Tên rạp" },
   ];
 
   return (
