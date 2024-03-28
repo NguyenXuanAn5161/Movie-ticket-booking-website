@@ -34,6 +34,8 @@ const getErrorMessageRoom = (error, { name, id }) => {
       return "Không tìm thấy rạp để thêm phòng!";
     case `Cinema not found with id:${id ? id : ""}`:
       return `Rạp phim không tồn tại!`;
+    case `Room not found with id:${id ? id : ""}`:
+      return `Phòng không tồn tại!`;
     default:
       return error;
   }
