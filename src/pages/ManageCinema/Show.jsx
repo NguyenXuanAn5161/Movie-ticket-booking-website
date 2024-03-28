@@ -8,6 +8,8 @@ import {
   Row,
   Table,
   Tag,
+  message,
+  notification,
 } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -24,10 +26,14 @@ import PageHeader from "../../components/PageHeader/PageHeader";
 import { doSetCinema } from "../../redux/cinema/cinemaSlice";
 import { doSetRoom } from "../../redux/cinema/room/roomSlice";
 import {
+  callDeleteRoom,
   callFetchCinemaById,
   callFetchListRoom,
 } from "../../services/apiMovie";
-import { getErrorMessageCinema } from "../../utils/errorHandling";
+import {
+  getErrorMessageCinema,
+  getErrorMessageRoom,
+} from "../../utils/errorHandling";
 
 const CinemaShow = () => {
   const { cinemaId } = useParams();
@@ -58,7 +64,7 @@ const CinemaShow = () => {
 
   const [listDataRoom, setListDataRoom] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
@@ -91,6 +97,25 @@ const CinemaShow = () => {
     }
 
     setIsLoading(false);
+  };
+
+  const handleDeleteData = async (dataId) => {
+    // thay đổi #1 api call
+    const res = await callDeleteRoom(dataId);
+    console.log("res: ", res);
+    if (res?.status === 200) {
+      // thay đổi #1 message
+      message.success("Xoá phòng thành công!");
+      await fetchData();
+    } else {
+      const error = getErrorMessageRoom(res.response.data.message, {
+        id: dataId,
+      });
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
   };
 
   const item = [
@@ -194,7 +219,7 @@ const CinemaShow = () => {
               description={"Bạn có chắc chắn muốn xóa phòng chiếu này?"}
               okText="Xác nhận"
               cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record._id)}
+              onConfirm={() => handleDeleteData(record.id)}
             >
               <span>
                 <AiOutlineDelete
