@@ -24,7 +24,7 @@ Online movie ticket booking system
 
 ---
 
-Link deloy Vercel: [(auto update) test nhanh website tại đây](https://movie-ticket-booking-website-i9gu7bryg-nguyen-xuan-ans-projects.vercel.app/)
+Link deloy Vercel: [(auto update) test nhanh website tại đây](https://movie-ticket-booking-website-git-main-nguyen-xuan-ans-projects.vercel.app/admin)
 
 ---
 
