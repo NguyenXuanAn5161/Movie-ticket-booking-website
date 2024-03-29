@@ -273,7 +273,7 @@ export const callFetchListTypeSeat = async () => {
   }
 };
 
-// đồ ăn
+// loại đồ ăn
 export const callGetCategoryFoodById = async (id) => {
   try {
     const response = await api.get(`/api/categoryFood/${id}`);
@@ -339,3 +339,70 @@ export const callDeleteCategoryFood = async (id) => {
     return error;
   }
 };
+
+// đồ ăn
+export const callGetFoodById = async (id) => {
+  try {
+    const response = await api.get(`/api/food/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
+export const callFetchListFood = async (query) => {
+  try {
+    const response = await api.get(`/api/food?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// export const callCreateCategoryFood = async (name) => {
+//   const bodyFormData = new FormData();
+//   bodyFormData.append("name", name);
+//   try {
+//     const response = await api({
+//       method: "post",
+//       url: "/api/categoryFood",
+//       data: bodyFormData,
+//       headers: {
+//         "Content-Type": "multipart/form-data",
+//       },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     return error;
+//   }
+// };
+
+// export const callUpdateCategoryFood = async (id, name) => {
+//   const bodyFormData = new FormData();
+//   bodyFormData.append("id", id);
+//   bodyFormData.append("name", name);
+//   try {
+//     const response = await api({
+//       method: "put",
+//       url: "/api/categoryFood",
+//       data: bodyFormData,
+//       headers: {
+//         "Content-Type": "multipart/form-data",
+//       },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     return error;
+//   }
+// };
+
+// export const callDeleteCategoryFood = async (id) => {
+//   try {
+//     const response = await api.delete(`/api/categoryFood/${id}`);
+//     return response.data;
+//   } catch (error) {
+//     console.error("error: ", error);
+//     return error;
+//   }
+// };
