@@ -8,6 +8,7 @@ import {
   message,
   notification,
 } from "antd";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import {
   AiOutlineDelete,
@@ -21,117 +22,14 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../components/InputSearch/InputSearch";
 import { doSetFood } from "../../../redux/food/foodSlice";
-import { callFetchListUser } from "../../../services/api";
+import { callFetchListFood } from "../../../services/apiMovie";
 
 // thay đổi #1
 const FoodList = () => {
-  const data = [
-    {
-      id: "1",
-      code: "item_001",
-      image: "path/to/image1.jpg",
-      foodName: "Popcorn",
-      category_id: "1",
-      size: "Medium",
-      price: 20000,
-      status: "unavailable",
-    },
-    {
-      id: "2",
-      code: "item_002",
-      image: "path/to/image2.jpg",
-      foodName: "Nước ngọt",
-      category_id: "1",
-      size: "Small",
-      price: 45000,
-      status: "available",
-    },
-    {
-      id: "3",
-      code: "item_003",
-      image: "path/to/image3.jpg",
-      foodName: "Bánh quy",
-      category_id: "2",
-      size: "Small",
-      price: 30000,
-      status: "available",
-    },
-    {
-      id: "4",
-      code: "item_004",
-      image: "path/to/image4.jpg",
-      foodName: "Kẹo cao su",
-      category_id: "2",
-      size: "Small",
-      price: 1.99,
-      status: "unavailable",
-    },
-    {
-      id: "5",
-      code: "item_005",
-      image: "path/to/image5.jpg",
-      foodName: "Bắp rang",
-      category_id: "3",
-      size: "Large",
-      price: 6.99,
-      status: "available",
-    },
-    {
-      id: "6",
-      code: "item_006",
-      image: "path/to/image6.jpg",
-      foodName: "Kem",
-      category_id: "3",
-      size: "Small",
-      price: 3.99,
-      status: "available",
-    },
-    {
-      id: "7",
-      code: "item_007",
-      image: "path/to/image7.jpg",
-      foodName: "Bánh hamburger",
-      category_id: "3",
-      size: "Small",
-      price: 5.99,
-      status: "available",
-    },
-    {
-      id: "8",
-      code: "item_008",
-      image: "path/to/image8.jpg",
-      foodName: "Nacho",
-      category_id: "3",
-      size: "Large",
-      price: 7.99,
-      status: "available",
-    },
-    {
-      id: "9",
-      code: "item_009",
-      image: "path/to/image9.jpg",
-      foodName: "Nước trái cây",
-      category_id: "4",
-      size: "Small",
-      price: 3.49,
-      status: "available",
-    },
-    {
-      id: "10",
-      code: "item_010",
-      image: "path/to/image10.jpg",
-      foodName: "Cốc nước lạnh",
-      category_id: "4",
-      size: "Large",
-      price: 2.99,
-      status: "unavailable",
-    },
-  ];
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
-  const [listData, setListData] = useState(data);
+  const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(2);
   const [total, setTotal] = useState(0);
@@ -149,20 +47,20 @@ const FoodList = () => {
   // mặc định #2
   const fetchData = async () => {
     setIsLoading(true);
-    let query = `current=${current}&pageSize=${pageSize}`;
+    let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
       query += `&${filter}`;
     }
 
-    if (sortQuery) {
-      query += `&${sortQuery}`;
-    }
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
 
     // thay đổi #1 api call
-    const res = await callFetchListUser(query);
-    if (res && res.data) {
-      // setListData(res.data.result);
-      // setTotal(res.data.meta.total);
+    const res = await callFetchListFood(query);
+    if (res?.content) {
+      setListData(res.content);
+      setTotal(res.totalElements);
     }
 
     setIsLoading(false);
@@ -200,16 +98,10 @@ const FoodList = () => {
     },
     {
       title: "Tên đồ ăn",
-      dataIndex: "foodName",
+      dataIndex: "name",
       sorter: true,
       width: 100,
       fixed: "left",
-    },
-    {
-      title: "Loại đồ ăn",
-      dataIndex: "category",
-      width: 150,
-      sorter: true,
     },
     {
       title: "Giá",
@@ -233,22 +125,24 @@ const FoodList = () => {
       width: 150,
       sorter: true,
       render: (status) => (
-        <Tag color={status === "available" ? "green" : "red"}>
-          {status === "available" ? "Có sẵn" : "Hết hàng"}
+        <Tag color={status ? "success" : "error"}>
+          {status ? "Còn hàng" : "Hết hàng"}
         </Tag>
       ),
     },
-    // {
-    //   title: "Cập nhật ngày",
-    //   dataIndex: "updatedAt",
-    //   width: 150,
-    //   render: (text, record, index) => {
-    //     return (
-    //       <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
-    //     );
-    //   },
-    //   sorter: true,
-    // },
+    {
+      title: "Cập nhật ngày",
+      dataIndex: "createdDate",
+      width: 150,
+      render: (text, record, index) => {
+        return (
+          <span>
+            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
+          </span>
+        );
+      },
+      sorter: true,
+    },
     {
       title: "Thao tác",
       width: 100,
@@ -314,6 +208,7 @@ const FoodList = () => {
           onClick={() => {
             setFilter("");
             setSortQuery("");
+            setCurrent(1);
           }}
         >
           <AiOutlineReload />
@@ -324,7 +219,18 @@ const FoodList = () => {
 
   // mặc định #2
   const handleSearch = (query) => {
-    setFilter(query);
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+
+    setFilter(q);
   };
 
   // mặc định #2
@@ -349,9 +255,9 @@ const FoodList = () => {
 
   // thay đổi #1
   const itemSearch = [
-    { field: "foodName", label: "Tên đồ ăn" },
-    { field: "category", label: "Loại đồ ăn" },
-    { field: "status", label: "Trạng thái" },
+    { field: "code", label: "Mã đồ ăn" },
+    { field: "name", label: "Tên đồ ăn" },
+    { field: "categoryId", label: "Loại đồ ăn" },
   ];
 
   return (
