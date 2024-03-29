@@ -18,6 +18,9 @@ Online movie ticket booking system
 - Lodash
 - react-infinite-scroll-component
 - dayjs
+- CountUp
+- Recharts
+- Styled-components (tạm thời-viết CSS trong JavaScript)
 
 ---
 
