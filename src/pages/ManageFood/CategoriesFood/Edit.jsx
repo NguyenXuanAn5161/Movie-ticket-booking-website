@@ -9,14 +9,42 @@ import {
   notification,
 } from "antd";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callUpdateUser } from "../../../services/api";
+import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
+import {
+  callGetCategoryFoodById,
+  callUpdateCategoryFood,
+} from "../../../services/apiMovie";
+import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 
 const FoodCategoryEdit = () => {
+  const { foodCategoryId } = useParams();
+  const dispatch = useDispatch();
   // thay đổi #1
   const foodCategory = useSelector((state) => state.foodCategory.foodCategory);
+  // fetch lai data cinema khi f5
+  useEffect(() => {
+    if (!foodCategory) {
+      getCategoryFoodById();
+    }
+  }, [foodCategory]);
+
+  const getCategoryFoodById = async () => {
+    const res = await callGetCategoryFoodById(foodCategoryId);
+    if (res) {
+      dispatch(doSetFoodCategory(res));
+    } else {
+      const error = getErrorMessageCategoryFood(res.response.data.message, {
+        id: foodCategoryId,
+      });
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
 
   // mặc định #2
   const navigate = useNavigate();
@@ -29,26 +57,24 @@ const FoodCategoryEdit = () => {
     form.setFieldsValue(foodCategory); // Cập nhật dữ liệu vào form khi userData thay đổi
   }, [foodCategory, form]);
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setUserData({ ...userData, [name]: value });
-  // };
-
   const onFinish = async (values) => {
-    console.log("value check: ", values);
     // thay đổi #1
-    const { _id, fullName, phone } = values;
+    const { name, id } = values;
     setIsSubmit(true);
     // thay đổi #1 api call
-    const res = await callUpdateUser(_id, fullName, phone);
-    if (res && res.data) {
+    const res = await callUpdateCategoryFood(id, name);
+    if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật loại đồ ăn thành công!");
       navigate("/admin/foodCategories");
     } else {
+      const error = getErrorMessageCategoryFood(res.response.data.message, {
+        name: name,
+        id: id,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
     }
     setIsSubmit(false);
@@ -64,26 +90,19 @@ const FoodCategoryEdit = () => {
       <Card bordered={false}>
         <Form form={form} onFinish={onFinish}>
           <Row gutter={[16]}>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Mã loại đồ ăn"
-                name="code"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mã loại đồ ăn!",
-                  },
-                ]}
-              >
-                <Input placeholder="Nhập mã loại đồ ăn" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
+            <Form.Item
+              hidden
+              labelCol={{ span: 24 }}
+              label="Id loại đồ ăn"
+              name="id"
+            >
+              <Input />
+            </Form.Item>
+            <Col span={24}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên loại đồ ăn"
-                name="categoryName"
+                name="name"
                 rules={[
                   {
                     required: true,
