@@ -12,7 +12,6 @@ import CinemaEdit from "./pages/ManageCinema/Edit";
 import CinemaList from "./pages/ManageCinema/List";
 import RoomCreate from "./pages/ManageCinema/Room/Create";
 import RoomEdit from "./pages/ManageCinema/Room/Edit";
-import RoomList from "./pages/ManageCinema/Room/List";
 import CinemaShow from "./pages/ManageCinema/Show";
 import FoodCategoryCreate from "./pages/ManageFood/CategoriesFood/Create";
 import FoodCategoryEdit from "./pages/ManageFood/CategoriesFood/Edit";
@@ -186,22 +185,22 @@ export default function App() {
           element: <CinemaEdit />,
         },
         // Phòng chiếu phim
-        {
-          path: "cinema/room",
-          element: <RoomList />,
-        },
-        {
-          path: "cinema/room/show/:movieId",
-          element: <MovieShow />,
-        },
-        {
-          path: "cinema/room/create",
-          element: <RoomCreate />,
-        },
-        {
-          path: "cinema/room/edit/:movieId",
-          element: <RoomEdit />,
-        },
+        // {
+        //   path: "cinema/room",
+        //   element: <RoomList />,
+        // },
+        // {
+        //   path: "cinema/room/show/:movieId",
+        //   element: <MovieShow />,
+        // },
+        // {
+        //   path: "cinema/room/create",
+        //   element: <RoomCreate />,
+        // },
+        // {
+        //   path: "cinema/room/edit/:movieId",
+        //   element: <RoomEdit />,
+        // },
         // Ghế trong phòng
         // {
         //   path: "cinema/room/seat",
