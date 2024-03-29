@@ -1,18 +1,75 @@
-import { Card, Col, Descriptions, Divider, Row, Tag, Typography } from "antd";
-import { useSelector } from "react-redux";
+import { Card, Col, Descriptions, Divider, Image, Row, Tag } from "antd";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-
-const { Text } = Typography;
+import { doSetFood } from "../../../redux/food/foodSlice";
+import {
+  callGetCategoryFoodById,
+  callGetFoodById,
+} from "../../../services/apiMovie";
+import { imageError } from "../../../utils/imageError";
 
 const FoodShow = () => {
+  const [foodCategory, setFoodCategory] = useState(null);
+  const { foodId } = useParams();
+  const dispatch = useDispatch();
   // thay đổi #1
   const food = useSelector((state) => state.food.food);
+  // fetch lai data cinema khi f5
+  useEffect(() => {
+    if (!food) {
+      getFoodById();
+    }
+  }, [food]);
+
+  const getFoodById = async () => {
+    const res = await callGetFoodById(foodId);
+    if (res) {
+      dispatch(doSetFood(res));
+    } else {
+      const error = getErrorMessageFood(res.response.data.message, {
+        id: foodId,
+      });
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
+
+  useEffect(() => {
+    console.log("category: ", foodCategory);
+  }, [foodCategory]);
+
+  // get tên theo loại đồ ăn
+  // fetch lai data cinema khi f5
+  useEffect(() => {
+    if (food) {
+      getCategoryFoodById();
+    }
+  }, [food]);
+
+  const getCategoryFoodById = async () => {
+    const res = await callGetCategoryFoodById(food?.categoryId);
+    if (res) {
+      setFoodCategory(res);
+    } else {
+      const error = getErrorMessageCategoryFood(res.response.data.message, {
+        id: food?.categoryId,
+      });
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
 
   const item = [
     { label: "Mã đồ ăn", children: food?.code },
     {
       label: "Tên đồ ăn",
-      children: food?.foodName,
+      children: food?.name,
     },
     {
       label: "Giá",
@@ -28,14 +85,14 @@ const FoodShow = () => {
     {
       label: "Trạng thái",
       children: (
-        <Tag color={food?.status === "available" ? "success" : "error"}>
-          {food?.status === "available" ? "Có sẵn" : "Hết hàng"}
+        <Tag color={food?.status ? "success" : "error"}>
+          {food?.status ? "Còn hàng" : "Hết hàng"}
         </Tag>
       ),
     },
     {
       label: "Loại đồ ăn",
-      children: food?.category,
+      children: foodCategory?.name,
       span: {
         xs: 1,
         sm: 2,
@@ -55,7 +112,15 @@ const FoodShow = () => {
     },
     {
       label: "Hình ảnh",
-      children: food?.image,
+      children: (
+        <Image
+          width={200}
+          height={200}
+          src={food?.image}
+          fallback={imageError}
+          alt="Lỗi tải hình ảnh"
+        />
+      ),
       span: {
         xs: 1,
         sm: 2,
