@@ -4,7 +4,6 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   TeamOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Layout, Menu, Space, message } from "antd";
 import React, { useState } from "react";
@@ -19,7 +18,7 @@ import {
 } from "react-icons/io5";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { RiMovie2Line } from "react-icons/ri";
-import { TbDiscount2, TbTheater } from "react-icons/tb";
+import { TbDiscount2 } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { doLogoutAction } from "../../redux/account/accountSlice";
@@ -74,36 +73,36 @@ const LayoutAdmin = () => {
           "order",
           <DollarCircleOutlined />
         ),
-        getItem("Quản lý người dùng", "manageUser", <UserOutlined />, [
-          getItem(
-            <Link to="/admin/user">Người dùng</Link>,
-            "user",
-            <TeamOutlined />
-          ),
-          getItem("Comming Soon", "commingsoon", <TeamOutlined />),
-        ]),
-        getItem("Quản lý rạp phim", "manageTheater", <GiTheater />, [
-          getItem(
-            <Link to="/admin/cinema">Rạp phim</Link>,
-            "cinema",
-            <GiTheater />
-          ),
-          getItem(
-            <Link to="/admin/cinema/room">Phòng chiếu</Link>,
-            "room",
-            <TbTheater />
-          ),
-          // getItem(
-          //   <Link to="/admin/cinema/room/seat">Ghế</Link>,
-          //   "seat",
-          //   <MdEventSeat />
-          // ),
-          // getItem(
-          //   <Link to="/admin/cinema/room/seatType">Loại ghế</Link>,
-          //   "seatType",
-          //   <BiCategoryAlt />
-          // ),
-        ]),
+        // getItem("Quản lý người dùng", "manageUser", <UserOutlined />, [
+        getItem(
+          <Link to="/admin/user">Quản lý người dùng</Link>,
+          "user",
+          <TeamOutlined />
+        ),
+        //   getItem("Comming Soon", "commingsoon", <TeamOutlined />),
+        // ]),
+        // getItem("Quản lý rạp phim", "manageTheater", <GiTheater />, [
+        getItem(
+          <Link to="/admin/cinema">Quản lý rạp phim</Link>,
+          "cinema",
+          <GiTheater />
+        ),
+        // getItem(
+        //   <Link to="/admin/cinema/room">Phòng chiếu</Link>,
+        //   "room",
+        //   <TbTheater />
+        // ),
+        // getItem(
+        //   <Link to="/admin/cinema/room/seat">Ghế</Link>,
+        //   "seat",
+        //   <MdEventSeat />
+        // ),
+        // getItem(
+        //   <Link to="/admin/cinema/room/seatType">Loại ghế</Link>,
+        //   "seatType",
+        //   <BiCategoryAlt />
+        // ),
+        // ]),
         getItem("Quản lý phim", "manageMovie", <RiMovie2Line />, [
           getItem(
             <Link to="/admin/movie">Phim</Link>,
