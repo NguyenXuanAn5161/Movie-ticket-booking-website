@@ -71,7 +71,9 @@ const RoomEdit = () => {
       dispatch(doSetRoom(res.data));
       setSelectedSeats(res.data?.seats);
     } else {
-      const error = getErrorMessageRoom(res.response.data.message, roomId);
+      const error = getErrorMessageRoom(res.response.data.message, {
+        id: roomId,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description: error,

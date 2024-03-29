@@ -1,21 +1,49 @@
 import { Card, Col, Descriptions, Divider, Row } from "antd";
 import moment from "moment";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
+import { callGetCategoryFoodById } from "../../../services/apiMovie";
+import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 
 const FoodCategoryShow = () => {
+  const { foodCategoryId } = useParams();
+  const dispatch = useDispatch();
   // thay đổi #1
   const foodCategory = useSelector((state) => state.foodCategory.foodCategory);
+  // fetch lai data cinema khi f5
+  useEffect(() => {
+    if (!foodCategory) {
+      getCategoryFoodById();
+    }
+  }, [foodCategory]);
+
+  const getCategoryFoodById = async () => {
+    const res = await callGetCategoryFoodById(foodCategoryId);
+    if (res) {
+      dispatch(doSetFoodCategory(res));
+    } else {
+      const error = getErrorMessageCategoryFood(res.response.data.message, {
+        id: foodCategoryId,
+      });
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
 
   const item = [
     { label: "Mã loại đồ ăn", children: foodCategory?.code },
     {
       label: "Tên loại đồ ăn",
-      children: foodCategory?.categoryName,
+      children: foodCategory?.name,
     },
     {
       label: "Ngày cập nhật",
-      children: moment(foodCategory?.updated_At).format("DD-MM-YYYY HH:mm:ss"),
+      children: moment(foodCategory?.createdDate).format("DD-MM-YYYY HH:mm:ss"),
     },
   ];
 

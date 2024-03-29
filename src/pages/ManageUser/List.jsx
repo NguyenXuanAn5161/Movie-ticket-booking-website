@@ -61,7 +61,9 @@ const UserList = () => {
       message.success("Tắt hoạt động người dùng thành công!");
       await fetchUser();
     } else {
-      const error = getErrorMessageUser(res.response.data.message, userId);
+      const error = getErrorMessageUser(res.response.data.message, {
+        id: userId,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description: error,

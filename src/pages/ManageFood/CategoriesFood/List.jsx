@@ -22,38 +22,19 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../components/InputSearch/InputSearch";
 import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
-import { callFetchListUser } from "../../../services/api";
+import {
+  callDeleteCategoryFood,
+  callFetchListCategoryFood,
+} from "../../../services/apiMovie";
+import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 
 const FoodCategoryList = () => {
-  const data = [
-    {
-      id: "1",
-      code: "cat_001",
-      categoryName: "Thức ăn nhẹ",
-    },
-    {
-      id: "2",
-      code: "cat_002",
-      categoryName: "Kẹo và Đồ ngọt",
-    },
-    {
-      id: "3",
-      code: "cat_003",
-      categoryName: "Đồ ăn nhanh",
-    },
-    {
-      id: "4",
-      code: "cat_004",
-      categoryName: "Đồ uống",
-    },
-  ];
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
-  const [listData, setListData] = useState(data);
+  const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
@@ -70,20 +51,20 @@ const FoodCategoryList = () => {
   // mặc định #2
   const fetchData = async () => {
     setIsLoading(true);
-    let query = `current=${current}&pageSize=${pageSize}`;
+    let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
-      query += `&${filter}`;
+      query += `${filter}`;
     }
 
-    if (sortQuery) {
-      query += `&${sortQuery}`;
-    }
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
 
     // thay đổi #1 api call
-    const res = await callFetchListUser(query);
-    if (res && res.data) {
-      //   setListData(res.data.result);
-      //   setTotal(res.data.meta.total);
+    const res = await callFetchListCategoryFood(query);
+    if (res?.content) {
+      setListData(res.content);
+      setTotal(res.totalElements);
     }
 
     setIsLoading(false);
@@ -92,15 +73,18 @@ const FoodCategoryList = () => {
   // mặc định #2
   const handleDeleteData = async (dataId) => {
     // thay đổi #1 api call
-    const res = await callDeleteUser(dataId);
-    if (res && res.data) {
+    const res = await callDeleteCategoryFood(dataId);
+    if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Xoá loại đồ ăn thành công!");
       await fetchData();
     } else {
+      const error = getErrorMessageCategoryFood(res.response.data.message, {
+        id: dataId,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
     }
   };
@@ -121,18 +105,20 @@ const FoodCategoryList = () => {
     },
     {
       title: "Loại đồ ăn",
-      dataIndex: "categoryName",
+      dataIndex: "name",
       sorter: true,
       width: 100,
       fixed: "left",
     },
     {
       title: "Cập nhật ngày",
-      dataIndex: "updatedAt",
+      dataIndex: "createdDate",
       width: 150,
       render: (text, record, index) => {
         return (
-          <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
+          <span>
+            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
+          </span>
         );
       },
       sorter: true,
@@ -211,6 +197,7 @@ const FoodCategoryList = () => {
           onClick={() => {
             setFilter("");
             setSortQuery("");
+            setCurrent(1);
           }}
         >
           <AiOutlineReload />
@@ -221,7 +208,18 @@ const FoodCategoryList = () => {
 
   // mặc định #2
   const handleSearch = (query) => {
-    setFilter(query);
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+
+    setFilter(q);
   };
 
   // mặc định #2
@@ -247,7 +245,7 @@ const FoodCategoryList = () => {
   // thay đổi #1
   const itemSearch = [
     { field: "code", label: "Mã loại đồ ăn" },
-    { field: "categoryName", label: "Loại đồ ăn" },
+    { field: "name", label: "Loại đồ ăn" },
   ];
 
   return (

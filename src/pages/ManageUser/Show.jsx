@@ -35,7 +35,9 @@ const UserShow = () => {
     if (res?.data) {
       dispatch(doSetUser(res.data));
     } else {
-      const error = getErrorMessageUser(res.response.data.message, userId);
+      const error = getErrorMessageUser(res.response.data.message, {
+        id: userId,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description: error,
@@ -49,7 +51,9 @@ const UserShow = () => {
       message.success("Tắt hoạt động người dùng thành công!");
       navigate(-1);
     } else {
-      const error = getErrorMessageUser(res.response.data.message, user?.id);
+      const error = getErrorMessageUser(res.response.data.message, {
+        id: user?.id,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description: error,

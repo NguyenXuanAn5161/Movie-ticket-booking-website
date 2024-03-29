@@ -43,4 +43,20 @@ const getErrorMessageRoom = (error, { name, id }) => {
   }
 };
 
-export { getErrorMessageCinema, getErrorMessageRoom, getErrorMessageUser };
+const getErrorMessageCategoryFood = (error, { name, id }) => {
+  switch (error) {
+    case `name: ${name ? name : ""} already exists`:
+      return `Tên loại đồ ăn đã tồn tại!`;
+    case `Category not found with id: ${id ? id : ""}`:
+      return `Loại đồ ăn không tồn tại`;
+    default:
+      return error;
+  }
+};
+
+export {
+  getErrorMessageCategoryFood,
+  getErrorMessageCinema,
+  getErrorMessageRoom,
+  getErrorMessageUser,
+};

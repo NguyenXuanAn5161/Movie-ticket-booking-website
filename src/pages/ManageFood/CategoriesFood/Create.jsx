@@ -12,7 +12,8 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callCreateUser } from "../../../services/api";
+import { callCreateCategoryFood } from "../../../services/apiMovie";
+import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 
 // thay đổi #1
 const FoodCategoryCreate = () => {
@@ -23,11 +24,12 @@ const FoodCategoryCreate = () => {
 
   const onFinish = async (values) => {
     // thay đổi #1
-    const { categoryName } = values;
+    const { name } = values;
     setIsSubmit(true);
     // thay đổi #1 api call
-    const res = await callCreateUser(fullName, email, password, phone);
-    if (res && res.data) {
+    const res = await callCreateCategoryFood(name);
+    console.log("res: ", res);
+    if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Tạo mới loại đồ ăn thành công!");
       form.resetFields();
@@ -35,9 +37,12 @@ const FoodCategoryCreate = () => {
       // thay đổi #1 thay đổi url
       navigate("/admin/foodCategories");
     } else {
+      const error = getErrorMessageCategoryFood(res.response.data.message, {
+        name: name,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
       setIsSubmit(false);
     }
@@ -63,7 +68,7 @@ const FoodCategoryCreate = () => {
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên loại đồ ăn"
-                name="categoryName"
+                name="name"
                 rules={[
                   {
                     required: true,
