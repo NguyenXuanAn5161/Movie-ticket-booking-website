@@ -411,12 +411,12 @@ export const callUpdateFood = async (
   }
 };
 
-// export const callDeleteCategoryFood = async (id) => {
-//   try {
-//     const response = await api.delete(`/api/categoryFood/${id}`);
-//     return response.data;
-//   } catch (error) {
-//     console.error("error: ", error);
-//     return error;
-//   }
-// };
+export const callDeleteFood = async (id) => {
+  try {
+    const response = await api.delete(`/api/food/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
