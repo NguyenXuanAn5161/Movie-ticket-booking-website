@@ -22,7 +22,8 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../components/InputSearch/InputSearch";
 import { doSetFood } from "../../../redux/food/foodSlice";
-import { callFetchListFood } from "../../../services/apiMovie";
+import { callDeleteFood, callFetchListFood } from "../../../services/apiMovie";
+import { getErrorMessageFood } from "../../../utils/errorHandling";
 
 // thay đổi #1
 const FoodList = () => {
@@ -69,15 +70,19 @@ const FoodList = () => {
   // mặc định #2
   const handleDeleteData = async (dataId) => {
     // thay đổi #1 api call
-    const res = await callDeleteUser(dataId);
-    if (res && res.data) {
+    const res = await callDeleteFood(dataId);
+    if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Xoá đồ ăn thành công!");
       await fetchData();
+      setCurrent(1);
     } else {
+      const error = getErrorMessageFood(res.response.data.message, {
+        foodId: dataId,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
     }
   };
