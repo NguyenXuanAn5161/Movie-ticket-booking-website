@@ -29,7 +29,7 @@ const FoodShow = () => {
       dispatch(doSetFood(res));
     } else {
       const error = getErrorMessageFood(res.response.data.message, {
-        id: foodId,
+        foodId: foodId,
       });
       notification.error({
         message: "Đã có lỗi xảy ra!",
@@ -37,10 +37,6 @@ const FoodShow = () => {
       });
     }
   };
-
-  useEffect(() => {
-    console.log("category: ", foodCategory);
-  }, [foodCategory]);
 
   // get tên theo loại đồ ăn
   // fetch lai data cinema khi f5
