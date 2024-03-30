@@ -360,42 +360,54 @@ export const callFetchListFood = async (query) => {
   }
 };
 
-// export const callCreateCategoryFood = async (name) => {
-//   const bodyFormData = new FormData();
-//   bodyFormData.append("name", name);
-//   try {
-//     const response = await api({
-//       method: "post",
-//       url: "/api/categoryFood",
-//       data: bodyFormData,
-//       headers: {
-//         "Content-Type": "multipart/form-data",
-//       },
-//     });
-//     return response.data;
-//   } catch (error) {
-//     return error;
-//   }
-// };
+export const callCreateFood = async (formData) => {
+  try {
+    const response = await api({
+      method: "post",
+      url: "/api/food",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
 
-// export const callUpdateCategoryFood = async (id, name) => {
-//   const bodyFormData = new FormData();
-//   bodyFormData.append("id", id);
-//   bodyFormData.append("name", name);
-//   try {
-//     const response = await api({
-//       method: "put",
-//       url: "/api/categoryFood",
-//       data: bodyFormData,
-//       headers: {
-//         "Content-Type": "multipart/form-data",
-//       },
-//     });
-//     return response.data;
-//   } catch (error) {
-//     return error;
-//   }
-// };
+export const callUpdateFood = async (
+  id,
+  name,
+  price,
+  categoryId,
+  status,
+  size,
+  image
+) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("id", id);
+  bodyFormData.append("name", name);
+  bodyFormData.append("image", image);
+  bodyFormData.append("price", price);
+  bodyFormData.append("categoryId", categoryId);
+  bodyFormData.append("sizeFood", size);
+  bodyFormData.append("status", status);
+
+  try {
+    const response = await api({
+      method: "put",
+      url: "/api/food",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
 
 // export const callDeleteCategoryFood = async (id) => {
 //   try {
