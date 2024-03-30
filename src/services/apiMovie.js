@@ -380,6 +380,7 @@ export const callUpdateFood = async (
   id,
   name,
   price,
+  quantity,
   categoryId,
   status,
   size,
@@ -388,6 +389,7 @@ export const callUpdateFood = async (
   const bodyFormData = new FormData();
   bodyFormData.append("id", id);
   bodyFormData.append("name", name);
+  bodyFormData.append("quantity", quantity);
   bodyFormData.append("image", image);
   bodyFormData.append("price", price);
   bodyFormData.append("categoryId", categoryId);
