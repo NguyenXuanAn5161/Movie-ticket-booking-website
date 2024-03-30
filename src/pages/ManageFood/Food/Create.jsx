@@ -1,3 +1,4 @@
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -9,50 +10,99 @@ import {
   Radio,
   Row,
   Select,
+  Upload,
   message,
   notification,
 } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callCreateUser } from "../../../services/api";
+import {
+  callCreateFood,
+  callFetchListCategoryFood,
+} from "../../../services/apiMovie";
+import {
+  getErrorMessageCategoryFood,
+  getErrorMessageFood,
+} from "../../../utils/errorHandling";
 
-// thay đổi #1
 const FoodCreate = () => {
   // mặc định #2
   const [isSubmit, setIsSubmit] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [foodCategory, setFoodCategory] = useState([]);
+
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
+  // get category
+  useEffect(() => {
+    getCategoryFood();
+  }, []);
+
+  const getCategoryFood = async () => {
+    let query = `size=100`;
+    const res = await callFetchListCategoryFood(query);
+    if (res?.content) {
+      const d = res.content.map((item) => {
+        return { label: item.name, value: item.id };
+      });
+      setFoodCategory(d);
+    } else {
+      const error = getErrorMessageCategoryFood(res.response.data.message);
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
+
   const onFinish = async (values) => {
-    // thay đổi #1
-    const { image, foodName, category_id, size, price, status } = values;
-    console.log("value: ", values);
+    const { name, price, quantity, categoryId, status, sizeFood } = values;
     setIsSubmit(true);
-    // thay đổi #1 api call
-    const res = await callCreateUser(fullName, email, password, phone);
-    if (res && res.data) {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("price", price);
+    formData.append("categoryId", categoryId);
+    formData.append("sizeFood", sizeFood);
+    formData.append("quantity", quantity);
+    formData.append("status", status);
+    formData.append("image", imageFile);
+
+    const res = await callCreateFood(formData);
+    if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Tạo mới đồ ăn thành công!");
       form.resetFields();
+      setImageFile(null);
       setIsSubmit(false);
       // thay đổi #1 thay đổi url
       navigate("/admin/food");
     } else {
+      const error = getErrorMessageFood(res.response.data.message, {
+        name: name,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
       setIsSubmit(false);
     }
   };
 
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    setImageFile(e.file);
+    return e && e.fileList;
+  };
+
   return (
     <>
-      {/* // thay đổi #1 title */}
       <PageHeader title="Tạo mới đồ ăn" numberBack={-1} type="create" />
       <Divider />
-      {/* // thay đổi #1 title */}
       <Card title="Tạo mới đồ ăn" bordered={false}>
         <Form
           form={form}
@@ -63,11 +113,11 @@ const FoodCreate = () => {
           style={{ margin: "0 auto" }}
         >
           <Row gutter={[16]}>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên đồ ăn"
-                name="foodName"
+                name="name"
                 rules={[
                   {
                     required: true,
@@ -78,7 +128,7 @@ const FoodCreate = () => {
                 <Input placeholder="Nhập tên đồ ăn" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Giá"
@@ -100,43 +150,87 @@ const FoodCreate = () => {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Số lượng"
+                name="quantity"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập số lượng!",
+                  },
+                ]}
+              >
+                <InputNumber min={1} style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Loại đồ ăn"
-                name="category_id"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: "Vui lòng nhập tên quốc gia sản xuất phim!",
-                //   },
-                // ]}
+                name="categoryId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên quốc gia sản xuất phim!",
+                  },
+                ]}
+                initialValue={1}
               >
                 <Select
-                  // defaultValue={null}
                   showSearch
                   allowClear
-                  // onChange={handleChange}
-                  // options={listCategory}
+                  options={foodCategory}
+                  filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? "")
+                      .toLowerCase()
+                      .localeCompare((optionB?.label ?? "").toLowerCase())
+                  }
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    // Tìm kiếm không phân biệt hoa thường
+                    option.label.toLowerCase().includes(input.toLowerCase())
+                  }
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Size"
-                name="size"
+                label="Trạng thái"
+                name="status"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn trạng thái!",
+                  },
+                ]}
+                initialValue={true}
+              >
+                <Radio.Group>
+                  <Radio value={true}>Còn hàng</Radio>
+                  <Radio value={false}>Hết hàng</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Kich cỡ"
+                name="sizeFood"
                 rules={[
                   {
                     required: true,
                     message: "Vui lòng chọn size cho đồ ăn!",
                   },
                 ]}
+                initialValue={"MEDIUM"}
               >
                 <Radio.Group>
-                  <Radio.Button value="Small">Small</Radio.Button>
-                  <Radio.Button value="Medium">Medium</Radio.Button>
-                  <Radio.Button value="Large">Large</Radio.Button>
+                  <Radio value="SMALL">Nhỏ</Radio>
+                  <Radio value="MEDIUM">Vừa</Radio>
+                  <Radio value="LARGE">Lớn</Radio>
                 </Radio.Group>
               </Form.Item>
             </Col>
@@ -152,7 +246,18 @@ const FoodCreate = () => {
                   },
                 ]}
               >
-                <Input style={{ width: "100%" }} />
+                <Upload
+                  accept="image/*"
+                  beforeUpload={() => false}
+                  onChange={(info) => normFile(info)}
+                  fileList={imageFile ? [imageFile] : []}
+                  listType="picture-card"
+                >
+                  <div>
+                    {loading ? <LoadingOutlined /> : <PlusOutlined />}
+                    <div style={{ marginTop: 8 }}>Tải ảnh lên</div>
+                  </div>
+                </Upload>
               </Form.Item>
             </Col>
           </Row>

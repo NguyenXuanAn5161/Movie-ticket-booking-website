@@ -54,9 +54,23 @@ const getErrorMessageCategoryFood = (error, { name, id }) => {
   }
 };
 
+const getErrorMessageFood = (error, { name, foodId, categoryId }) => {
+  switch (error) {
+    case `name: ${name ? name : ""} already exists`:
+      return `Tên loại đồ ăn đã tồn tại!`;
+    case `Category not found with id: ${categoryId ? categoryId : ""}`:
+      return `Loại đồ ăn không tồn tại`;
+    case `Food not found with id: ${foodId ? foodId : ""}`:
+      return "Đồ ăn này không tồn tại!";
+    default:
+      return error;
+  }
+};
+
 export {
   getErrorMessageCategoryFood,
   getErrorMessageCinema,
+  getErrorMessageFood,
   getErrorMessageRoom,
   getErrorMessageUser,
 };

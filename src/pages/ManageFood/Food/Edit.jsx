@@ -1,3 +1,4 @@
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -8,52 +9,160 @@ import {
   Radio,
   Row,
   Select,
+  Upload,
   message,
   notification,
 } from "antd";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callUpdateUser } from "../../../services/api";
+import { doSetFood } from "../../../redux/food/foodSlice";
+import {
+  callFetchListCategoryFood,
+  callGetFoodById,
+  callUpdateFood,
+} from "../../../services/apiMovie";
+import {
+  getErrorMessageCategoryFood,
+  getErrorMessageFood,
+} from "../../../utils/errorHandling";
 
 const FoodEdit = () => {
-  // thay đổi #1
-  const food = useSelector((state) => state.food.food);
+  const [foodCategory, setFoodCategory] = useState([]);
+  const [isSubmit, setIsSubmit] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [initForm, setInitForm] = useState(null);
+  const [initImage, setInitImage] = useState(null);
+
+  const { foodId } = useParams();
+  const dispatch = useDispatch();
   // mặc định #2
   const navigate = useNavigate();
-  const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
-
+  // thay đổi #1
+  const food = useSelector((state) => state.food.food);
+  // fetch lai data cinema khi f5
   useEffect(() => {
-    form.resetFields();
-    // thay đổi #1 [], setfields
-    form.setFieldsValue(food); // Cập nhật dữ liệu vào form khi userData thay đổi
-  }, [food, form]);
+    if (!food) {
+      getFoodById();
+    }
+  }, [food]);
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setUserData({ ...userData, [name]: value });
-  // };
+  const getFoodById = async () => {
+    const res = await callGetFoodById(foodId);
+    if (res) {
+      dispatch(doSetFood(res));
+    } else {
+      const error = getErrorMessageFood(res.response.data.message, {
+        foodId: foodId,
+      });
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
+
+  // get categoryFood
+  useEffect(() => {
+    getCategoryFood();
+  }, []);
+
+  const getCategoryFood = async () => {
+    let query = `size=100`;
+    const res = await callFetchListCategoryFood(query);
+    console.log("res: ", res);
+    if (res?.content) {
+      const d = res.content.map((item) => {
+        return { label: item.name, value: item.id };
+      });
+      setFoodCategory(d);
+    } else {
+      const error = getErrorMessageCategoryFood(res.response.data.message);
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
 
   const onFinish = async (values) => {
-    console.log("value check: ", values);
+    const { id, name, price, categoryId, status, sizeFood, quantity } = values;
     // thay đổi #1
-    const { _id, fullName, phone } = values;
     setIsSubmit(true);
     // thay đổi #1 api call
-    const res = await callUpdateUser(_id, fullName, phone);
-    if (res && res.data) {
+    const res = await callUpdateFood(
+      id,
+      name,
+      price,
+      quantity,
+      categoryId,
+      status,
+      sizeFood,
+      imageFile
+    );
+    console.log("res update: ", res);
+    if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật đồ ăn thành công!");
       navigate("/admin/food");
     } else {
+      const error = getErrorMessageFood(res.response.data.message, {
+        foodId: id,
+        name: name,
+        categoryId: categoryId,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
     }
     setIsSubmit(false);
+  };
+
+  // load data cho form edit
+  useEffect(() => {
+    if (food?.id) {
+      // create data init for form update
+      const init = {
+        id: food.id,
+        code: food.code,
+        name: food.name,
+        price: food.price,
+        status: food.status,
+        categoryId: food.categoryId,
+        quantity: food.quantity,
+        sizeFood: food.size,
+        image: food.image,
+      };
+      setInitForm(init);
+      setInitImage(food.image);
+      setImageFile(food.image);
+      // có s là set nhiều field
+      form.setFieldsValue(init);
+    }
+
+    console.log("image: ", food?.image);
+    // reset field upload - bug
+    return () => {
+      form.resetFields();
+    };
+  }, [food]);
+
+  // xử lý ảnh
+  const handleRemoveFile = (file) => {
+    setImageFile([]);
+  };
+
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    setImageFile(e.file);
+    setInitImage(null);
+    return e && e.fileList;
   };
 
   return (
@@ -66,11 +175,19 @@ const FoodEdit = () => {
       <Card bordered={false}>
         <Form form={form} onFinish={onFinish}>
           <Row gutter={[16]}>
-            <Col span={12}>
+            <Form.Item
+              hidden
+              labelCol={{ span: 24 }}
+              label="Id đồ ăn"
+              name="id"
+            >
+              <Input />
+            </Form.Item>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên đồ ăn"
-                name="foodName"
+                name="name"
                 rules={[
                   {
                     required: true,
@@ -81,25 +198,7 @@ const FoodEdit = () => {
                 <Input placeholder="Nhập tên đồ ăn" />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Trạng thái"
-                name="status"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn trạng thái!",
-                  },
-                ]}
-              >
-                <Radio.Group value={food?.status}>
-                  <Radio.Button value="available">Có sẵn</Radio.Button>
-                  <Radio.Button value="unavailable">Hết hàng</Radio.Button>
-                </Radio.Group>
-              </Form.Item>
-            </Col>
-            <Col span={24}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Giá"
@@ -121,43 +220,86 @@ const FoodEdit = () => {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Số lượng"
+                name="quantity"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập số lượng!",
+                  },
+                ]}
+              >
+                <InputNumber min={0} style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Loại đồ ăn"
-                name="category_id"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: "Vui lòng nhập tên quốc gia sản xuất phim!",
-                //   },
-                // ]}
+                name="categoryId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn loại đồ ăn!",
+                  },
+                ]}
               >
                 <Select
-                  // defaultValue={null}
                   showSearch
                   allowClear
                   // onChange={handleChange}
-                  // options={listCategory}
+                  options={foodCategory}
+                  filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? "")
+                      .toLowerCase()
+                      .localeCompare((optionB?.label ?? "").toLowerCase())
+                  }
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    // Tìm kiếm không phân biệt hoa thường
+                    option.label.toLowerCase().includes(input.toLowerCase())
+                  }
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Size"
-                name="size"
+                label="Trạng thái"
+                name="status"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn trạng thái!",
+                  },
+                ]}
+              >
+                <Radio.Group value={food?.status}>
+                  <Radio value={true}>Còn hàng</Radio>
+                  <Radio value={false}>Hết hàng</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Kich cỡ"
+                name="sizeFood"
                 rules={[
                   {
                     required: true,
                     message: "Vui lòng chọn size cho đồ ăn!",
                   },
                 ]}
+                initialValue={"MEDIUM"}
               >
-                <Radio.Group value={food?.size}>
-                  <Radio.Button value="Small">Small</Radio.Button>
-                  <Radio.Button value="Medium">Medium</Radio.Button>
-                  <Radio.Button value="Large">Large</Radio.Button>
+                <Radio.Group value={food?.sizeFood}>
+                  <Radio value="SMALL">Nhỏ</Radio>
+                  <Radio value="MEDIUM">Vừa</Radio>
+                  <Radio value="LARGE">Lớn</Radio>
                 </Radio.Group>
               </Form.Item>
             </Col>
@@ -173,7 +315,20 @@ const FoodEdit = () => {
                   },
                 ]}
               >
-                <Input style={{ width: "100%" }} />
+                <Upload
+                  accept="image/*"
+                  maxCount={1}
+                  beforeUpload={() => false}
+                  onRemove={(file) => handleRemoveFile(file)}
+                  onChange={(info) => normFile(info)}
+                  listType="picture-card"
+                  defaultFileList={food?.image ? [{ url: food.image }] : []}
+                >
+                  <div>
+                    {loading ? <LoadingOutlined /> : <PlusOutlined />}
+                    <div style={{ marginTop: 8 }}>Tải ảnh lên</div>
+                  </div>
+                </Upload>
               </Form.Item>
             </Col>
           </Row>
