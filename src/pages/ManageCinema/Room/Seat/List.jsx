@@ -315,7 +315,11 @@ const SeatList = () => {
     <>
       <Row gutter={[20, 20]}>
         <Col span={24}>
-          <InputSearch itemSearch={itemSearch} handleSearch={handleSearch} />
+          <InputSearch
+            itemSearch={itemSearch}
+            handleSearch={handleSearch}
+            setFilter={setFilter}
+          />
         </Col>
         <Col span={24}>
           <Table
