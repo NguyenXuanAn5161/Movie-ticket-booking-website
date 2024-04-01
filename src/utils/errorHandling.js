@@ -67,10 +67,24 @@ const getErrorMessageFood = (error, { name, foodId, categoryId }) => {
   }
 };
 
+const getErrorMessageSalePriceHeader = (error, { name, id }) => {
+  switch (error) {
+    case `A sale price already exists within the specified time period`:
+      return `Giá đã tồn tại trong khoảng thời gian đã chọn!`;
+    case `name: ${name ? name : ""} already exists`:
+      return `Tên giá đã tồn tại!`;
+    case `Food not found with id: ${id ? id : ""}`:
+      return "Đồ ăn này không tồn tại!";
+    default:
+      return error;
+  }
+};
+
 export {
   getErrorMessageCategoryFood,
   getErrorMessageCinema,
   getErrorMessageFood,
   getErrorMessageRoom,
+  getErrorMessageSalePriceHeader,
   getErrorMessageUser,
 };
