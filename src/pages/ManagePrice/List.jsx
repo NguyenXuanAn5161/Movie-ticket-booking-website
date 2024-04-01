@@ -23,77 +23,18 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../components/InputSearch/InputSearch";
 import { doSetPrice } from "../../redux/price/priceSlice";
-import { callDeleteUser } from "../../services/api";
+import {
+  callDeleteSalePrice,
+  callFetchListSalePrice,
+} from "../../services/apiMovie";
 
 const PriceList = () => {
-  const data = [
-    {
-      id: "1",
-      code: "priceSeatVip",
-      name: "Giá ghế vip",
-      description:
-        "Giá ghế vip đầu xuân 2024 dành cho khách hàng là thành viên",
-      startDate: "2024-01-16",
-      endDate: "2024-03-31",
-      status: true,
-      salePriceDetail: [
-        {
-          id: "1",
-          code: "priceSeatVip1",
-          salePriceHeader_id: "1",
-          price: 150000,
-          list_seat_type_id: ["vip", "sweet"], // example seat types
-          list_food_id: null, // example food items
-          type_sale: "seat", // or "Food"
-        },
-        {
-          id: "2",
-          code: "priceSeatVip2",
-          salePriceHeader_id: "1",
-          price: 150000,
-          list_seat_type_id: ["vip"], // example seat types
-          list_food_id: null, // example food items
-          type_sale: "seat", // or "Food"
-        },
-      ],
-    },
-    {
-      id: "2",
-      code: "bapRangXuan",
-      name: "Bắp rang xuân 2024",
-      description: "Bắp rang xuân 2024 ưu đãi dành cho toàn bộ khách hàng",
-      startDate: "2024-01-16",
-      endDate: "2024-03-31",
-      status: false,
-      salePriceDetail: [
-        {
-          id: "2",
-          code: "bapRangXuan",
-          salePriceHeader_id: "2",
-          price: 50000,
-          list_seat_type_id: null, // example seat type
-          list_food_id: ["popcorn"], // example food item
-          type_sale: "food", // or "Seat"
-        },
-      ],
-    },
-    {
-      id: "3",
-      code: "priceSeatVip",
-      name: "Giá ghế Vip đầu lễ noel 2023",
-      description: "Giá ghế vip nhân dịp lễ noel 2023",
-      startDate: "2023-12-30",
-      endDate: "2023-12-20",
-      status: true,
-    },
-  ];
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
-  const [listData, setListData] = useState(data);
+  const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(200);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
@@ -110,21 +51,22 @@ const PriceList = () => {
   // mặc định #2
   const fetchData = async () => {
     setIsLoading(true);
-    let query = `current=${current}&pageSize=${pageSize}`;
+    let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
       query += `&${filter}`;
     }
 
-    if (sortQuery) {
-      query += `&${sortQuery}`;
-    }
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
 
     // thay đổi #1 api call
-    // const res = await callFetchListUser(query);
-    // if (res && res.data) {
-    //   setListData(res.data.result);
-    //   setTotal(res.data.meta.total);
-    // }
+    const res = await callFetchListSalePrice(query);
+    console.log("res", res);
+    if (res?.content) {
+      setListData(res.content);
+      setTotal(res.totalElements);
+    }
 
     setIsLoading(false);
   };
@@ -132,15 +74,15 @@ const PriceList = () => {
   // mặc định #2
   const handleDeleteData = async (dataId) => {
     // thay đổi #1 api call
-    const res = await callDeleteUser(dataId);
-    if (res && res.data) {
+    const res = await callDeleteSalePrice(dataId);
+    if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Xoá giá sản phẩm thành công!");
       await fetchData();
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: res.response.data.message,
       });
     }
   };
@@ -148,19 +90,19 @@ const PriceList = () => {
   const handleView = (data, url) => {
     // thay đổi #1
     dispatch(doSetPrice(data));
-    navigate(`${url}/${data.code}`);
+    navigate(`${url}/${data.id}`);
   };
 
   // thay đổi #1
   const columns = [
     {
-      title: "Mã giá sản phẩm",
+      title: "Mã giá",
       dataIndex: "code",
       width: 150,
       fixed: "left",
     },
     {
-      title: "Tên giá sản phẩm",
+      title: "Tên giá",
       dataIndex: "name",
       key: "name",
       sorter: true,
@@ -172,7 +114,9 @@ const PriceList = () => {
       dataIndex: "startDate",
       width: 120,
       render: (text, record, index) => {
-        return <span>{moment(record.startDate).format("DD-MM-YYYY")}</span>;
+        return (
+          <span>{moment(record.startDate).format("DD-MM-YYYY HH:mm:ss")}</span>
+        );
       },
     },
     {
@@ -180,7 +124,9 @@ const PriceList = () => {
       dataIndex: "endDate",
       width: 130,
       render: (text, record, index) => {
-        return <span>{moment(record.endDate).format("DD-MM-YYYY")}</span>;
+        return (
+          <span>{moment(record.endDate).format("DD-MM-YYYY HH:mm:ss")}</span>
+        );
       },
     },
     {
@@ -200,17 +146,19 @@ const PriceList = () => {
         </Tag>
       ),
     },
-    // {
-    //   title: "Cập nhật ngày",
-    //   dataIndex: "updatedAt",
-    //   width: 150,
-    //   render: (text, record, index) => {
-    //     return (
-    //       <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
-    //     );
-    //   },
-    //   sorter: true,
-    // },
+    {
+      title: "Cập nhật ngày",
+      dataIndex: "createdDate",
+      width: 150,
+      render: (text, record, index) => {
+        return (
+          <span>
+            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
+          </span>
+        );
+      },
+      sorter: true,
+    },
     {
       title: "Thao tác",
       width: 100,
@@ -295,7 +243,19 @@ const PriceList = () => {
 
   // mặc định #2
   const handleSearch = (query) => {
-    setFilter(query);
+    console.log("query", query);
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+
+    setFilter(q);
   };
 
   // mặc định #2
@@ -320,16 +280,21 @@ const PriceList = () => {
 
   // thay đổi #1
   const itemSearch = [
-    { field: "status", label: "Trạng thái" },
-    { field: "start_date", label: "Ngày bắt đầu" },
-    { field: "end_date", label: "Ngày kết thúc" },
+    // trạng thái
+    { field: "code", label: "Mã khuyến mãi" },
+    { field: "startDate", label: "Ngày bắt đầu" },
+    { field: "endDate", label: "Ngày kết thúc" },
   ];
 
   return (
     <>
       <Row gutter={[20, 20]}>
         <Col span={24}>
-          <InputSearch itemSearch={itemSearch} handleSearch={handleSearch} />
+          <InputSearch
+            itemSearch={itemSearch}
+            handleSearch={handleSearch}
+            setFilter={setFilter}
+          />
         </Col>
         <Col span={24}>
           <Table
