@@ -8,7 +8,7 @@ import {
   Tag,
 } from "antd";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AiOutlineDelete,
   AiOutlineExport,
@@ -17,12 +17,41 @@ import {
 } from "react-icons/ai";
 import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import { doSetPrice } from "../../redux/price/priceSlice";
+import { callGetPriceHeaderById } from "../../services/apiMovie";
+import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
 import PriceDetailModalForm from "./PriceDetail/ModalForm";
 
 const PriceShow = () => {
+  const { priceId } = useParams();
+  const dispatch = useDispatch();
+
   const price = useSelector((state) => state.price.price);
+
+  // fetch data f5
+  useEffect(() => {
+    if (!price) {
+      getPriceHeaderById();
+    }
+  }, [price]);
+
+  const getPriceHeaderById = async () => {
+    const res = await callGetPriceHeaderById(priceId);
+    if (res) {
+      dispatch(doSetPrice(res));
+    } else {
+      const error = getErrorMessageSalePriceHeader(res.response.data.message, {
+        id: priceId,
+      });
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
 
   const [isLoading, setIsLoading] = useState(false);
   const [openModalCreate, setOpenModalCreate] = useState(false);
@@ -31,7 +60,7 @@ const PriceShow = () => {
   const [openModalExport, setOpenModalExport] = useState(false);
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
   const [dataUpdate, setDataUpdate] = useState(null);
-  const [total, setTotal] = useState(price?.salePriceDetail.length);
+  const [total, setTotal] = useState(price?.salePriceDetail?.length);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(2);
   const [filter, setFilter] = useState(null);
@@ -47,28 +76,23 @@ const PriceShow = () => {
   // render thông tin promotion header
   const items = [
     {
-      label: "Mã giá sản phẩm",
-      key: "1",
+      label: "Mã giá",
       children: price?.code,
     },
     {
-      label: "Tên giá sản phẩm",
-      key: "2",
+      label: "Tên giá",
       children: price?.name,
     },
     {
       label: "Ngày bắt đầu",
-      key: "3",
       children: moment(price?.startDate).format("DD-MM-YYYY HH:mm:ss"),
     },
     {
       label: "Ngày kết thúc",
-      key: "4",
       children: moment(price?.endDate).format("DD-MM-YYYY HH:mm:ss"),
     },
     {
       label: "Trạng thái",
-      key: "5",
       children: (
         <Tag color={price?.status ? "success" : "error"}>
           {price?.status ? "Hoạt động" : "Không hoạt động"}
@@ -77,7 +101,6 @@ const PriceShow = () => {
     },
     {
       label: "Mô tả",
-      key: "6",
       children: price?.description,
       span: {
         xs: 1,
