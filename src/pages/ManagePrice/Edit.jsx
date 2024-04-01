@@ -9,15 +9,51 @@ import {
   message,
   notification,
 } from "antd";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import CustomDatePicker from "../../components/DatePicker/CustomDatePicker";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callUpdateUser } from "../../services/api";
+import { doSetPrice } from "../../redux/price/priceSlice";
+import {
+  callGetPriceHeaderById,
+  callUpdateSalePrice,
+} from "../../services/apiMovie";
+import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
+
+const dateFormat = "DD-MM-YYYY HH:mm:ss";
+const defaultStartDate = dayjs().startOf("day").add(1, "day");
+const defaultEndDate = dayjs().endOf("day").add(1, "day");
 
 const PriceEdit = () => {
-  // thay đổi #1
+  const { priceId } = useParams();
+  const dispatch = useDispatch();
+
   const price = useSelector((state) => state.price.price);
+
+  // fetch data f5
+  useEffect(() => {
+    if (!price) {
+      getPriceHeaderById();
+    }
+  }, [price]);
+
+  const getPriceHeaderById = async () => {
+    const res = await callGetPriceHeaderById(priceId);
+    if (res) {
+      dispatch(doSetPrice(res));
+    } else {
+      const error = getErrorMessageSalePriceHeader(res.response.data.message, {
+        id: priceId,
+      });
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: error,
+      });
+    }
+  };
+
   // mặc định #2
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
@@ -29,29 +65,35 @@ const PriceEdit = () => {
     form.setFieldsValue(price); // Cập nhật dữ liệu vào form
   }, [price, form]);
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setUserData({ ...userData, [name]: value });
-  // };
-
   const onFinish = async (values) => {
-    console.log("value check: ", values);
-    // thay đổi #1
-    const { _id, fullName, phone } = values;
+    console.log("check value: ", values);
+    const { id, name, timeApply, description, status } = values;
+    const startDate = dayjs(timeApply[0]).format("YYYY-MM-DDTHH:mm:ss.SSS");
+    const endDate = dayjs(timeApply[1]).format("YYYY-MM-DDTHH:mm:ss.SSS");
     setIsSubmit(true);
-    // thay đổi #1 api call
-    const res = await callUpdateUser(_id, fullName, phone);
-    if (res && res.data) {
-      // thay đổi #1 message và url
-      message.success("Cập nhật giá sản phẩm thành công!");
+    const res = await callUpdateSalePrice(
+      id,
+      name,
+      endDate,
+      description,
+      status
+    );
+    console.log("res", res);
+    if (res?.status === 200) {
+      message.success("Tạo mới giá sản phẩm thành công!");
+      form.resetFields();
+      setIsSubmit(false);
       navigate("/admin/price");
     } else {
+      const error = getErrorMessageSalePriceHeader(res.response.data.message, {
+        name: name,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
+      setIsSubmit(false);
     }
-    setIsSubmit(false);
   };
 
   return (
@@ -60,22 +102,10 @@ const PriceEdit = () => {
       <Card bordered={false}>
         <Form form={form} onFinish={onFinish}>
           <Row gutter={[16]}>
-            <Col span={6}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Mã giá sản phẩm"
-                name="code"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mã giá sản phẩm!",
-                  },
-                ]}
-              >
-                <Input placeholder="Nhập mã giá sản phẩm" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
+            <Form.Item hidden labelCol={{ span: 24 }} label="Id" name="id">
+              <Input />
+            </Form.Item>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên giá sản phẩm"
@@ -90,7 +120,33 @@ const PriceEdit = () => {
                 <Input placeholder="Nhập tên giá sản phẩm" />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                name="timeApply"
+                label="Khoảng thời gian áp dụng"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn ngày bắt đầu!",
+                  },
+                ]}
+                initialValue={
+                  price
+                    ? [dayjs(price?.startDate), dayjs(price?.endDate)]
+                    : [defaultStartDate, defaultEndDate]
+                }
+              >
+                <CustomDatePicker
+                  showTime
+                  format={dateFormat}
+                  minDate={defaultStartDate}
+                  defaultValue={[price?.startDate, price?.endDate]}
+                  placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Trạng thái"
@@ -103,39 +159,9 @@ const PriceEdit = () => {
                 ]}
               >
                 <Radio.Group value={price?.status}>
-                  <Radio.Button value={true}>Hoạt động</Radio.Button>
-                  <Radio.Button value={false}>Ngưng hoạt động</Radio.Button>
+                  <Radio value={true}>Hoạt động</Radio>
+                  <Radio value={false}>Ngưng hoạt động</Radio>
                 </Radio.Group>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Ngày bắt đầu"
-                name="startDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày bắt đầu!",
-                  },
-                ]}
-              >
-                <Input type="date" style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Ngày kết thúc"
-                name="endDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày kết thúc!",
-                  },
-                ]}
-              >
-                <Input type="date" style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={24}>
