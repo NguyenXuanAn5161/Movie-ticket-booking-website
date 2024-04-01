@@ -9,10 +9,17 @@ import {
   message,
   notification,
 } from "antd";
+import dayjs from "dayjs";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import CustomDatePicker from "../../components/DatePicker/CustomDatePicker";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callCreateUser } from "../../services/api";
+import { callCreateSalePrice } from "../../services/apiMovie";
+import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
+
+const dateFormat = "DD-MM-YYYY HH:mm:ss";
+const defaultStartDate = dayjs().startOf("day").add(1, "day");
+const defaultEndDate = dayjs().endOf("day").add(1, "day");
 
 const PriceCreate = () => {
   // mặc định #2
@@ -21,18 +28,28 @@ const PriceCreate = () => {
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    const { fullName, email, password, phone } = values;
+    const { name, timeApply, description } = values;
+    const startDate = dayjs(timeApply[0]).format("YYYY-MM-DDTHH:mm:ss.SSS");
+    const endDate = dayjs(timeApply[1]).format("YYYY-MM-DDTHH:mm:ss.SSS");
     setIsSubmit(true);
-    const res = await callCreateUser(fullName, email, password, phone);
-    if (res && res.data) {
+    const res = await callCreateSalePrice(
+      name,
+      startDate,
+      endDate,
+      description
+    );
+    if (res?.status === 200) {
       message.success("Tạo mới giá sản phẩm thành công!");
       form.resetFields();
       setIsSubmit(false);
       navigate("/admin/price");
     } else {
+      const error = getErrorMessageSalePriceHeader(res.response.data.message, {
+        name: name,
+      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: error,
       });
       setIsSubmit(false);
     }
@@ -51,23 +68,8 @@ const PriceCreate = () => {
           autoComplete="true"
           style={{ margin: "0 auto" }}
         >
-          <Row gutter={[20, 20]}>
-            <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                name="code"
-                label="Mã giá sản phẩm"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mã giá sản phẩm!",
-                  },
-                ]}
-              >
-                <Input placeholder="Nhập mã giá sản phẩm" />
-              </Form.Item>
-            </Col>
-            <Col span={16}>
+          <Row gutter={16}>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên giá sản phẩm"
@@ -82,40 +84,28 @@ const PriceCreate = () => {
                 <Input placeholder="Nhập tên giá sản phẩm" />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={[20]}>
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                name="startDate"
-                label="Ngày Bắt Đầu"
+                name="timeApply"
+                label="Khoảng thời gian áp dụng"
                 rules={[
                   {
                     required: true,
                     message: "Vui lòng chọn ngày bắt đầu!",
                   },
                 ]}
+                initialValue={[defaultStartDate, defaultEndDate]}
               >
-                <Input type="date" />
+                <CustomDatePicker
+                  showTime
+                  format={dateFormat}
+                  minDate={defaultStartDate}
+                  defaultValue={[defaultStartDate, defaultEndDate]}
+                  placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
+                />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                name="endDate"
-                label="Ngày Kết Thúc"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày kết thúc!",
-                  },
-                ]}
-              >
-                <Input type="date" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={[20]}>
             <Col span={24}>
               <Form.Item
                 labelCol={{ span: 24 }}
