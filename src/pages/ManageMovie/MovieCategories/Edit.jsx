@@ -9,12 +9,18 @@ import {
   notification,
 } from "antd";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callUpdateUser } from "../../../services/api";
+import { doSetMovieGenre } from "../../../redux/movie/movieGenreSlice";
+import {
+  callGetGenreMovieById,
+  callUpdateGenreMovie,
+} from "../../../services/apiMovie";
 
 const MovieGenreEdit = () => {
+  const { categoryMovieId } = useParams();
+  const dispatch = useDispatch();
   // thay đổi #1
   const movieGenre = useSelector((state) => state.movieGenre.movieGenre);
   // mặc định #2
@@ -22,32 +28,45 @@ const MovieGenreEdit = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
 
+  // f5 fetch data
+  useEffect(() => {
+    if (!movieGenre) {
+      getMovieGenreById();
+    }
+  }, [movieGenre]);
+
+  const getMovieGenreById = async () => {
+    const res = await callGetGenreMovieById(categoryMovieId);
+    if (res) {
+      dispatch(doSetMovieGenre(res));
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: res.response.data.message,
+      });
+    }
+  };
+
   useEffect(() => {
     form.resetFields();
     // thay đổi #1 [], setfields
     form.setFieldsValue(movieGenre); // Cập nhật dữ liệu vào form khi userData thay đổi
   }, [movieGenre, form]);
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setUserData({ ...userData, [name]: value });
-  // };
-
   const onFinish = async (values) => {
-    console.log("value check: ", values);
     // thay đổi #1
-    const { _id, fullName, phone } = values;
+    const { id, name } = values;
     setIsSubmit(true);
     // thay đổi #1 api call
-    const res = await callUpdateUser(_id, fullName, phone);
-    if (res && res.data) {
+    const res = await callUpdateGenreMovie(id, name);
+    if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật loại phim thành công!");
       navigate("/admin/movieGenre");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: res.response.data.message,
       });
     }
     setIsSubmit(false);
@@ -63,26 +82,19 @@ const MovieGenreEdit = () => {
       <Card bordered={false}>
         <Form form={form} onFinish={onFinish}>
           <Row gutter={[16]}>
-            <Col span={12}>
+            <Col span={24}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Mã loại phim"
-                name="code"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mã loại phim!",
-                  },
-                ]}
+                label="Id loại phim"
+                name="id"
+                hidden
               >
-                <Input placeholder="Nhập mã loại phim" />
+                <Input />
               </Form.Item>
-            </Col>
-            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên loại phim"
-                name="nameGenre"
+                name="name"
                 rules={[
                   {
                     required: true,
