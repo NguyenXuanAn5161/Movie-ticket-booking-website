@@ -2,6 +2,7 @@ import {
   Col,
   Divider,
   Form,
+  Input,
   InputNumber,
   Modal,
   Radio,
@@ -12,14 +13,48 @@ import {
   notification,
 } from "antd";
 import React, { useEffect, useState } from "react";
+import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
+import {
+  callCreateSalePriceDetail,
+  callFetchListFood,
+  callFetchListTypeSeat,
+  callUpdateSalePriceDetail,
+} from "../../../services/apiMovie";
 
 const PriceDetailModalForm = (props) => {
   const [form] = Form.useForm();
-  const { formType, data, setData, openModal, setOpenModal } = props;
+  const { formType, data, setData, openModal, setOpenModal, fetchData } = props;
   const [current, setCurrent] = useState(0);
   const [isSubmit, setIsSubmit] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [priceType, setPriceType] = useState("");
+  const [priceType, setPriceType] = useState("seat");
+  const [typeSeat, setTypeSeat] = useState([]);
+  const [food, setFood] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    fetchTypeSeat();
+  }, []);
+
+  const fetchTypeSeat = async () => {
+    setIsLoading(true);
+    const res = await callFetchListTypeSeat();
+    if (res) {
+      const data = res.map((item) => {
+        return {
+          label:
+            item?.name === "STANDARD"
+              ? "Ghế thường"
+              : item?.name === "VIP"
+              ? "Ghế vip"
+              : "Ghế đôi",
+          value: item.id,
+        };
+      });
+      setTypeSeat(data);
+    }
+    setIsLoading(false);
+  };
 
   const isDisabled = formType === "view" ? true : false;
   const radioStyle = {
@@ -45,76 +80,100 @@ const PriceDetailModalForm = (props) => {
     });
   }, [selectedItems]);
 
-  const options = [
-    {
-      label: "Ghế thường",
-      value: "standard",
-    },
-    {
-      label: "Ghế vip",
-      value: "vip",
-    },
-    {
-      label: "Ghế đôi",
-      value: "sweet",
-    },
-  ];
-
-  const foodOptions = [
-    {
-      label: "Thức ăn 1",
-      value: "food1",
-    },
-    {
-      label: "Thức ăn 2",
-      value: "food2",
-    },
-    {
-      label: "Thức ăn 3",
-      value: "food3",
-    },
-  ];
-
   useEffect(() => {
     if (formType === "update" || formType === "view") {
-      const ids =
-        data?.list_seat_type_id?.length > 0
-          ? data.list_seat_type_id
-          : data?.list_food_id?.length > 0
-          ? data.list_food_id
-          : [];
-      setSelectedItems(ids);
-      setPriceType(data?.type_sale);
+      if (data?.typeSeat) {
+        setSelectedItems(data?.typeSeat);
+        setPriceType("seat");
+      } else {
+        const food = {
+          label: data?.food.name,
+          value: data?.food.id,
+        };
+        setFood(food);
+        setPriceType("food");
+      }
     } else {
       setPriceType("seat");
     }
   }, [data, formType]);
 
   const onFinish = async (values) => {
-    console.log("check value: ", values);
-
-    const { fullName, email, password, phone } = values;
     setIsSubmit(true);
-    // const res = await callCreateUser(fullName, email, password, phone);
-    // if (res && res.data) {
-    if (true) {
-      message.success("Tạo mới giá sản phẩm thành công!");
-      form.resetFields();
-      setOpenModal(false);
-      setPriceType("seat");
-      // await props.fetchUser();
-    } else {
-      notification.error({
-        message: "Đã có lỗi xảy ra!",
-        description: res.message,
-      });
+
+    if (formType === "create") {
+      const { priceId, price, status, type_sale } = values;
+      const itemId = type_sale === "seat" ? selectedItems : food.value;
+      console.log("check", type_sale, priceId, price, status, itemId);
+
+      const res = await callCreateSalePriceDetail(
+        type_sale,
+        priceId,
+        price,
+        status,
+        itemId
+      );
+
+      console.log("res", res);
+
+      if (res?.status === 200) {
+        message.success("Tạo mới giá sản phẩm thành công!");
+        form.resetFields();
+        setFood([]);
+        setOpenModal(false);
+        setPriceType("seat");
+        // await props.fetchUser();
+      } else {
+        notification.error({
+          message: "Đã có lỗi xảy ra!",
+          description: res.response.data.message,
+        });
+      }
+    } else if (formType === "update") {
+      // Xử lý logic cập nhật giá ở đây
+      let itemId = null;
+      let type_sale = null;
+      if (data?.typeSeat) {
+        itemId = selectedItems;
+        type_sale = "seat";
+      } else {
+        itemId = food.value;
+        type_sale = "food";
+      }
+      const { priceDetailId, price, status } = values;
+      console.log("check", priceDetailId, price, status, itemId, type_sale);
+
+      const res = await callUpdateSalePriceDetail(
+        priceDetailId,
+        price,
+        status,
+        itemId,
+        type_sale
+      );
+
+      console.log("res", res);
+
+      if (res?.status === 200) {
+        message.success("Cập nhật giá sản phẩm thành công!");
+        setOpenModal(false);
+        setPriceType("seat");
+        // await props.fetchUser();
+      } else {
+        notification.error({
+          message: "Đã có lỗi xảy ra!",
+          description: res.response.data.message,
+        });
+      }
     }
+
     setIsSubmit(false);
   };
 
   // Xử lý khi đóng modal
   const handleCancel = () => {
     setOpenModal(false);
+    setFood([]);
+    setPriceType("seat");
     form.resetFields();
     if (!(formType === "create")) {
       setData(null);
@@ -148,7 +207,7 @@ const PriceDetailModalForm = (props) => {
         form={form}
         name="basic"
         style={{
-          maxWidth: 450,
+          maxWidth: 550,
           margin: "0 auto",
         }}
         onFinish={onFinish}
@@ -156,29 +215,50 @@ const PriceDetailModalForm = (props) => {
         disabled={isDisabled}
       >
         <Row gutter={16}>
-          <Col span={12}>
+          <Form.Item
+            labelCol={{ span: 24 }}
+            label="id priceHeader"
+            name="priceId"
+            hidden
+          >
+            <Input />
+          </Form.Item>
+          {formType === "update" && (
             <Form.Item
               labelCol={{ span: 24 }}
-              label="Giá cho"
-              name="type_sale"
-              rules={[
-                {
-                  required: true,
-                  message: "Không được để trống!",
-                },
-              ]}
-              initialValue={"seat"}
+              label="id priceDetail"
+              name="priceDetailId"
+              hidden
+              initialValue={data?.id}
             >
-              <Radio.Group onChange={handlePriceTypeChange}>
-                <Radio.Button value="seat" style={radioStyle}>
-                  Ghế
-                </Radio.Button>
-                <Radio.Button value="food" style={radioStyle}>
-                  Đồ ăn
-                </Radio.Button>
-              </Radio.Group>
+              <Input />
             </Form.Item>
-          </Col>
+          )}
+          {!(formType === "update") && (
+            <Col span={12}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Giá cho"
+                name="type_sale"
+                rules={[
+                  {
+                    required: true,
+                    message: "Không được để trống!",
+                  },
+                ]}
+                initialValue={priceType}
+              >
+                <Radio.Group onChange={handlePriceTypeChange}>
+                  <Radio value={"seat"} style={radioStyle}>
+                    Ghế
+                  </Radio>
+                  <Radio value={"food"} style={radioStyle}>
+                    Đồ ăn
+                  </Radio>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+          )}
           <Col span={12}>
             <Form.Item
               labelCol={{ span: 24 }}
@@ -201,57 +281,109 @@ const PriceDetailModalForm = (props) => {
               />
             </Form.Item>
           </Col>
-        </Row>
-        <Form.Item
-          labelCol={{ span: 24 }}
-          label={`Áp dụng cho ${priceType === "seat" ? "loại ghế" : "đồ ăn"}`}
-          name="listItems"
-          rules={[
-            {
-              required: true,
-              message: `Vui lòng chọn ít nhất 1 ${
-                priceType === "seat" ? "loại ghế" : "đồ ăn"
-              }!`,
-            },
-          ]}
-          initialValue={selectedItems}
-        >
-          <Space
-            style={{
-              width: "100%",
-            }}
-            direction="vertical"
-          >
-            <Select
-              mode="multiple"
-              allowClear
-              showSearch
-              style={{
-                width: "100%",
-              }}
-              placeholder={`Chọn danh sách ${
+          <Col span={12}>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label="Trạng thái"
+              name="status"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn trạng thái!",
+                },
+              ]}
+              initialValue={false}
+            >
+              <Radio.Group>
+                <Radio value={true}>Hoạt động</Radio>
+                <Radio value={false}>Ngưng hoạt động</Radio>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label={`Áp dụng cho ${
                 priceType === "seat" ? "loại ghế" : "đồ ăn"
               }`}
-              options={priceType === "seat" ? options : foodOptions}
-              value={selectedItems}
-              onChange={(value) => setSelectedItems(value)}
-              optionFilterProp="label"
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? "")
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? "").toLowerCase())
-              }
-              // optionFilterProp="children"
-              filterOption={(input, option) =>
-                // Tìm kiếm không phân biệt hoa thường
-                option.label.toLowerCase().includes(input.toLowerCase())
-              }
-            />
-          </Space>
-        </Form.Item>
+              name="listItems"
+              rules={[
+                {
+                  required: true,
+                  message: `Vui lòng chọn ít nhất 1 ${
+                    priceType === "seat" ? "loại ghế" : "đồ ăn"
+                  }!`,
+                },
+              ]}
+              initialValue={selectedItems}
+            >
+              <Space
+                style={{
+                  width: "100%",
+                }}
+                direction="vertical"
+              >
+                {priceType === "seat" ? (
+                  <Select
+                    // mode="multiple"
+                    allowClear
+                    showSearch
+                    style={{
+                      width: "100%",
+                    }}
+                    placeholder={`Chọn danh sách ${"loại ghế"}`}
+                    options={typeSeat}
+                    value={selectedItems}
+                    onChange={(value) => setSelectedItems(value)}
+                    optionFilterProp="label"
+                    filterSort={(optionA, optionB) =>
+                      (optionA?.label ?? "")
+                        .toLowerCase()
+                        .localeCompare((optionB?.label ?? "").toLowerCase())
+                    }
+                    // optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      // Tìm kiếm không phân biệt hoa thường
+                      option.label.toLowerCase().includes(input.toLowerCase())
+                    }
+                  />
+                ) : (
+                  <DebounceSelect
+                    // mode="multiple"
+                    value={food}
+                    onChange={(newValue) => {
+                      setFood(newValue);
+                    }}
+                    placeholder="Chọn đồ ăn"
+                    fetchOptions={fetchFoodList}
+                  />
+                )}
+              </Space>
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </Modal>
   );
 };
 
 export default PriceDetailModalForm;
+
+// Hàm fetch danh sách phim
+async function fetchFoodList(foodName) {
+  try {
+    let query = `size=5&name=${foodName}`;
+    const res = await callFetchListFood(query);
+    const food = res.content.map((data) => ({
+      label: data.name,
+      value: data.id,
+    }));
+
+    return food;
+  } catch (error) {
+    // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+    console.error("Error fetching movies:", error);
+    // Trả về một mảng trống nếu xảy ra lỗi
+    return [];
+  }
+}
