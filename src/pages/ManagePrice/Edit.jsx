@@ -80,7 +80,7 @@ const PriceEdit = () => {
     );
     console.log("res", res);
     if (res?.status === 200) {
-      message.success("Tạo mới giá sản phẩm thành công!");
+      message.success("cập nhật giá sản phẩm thành công!");
       form.resetFields();
       setIsSubmit(false);
       navigate("/admin/price");
