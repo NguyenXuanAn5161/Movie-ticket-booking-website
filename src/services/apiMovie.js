@@ -507,3 +507,175 @@ export const callDeleteSalePrice = async (id) => {
     return error;
   }
 };
+
+// sale price detail
+export const callGetAllPriceDetail = async (id) => {
+  try {
+    const response = await api.get(`api/salePrice/${id}/detail`);
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
+export const callCreateSalePriceDetail = async (
+  type_sale,
+  priceHeaderId,
+  price,
+  status,
+  itemId
+) => {
+  const data = [
+    {
+      price: price,
+      [type_sale === "seat" ? "typeSeatId" : "foodId"]: itemId,
+      priceHeaderId: priceHeaderId,
+      status: status,
+    },
+  ];
+
+  try {
+    const response = await api.post("/api/salePrice/detail", data);
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
+export const callUpdateSalePriceDetail = async (
+  priceDetailId,
+  price,
+  status,
+  itemId,
+  type_sale
+) => {
+  const data = [
+    {
+      price: price,
+      [type_sale === "seat" ? "typeSeatId" : "foodId"]: itemId,
+      status: status,
+    },
+  ];
+  try {
+    const response = await api.put(
+      `/api/salePrice/detail/${priceDetailId}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
+export const callDeleteSalePriceDetail = async (id) => {
+  try {
+    const response = await api.delete(`/api/salePrice/detail/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
+// moive
+export const callFetchListMovie = async (query) => {
+  try {
+    const response = await api.get(`/api/movie?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callCreateMovie = async (
+  name,
+  image,
+  trailler,
+  description,
+  duration,
+  genreId,
+  releaseDate,
+  country,
+  director,
+  cast,
+  producer,
+  cinemaId,
+  status
+) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("name", name);
+  bodyFormData.append("image", image);
+  bodyFormData.append("trailer", trailler);
+  bodyFormData.append("description", description);
+  bodyFormData.append("duration", duration);
+  bodyFormData.append("genreId", genreId);
+  bodyFormData.append("releaseDate", releaseDate);
+  bodyFormData.append("country", country);
+  bodyFormData.append("director", director);
+  bodyFormData.append("cast", cast);
+  bodyFormData.append("producer", producer);
+  bodyFormData.append("cinemaId", cinemaId);
+  bodyFormData.append("status", status);
+  try {
+    const response = await api({
+      method: "post",
+      url: "/api/movie",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// genre movie
+export const callGetGenreMovieById = async (id) => {
+  try {
+    const response = await api.get(`/api/genre/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callFetchListGenreMovie = async (query) => {
+  try {
+    const response = await api.get(`/api/genre?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callCreateGenreMovie = async (name) => {
+  try {
+    const response = await api.post(`/api/genre?name=${name}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callUpdateGenreMovie = async (id, name) => {
+  try {
+    const response = await api.put(`/api/genre?id=${id}&name=${name}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callDeleteGenreMovie = async (id) => {
+  try {
+    const response = await api.delete(`/api/genre/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
