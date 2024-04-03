@@ -1,52 +1,96 @@
-import { Card, Col, Descriptions, Divider, Row, Tag, Typography } from "antd";
+import {
+  Card,
+  Col,
+  Descriptions,
+  Divider,
+  Image,
+  Row,
+  Tag,
+  Typography,
+  notification,
+} from "antd";
 import moment from "moment";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+import { doSetMovie } from "../../../redux/movie/movieSlice";
+import { callGetMovieById } from "../../../services/apiMovie";
+import { imageError } from "../../../utils/imageError";
 
 const { Text } = Typography;
 
 const MovieShow = () => {
-  // thay đổi #1
+  const { movieId } = useParams();
+  const dispatch = useDispatch();
   const movie = useSelector((state) => state.movie.movie);
+
+  // f5 fetch data
+  useEffect(() => {
+    if (!movie) {
+      getMovieById();
+    }
+  }, [movie]);
+
+  const getMovieById = async () => {
+    const res = await callGetMovieById(movieId);
+    if (res) {
+      dispatch(doSetMovie(res));
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: res.response.data.message,
+      });
+    }
+  };
 
   const item = [
     { label: "Mã phim", children: movie?.code },
     {
       label: "Tên phim",
-      children: movie?.movieName,
+      children: movie?.name,
     },
     {
       label: "Ngày sản xuất",
-      children: moment(movie?.releaseDate).format("DD-MM-YYYY HH:mm:ss"),
+      children: moment(movie?.releaseDate).format("DD-MM-YYYY"),
     },
     {
       label: "Trạng thái",
       children: (
-        <Tag
-          color={
-            movie?.status === "Đang chiếu"
-              ? "success"
-              : movie?.status === "Sắp chiếu"
-              ? "default"
-              : "error"
-          }
-        >
-          {movie?.status}
+        <Tag color={movie?.status ? "success" : "error"}>
+          {movie?.status ? "Được chiếu" : "Ngưng chiếu"}
         </Tag>
       ),
     },
-    { label: "Thể loại", children: movie?.genre?.genreName },
     {
-      label: "Thời lượng (Phút)",
-      children: movie?.durationInMins,
+      label: "Thể loại",
+      children: movie?.genre?.genreName,
+      span: {
+        xs: 1,
+        sm: 2,
+        md: 2,
+        lg: 2,
+      },
     },
     {
-      label: "Ngôn ngữ của phim",
-      children: movie?.language,
+      label: "Thời lượng (Phút)",
+      children: movie?.durationMinutes,
+      span: {
+        xs: 1,
+        sm: 1,
+        md: 1,
+        lg: 1,
+      },
     },
     {
       label: "Quốc gia sản xuất phim",
       children: movie?.country,
+      span: {
+        xs: 1,
+        sm: 1,
+        md: 1,
+        lg: 1,
+      },
     },
     {
       label: "Đạo diễn",
@@ -54,7 +98,7 @@ const MovieShow = () => {
     },
     {
       label: "Diễn viên",
-      children: movie?.performer,
+      children: movie?.cast,
       span: {
         xs: 1,
         sm: 2,
@@ -78,7 +122,15 @@ const MovieShow = () => {
     },
     {
       label: "Hình ảnh",
-      children: movie?.image,
+      children: (
+        <Image
+          width={200}
+          height={"auto"}
+          src={movie?.imageLink}
+          fallback={imageError}
+          alt="Lỗi tải hình ảnh"
+        />
+      ),
       span: {
         xs: 1,
         sm: 2,
@@ -88,7 +140,12 @@ const MovieShow = () => {
     },
     {
       label: "Trailer",
-      children: movie?.trailer,
+      children: (
+        // target = "_blank" to open a new tab
+        <Link to={movie?.trailerLink} target="_blank">
+          {movie?.name}
+        </Link>
+      ),
       span: {
         xs: 1,
         sm: 2,

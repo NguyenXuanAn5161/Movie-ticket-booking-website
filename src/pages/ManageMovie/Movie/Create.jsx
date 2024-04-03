@@ -3,21 +3,27 @@ import {
   Button,
   Card,
   Col,
+  DatePicker,
   Divider,
   Form,
   Input,
   InputNumber,
   Modal,
+  Radio,
   Row,
   Select,
   Upload,
   message,
   notification,
 } from "antd";
-import { useState } from "react";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callCreateUser, callUploadBookImg } from "../../../services/api";
+import {
+  callCreateMovie,
+  callFetchListGenreMovie,
+} from "../../../services/apiMovie";
 
 // thay đổi #1
 const MovieCreate = () => {
@@ -25,98 +31,96 @@ const MovieCreate = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
-  // ???
+  const [listGenre, setListGenre] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
-  const [dataThumbnail, setDataThumbnail] = useState([]);
+  const [imageFile, setImageFile] = useState([]);
+  // const [imageUrl, setImageUrl] = useState("");
+  // const [dataThumbnail, setDataThumbnail] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
 
-  const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => callback(reader.result));
-    reader.readAsDataURL(img);
-  };
+  useEffect(() => {
+    fetchDataGenre();
+  }, []);
 
-  const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-    if (!isJpgOrPng) {
-      message.error("You can only upload JPG/PNG file!");
+  const fetchDataGenre = async () => {
+    setIsLoading(true);
+    let query = `&size=100`;
+    const res = await callFetchListGenreMovie(query);
+    if (res?.content) {
+      setListGenre(res.content);
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error("Image must smaller than 2MB!");
-    }
-    return isJpgOrPng && isLt2M;
+
+    setIsLoading(false);
   };
 
-  const handleChange = (info) => {
-    if (info.file.status === "done") {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (url) => {
-        setLoading(false);
-        setImageUrl(url);
-      });
-    }
-  };
+  // const getBase64 = (img, callback) => {
+  //   const reader = new FileReader();
+  //   reader.addEventListener("load", () => callback(reader.result));
+  //   reader.readAsDataURL(img);
+  // };
 
-  const handleUploadFileThumbnail = async ({ file, onSuccess, onError }) => {
-    const res = await callUploadBookImg(file);
-    if (res && res.data) {
-      setDataThumbnail([
-        {
-          name: res.data.fileUploaded,
-          uid: file.uid,
-        },
-      ]);
-      onSuccess("ok");
-    } else {
-      onError("Đã có lỗi khi upload file");
-    }
-  };
+  // const beforeUpload = (file) => {
+  //   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+  //   if (!isJpgOrPng) {
+  //     message.error("You can only upload JPG/PNG file!");
+  //   }
+  //   const isLt2M = file.size / 1024 / 1024 < 2;
+  //   if (!isLt2M) {
+  //     message.error("Image must smaller than 2MB!");
+  //   }
+  //   return isJpgOrPng && isLt2M;
+  // };
 
-  const handleRemoveFile = (file) => {
-    setDataThumbnail([]);
-  };
+  // const handleChange = (info) => {
+  //   if (info.file.status === "done") {
+  //     // Get this url from response in real world.
+  //     getBase64(info.file.originFileObj, (url) => {
+  //       setLoading(false);
+  //       setImageUrl(url);
+  //     });
+  //   }
+  // };
 
-  const handlePreview = async (file) => {
-    getBase64(file.originFileObj, (url) => {
-      setPreviewImage(url);
-      setPreviewOpen(true);
-      setPreviewTitle(
-        file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-      );
-    });
-  };
+  // const handleUploadFileThumbnail = async ({ file, onSuccess, onError }) => {
+  //   const res = await callUploadBookImg(file);
+  //   if (res && res.data) {
+  //     setDataThumbnail([
+  //       {
+  //         name: res.data.fileUploaded,
+  //         uid: file.uid,
+  //       },
+  //     ]);
+  //     onSuccess("ok");
+  //   } else {
+  //     onError("Đã có lỗi khi upload file");
+  //   }
+  // };
+
+  // const handleRemoveFile = (file) => {
+  //   setDataThumbnail([]);
+  // };
+
+  // const handlePreview = async (file) => {
+  //   getBase64(file.originFileObj, (url) => {
+  //     setPreviewImage(url);
+  //     setPreviewOpen(true);
+  //     setPreviewTitle(
+  //       file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+  //     );
+  //   });
+  // };
 
   const onFinish = async (values) => {
-    if (dataThumbnail.length === 0) {
-      notification.error({
-        message: "Có lỗi xảy ra!",
-        description: "Ảnh bìa phim không được để trống!",
-      });
-      return;
-    }
     // thay đổi #1
-    const {
-      movieName,
-      Image,
-      trailer,
-      description,
-      durationInMins,
-      genre_id,
-      language,
-      releaseDate,
-      country,
-      director,
-      performer,
-      producer,
-    } = values;
     setIsSubmit(true);
     // thay đổi #1 api call
-    const res = await callCreateUser(fullName, email, password, phone);
-    if (res && res.data) {
+    const releaseDate = dayjs(values.releaseDate).format("YYYY-MM-DD");
+    // const dateFormat = dayjsvalues.releaseDate
+    const res = await callCreateMovie(values, releaseDate, imageFile);
+    if (res?.status === 201) {
       // thay đổi #1 message
       message.success("Tạo mới phim thành công!");
       form.resetFields();
@@ -126,10 +130,23 @@ const MovieCreate = () => {
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: res.response.data.message,
       });
       setIsSubmit(false);
     }
+  };
+
+  // xử lý ảnh
+  const handleRemoveFile = (file) => {
+    setImageFile([]);
+  };
+
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    setImageFile(e.file);
+    return e && e.fileList;
   };
 
   return (
@@ -148,11 +165,11 @@ const MovieCreate = () => {
           style={{ margin: "0 auto" }}
         >
           <Row gutter={[16]}>
-            <Col span={24}>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên phim"
-                name="movieName"
+                name="name"
                 rules={[
                   {
                     required: true,
@@ -166,8 +183,41 @@ const MovieCreate = () => {
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
+                label="Chọn rạp"
+                name="cinemaId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn rạp!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Trạng thái"
+                name="status"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn trạng thái!",
+                  },
+                ]}
+              >
+                <Radio.Group>
+                  <Radio value={true}>Được chiếu</Radio>
+                  <Radio value={false}>Ngưng chiếu</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                labelCol={{ span: 24 }}
                 label="Thể loại"
-                name="genre_id"
+                name="genreId"
                 rules={[
                   {
                     required: true,
@@ -176,27 +226,25 @@ const MovieCreate = () => {
                 ]}
               >
                 <Select
-                  // defaultValue={null}
+                  mode="multiple"
                   showSearch
                   allowClear
                   // onChange={handleChange}
-                  // options={listCategory}
+                  options={listGenre.map((item) => ({
+                    value: item.id,
+                    label: item.name,
+                  }))}
+                  filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? "")
+                      .toLowerCase()
+                      .localeCompare((optionB?.label ?? "").toLowerCase())
+                  }
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    // Tìm kiếm không phân biệt hoa thường
+                    option.label.toLowerCase().includes(input.toLowerCase())
+                  }
                 />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Ngôn ngữ của phim"
-                name="language"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập ngôn ngữ của phim!",
-                  },
-                ]}
-              >
-                <Input style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -230,13 +278,17 @@ const MovieCreate = () => {
                   },
                 ]}
               >
-                <Input type="date" style={{ width: "100%" }} />
+                <DatePicker
+                  style={{ width: "100%" }}
+                  format="DD-MM-YYYY"
+                  placeholder="Chọn ngày sản xuất"
+                />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={4}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Quốc gia sản xuất phim"
+                label="Quốc gia"
                 name="country"
                 rules={[
                   {
@@ -248,7 +300,7 @@ const MovieCreate = () => {
                 <Input style={{ width: "100%" }} />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={4}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Đạo diễn"
@@ -263,23 +315,7 @@ const MovieCreate = () => {
                 <Input style={{ width: "100%" }} />
               </Form.Item>
             </Col>
-            <Col span={6}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Diễn viên"
-                name="performer"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập tên các diễn viên chính!",
-                  },
-                ]}
-              >
-                <Input style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-
-            <Col span={6}>
+            <Col span={4}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Nhà sản xuất"
@@ -288,6 +324,21 @@ const MovieCreate = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập tên nhà sản xuất phim!",
+                  },
+                ]}
+              >
+                <Input style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Diễn viên"
+                name="cast"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên các diễn viên chính!",
                   },
                 ]}
               >
@@ -325,20 +376,16 @@ const MovieCreate = () => {
                 ]}
               >
                 <Upload
-                  name="thumbnail"
-                  listType="picture-card"
-                  className="avatar-uploader"
+                  accept="image/*"
                   maxCount={1}
-                  multiple={false}
-                  customRequest={handleUploadFileThumbnail}
-                  beforeUpload={beforeUpload}
-                  onChange={handleChange}
+                  beforeUpload={() => false}
                   onRemove={(file) => handleRemoveFile(file)}
-                  onPreview={handlePreview}
+                  onChange={(info) => normFile(info)}
+                  listType="picture-card"
                 >
                   <div>
                     {loading ? <LoadingOutlined /> : <PlusOutlined />}
-                    <div style={{ marginTop: 8 }}>Upload</div>
+                    <div style={{ marginTop: 8 }}>Tải ảnh lên</div>
                   </div>
                 </Upload>
               </Form.Item>

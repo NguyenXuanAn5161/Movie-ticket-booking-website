@@ -4,6 +4,7 @@ import {
   Popconfirm,
   Row,
   Table,
+  Tag,
   message,
   notification,
 } from "antd";
@@ -22,7 +23,7 @@ import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../components/InputSearch/InputSearch";
 import { doSetMovie } from "../../../redux/movie/movieSlice";
 import {
-  callDeleteGenreMovie,
+  callDeleteMovie,
   callFetchListMovie,
 } from "../../../services/apiMovie";
 
@@ -192,9 +193,9 @@ const MovieList = () => {
       query += `&${filter}`;
     }
 
-    if (sortQuery) {
-      query += `&${sortQuery}`;
-    }
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
 
     // thay đổi #1 api call
     const res = await callFetchListMovie(query);
@@ -210,15 +211,16 @@ const MovieList = () => {
   // mặc định #2
   const handleDeleteData = async (dataId) => {
     // thay đổi #1 api call
-    const res = await callDeleteGenreMovie(dataId);
+    const res = await callDeleteMovie(dataId);
     if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Xoá phim thành công!");
+      setCurrent(1);
       await fetchData();
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: res.response.data.message,
       });
     }
   };
@@ -232,27 +234,27 @@ const MovieList = () => {
   // thay đổi #1
   const columns = [
     {
-      title: "Code",
-      dataIndex: "code",
-      width: 100,
+      title: "Tên phim",
+      dataIndex: "name",
+      sorter: true,
+      width: 250,
       fixed: "left",
     },
     {
-      title: "Tên phim",
-      dataIndex: "movieName",
-      sorter: true,
-      width: 100,
-      fixed: "left",
+      title: "Đạo diễn",
+      dataIndex: "director",
+      width: 150,
+    },
+    {
+      title: "Diễn viên",
+      dataIndex: "cast",
     },
     {
       title: "Ngày sản xuất",
       dataIndex: "releaseDate",
-      width: 150,
-      sorter: true,
-    },
-    {
-      title: "Thể loại",
-      dataIndex: "genreName",
+      render: (text, record, index) => {
+        return <span>{moment(record.releaseDate).format("DD-MM-YYYY")}</span>;
+      },
       width: 150,
       sorter: true,
     },
@@ -260,15 +262,22 @@ const MovieList = () => {
       title: "Trạng thái",
       dataIndex: "status",
       width: 150,
-      sorter: true,
+      render: (status) => (
+        <Tag color={status ? "success" : "error"}>
+          {status ? "Được chiếu" : "Ngưng chiếu"}
+        </Tag>
+      ),
+      // sorter: true,
     },
     {
       title: "Cập nhật ngày",
-      dataIndex: "updatedAt",
+      dataIndex: "createdDate",
       width: 150,
       render: (text, record, index) => {
         return (
-          <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
+          <span>
+            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
+          </span>
         );
       },
       sorter: true,

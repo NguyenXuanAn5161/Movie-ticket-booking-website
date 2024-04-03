@@ -1,3 +1,4 @@
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -8,22 +9,70 @@ import {
   Radio,
   Row,
   Select,
+  Upload,
   message,
   notification,
 } from "antd";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callUpdateUser } from "../../../services/api";
+import { doSetMovie } from "../../../redux/movie/movieSlice";
+import {
+  callFetchListGenreMovie,
+  callGetMovieById,
+  callUpdateMovie,
+} from "../../../services/apiMovie";
 
 const MovieEdit = () => {
   // thay đổi #1
   const movie = useSelector((state) => state.movie.movie);
+  const { movieId } = useParams();
+  const dispatch = useDispatch();
   // mặc định #2
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
+  const [listGenre, setListGenre] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(
+    movie?.imageLink ? [movie.imageLink] : []
+  );
+
+  // f5 fetch data
+  useEffect(() => {
+    if (!movie) {
+      getMovieById();
+    }
+  }, [movie]);
+
+  const getMovieById = async () => {
+    const res = await callGetMovieById(movieId);
+    if (res) {
+      dispatch(doSetMovie(res));
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: res.response.data.message,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchDataGenre();
+  }, []);
+
+  const fetchDataGenre = async () => {
+    setIsLoading(true);
+    let query = `&size=100`;
+    const res = await callFetchListGenreMovie(query);
+    if (res?.content) {
+      setListGenre(res.content);
+    }
+
+    setIsLoading(false);
+  };
 
   useEffect(() => {
     form.resetFields();
@@ -31,29 +80,36 @@ const MovieEdit = () => {
     form.setFieldsValue(movie); // Cập nhật dữ liệu vào form khi userData thay đổi
   }, [movie, form]);
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setUserData({ ...userData, [name]: value });
-  // };
-
   const onFinish = async (values) => {
-    console.log("value check: ", values);
     // thay đổi #1
-    const { _id, fullName, phone } = values;
     setIsSubmit(true);
     // thay đổi #1 api call
-    const res = await callUpdateUser(_id, fullName, phone);
-    if (res && res.data) {
+    console.log("values update movie: ", values);
+    const res = await callUpdateMovie(values, imageFile);
+    if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật phim thành công!");
       navigate("/admin/movie");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: res.response.data.message,
       });
     }
     setIsSubmit(false);
+  };
+
+  // xử lý ảnh
+  const handleRemoveFile = (file) => {
+    setImageFile([]);
+  };
+
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    setImageFile(e.file);
+    return e && e.fileList;
   };
 
   return (
@@ -62,11 +118,14 @@ const MovieEdit = () => {
       <Card bordered={false}>
         <Form form={form} onFinish={onFinish}>
           <Row gutter={[16]}>
+            <Form.Item hidden labelCol={{ span: 24 }} label="Id phim" name="id">
+              <Input />
+            </Form.Item>
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên phim"
-                name="movieName"
+                name="name"
                 rules={[
                   {
                     required: true,
@@ -75,6 +134,21 @@ const MovieEdit = () => {
                 ]}
               >
                 <Input placeholder="Nhập tên phim" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Chọn rạp"
+                name="cinemaId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn rạp!",
+                  },
+                ]}
+              >
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -90,9 +164,8 @@ const MovieEdit = () => {
                 ]}
               >
                 <Radio.Group value={movie?.status}>
-                  <Radio.Button value="Đang chiếu">Đang chiếu</Radio.Button>
-                  <Radio.Button value="Sắp chiếu">Sắp chiếu</Radio.Button>
-                  <Radio.Button value="Ngưng chiếu">Ngưng chiếu</Radio.Button>
+                  <Radio value={true}>Được chiếu</Radio>
+                  <Radio value={false}>Ngưng chiếu</Radio>
                 </Radio.Group>
               </Form.Item>
             </Col>
@@ -100,43 +173,42 @@ const MovieEdit = () => {
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Thể loại"
-                name="genre_id"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: "Vui lòng nhập tên quốc gia sản xuất phim!",
-                //   },
-                // ]}
+                name="genreId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng thể loại phim!",
+                  },
+                ]}
+                initialValue={movie?.genreIds}
               >
                 <Select
-                  // defaultValue={null}
+                  mode="multiple"
                   showSearch
                   allowClear
                   // onChange={handleChange}
-                  // options={listCategory}
+                  options={listGenre.map((item) => ({
+                    value: item.id,
+                    label: item.name,
+                  }))}
+                  filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? "")
+                      .toLowerCase()
+                      .localeCompare((optionB?.label ?? "").toLowerCase())
+                  }
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    // Tìm kiếm không phân biệt hoa thường
+                    option.label.toLowerCase().includes(input.toLowerCase())
+                  }
                 />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Ngôn ngữ của phim"
-                name="language"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập ngôn ngữ của phim!",
-                  },
-                ]}
-              >
-                <Input style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
                 label="Thời lượng"
-                name="durationInMins"
+                name="durationMinutes"
                 rules={[
                   {
                     required: true,
@@ -166,10 +238,10 @@ const MovieEdit = () => {
                 <Input type="date" style={{ width: "100%" }} />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={4}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Quốc gia sản xuất phim"
+                label="Quốc gia"
                 name="country"
                 rules={[
                   {
@@ -181,7 +253,7 @@ const MovieEdit = () => {
                 <Input style={{ width: "100%" }} />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={4}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Đạo diễn"
@@ -196,23 +268,7 @@ const MovieEdit = () => {
                 <Input style={{ width: "100%" }} />
               </Form.Item>
             </Col>
-            <Col span={6}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Diễn viên"
-                name="performer"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập tên các diễn viên chính!",
-                  },
-                ]}
-              >
-                <Input style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-
-            <Col span={6}>
+            <Col span={4}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Nhà sản xuất"
@@ -221,6 +277,21 @@ const MovieEdit = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập tên nhà sản xuất phim!",
+                  },
+                ]}
+              >
+                <Input style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Diễn viên"
+                name="cast"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên các diễn viên chính!",
                   },
                 ]}
               >
@@ -249,7 +320,7 @@ const MovieEdit = () => {
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Hình ảnh"
-                name="image"
+                name="imageLink"
                 rules={[
                   {
                     required: true,
@@ -257,18 +328,33 @@ const MovieEdit = () => {
                   },
                 ]}
               >
-                <Input style={{ width: "100%" }} />
+                <Upload
+                  accept="image/*"
+                  maxCount={1}
+                  beforeUpload={() => false}
+                  onRemove={(file) => handleRemoveFile(file)}
+                  onChange={(info) => normFile(info)}
+                  listType="picture-card"
+                  defaultFileList={
+                    movie?.imageLink ? [{ url: movie.imageLink }] : []
+                  }
+                >
+                  <div>
+                    {loading ? <LoadingOutlined /> : <PlusOutlined />}
+                    <div style={{ marginTop: 8 }}>Tải ảnh lên</div>
+                  </div>
+                </Upload>
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Trailer"
-                name="trailer"
+                name="trailerLink"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn trailer!",
+                    message: "Vui lòng nhập link trailer!",
                   },
                 ]}
               >
