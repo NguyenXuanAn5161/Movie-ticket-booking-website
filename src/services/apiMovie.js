@@ -581,6 +581,15 @@ export const callDeleteSalePriceDetail = async (id) => {
 };
 
 // moive
+export const callGetMovieById = async (id) => {
+  try {
+    const response = await api.get(`/api/movie/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const callFetchListMovie = async (query) => {
   try {
     const response = await api.get(`/api/movie?${query}`);
@@ -590,27 +599,26 @@ export const callFetchListMovie = async (query) => {
   }
 };
 
-export const callCreateMovie = async (
-  name,
-  image,
-  trailler,
-  description,
-  duration,
-  genreId,
-  releaseDate,
-  country,
-  director,
-  cast,
-  producer,
-  cinemaId,
-  status
-) => {
+export const callCreateMovie = async (values, releaseDate, image) => {
+  const {
+    name,
+    description,
+    trailer,
+    durationInMins,
+    genreId,
+    country,
+    director,
+    cast,
+    producer,
+    status,
+    cinemaId,
+  } = values;
   const bodyFormData = new FormData();
   bodyFormData.append("name", name);
   bodyFormData.append("image", image);
-  bodyFormData.append("trailer", trailler);
+  bodyFormData.append("trailer", trailer);
   bodyFormData.append("description", description);
-  bodyFormData.append("duration", duration);
+  bodyFormData.append("duration", durationInMins);
   bodyFormData.append("genreId", genreId);
   bodyFormData.append("releaseDate", releaseDate);
   bodyFormData.append("country", country);
@@ -628,6 +636,62 @@ export const callCreateMovie = async (
         "Content-Type": "multipart/form-data",
       },
     });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callUpdateMovie = async (values, image) => {
+  const {
+    id,
+    name,
+    description,
+    trailerLink,
+    durationMinutes,
+    genreId,
+    releaseDate,
+    country,
+    director,
+    cast,
+    producer,
+    status,
+    cinemaId,
+  } = values;
+  const bodyFormData = new FormData();
+  bodyFormData.append("id", id);
+  bodyFormData.append("name", name);
+  bodyFormData.append("description", description);
+  bodyFormData.append("image", image);
+  bodyFormData.append("trailer", trailerLink);
+  bodyFormData.append("duration", durationMinutes);
+  bodyFormData.append("genreId", genreId);
+  bodyFormData.append("releaseDate", releaseDate);
+  bodyFormData.append("country", country);
+  bodyFormData.append("director", director);
+  bodyFormData.append("cast", cast);
+  bodyFormData.append("producer", producer);
+  bodyFormData.append("status", status);
+  bodyFormData.append("cinemaId", cinemaId);
+
+  try {
+    const response = await api({
+      method: "put",
+      url: "/api/movie",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callDeleteMovie = async (id) => {
+  try {
+    const response = await api.delete(`/api/movie/${id}`);
     return response.data;
   } catch (error) {
     return error;
@@ -674,6 +738,25 @@ export const callUpdateGenreMovie = async (id, name) => {
 export const callDeleteGenreMovie = async (id) => {
   try {
     const response = await api.delete(`/api/genre/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// showtime
+export const callGetShowtimeById = async (id) => {
+  try {
+    const response = await api.get(`/api/showtime/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callFetchListShowtime = async (query) => {
+  try {
+    const response = await api.get(`/api/showtime?${query}`);
     return response.data;
   } catch (error) {
     return error;
