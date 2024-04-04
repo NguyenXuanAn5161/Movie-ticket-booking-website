@@ -1,19 +1,11 @@
-import {
-  Button,
-  Form,
-  Modal,
-  Select,
-  Steps,
-  message,
-  notification,
-} from "antd";
+import { Button, Form, Modal, Steps, message, notification } from "antd";
 import React, { useEffect, useState } from "react";
+import { callCreatePromotionLine } from "../../../services/apiMovie";
 import PromotionBasicInfo from "./StepsCreate/BasicInfor";
 import PromotionDetailsDiscount from "./StepsCreate/DetailsDiscount";
 import PromotionDetailsGift from "./StepsCreate/DetailsGift";
+import ImageDetail from "./StepsCreate/ImageDetail";
 import PromotionUsageConditions from "./StepsCreate/UsageConditions";
-
-const { Option } = Select;
 
 const PromotionLineModalForm = (props) => {
   const [form] = Form.useForm();
@@ -21,8 +13,19 @@ const PromotionLineModalForm = (props) => {
   const [current, setCurrent] = useState(0);
   const [isSubmit, setIsSubmit] = useState(false);
   const [formData, setFormData] = useState({});
+  const [imageFile, setImageFile] = useState([]);
 
   const steps = [
+    {
+      title: "Hình ảnh mô tả",
+      formComponent: (
+        <ImageDetail
+          form={form}
+          setImageFile={setImageFile}
+          formType={formType === "view" ? formType : null}
+        />
+      ),
+    },
     {
       title: "Thông tin cơ bản",
       formComponent: (
@@ -44,7 +47,7 @@ const PromotionLineModalForm = (props) => {
     {
       title: "Chi tiết khuyến mãi",
       formComponent:
-        formData?.type === "discount" ? (
+        formData?.typePromotion === "DISCOUNT" ? (
           <PromotionDetailsDiscount
             form={form}
             promotionDetails={data?.promotionDetails}
@@ -71,6 +74,7 @@ const PromotionLineModalForm = (props) => {
     form
       .validateFields()
       .then((values) => {
+        console.log("values basic: ", values);
         setCurrent(current + 1);
         // Update formData
         setFormData({ ...formData, ...values });
@@ -102,25 +106,40 @@ const PromotionLineModalForm = (props) => {
         setIsSubmit(true);
         // api
         // Lấy giá trị của type_promotion từ values
-        const { type_promotion, ...formDataDetail } = values;
-        console.log("formData trong nối: ", {
+        const dataPromotionLine = {
           ...formData,
-          promotionDetail: formDataDetail,
-          type_promotion: type_promotion ? type_promotion : null,
-        });
-        setTimeout(() => {
+          PromotionDetailDto: values,
+        };
+        console.log("dataPromotionLine: ", dataPromotionLine);
+        const res = callCreatePromotionLine(dataPromotionLine, data, imageFile);
+        console.log("res: ", res);
+        if (res?.status === 200) {
+          message.success("Tạo mới chương trình khuyến mãi thành công");
+          form.resetFields();
           setIsSubmit(false);
           setOpenModal(false);
           setCurrent(0);
-          form.resetFields();
-          message.success("Tạo mới chương trình khuyến mãi thành công");
-        }, 1000);
+        } else {
+          notification.error({
+            message: "Đã có lỗi xảy ra!",
+            description: res.response.data.message,
+          });
+          setIsSubmit(false);
+        }
+
+        // setTimeout(() => {
+        //   setIsSubmit(false);
+        //   setOpenModal(false);
+        //   form.resetFields();
+        //   message.success("Tạo mới chương trình khuyến mãi thành công");
+        // }, 1000);
       })
       .catch((error) => {
         notification.error({
           message: "Có lỗi xảy ra!",
           description: "Vui lòng nhập đầy đủ thông tin",
         });
+        setIsSubmit(false);
       });
   };
 
