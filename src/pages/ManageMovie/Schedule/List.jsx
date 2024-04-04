@@ -21,153 +21,13 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../components/InputSearch/InputSearch";
 import { doSetSchedule } from "../../../redux/schedule/scheduleSlice";
-import { callFetchListUser } from "../../../services/api";
+import { callFetchListShowtime } from "../../../services/apiMovie";
 
 const ScheduleList = () => {
-  const data = [
-    {
-      id: "1",
-      code: "MOV001",
-      movieName: "Kẻ Trộm Giấc Mơ",
-      title: "Inception",
-      image: "inception.jpg",
-      description:
-        "Một tên trộm đạo chích với khả năng đánh cắp bí mật của doanh nghiệp thông qua công nghệ chia sẻ giấc mơ được giao nhiệm vụ ngược lại là trồng một ý tưởng vào tâm trí của một CEO.",
-      durationInMins: 148,
-      genreName: "khoa-học-viễn-tưởng",
-      language: "Tiếng Anh",
-      releaseDate: "2010-07-16",
-      country: "Mỹ",
-      director: "Christopher Nolan",
-      performer: "Leonardo DiCaprio, Joseph Gordon-Levitt, Ellen Page",
-      producer: "Christopher Nolan, Emma Thomas",
-      status: "Đang chiếu",
-      showTimes: [
-        {
-          id: "1",
-          code: "ST001",
-          show_date: "2024-03-20",
-          startTime: "19:00",
-          endTime: "21:28",
-          room_id: "R001",
-          cinema_id: "C001",
-          seats_booked: 50,
-          status: true,
-        },
-        {
-          id: "2",
-          code: "ST002",
-          show_date: "2024-03-21",
-          startTime: "21:30",
-          endTime: "23:58",
-          room_id: "R001",
-          cinema_id: "C001",
-          seats_booked: 30,
-          status: true,
-        },
-        {
-          id: "3",
-          code: "ST003",
-          show_date: "2024-03-23",
-          startTime: "21:30",
-          endTime: "23:58",
-          room_id: "R001",
-          cinema_id: "C001",
-          seats_booked: 30,
-          status: true,
-        },
-      ],
-    },
-    {
-      id: "2",
-      code: "MOV002",
-      movieName: "Người Vận Chuyển",
-      title: "The Transporter",
-      image: "transporter.jpg",
-      description:
-        "Frank Martin, một tay lái xe chuyên nghiệp ở Pháp chấp nhận các nhiệm vụ đưa hàng cho các tên tội phạm mà không hỏi bất kỳ câu hỏi nào.",
-      durationInMins: 92,
-      genreName: "hành-động",
-      language: "Tiếng Anh",
-      releaseDate: "2002-10-11",
-      country: "Pháp",
-      director: "Louis Leterrier, Corey Yuen",
-      performer: "Jason Statham, Shu Qi, Matt Schulze",
-      producer: "Luc Besson",
-      status: "Sắp chiếu",
-      showTimes: [
-        {
-          id: "3",
-          code: "ST003",
-          show_date: "2024-03-22",
-          startTime: "18:00",
-          endTime: "19:32",
-          room_id: "R002",
-          cinema_id: "C002",
-          seats_booked: 20,
-          status: true,
-        },
-        {
-          id: "4",
-          code: "ST004",
-          show_date: "2024-03-23",
-          startTime: "20:00",
-          endTime: "21:32",
-          room_id: "R002",
-          cinema_id: "C002",
-          seats_booked: 40,
-          status: true,
-        },
-      ],
-    },
-    {
-      id: "3",
-      code: "MOV003",
-      movieName: "Hoa Mắt",
-      title: "Eyes Wide Shut",
-      image: "eyes-wide-shut.jpg",
-      description:
-        "Một bác sĩ thành phố New York vô tình khám phá ra một cộng đồng bí mật của người thừa kế tầm quan trọng của ông.",
-      durationInMins: 159,
-      genreName: "tâm-lý",
-      language: "Tiếng Anh",
-      releaseDate: "1999-07-16",
-      country: "Mỹ",
-      director: "Stanley Kubrick",
-      performer: "Tom Cruise, Nicole Kidman, Todd Field",
-      producer: "Stanley Kubrick",
-      status: "Ngưng chiếu",
-      showTimes: [
-        // {
-        //   id: "5",
-        //   code: "ST005",
-        //   show_date: "2024-03-24",
-        //   startTime: "17:30",
-        //   endTime: "19:29",
-        //   room_id: "R003",
-        //   cinema_id: "C003",
-        //   seats_booked: 15,
-        //   status: true,
-        // },
-        // {
-        //   id: "6",
-        //   code: "ST006",
-        //   show_date: "2024-03-25",
-        //   startTime: "19:30",
-        //   endTime: "21:29",
-        //   room_id: "R003",
-        //   cinema_id: "C003",
-        //   seats_booked: 25,
-        //   status: true,
-        // },
-      ],
-    },
-  ];
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
-  const [listData, setListData] = useState(data);
+  const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(2);
   const [total, setTotal] = useState(0);
@@ -185,20 +45,25 @@ const ScheduleList = () => {
   // mặc định #2
   const fetchData = async () => {
     setIsLoading(true);
-    let query = `current=${current}&pageSize=${pageSize}`;
+    let query = `page=${current - 1}&size=${pageSize}`;
+
+    if (!filter) {
+      query += `&cinemaId=7&movieId=1`;
+    }
+
     if (filter) {
       query += `&${filter}`;
     }
 
-    if (sortQuery) {
-      query += `&${sortQuery}`;
-    }
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
 
     // thay đổi #1 api call
-    const res = await callFetchListUser(query);
-    if (res && res.data) {
-      // setListData(res.data.result);
-      // setTotal(res.data.meta.total);
+    const res = await callFetchListShowtime(query);
+    if (res?.content) {
+      setListData(res.content);
+      setTotal(res.totalElements);
     }
 
     setIsLoading(false);
@@ -229,56 +94,75 @@ const ScheduleList = () => {
   // thay đổi #1
   const columns = [
     {
-      title: "Code",
-      dataIndex: "code",
-      width: 100,
-      fixed: "left",
-    },
-    {
       title: "Tên phim",
-      dataIndex: "movieName",
+      // dataIndex: "name",
+      dataIndex: "movieId",
       sorter: true,
       width: 200,
       fixed: "left",
     },
     {
       title: "Ngày chiếu",
-      dataIndex: "showTimes",
+      dataIndex: "showDate",
       width: 150,
       sorter: true,
-      render: (showTimes) => {
-        if (showTimes && showTimes.length > 0) {
-          const renderShowTimes = showTimes.map((showTime, index) => (
-            <Col
-              key={showTime.id}
-              style={{ marginBottom: showTimes.length > 2 ? 5 : null }}
-            >
-              <Tag>{showTime.show_date}</Tag>
-            </Col>
-          ));
+      // render: (showTimes) => {
+      //   if (showTimes && showTimes.length > 0) {
+      //     const renderShowTimes = showTimes.map((showTime, index) => (
+      //       <Col
+      //         key={showTime.id}
+      //         style={{ marginBottom: showTimes.length > 2 ? 5 : null }}
+      //       >
+      //         <Tag>{showTime.show_date}</Tag>
+      //       </Col>
+      //     ));
 
-          return <Row gutter={[8, 8]}>{renderShowTimes}</Row>;
-        } else {
-          return <span>Chưa có lịch chiếu</span>; // Trường hợp không có lịch chiếu
-        }
-      },
+      //     return <Row gutter={[8, 8]}>{renderShowTimes}</Row>;
+      //   } else {
+      //     return <span>Chưa có lịch chiếu</span>; // Trường hợp không có lịch chiếu
+      //   }
+      // },
+    },
+    {
+      title: "Giờ chiếu",
+      dataIndex: "showTime",
+      width: 150,
+      sorter: true,
+    },
+    {
+      title: "Rạp chiếu",
+      dataIndex: "cinemaId",
+      width: 150,
+    },
+    {
+      title: "Phòng chiếu",
+      dataIndex: "roomId",
+      width: 150,
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       width: 150,
-      sorter: true,
+      render: (text, record, index) => {
+        return (
+          <Tag color={record.status ? "success" : "error"}>
+            {record.status ? "Được chiếu" : "Ngừng chiếu"}
+          </Tag>
+        );
+      },
     },
     {
       title: "Cập nhật ngày",
-      dataIndex: "updatedAt",
+      dataIndex: "createdDate",
       width: 150,
+      sorter: true,
       render: (text, record, index) => {
         return (
-          <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
+          <span>
+            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
+          </span>
         );
       },
-      sorter: true,
     },
     {
       title: "Thao tác",
@@ -357,7 +241,18 @@ const ScheduleList = () => {
 
   // mặc định #2
   const handleSearch = (query) => {
-    setFilter(query);
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+    console.log("q", q);
+    setFilter(q);
   };
 
   // mặc định #2
@@ -382,9 +277,9 @@ const ScheduleList = () => {
 
   // thay đổi #1
   const itemSearch = [
-    { field: "movieName", label: "Tên phim" },
-    { field: "author", label: "Tác giả" },
-    { field: "movieCategories", label: "Thể loại" },
+    { field: "cinemaId", label: "Tên rạp" },
+    { field: "movieId", label: "Tên phim" },
+    { field: "date", label: "Ngày chiếu" },
   ];
 
   return (
@@ -412,7 +307,7 @@ const ScheduleList = () => {
             dataSource={listData}
             onChange={onChange}
             // thay đổi #1
-            rowKey="_id"
+            rowKey="id"
             pagination={{
               current: current,
               pageSize: pageSize,
