@@ -13,6 +13,7 @@ import {
   message,
   notification,
 } from "antd";
+import dayjs from "dayjs";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -306,7 +307,10 @@ const ScheduleEdit = () => {
                 ]}
                 initialValue={moment()}
               >
-                <TimePicker format="HH:mm" />
+                <TimePicker
+                  // onChange={onChange}
+                  defaultOpenValue={dayjs("00:00:00", "HH:mm:ss")}
+                />
               </Form.Item>
             </Col>
             <Col span={8}>
