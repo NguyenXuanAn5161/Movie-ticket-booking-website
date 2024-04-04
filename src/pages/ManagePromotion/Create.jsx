@@ -27,13 +27,6 @@ const PromotionCreate = () => {
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    console.log("Success:", values);
-    console.log(
-      "startTime:",
-      values.timeValue[0].format("YYYY-MM-DD HH:mm:ss")
-    );
-    console.log("endTime:", values.timeValue[1].format("YYYY-MM-DD HH:mm:ss"));
-    // const { fullName, email, password, phone } = values;
     setIsSubmit(true);
     const res = await callCreatePromotionHeader(values);
     if (res?.status === 200) {
