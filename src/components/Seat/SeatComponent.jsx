@@ -20,9 +20,9 @@ const SeatComponent = ({
   // Ánh xạ giữa typeSeat và backgroundColor
   const getTypeSeatColor = (seatTypeId) => {
     switch (seatTypeId) {
-      case 3:
-        return "#FF8247"; // Màu cam cho ghế vip
       case 2:
+        return "#FF8247"; // Màu cam cho ghế vip
+      case 1:
         return "#FF1493"; // Màu hồng cho ghế đôi
       default:
         return "#6959CD"; // Màu tím cho ghế thường (mặc định)
