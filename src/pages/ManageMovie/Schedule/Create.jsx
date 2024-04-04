@@ -5,22 +5,26 @@ import {
   DatePicker,
   Divider,
   Form,
-  Popconfirm,
   Radio,
   Row,
-  Table,
-  Tag,
+  Select,
   TimePicker,
   message,
   notification,
 } from "antd";
-import moment from "moment";
-import { useState } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
-import { CiEdit } from "react-icons/ci";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+import {
+  callCreateShowtime,
+  callFetchListCinema,
+  callFetchListMovie,
+  callFetchListRoom,
+} from "../../../services/apiMovie";
+
+const defaultStartDate = dayjs().startOf("day").add(1, "day");
 
 // thay đổi #1
 const ScheduleCreate = () => {
@@ -28,7 +32,9 @@ const ScheduleCreate = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
-  const [value, setValue] = useState([]);
+  const [movie, setMovie] = useState({});
+  const [cinema, setCinema] = useState({});
+  const [room, setRoom] = useState([]);
   const [listData, setListData] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [current, setCurrent] = useState(1);
@@ -39,32 +45,50 @@ const ScheduleCreate = () => {
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
   const [openModalExport, setOpenModalExport] = useState(false);
 
+  useEffect(() => {
+    if (cinema) {
+      setRoom([]);
+      // reset field room
+      form.resetFields(["roomId"]);
+      fetchData();
+    }
+  }, [cinema]);
+
+  // mặc định #2
+  const fetchData = async () => {
+    setIsLoading(true);
+    let query = `size=100&cinemaId=${cinema?.value}`;
+    if (filter) {
+      query += `${filter}`;
+    }
+
+    // thay đổi #1 api call
+    const res = await callFetchListRoom(query);
+    if (res?.content) {
+      setRoom(res.content);
+    }
+
+    setIsLoading(false);
+  };
+
   const onFinish = async (values) => {
-    const check = {
-      ...values,
-      startTime: values["startTime"].format("HH:mm:ss"),
-    };
-    console.log("Check values of form: ", check);
+    // const check = {
+    //   ...values,
+    //   startTime: values["startTime"].format("HH:mm:ss"),
+    // };
+    console.log("Check values of form: ", values);
     // thay đổi #1
     setIsSubmit(true);
-    // Gọi API để tạo mới hoặc cập nhật dữ liệu với dữ liệu từ Form
+    const res = await callCreateShowtime(values);
     try {
-      // Nếu có dữ liệu từ hàng được chọn, đó là việc cập nhật
-      if (selectedRowData) {
-        // Gọi API để cập nhật dữ liệu với dữ liệu từ Form
-      } else {
-        // Nếu không có dữ liệu từ hàng được chọn, đó là việc tạo mới
-        // Gọi API để tạo mới dữ liệu với dữ liệu từ Form
-      }
-      // if (res && res.data) {
-      if (true) {
+      if (res?.status === 201) {
         // thay đổi #1 message
         message.success("Tạo mới lịch chiếu phim thành công!");
         // setIsSubmit(false);
       } else {
         notification.error({
           message: "Đã có lỗi xảy ra!",
-          description: res.message,
+          description: res.response.data.message,
         });
         setIsSubmit(false);
       }
@@ -76,115 +100,6 @@ const ScheduleCreate = () => {
       });
     } finally {
       setIsSubmit(false);
-    }
-  };
-
-  const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span style={{ fontWeight: "500" }}>Chi tiết lịch chiếu phim</span>
-    </div>
-  );
-
-  const handleEdit = (record) => {
-    form.setFieldsValue({
-      // movieName: record.movieName,
-      cinema_id: record.cinema_id,
-      room_id: record.room_id,
-      show_date: moment(record.show_date), // Chuyển đổi định dạng ngày nếu cần
-      startTime: moment(record.startTime), // Chuyển đổi định dạng giờ nếu cần
-      status: record.status,
-    });
-    setSelectedRowData(record);
-  };
-
-  const columns = [
-    {
-      title: "Tên phim",
-      dataIndex: "movieName",
-      width: 120,
-    },
-    {
-      title: "Rạp chiếu",
-      dataIndex: "cinema_id",
-      width: 120,
-    },
-    {
-      title: "Phòng chiếu",
-      dataIndex: "room_id",
-      key: "room_id",
-      width: 150,
-    },
-    {
-      title: "Ngày chiếu",
-      dataIndex: "show_date",
-      width: 120,
-      render: (text, record, index) => {
-        return <span>{moment(record.show_date).format("DD-MM-YYYY")}</span>;
-      },
-    },
-    {
-      title: "Giờ chiếu",
-      dataIndex: "startTime",
-      width: 120,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      width: 100,
-      sorter: true,
-      render: (status) => (
-        <Tag color={status ? "success" : "error"}>
-          {status ? "Hoạt động" : "Ngưng hoạt động"}
-        </Tag>
-      ),
-    },
-    {
-      title: "Thao tác",
-      width: 100,
-      fixed: "right",
-      render: (text, record, index) => {
-        return (
-          <>
-            <Popconfirm
-              placement="leftTop"
-              title={"Xác nhận xóa lịch chiếu phim"}
-              description={"Bạn có chắc chắn muốn xóa lịch chiếu phim này?"}
-              okText="Xác nhận"
-              cancelText="Hủy"
-              onConfirm={() => handleDeleteBook(record.id)}
-            >
-              <span>
-                <AiOutlineDelete
-                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
-                />
-              </span>
-            </Popconfirm>
-            <CiEdit
-              style={{ color: "#f57800", cursor: "pointer" }}
-              onClick={() => handleEdit(record)}
-            />
-          </>
-        );
-      },
-    },
-  ];
-
-  const onChange = (pagination, filters, sorter, extra) => {
-    if (pagination && pagination.current !== current) {
-      setCurrent(pagination.current);
-    }
-
-    if (pagination && pagination.pageSize !== pageSize) {
-      setPageSize(pagination.pageSize);
-      setCurrent(1);
-    }
-
-    if (sorter && sorter.field) {
-      const q =
-        sorter.order === "ascend"
-          ? `sort=${sorter.field}`
-          : `sort=-${sorter.field}`;
-      setSortQuery(q);
     }
   };
 
@@ -216,7 +131,7 @@ const ScheduleCreate = () => {
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Chọn phim"
-                name="movieName"
+                name="movieId"
                 rules={[
                   {
                     required: true,
@@ -225,9 +140,9 @@ const ScheduleCreate = () => {
                 ]}
               >
                 <DebounceSelect
-                  value={value}
+                  value={movie}
                   onChange={(newValue) => {
-                    setValue(newValue);
+                    setMovie(newValue);
                   }}
                   placeholder="Chọn phim"
                   fetchOptions={fetchMovieList}
@@ -238,7 +153,7 @@ const ScheduleCreate = () => {
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Chọn rạp"
-                name="cinema_id"
+                name="cinemaId"
                 rules={[
                   {
                     required: true,
@@ -247,12 +162,12 @@ const ScheduleCreate = () => {
                 ]}
               >
                 <DebounceSelect
-                  value={value}
+                  value={cinema}
                   onChange={(newValue) => {
-                    setValue(newValue);
+                    setCinema(newValue);
                   }}
                   placeholder="Chọn rạp"
-                  fetchOptions={fetchMovieList}
+                  fetchOptions={fetchCinemaList}
                 />
               </Form.Item>
             </Col>
@@ -260,7 +175,7 @@ const ScheduleCreate = () => {
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Chọn phòng chiếu"
-                name="room_id"
+                name="roomId"
                 rules={[
                   {
                     required: true,
@@ -268,20 +183,31 @@ const ScheduleCreate = () => {
                   },
                 ]}
               >
-                <DebounceSelect
-                  value={value}
-                  onChange={(newValue) => {
-                    setValue(newValue);
-                  }}
-                  placeholder="Chọn phòng chiếu"
-                  fetchOptions={fetchMovieList}
+                <Select
+                  showSearch
+                  allowClear
+                  // onChange={handleChange}
+                  options={room.map((item) => ({
+                    value: item.id,
+                    label: item.name,
+                  }))}
+                  filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? "")
+                      .toLowerCase()
+                      .localeCompare((optionB?.label ?? "").toLowerCase())
+                  }
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    // Tìm kiếm không phân biệt hoa thường
+                    option.label.toLowerCase().includes(input.toLowerCase())
+                  }
                 />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                name="show_date"
+                name="showDate"
                 label="Ngày chiếu"
                 rules={[
                   {
@@ -291,13 +217,17 @@ const ScheduleCreate = () => {
                 ]}
                 // initialValue={}
               >
-                <DatePicker format="DD-MM-YYYY" placeholder="Chọn ngày chiếu" />
+                <DatePicker
+                  minDate={defaultStartDate}
+                  format="DD-MM-YYYY"
+                  placeholder="Chọn ngày chiếu"
+                />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                name="startTime"
+                name="showTime"
                 label="Giờ chiếu"
                 rules={[
                   {
@@ -305,9 +235,12 @@ const ScheduleCreate = () => {
                     message: "Vui lòng chọn giờ chiếu!",
                   },
                 ]}
-                initialValue={moment()}
+                // initialValue={moment()}
               >
-                <TimePicker format="HH:mm" />
+                <TimePicker
+                  placeholder="Chọn giờ chiếu"
+                  defaultOpenValue={dayjs("00:00:00", "HH:mm:ss")}
+                />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -342,39 +275,6 @@ const ScheduleCreate = () => {
               </Button>
             </Form.Item>
           </Row>
-          <Row>
-            <Col span={24}>
-              <Table
-                locale={{ emptyText: "Không có dữ liệu" }}
-                scroll={{
-                  x: "100%",
-                  y: 200,
-                }}
-                title={renderHeader}
-                bordered
-                // thay đổi #1
-                // loading={isLoading}
-                columns={columns}
-                dataSource={listData}
-                onChange={onChange}
-                // thay đổi #1
-                rowKey="_id"
-                pagination={{
-                  current: current,
-                  pageSize: pageSize,
-                  showSizeChanger: true,
-                  total: total,
-                  showTotal: (total, range) => {
-                    return (
-                      <div>
-                        {range[0]} - {range[1]} trên {total} dòng
-                      </div>
-                    );
-                  },
-                }}
-              />
-            </Col>
-          </Row>
         </Form>
       </Card>
     </>
@@ -383,44 +283,40 @@ const ScheduleCreate = () => {
 
 export default ScheduleCreate;
 
+// Hàm fetch danh sách cinema
+async function fetchCinemaList(cinemaName) {
+  try {
+    let query = `size=5&name=${cinemaName}`;
+    const res = await callFetchListCinema(query);
+    const food = res.content.map((data) => ({
+      label: data.name,
+      value: data.id,
+    }));
+
+    return food;
+  } catch (error) {
+    // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+    console.error("Error fetching movies:", error);
+    // Trả về một mảng trống nếu xảy ra lỗi
+    return [];
+  }
+}
+
 // Hàm fetch danh sách phim
-// async function fetchMovieList(value) {
-//   try {
-//     // Thực hiện gọi API hoặc tìm kiếm dữ liệu từ nguồn dữ liệu có sẵn
-//     // Ví dụ: Gửi yêu cầu tới API để lấy danh sách phim dựa trên giá trị tìm kiếm `value`
-//     const response = await fetch(
-//       `https://example.com/api/movies?search=${value}`
-//     );
+async function fetchMovieList(movieName) {
+  try {
+    let query = `size=5&name=${movieName}`;
+    const res = await callFetchListMovie(query);
+    const food = res.content.map((data) => ({
+      label: data.name,
+      value: data.id,
+    }));
 
-//     // Kiểm tra xem kết quả trả về từ API có thành công không
-//     if (!response.ok) {
-//       // Xử lý lỗi nếu cần thiết, ví dụ: throw new Error("Failed to fetch movies");
-//     }
-
-//     // Chuyển đổi dữ liệu nhận được từ API sang định dạng phù hợp để hiển thị trong ô chọn phim
-//     const data = await response.json();
-//     const movies = data.results.map((movie) => ({
-//       label: movie.title, // Label của mỗi phim, có thể là tiêu đề của phim
-//       value: movie.id, // Giá trị của mỗi phim, có thể là ID của phim
-//     }));
-
-//     // Trả về một mảng các đối tượng { label: string, value: any } đại diện cho danh sách phim tìm kiếm được
-//     return movies;
-//   } catch (error) {
-//     // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
-//     console.error("Error fetching movies:", error);
-//     // Trả về một mảng trống nếu xảy ra lỗi
-//     return [];
-//   }
-// }
-
-async function fetchMovieList(username) {
-  return fetch("https://randomuser.me/api/?results=5")
-    .then((response) => response.json())
-    .then((body) =>
-      body.results.map((user) => ({
-        label: `${user.name.first} ${user.name.last}`,
-        value: user.login.username,
-      }))
-    );
+    return food;
+  } catch (error) {
+    // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+    console.error("Error fetching movies:", error);
+    // Trả về một mảng trống nếu xảy ra lỗi
+    return [];
+  }
 }
