@@ -762,3 +762,128 @@ export const callFetchListShowtime = async (query) => {
     return error;
   }
 };
+
+export const callCreateShowtime = async (data) => {
+  const { showDate, showTime, movieId, roomId, status } = data;
+  const showDateStr = showDate.format("YYYY-MM-DD");
+  const showTimeStr = showTime.format("HH:mm:ss");
+  try {
+    const response = await api.post(`/api/showtime`, [
+      {
+        showDate: showDateStr,
+        showTime: showTimeStr,
+        movieId: movieId.value,
+        roomId,
+        status,
+      },
+    ]);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// promotion header
+export const callGetPromotionHeaderById = async (id) => {
+  try {
+    const response = await api.get(`/api/promotion/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callFetchListPromotionHeader = async (query) => {
+  try {
+    const response = await api.get(`/api/promotion?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callCreatePromotionHeader = async (data) => {
+  const { name, timeValue, description } = data;
+  const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
+  const endDate = timeValue[1].format("YYYY-MM-DDTHH:mm:ss");
+
+  const bodyFormData = new FormData();
+  bodyFormData.append("name", name);
+  bodyFormData.append("startDate", startDate);
+  bodyFormData.append("endDate", endDate);
+  bodyFormData.append("description", description);
+  bodyFormData.append("status", false);
+
+  try {
+    const response = await api({
+      method: "post",
+      url: "/api/promotion",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// get promtion line by promotionId
+export const callGetPromotionLineByPromotionId = async (query) => {
+  try {
+    const response = await api.get(`/api/promotion/line?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+// create promotion line
+export const callCreatePromotionLine = async (data, promotionId, image) => {
+  const {
+    code,
+    name,
+    description,
+    typePromotion,
+    timeValue,
+    applicableObject,
+    usePerUser,
+    usePerPromotion,
+    PromotionDetailDto,
+  } = data;
+
+  const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
+  const endDate = timeValue[1].format("YYYY-MM-DDTHH:mm:ss");
+
+  const bodyFormData = new FormData();
+  bodyFormData.append("promotionId", promotionId);
+  bodyFormData.append("code", code);
+  bodyFormData.append("name", name);
+  bodyFormData.append("image", image);
+  bodyFormData.append("description", description);
+  bodyFormData.append("typePromotion", typePromotion);
+  bodyFormData.append("startDate", startDate);
+  bodyFormData.append("endDate", endDate);
+  bodyFormData.append("status", false);
+  bodyFormData.append("applicableObject", applicableObject);
+  bodyFormData.append("usePerUser", usePerUser);
+  bodyFormData.append("usePerPromotion", usePerPromotion);
+  // bodyFormData.append("PromotionDetailDto", JSON.stringify(PromotionDetailDto));
+
+  try {
+    const response = await api({
+      method: "post",
+      url: `/api/promotion/line`,
+      data: bodyFormData,
+      body: JSON.stringify(PromotionDetailDto),
+      headers: {
+        "Content-Type": "multipart/form-data",
+        // Accept: "application/json",
+        // type: "formData",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
