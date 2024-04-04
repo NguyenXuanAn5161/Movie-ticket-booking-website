@@ -8,7 +8,16 @@ const PromotionDetailsDiscount = ({ form, promotionDetails, formType }) => {
     opacity: isDisabled ? 0.5 : 1, // Làm mờ hoặc không làm mờ nút radio
   };
 
-  const [typePromotion, setTypePromotion] = useState("percent");
+  const [typePromotion, setTypePromotion] = useState("PERCENT");
+  const [discountValue, setDiscountValue] = useState(1000);
+
+  useEffect(() => {
+    if (typePromotion === "AMOUNT") {
+      form.setFieldsValue({
+        maxValue: discountValue,
+      });
+    }
+  }, [discountValue, form]);
 
   useEffect(() => {
     // Kiểm tra xem promotionDetails có dữ liệu không
@@ -40,48 +49,77 @@ const PromotionDetailsDiscount = ({ form, promotionDetails, formType }) => {
         >
           <Form.Item
             label="Loại giảm giá"
-            name="type_promotion"
+            name="typeDiscount"
             rules={[{ required: true, message: "Không được để trống!" }]}
-            initialValue={"percent"}
+            initialValue={"PERCENT"}
           >
             <Radio.Group disabled={false} onChange={handleTypeChange}>
-              <Radio.Button style={radioStyle} value="percent">
+              <Radio style={radioStyle} value="PERCENT">
                 % Chiết khấu
-              </Radio.Button>
-              <Radio.Button style={radioStyle} value="amount">
+              </Radio>
+              <Radio style={radioStyle} value="AMOUNT">
                 Giảm trực tiếp
-              </Radio.Button>
+              </Radio>
             </Radio.Group>
           </Form.Item>
         </Col>
-        <Col style={{ display: "flex", flexDirection: "flex-start" }} span={12}>
+        <Col
+          style={{
+            display: "flex",
+            flexDirection: "flex-start",
+          }}
+          span={12}
+        >
           <Form.Item
             label="Giá trị giảm"
-            name="discount_value"
+            name="discountValue"
             rules={[{ required: true, message: "Không để trống!" }]}
           >
             <InputNumber
-              min={0}
-              addonAfter={typePromotion === "percent" ? "%" : "VND"}
+              onChange={(value) => setDiscountValue(value)}
+              style={{ width: "100%" }}
+              min={typePromotion === "PERCENT" ? 1 : 1000}
+              formatter={(value) =>
+                typePromotion === "AMOUNT"
+                  ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  : value
+              }
+              max={typePromotion === "PERCENT" ? 100 : 99900}
+              addonAfter={typePromotion === "PERCENT" ? "%" : "VND"}
             />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item
             label="Chi tiêu tối thiếu"
-            name="min_spend"
+            name="minBillValue"
             rules={[{ required: true, message: "Không để trống!" }]}
           >
-            <InputNumber style={{ width: "100%" }} min={0} addonAfter={"VND"} />
+            <InputNumber
+              formatter={(value) =>
+                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              }
+              style={{ width: "100%" }}
+              min={0}
+              addonAfter={"VND"}
+            />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item
-            label="Chi tiêu tối đa"
-            name="max_spend"
+            label="Số tiền giảm tối đa"
+            name="maxValue"
             rules={[{ required: true, message: "Không để trống!" }]}
+            initialValue={typePromotion === "AMOUNT" ? discountValue : ""}
           >
-            <InputNumber style={{ width: "100%" }} min={0} addonAfter={"VND"} />
+            <InputNumber
+              formatter={(value) =>
+                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              }
+              disabled={typePromotion === "AMOUNT" ? true : false}
+              style={{ width: "100%" }}
+              addonAfter={"VND"}
+            />
           </Form.Item>
         </Col>
       </Row>
