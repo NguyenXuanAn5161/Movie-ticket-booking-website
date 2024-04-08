@@ -27,7 +27,7 @@ const PriceDetailModalForm = (props) => {
   const [current, setCurrent] = useState(0);
   const [isSubmit, setIsSubmit] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [priceType, setPriceType] = useState("seat");
+  const [priceType, setPriceType] = useState("");
   const [typeSeat, setTypeSeat] = useState([]);
   const [food, setFood] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -105,7 +105,7 @@ const PriceDetailModalForm = (props) => {
       const { priceId, price, status, type_sale } = values;
       const itemId = type_sale === "seat" ? selectedItems : food.value;
       console.log("check", type_sale, priceId, price, status, itemId);
-
+      console.log("listItems", values.listItems);
       const res = await callCreateSalePriceDetail(
         type_sale,
         priceId,
@@ -122,7 +122,7 @@ const PriceDetailModalForm = (props) => {
         setFood([]);
         setOpenModal(false);
         setPriceType("seat");
-        // await props.fetchUser();
+        await props.fetchSalePriceDetail();
       } else {
         notification.error({
           message: "Đã có lỗi xảy ra!",
@@ -292,7 +292,7 @@ const PriceDetailModalForm = (props) => {
                   message: "Vui lòng chọn trạng thái!",
                 },
               ]}
-              initialValue={false}
+              initialValue={true}
             >
               <Radio.Group>
                 <Radio value={true}>Hoạt động</Radio>

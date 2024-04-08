@@ -52,7 +52,7 @@ const PromotionList = () => {
     let query = `page=${current - 1}&size=${pageSize}`;
 
     if (!filter) {
-      query += `&status=true`;
+      query += `&status=false`;
     }
 
     if (filter) {

@@ -46,7 +46,7 @@ const PriceShow = () => {
   const [dataUpdate, setDataUpdate] = useState(null);
   const [total, setTotal] = useState(price?.salePriceDetail?.length);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [filter, setFilter] = useState(null);
   const [sortQuery, setSortQuery] = useState("");
   // fetch data f5
@@ -338,6 +338,7 @@ const PriceShow = () => {
       </div>
 
       <PriceDetailModalForm
+        fetchSalePriceDetail={fetchSalePriceDetail}
         formType={
           openModalCreate ? "create" : openModalUpdate ? "update" : "view"
         }
