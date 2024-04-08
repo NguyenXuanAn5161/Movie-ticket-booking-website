@@ -16,7 +16,6 @@ export const createColumn = (
   };
 
   if (render) {
-    console.log("check: ", render);
     column.render = render;
   }
 

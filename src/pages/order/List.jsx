@@ -1,27 +1,18 @@
-import {
-  Button,
-  Col,
-  Popconfirm,
-  Row,
-  Table,
-  Tag,
-  message,
-  notification,
-} from "antd";
+import { Col, Popconfirm, Row, Table, Tag, message, notification } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { AiOutlineDelete, AiOutlineReload } from "react-icons/ai";
+import { AiOutlineDelete } from "react-icons/ai";
 import { BsEye } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import UserExport from "../../components/Admin/User/data/UserExport";
 import UserImport from "../../components/Admin/User/data/UserImport";
-import InputSearch from "../../components/InputSearch/InputSearch";
+import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetUser } from "../../redux/account/userSlice";
 import { callDeleteUser, callFetchListUser } from "../../services/apiMovie";
 import { getErrorMessageUser } from "../../utils/errorHandling";
 
-const UserList = () => {
+const OrderList = () => {
   const navigate = useNavigate();
 
   const [listUser, setListUser] = useState([]);
@@ -160,24 +151,40 @@ const UserList = () => {
     },
   ];
 
+  const handleReload = () => {
+    setFilter("");
+    setSortQuery("");
+    setCurrent(1);
+  };
+
+  const handleToPageCreate = () => {
+    navigate(`create`);
+  };
+
+  const itemSearch = [
+    { field: "username", label: "Tên" },
+    { field: "age", label: "Tuổi", type: "number" },
+    {
+      field: "gender",
+      label: "Giới tính",
+      type: "select",
+      options: [
+        { value: "male", label: "Nam" },
+        { value: "female", label: "Nữ" },
+      ],
+    },
+  ];
+
   const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span style={{ fontWeight: "700", fontSize: "16" }}>
-        Danh sách người dùng
-      </span>
-      <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          type="ghost"
-          onClick={() => {
-            setFilter("");
-            setSortQuery("");
-            setCurrent(1);
-          }}
-        >
-          <AiOutlineReload />
-        </Button>
-      </span>
-    </div>
+    <TableHeader
+      onReload={handleReload}
+      filter={filter}
+      setFilter={setFilter}
+      handleSearch={handleSearch}
+      headerTitle={"Danh sách người dùng"}
+      itemSearch={itemSearch}
+      create={handleToPageCreate}
+    />
   );
 
   const handleSearch = (query) => {
@@ -195,23 +202,9 @@ const UserList = () => {
     }
   };
 
-  const itemSearch = [
-    { field: "username", label: "Họ và tên" },
-    { field: "email", label: "Email" },
-    { field: "phone", label: "Số điện thoại" },
-  ];
-
   return (
     <>
       <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <InputSearch
-            itemSearch={itemSearch}
-            handleSearch={handleSearch} // Hàm xử lý tìm kiếm, truyền vào từ props
-            setFilter={setFilter}
-            filter={filter}
-          />
-        </Col>
         <Col span={24}>
           <Table
             locale={{ emptyText: "Không có dữ liệu" }}
@@ -258,4 +251,4 @@ const UserList = () => {
   );
 };
 
-export default UserList;
+export default OrderList;
