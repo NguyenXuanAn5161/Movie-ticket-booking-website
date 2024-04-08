@@ -1,32 +1,27 @@
-import {
-  Button,
-  Col,
-  Popconfirm,
-  Row,
-  Table,
-  Tag,
-  message,
-  notification,
-} from "antd";
-import moment from "moment";
+import { Col, Row, Table, message, notification } from "antd";
 import { useEffect, useState } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlineExport,
-  AiOutlinePlus,
-  AiOutlineReload,
-} from "react-icons/ai";
-import { BsEye } from "react-icons/bs";
-import { CiEdit } from "react-icons/ci";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import InputSearch from "../../../components/InputSearch/InputSearch";
+import ActionButtons from "../../../components/Button/ActionButtons";
+import {
+  renderCurrency,
+  renderDate,
+  renderStatus,
+} from "../../../components/FunctionRender/FunctionRender";
+import TableHeader from "../../../components/TableHeader/TableHeader";
+import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
 import { doSetFood } from "../../../redux/food/foodSlice";
-import { callDeleteFood, callFetchListFood } from "../../../services/apiMovie";
+import {
+  callDeleteFood,
+  callFetchListCategoryFood,
+  callFetchListFood,
+} from "../../../services/apiMovie";
+import { createColumn } from "../../../utils/createColumn";
 import { getErrorMessageFood } from "../../../utils/errorHandling";
 
 // thay đổi #1
 const FoodList = () => {
+  const foodCategory = useSelector((state) => state.foodCategory.foodCategory);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
@@ -38,6 +33,26 @@ const FoodList = () => {
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
   const [openModalExport, setOpenModalExport] = useState(false);
+
+  useEffect(() => {
+    fetchFoodCategory();
+  }, []);
+
+  const fetchFoodCategory = async () => {
+    setIsLoading(true);
+    let query = `size=${100}`;
+    const res = await callFetchListCategoryFood(query);
+    if (res?.content) {
+      const data = res.content.map((item) => {
+        return {
+          value: item.id,
+          label: item.name,
+        };
+      });
+      dispatch(doSetFoodCategory(data));
+    }
+    setIsLoading(false);
+  };
 
   // mặc định #2
   useEffect(() => {
@@ -93,133 +108,62 @@ const FoodList = () => {
     navigate(`${url}/${data.id}`);
   };
 
-  // thay đổi #1
   const columns = [
-    {
-      title: "Code",
-      dataIndex: "code",
-      width: 100,
-      fixed: "left",
-    },
-    {
-      title: "Tên đồ ăn",
-      dataIndex: "name",
-      sorter: true,
-      width: 100,
-      fixed: "left",
-    },
-    {
-      title: "Giá",
-      dataIndex: "price",
-      width: 150,
-      sorter: true,
-      render: (text, record, index) => {
-        return (
-          <span>
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(record?.price ?? 0)}
-          </span>
-        );
-      },
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      width: 150,
-      sorter: true,
-      render: (status) => (
-        <Tag color={status ? "success" : "error"}>
-          {status ? "Còn hàng" : "Hết hàng"}
-        </Tag>
-      ),
-    },
-    {
-      title: "Cập nhật ngày",
-      dataIndex: "createdDate",
-      width: 150,
-      render: (text, record, index) => {
-        return (
-          <span>
-            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
-          </span>
-        );
-      },
-      sorter: true,
-    },
+    createColumn("Code", "code", 100, true, undefined, "left"),
+    createColumn("Tên đồ ăn", "name", 100, true, undefined, "left"),
+    createColumn("Giá", "price", 150, true, renderCurrency),
+    createColumn("Trạng thái", "status", 150, true, renderStatus),
+    createColumn("Cập nhật ngày", "createdDate", 150, true, renderDate),
     {
       title: "Thao tác",
-      width: 100,
+      width: 200,
       fixed: "right",
       render: (text, record, index) => {
         return (
-          <>
-            <Popconfirm
-              placement="leftTop"
-              // thay đổi #1 sửa title và description
-              title={"Xác nhận xóa đồ ăn"}
-              description={"Bạn có chắc chắn muốn xóa đồ ăn này?"}
-              okText="Xác nhận"
-              cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record.id)}
-            >
-              <span>
-                <AiOutlineDelete
-                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
-                />
-              </span>
-            </Popconfirm>
-            <BsEye
-              style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={() => handleView(record, "show")}
-            />
-            <CiEdit
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                handleView(record, "edit");
-              }}
-            />
-          </>
+          <ActionButtons
+            record={record}
+            handleDelete={handleDeleteData}
+            handleView={handleView}
+            showDelete={true}
+            showEdit={true}
+            showView={true}
+          />
         );
       },
     },
   ];
 
+  const handleReload = () => {
+    setFilter("");
+    setSortQuery("");
+    setCurrent(1);
+  };
+
+  const handleToPageCreate = () => {
+    navigate(`create`);
+  };
+
+  const itemSearch = [
+    { field: "code", label: "Mã đồ ăn" },
+    { field: "name", label: "Tên đồ ăn" },
+    {
+      field: "categoryId",
+      label: "Loại đồ ăn",
+      type: "select",
+      options: foodCategory,
+    },
+  ];
+
   const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      {/* thay đổi #1 */}
-      <span style={{ fontWeight: "700", fontSize: "16" }}>Danh sách đồ ăn</span>
-      <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          icon={<AiOutlineExport />}
-          type="primary"
-          onClick={() => setOpenModalExport(true)}
-        >
-          Export
-        </Button>
-        <Button
-          icon={<AiOutlinePlus />}
-          type="primary"
-          onClick={(event) => {
-            // Điều hướng đến trang mới và truyền userId qua URL
-            navigate(`create`);
-          }}
-        >
-          Thêm mới
-        </Button>
-        <Button
-          type="ghost"
-          onClick={() => {
-            setFilter("");
-            setSortQuery("");
-            setCurrent(1);
-          }}
-        >
-          <AiOutlineReload />
-        </Button>
-      </span>
-    </div>
+    <TableHeader
+      onReload={handleReload}
+      filter={filter}
+      setFilter={setFilter}
+      handleSearch={handleSearch}
+      headerTitle={"Danh sách đồ ăn"}
+      itemSearch={itemSearch}
+      create={handleToPageCreate}
+    />
   );
 
   // mặc định #2
@@ -258,26 +202,11 @@ const FoodList = () => {
     }
   };
 
-  // thay đổi #1
-  const itemSearch = [
-    { field: "code", label: "Mã đồ ăn" },
-    { field: "name", label: "Tên đồ ăn" },
-    { field: "categoryId", label: "Loại đồ ăn" },
-  ];
-
   return (
     <>
       <Row gutter={[20, 20]}>
         <Col span={24}>
-          <InputSearch
-            itemSearch={itemSearch}
-            handleSearch={handleSearch}
-            setFilter={setFilter}
-          />
-        </Col>
-        <Col span={24}>
           <Table
-            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 280,
