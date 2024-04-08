@@ -1,29 +1,19 @@
-import {
-  Button,
-  Col,
-  Popconfirm,
-  Row,
-  Table,
-  Tag,
-  message,
-  notification,
-} from "antd";
-import moment from "moment";
+import { Col, Popconfirm, Row, Table, message, notification } from "antd";
 import { useEffect, useState } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlineExport,
-  AiOutlineImport,
-  AiOutlinePlus,
-  AiOutlineReload,
-} from "react-icons/ai";
+import { AiOutlineDelete } from "react-icons/ai";
 import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import InputSearch from "../../components/InputSearch/InputSearch";
+import {
+  renderAddress,
+  renderDate,
+  renderStatus,
+} from "../../components/FunctionRender/FunctionRender";
+import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetCinema } from "../../redux/cinema/cinemaSlice";
 import { callDeleteCinema, callFetchListCinema } from "../../services/apiMovie";
+import { createColumn } from "../../utils/createColumn";
 import { getErrorMessageCinema } from "../../utils/errorHandling";
 
 const CinemaList = () => {
@@ -93,64 +83,13 @@ const CinemaList = () => {
     navigate(`${url}/${data.id}`);
   };
 
-  // thay đổi #1
   const columns = [
-    {
-      title: "Mã rạp",
-      dataIndex: "code",
-      width: 135,
-      fixed: "left",
-    },
-    {
-      title: "Tên rạp",
-      dataIndex: "name",
-      sorter: true,
-      width: 150,
-      fixed: "left",
-    },
-    {
-      title: "Tổng số phòng",
-      dataIndex: "totalRoom",
-      width: 120,
-      sorter: true,
-    },
-    {
-      title: "Địa chỉ",
-      dataIndex: "address",
-      width: 150,
-      sorter: true,
-      render: (text, record, index) => {
-        return (
-          <span>
-            {record.address.street}, {record.address.ward},{" "}
-            {record.address.district}, {record.address.city},{" "}
-            {record.address.nation}
-          </span>
-        );
-      },
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      width: 100,
-      sorter: true,
-      render: (status) => (
-        <Tag color={status ? "success" : "error"}>
-          {status ? "Hoạt động" : "Ngưng hoạt động"}
-        </Tag>
-      ),
-    },
-    {
-      title: "Cập nhật ngày",
-      dataIndex: "updatedAt",
-      width: 150,
-      render: (text, record, index) => {
-        return (
-          <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
-        );
-      },
-      sorter: true,
-    },
+    createColumn("Mã rạp", "code", 135, "left"),
+    createColumn("Tên rạp", "name", 150, "left"),
+    createColumn("Tổng số phòng", "totalRoom", 120),
+    createColumn("Địa chỉ", "address", 150, undefined, renderAddress),
+    createColumn("Trạng thái", "status", 100, undefined, renderStatus),
+    createColumn("Cập nhật ngày", "updatedAt", 150, undefined, renderDate),
     {
       title: "Thao tác",
       width: 100,
@@ -160,7 +99,6 @@ const CinemaList = () => {
           <>
             <Popconfirm
               placement="leftTop"
-              // thay đổi #1 sửa title và description
               title={"Xác nhận xóa rạp phim"}
               description={"Bạn có chắc chắn muốn xóa rạp phim này?"}
               okText="Xác nhận"
@@ -189,49 +127,32 @@ const CinemaList = () => {
     },
   ];
 
+  const handleReload = () => {
+    setFilter("");
+    setSortQuery("");
+    setCurrent(1);
+  };
+
+  const handleToPageCreate = () => {
+    navigate(`create`);
+  };
+
+  const itemSearch = [
+    { field: "code", label: "Mã rạp" },
+    { field: "name", label: "Tên rạp" },
+    { field: "address", label: "Địa chỉ" },
+  ];
+
   const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      {/* thay đổi #1 */}
-      <span style={{ fontWeight: "700", fontSize: "16" }}>
-        Danh sách rạp chiếu phim
-      </span>
-      <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          icon={<AiOutlineExport />}
-          type="primary"
-          onClick={() => setOpenModalExport(true)}
-        >
-          Export
-        </Button>
-        <Button
-          icon={<AiOutlineImport />}
-          type="primary"
-          onClick={() => setOpenModalImport(true)}
-        >
-          Import
-        </Button>
-        <Button
-          icon={<AiOutlinePlus />}
-          type="primary"
-          onClick={(event) => {
-            // Điều hướng đến trang mới và truyền userId qua URL
-            navigate(`create`);
-          }}
-        >
-          Thêm mới
-        </Button>
-        <Button
-          type="ghost"
-          onClick={() => {
-            setFilter("");
-            setSortQuery("");
-            setCurrent(1);
-          }}
-        >
-          <AiOutlineReload />
-        </Button>
-      </span>
-    </div>
+    <TableHeader
+      headerTitle={"Danh sách rạp phim"}
+      onReload={handleReload}
+      filter={filter}
+      setFilter={setFilter}
+      handleSearch={handleSearch}
+      itemSearch={itemSearch}
+      create={handleToPageCreate}
+    />
   );
 
   // mặc định #2
@@ -270,23 +191,9 @@ const CinemaList = () => {
     }
   };
 
-  // thay đổi #1
-  const itemSearch = [
-    { field: "code", label: "Mã rạp" },
-    { field: "name", label: "Tên rạp" },
-    { field: "address", label: "Địa chỉ" },
-  ];
-
   return (
     <>
       <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <InputSearch
-            itemSearch={itemSearch}
-            handleSearch={handleSearch}
-            setFilter={setFilter}
-          />
-        </Col>
         <Col span={24}>
           <Table
             locale={{ emptyText: "Không có dữ liệu" }}
