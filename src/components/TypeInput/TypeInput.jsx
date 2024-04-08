@@ -8,7 +8,7 @@ const TypeInput = ({ item }) => {
     switch (item.type) {
       case "select":
         return (
-          <Select placeholder={item.label}>
+          <Select placeholder={item.label} showSearch allowClear>
             {item.options &&
               item.options.map((option) => (
                 <Option key={option.value} value={option.value}>

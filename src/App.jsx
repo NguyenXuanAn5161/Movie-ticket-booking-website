@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import LayoutAdmin from "./components/Admin/LayoutAdmin";
-import OrderTable from "./components/Admin/Order/OrderTable";
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -46,6 +45,7 @@ import UserList from "./pages/ManageUser/List";
 import UserShow from "./pages/ManageUser/Show";
 import DashBoardShow from "./pages/dashboard/Show";
 import LoginPage from "./pages/login";
+import OrderList from "./pages/order/List";
 import { doGetAccountAction } from "./redux/account/accountSlice";
 import { callFetchAccount } from "./services/api";
 import "./styles/reset.scss";
@@ -91,7 +91,7 @@ export default function App() {
         // Hóa đơn
         {
           path: "order",
-          element: <OrderTable />,
+          element: <OrderList />,
         },
         // Người dùng
         {

@@ -1,9 +1,15 @@
 import { Button, Col, Form, Input, Row, theme } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 
 const InputSearch = (props) => {
   const { token } = theme.useToken();
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (props.filter === "") {
+      form.resetFields();
+    }
+  }, [props.filter]);
 
   const formStyle = {
     maxWidth: "none",
