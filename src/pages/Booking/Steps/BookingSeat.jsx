@@ -1,19 +1,43 @@
+import { useEffect, useState } from "react";
 import SeatGrid from "../../../components/Seat/SeatGrid";
+import { callGetSeatForUserByShowtimeId } from "../../../services/apiMovie";
 
 const BookingSeat = (props) => {
-  const seatData = [
-    { seatRow: 1, seatColumn: 1 },
-    { seatRow: 1, seatColumn: 2 },
-    { seatRow: 1, seatColumn: 5 },
-    { seatRow: 4, seatColumn: 1 },
-    { seatRow: 4, seatColumn: 5 },
-  ];
+  const { selectedSeats, setSelectedSeats } = props;
+
+  const [seatData, setSeatData] = useState([]);
+
+  useEffect(() => {
+    console.log("seatData", seatData);
+  }, [seatData]);
+
+  useEffect(() => {
+    // Call API to get seat data
+    fetchSeatForUser();
+  }, []);
+
+  const fetchSeatForUser = async () => {
+    const res = await callGetSeatForUserByShowtimeId(props.oneShowTime.id);
+    if (res) {
+      setSeatData(res);
+    }
+  };
 
   return (
     <>
       <h2>Chọn ghế</h2>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <SeatGrid seatData={seatData} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <SeatGrid
+          seatData={seatData}
+          selectedSeats={selectedSeats}
+          setSelectedSeats={setSelectedSeats}
+        />
       </div>
     </>
   );
