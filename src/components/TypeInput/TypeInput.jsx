@@ -9,7 +9,7 @@ const TypeInput = ({ item }) => {
       case "select":
         return (
           <Select placeholder={item.label} showSearch allowClear>
-            {item.options &&
+            {Array.isArray(item.options) &&
               item.options.map((option) => (
                 <Option key={option.value} value={option.value}>
                   {option.label}
