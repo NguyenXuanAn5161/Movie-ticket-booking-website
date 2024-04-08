@@ -1,31 +1,18 @@
-import {
-  Button,
-  Col,
-  Popconfirm,
-  Row,
-  Table,
-  message,
-  notification,
-} from "antd";
-import moment from "moment";
+import { Col, Popconfirm, Row, Table, message, notification } from "antd";
 import { useEffect, useState } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlineExport,
-  AiOutlineImport,
-  AiOutlinePlus,
-  AiOutlineReload,
-} from "react-icons/ai";
+import { AiOutlineDelete } from "react-icons/ai";
 import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import InputSearch from "../../../components/InputSearch/InputSearch";
+import { renderDate } from "../../../components/FunctionRender/FunctionRender";
+import TableHeader from "../../../components/TableHeader/TableHeader";
 import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
 import {
   callDeleteCategoryFood,
   callFetchListCategoryFood,
 } from "../../../services/apiMovie";
+import { createColumn } from "../../../utils/createColumn";
 import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 
 const FoodCategoryList = () => {
@@ -95,34 +82,10 @@ const FoodCategoryList = () => {
     navigate(`${url}/${data.id}`);
   };
 
-  // thay đổi #1
   const columns = [
-    {
-      title: "Mã loại đồ ăn",
-      dataIndex: "code",
-      width: 100,
-      fixed: "left",
-    },
-    {
-      title: "Loại đồ ăn",
-      dataIndex: "name",
-      sorter: true,
-      width: 100,
-      fixed: "left",
-    },
-    {
-      title: "Cập nhật ngày",
-      dataIndex: "createdDate",
-      width: 150,
-      render: (text, record, index) => {
-        return (
-          <span>
-            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
-          </span>
-        );
-      },
-      sorter: true,
-    },
+    createColumn("Mã loại đồ ăn", "code", 100, "left"),
+    createColumn("Loại đồ ăn", "name", 100, "left"),
+    createColumn("Cập nhật ngày", "createdDate", 150, undefined, renderDate),
     {
       title: "Thao tác",
       width: 100,
@@ -132,7 +95,6 @@ const FoodCategoryList = () => {
           <>
             <Popconfirm
               placement="leftTop"
-              // thay đổi #1 sửa title và description
               title={"Xác nhận xóa loại đồ ăn"}
               description={"Bạn có chắc chắn muốn xóa loại đồ ăn này?"}
               okText="Xác nhận"
@@ -161,49 +123,31 @@ const FoodCategoryList = () => {
     },
   ];
 
+  const handleReload = () => {
+    setFilter("");
+    setSortQuery("");
+    setCurrent(1);
+  };
+
+  const handleToPageCreate = () => {
+    navigate(`create`);
+  };
+
+  const itemSearch = [
+    { field: "code", label: "Mã loại đồ ăn" },
+    { field: "name", label: "Loại đồ ăn" },
+  ];
+
   const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      {/* thay đổi #1 */}
-      <span style={{ fontWeight: "700", fontSize: "16" }}>
-        Danh sách loại đồ ăn
-      </span>
-      <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          icon={<AiOutlineExport />}
-          type="primary"
-          onClick={() => setOpenModalExport(true)}
-        >
-          Export
-        </Button>
-        <Button
-          icon={<AiOutlineImport />}
-          type="primary"
-          onClick={() => setOpenModalImport(true)}
-        >
-          Import
-        </Button>
-        <Button
-          icon={<AiOutlinePlus />}
-          type="primary"
-          onClick={(event) => {
-            // Điều hướng đến trang mới và truyền userId qua URL
-            navigate(`create`);
-          }}
-        >
-          Thêm mới
-        </Button>
-        <Button
-          type="ghost"
-          onClick={() => {
-            setFilter("");
-            setSortQuery("");
-            setCurrent(1);
-          }}
-        >
-          <AiOutlineReload />
-        </Button>
-      </span>
-    </div>
+    <TableHeader
+      onReload={handleReload}
+      filter={filter}
+      setFilter={setFilter}
+      handleSearch={handleSearch}
+      headerTitle={"Danh sách loại đồ ăn"}
+      itemSearch={itemSearch}
+      create={handleToPageCreate}
+    />
   );
 
   // mặc định #2
@@ -242,22 +186,9 @@ const FoodCategoryList = () => {
     }
   };
 
-  // thay đổi #1
-  const itemSearch = [
-    { field: "code", label: "Mã loại đồ ăn" },
-    { field: "name", label: "Loại đồ ăn" },
-  ];
-
   return (
     <>
       <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <InputSearch
-            itemSearch={itemSearch}
-            handleSearch={handleSearch}
-            setFilter={setFilter}
-          />
-        </Col>
         <Col span={24}>
           <Table
             locale={{ emptyText: "Không có dữ liệu" }}
