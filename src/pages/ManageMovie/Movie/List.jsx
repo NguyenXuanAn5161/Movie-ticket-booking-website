@@ -1,10 +1,8 @@
-import { Col, Popconfirm, Row, Table, message, notification } from "antd";
+import { Col, Row, Table, message, notification } from "antd";
 import { useEffect, useState } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
-import { BsEye } from "react-icons/bs";
-import { CiEdit } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import ActionButtons from "../../../components/Button/ActionButtons";
 import {
   renderDate,
   renderStatus,
@@ -34,10 +32,8 @@ const MovieList = () => {
   const [openModalExport, setOpenModalExport] = useState(false);
 
   useEffect(() => {
-    if (!movieGenre) {
-      fetchDataGenre();
-    }
-  }, [movieGenre]);
+    fetchDataGenre();
+  }, []);
 
   const fetchDataGenre = async () => {
     setIsLoading(true);
@@ -121,32 +117,15 @@ const MovieList = () => {
       fixed: "right",
       render: (text, record, index) => {
         return (
-          <>
-            <Popconfirm
-              placement="leftTop"
-              title={"Xác nhận xóa phim"}
-              description={"Bạn có chắc chắn muốn xóa phim này?"}
-              okText="Xác nhận"
-              cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record.id)}
-            >
-              <span>
-                <AiOutlineDelete
-                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
-                />
-              </span>
-            </Popconfirm>
-            <BsEye
-              style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={() => handleView(record, "show")}
-            />
-            <CiEdit
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                handleView(record, "edit");
-              }}
-            />
-          </>
+          <ActionButtons
+            record={record}
+            handleDelete={handleDeleteData}
+            handleView={handleView}
+            showDelete={true}
+            showEdit={true}
+            showView={true}
+            itemName={"phim"}
+          />
         );
       },
     },
