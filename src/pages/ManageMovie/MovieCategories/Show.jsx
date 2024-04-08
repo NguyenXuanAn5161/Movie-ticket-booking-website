@@ -1,21 +1,46 @@
-import { Card, Col, Descriptions, Divider, Row } from "antd";
+import { Card, Col, Descriptions, Divider, Row, notification } from "antd";
 import moment from "moment";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+import { doSetMovieGenre } from "../../../redux/movie/movieGenreSlice";
+import { callGetGenreMovieById } from "../../../services/apiMovie";
 
 const MovieGenreShow = () => {
+  const { categoryMovieId } = useParams();
+  const dispatch = useDispatch();
   // thay đổi #1
   const movieGenre = useSelector((state) => state.movieGenre.movieGenre);
+
+  // f5 fetch data
+  useEffect(() => {
+    if (!movieGenre) {
+      getMovieGenreById();
+    }
+  }, [movieGenre]);
+
+  const getMovieGenreById = async () => {
+    const res = await callGetGenreMovieById(categoryMovieId);
+    if (res) {
+      dispatch(doSetMovieGenre(res));
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: res.response.data.message,
+      });
+    }
+  };
 
   const item = [
     { label: "Mã loại phim", children: movieGenre?.code },
     {
       label: "Tên loại phim",
-      children: movieGenre?.nameGenre,
+      children: movieGenre?.name,
     },
     {
       label: "Ngày cập nhật",
-      children: moment(movieGenre?.updated_At).format("DD-MM-YYYY HH:mm:ss"),
+      children: moment(movieGenre?.createdDate).format("DD-MM-YYYY HH:mm:ss"),
     },
   ];
 

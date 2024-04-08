@@ -3,6 +3,7 @@ import {
   Card,
   Col,
   DatePicker,
+  Divider,
   Form,
   Popconfirm,
   Radio,
@@ -13,23 +14,19 @@ import {
   message,
   notification,
 } from "antd";
-import dayjs from "dayjs";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callUpdateUser } from "../../../services/api";
 
-const ScheduleEdit = () => {
-  // thay đổi #1
-  const schedule = useSelector((state) => state.schedule.schedule);
+// thay đổi #1
+const ScheduleCreate = () => {
   // mặc định #2
-  const navigate = useNavigate();
   const [form] = Form.useForm();
+  const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
   const [value, setValue] = useState([]);
   const [listData, setListData] = useState([]);
@@ -42,49 +39,62 @@ const ScheduleEdit = () => {
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
   const [openModalExport, setOpenModalExport] = useState(false);
 
-  const idDisabled = selectedRowData ? false : true;
-
-  useEffect(() => {
-    if (schedule && schedule.showTimes) {
-      const updatedListData = schedule.showTimes.map((showTime) => ({
-        ...showTime,
-        movieName: schedule.movieName, // Thêm trường movieName vào mỗi phần tử trong showTimes
-      }));
-      setListData(updatedListData);
-    }
-  }, [schedule]);
-
-  useEffect(() => {
-    form.resetFields();
-    // thay đổi #1 [], setfields
-    form.setFieldsValue(schedule); // Cập nhật dữ liệu vào form khi userData thay đổi
-  }, [schedule, form]);
-
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setUserData({ ...userData, [name]: value });
-  // };
-
   const onFinish = async (values) => {
-    console.log("value check: ", values);
-    form.resetFields();
-    setSelectedRowData(null);
+    const check = {
+      ...values,
+      startTime: values["startTime"].format("HH:mm:ss"),
+    };
+    console.log("Check values of form: ", check);
     // thay đổi #1
-    const { _id, fullName, phone } = values;
     setIsSubmit(true);
-    // thay đổi #1 api call
-    const res = await callUpdateUser(_id, fullName, phone);
-    if (res && res.data) {
-      // thay đổi #1 message và url
-      message.success("Cập nhật phim thành công!");
-      navigate("/admin/schedule");
-    } else {
+    // Gọi API để tạo mới hoặc cập nhật dữ liệu với dữ liệu từ Form
+    try {
+      // Nếu có dữ liệu từ hàng được chọn, đó là việc cập nhật
+      if (selectedRowData) {
+        // Gọi API để cập nhật dữ liệu với dữ liệu từ Form
+      } else {
+        // Nếu không có dữ liệu từ hàng được chọn, đó là việc tạo mới
+        // Gọi API để tạo mới dữ liệu với dữ liệu từ Form
+      }
+      // if (res && res.data) {
+      if (true) {
+        // thay đổi #1 message
+        message.success("Tạo mới lịch chiếu phim thành công!");
+        // setIsSubmit(false);
+      } else {
+        notification.error({
+          message: "Đã có lỗi xảy ra!",
+          description: res.message,
+        });
+        setIsSubmit(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: "Xin vui lòng thử lại sau.",
       });
+    } finally {
+      setIsSubmit(false);
     }
-    setIsSubmit(false);
+  };
+
+  const renderHeader = () => (
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <span style={{ fontWeight: "500" }}>Chi tiết lịch chiếu phim</span>
+    </div>
+  );
+
+  const handleEdit = (record) => {
+    form.setFieldsValue({
+      // movieName: record.movieName,
+      cinema_id: record.cinema_id,
+      room_id: record.room_id,
+      show_date: moment(record.show_date), // Chuyển đổi định dạng ngày nếu cần
+      startTime: moment(record.startTime), // Chuyển đổi định dạng giờ nếu cần
+      status: record.status,
+    });
+    setSelectedRowData(record);
   };
 
   const columns = [
@@ -159,24 +169,6 @@ const ScheduleEdit = () => {
     },
   ];
 
-  const handleEdit = (record) => {
-    form.setFieldsValue({
-      movieName: record.movieName,
-      cinema_id: record.cinema_id,
-      room_id: record.room_id,
-      show_date: moment(record.show_date, "YYYY-MM-DD"), // Chuyển đổi định dạng ngày nếu cần
-      startTime: moment(record.startTime, "HH:mm"), // Chuyển đổi định dạng giờ nếu cần
-      status: record.status,
-    });
-    setSelectedRowData(record);
-  };
-
-  const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span style={{ fontWeight: "500" }}>Chi tiết lịch chiếu phim</span>
-    </div>
-  );
-
   const onChange = (pagination, filters, sorter, extra) => {
     if (pagination && pagination.current !== current) {
       setCurrent(pagination.current);
@@ -198,18 +190,27 @@ const ScheduleEdit = () => {
 
   const handleClearForm = () => {
     form.resetFields();
-    setSelectedRowData(null);
   };
 
   return (
     <>
+      {/* // thay đổi #1 title */}
       <PageHeader
-        title="Cập nhật thông tin lịch chiếu phim"
+        title="Tạo mới lịch chiếu phim"
         numberBack={-1}
-        type="edit"
+        type="create"
       />
-      <Card bordered={false}>
-        <Form form={form} onFinish={onFinish} disabled={idDisabled}>
+      <Divider />
+      {/* // thay đổi #1 title */}
+      <Card title="Tạo mới lịch chiếu phim" bordered={false}>
+        <Form
+          form={form}
+          name="basic"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          autoComplete="true"
+          style={{ margin: "0 auto" }}
+        >
           <Row gutter={[16]}>
             <Col span={8}>
               <Form.Item
@@ -230,7 +231,6 @@ const ScheduleEdit = () => {
                   }}
                   placeholder="Chọn phim"
                   fetchOptions={fetchMovieList}
-                  disabled
                 />
               </Form.Item>
             </Col>
@@ -289,7 +289,7 @@ const ScheduleEdit = () => {
                     message: "Vui lòng chọn ngày chiếu!",
                   },
                 ]}
-                // initialValue={moment()}
+                // initialValue={}
               >
                 <DatePicker format="DD-MM-YYYY" placeholder="Chọn ngày chiếu" />
               </Form.Item>
@@ -307,10 +307,7 @@ const ScheduleEdit = () => {
                 ]}
                 initialValue={moment()}
               >
-                <TimePicker
-                  // onChange={onChange}
-                  defaultOpenValue={dayjs("00:00:00", "HH:mm:ss")}
-                />
+                <TimePicker format="HH:mm" />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -341,50 +338,50 @@ const ScheduleEdit = () => {
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit" loading={isSubmit}>
-                Cập nhật
+                Tạo mới
               </Button>
             </Form.Item>
           </Row>
+          <Row>
+            <Col span={24}>
+              <Table
+                locale={{ emptyText: "Không có dữ liệu" }}
+                scroll={{
+                  x: "100%",
+                  y: 200,
+                }}
+                title={renderHeader}
+                bordered
+                // thay đổi #1
+                // loading={isLoading}
+                columns={columns}
+                dataSource={listData}
+                onChange={onChange}
+                // thay đổi #1
+                rowKey="id"
+                pagination={{
+                  current: current,
+                  pageSize: pageSize,
+                  showSizeChanger: true,
+                  total: total,
+                  showTotal: (total, range) => {
+                    return (
+                      <div>
+                        {range[0]} - {range[1]} trên {total} dòng
+                      </div>
+                    );
+                  },
+                }}
+              />
+            </Col>
+          </Row>
         </Form>
-        <Row>
-          <Col span={24}>
-            <Table
-              locale={{ emptyText: "Không có dữ liệu" }}
-              scroll={{
-                x: "100%",
-                y: 200,
-              }}
-              title={renderHeader}
-              bordered
-              // thay đổi #1
-              // loading={isLoading}
-              columns={columns}
-              dataSource={listData}
-              onChange={onChange}
-              // thay đổi #1
-              rowKey="_id"
-              pagination={{
-                current: current,
-                pageSize: pageSize,
-                showSizeChanger: true,
-                total: total,
-                showTotal: (total, range) => {
-                  return (
-                    <div>
-                      {range[0]} - {range[1]} trên {total} dòng
-                    </div>
-                  );
-                },
-              }}
-            />
-          </Col>
-        </Row>
       </Card>
     </>
   );
 };
 
-export default ScheduleEdit;
+export default ScheduleCreate;
 
 // Hàm fetch danh sách phim
 // async function fetchMovieList(value) {

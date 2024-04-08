@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Col,
+  DatePicker,
   Divider,
   Form,
   Input,
@@ -9,10 +10,15 @@ import {
   message,
   notification,
 } from "antd";
+import dayjs from "dayjs";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callCreateUser } from "../../services/api";
+import { callCreatePromotionHeader } from "../../services/apiMovie";
+
+const dateFormat = "DD-MM-YYYY HH:mm:ss";
+const defaultStartDate = dayjs().startOf("day").add(1, "day");
+const defaultEndDate = dayjs().endOf("day").add(1, "day");
 
 const PromotionCreate = () => {
   // mặc định #2
@@ -21,10 +27,9 @@ const PromotionCreate = () => {
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    const { fullName, email, password, phone } = values;
     setIsSubmit(true);
-    const res = await callCreateUser(fullName, email, password, phone);
-    if (res && res.data) {
+    const res = await callCreatePromotionHeader(values);
+    if (res?.status === 200) {
       message.success("Tạo mới khuyến mãi thành công!");
       form.resetFields();
       setIsSubmit(false);
@@ -32,7 +37,7 @@ const PromotionCreate = () => {
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: res.response.data.message,
       });
       setIsSubmit(false);
     }
@@ -51,23 +56,8 @@ const PromotionCreate = () => {
           autoComplete="true"
           style={{ margin: "0 auto" }}
         >
-          <Row gutter={[20, 20]}>
-            <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                name="code"
-                label="Mã Khuyến Mãi"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mã khuyến mãi!",
-                  },
-                ]}
-              >
-                <Input placeholder="Nhập mã khuyến mãi" />
-              </Form.Item>
-            </Col>
-            <Col span={16}>
+          <Row gutter={16}>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên khuyến mãi"
@@ -82,40 +72,29 @@ const PromotionCreate = () => {
                 <Input placeholder="Nhập tên khuyến mãi" />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={[20, 20]}>
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                name="start_date"
-                label="Ngày Bắt Đầu"
+                name="timeValue"
+                label="Thời gian áp dụng"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn ngày bắt đầu!",
+                    message: "Vui lòng chọn thời gian áp dụng!",
                   },
                 ]}
+                initialValue={[defaultStartDate, defaultEndDate]}
               >
-                <Input type="date" />
+                <DatePicker.RangePicker
+                  style={{ width: "100%" }}
+                  showTime
+                  format={dateFormat}
+                  minDate={defaultStartDate}
+                  // defaultValue={[defaultStartDate, defaultEndDate]}
+                  placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
+                />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                name="end_date"
-                label="Ngày Kết Thúc"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày kết thúc!",
-                  },
-                ]}
-              >
-                <Input type="date" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={[20, 20]}>
             <Col span={24}>
               <Form.Item
                 labelCol={{ span: 24 }}

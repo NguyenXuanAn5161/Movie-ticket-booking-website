@@ -47,7 +47,7 @@ const ModalTypeSeat = (props) => {
     for (let i = 0; i < adjacentIndexes.length; i++) {
       const seatIndex = adjacentIndexes[i]; // 8 10 11
       const seat = selectedSeats.find((seat) => seat.index === seatIndex);
-      if (seat && seat.seatTypeId === 2) {
+      if (seat && seat.seatTypeId === 1) {
         return true; // Nếu có một ghế đôi trong hai ghế trước hoặc sau, trả về true
       }
     }
@@ -69,7 +69,7 @@ const ModalTypeSeat = (props) => {
     setIsSubmit(true);
 
     // Kiểm tra nếu loại ghế là "sweet" và số lượng ghế đã chọn lớn hơn 2
-    if (seatTypeId === 2 && selectedItems.length > 2) {
+    if (seatTypeId === 1 && selectedItems.length > 2) {
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description:
@@ -79,7 +79,7 @@ const ModalTypeSeat = (props) => {
       return;
     }
 
-    if (seatTypeId === 2) {
+    if (seatTypeId === 1) {
       if (
         selectedItems[0] > selectedItems[1] &&
         selectedItems[0] - 1 !== selectedItems[1]
@@ -105,7 +105,7 @@ const ModalTypeSeat = (props) => {
 
     // Kiểm tra xem hai ghế trước hoặc hai ghế sau đã là ghế đôi
     const currentSeatIndex = selectedItems[0];
-    if (seatTypeId === 2 && checkAdjacentSeats(currentSeatIndex)) {
+    if (seatTypeId === 1 && checkAdjacentSeats(currentSeatIndex)) {
       notification.error({
         message: "Đã có lỗi xảy ra!",
         description:

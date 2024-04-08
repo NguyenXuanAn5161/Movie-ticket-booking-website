@@ -29,9 +29,6 @@ const PromotionBasicInfo = ({ form, formType }) => {
             <Input />
           </Form.Item>
         </Col>
-      </Row>
-
-      <Row>
         <Col span={24}>
           <Form.Item
             label="Mô tả"
@@ -41,27 +38,22 @@ const PromotionBasicInfo = ({ form, formType }) => {
             <Input.TextArea />
           </Form.Item>
         </Col>
-      </Row>
-      <Row>
-        <Col>
-          <Form.Item
-            label="Loại khuyến mãi"
-            name="type"
-            rules={[
-              { required: true, message: "Vui lòng chọn loại khuyến mãi!" },
-            ]}
-            initialValue={"discount"}
-          >
-            <Radio.Group disabled={false}>
-              <Radio.Button value="discount" style={radioStyle}>
-                Giảm giá
-              </Radio.Button>
-              <Radio.Button value="gift" style={radioStyle}>
-                Quà tặng
-              </Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-        </Col>
+        <Form.Item
+          label="Loại khuyến mãi"
+          name="typePromotion"
+          rules={[
+            { required: true, message: "Vui lòng chọn loại khuyến mãi!" },
+          ]}
+        >
+          <Radio.Group disabled={false}>
+            <Radio value="DISCOUNT" style={radioStyle}>
+              Giảm giá
+            </Radio>
+            <Radio value="GIFT" style={radioStyle}>
+              Quà tặng
+            </Radio>
+          </Radio.Group>
+        </Form.Item>
       </Row>
     </Form>
   );

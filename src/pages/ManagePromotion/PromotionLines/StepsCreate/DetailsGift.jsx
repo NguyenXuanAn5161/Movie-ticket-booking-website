@@ -141,17 +141,17 @@ const PromotionDetailsGift = ({ form, promotionDetails, formType }) => {
 
   useEffect(() => {
     form.setFieldsValue({
-      listGift: selectedGifts, // Đặt giá trị ban đầu cho listGift tại đây
+      foodId: selectedGifts, // Đặt giá trị ban đầu cho foodId tại đây
     });
   }, [selectedGifts]);
 
   return (
     <Form form={form} layout="vertical" disabled={isDisabled}>
       <Row gutter={16}>
-        <Col span={24}>
+        <Col span={12}>
           <Form.Item
             label="Chọn danh sách quà tặng"
-            name="listGift"
+            name="foodId"
             rules={[
               {
                 required: true,
@@ -166,7 +166,7 @@ const PromotionDetailsGift = ({ form, promotionDetails, formType }) => {
               direction="vertical"
             >
               <Select
-                mode="multiple"
+                // mode="multiple"
                 allowClear
                 showSearch
                 style={{
@@ -193,17 +193,21 @@ const PromotionDetailsGift = ({ form, promotionDetails, formType }) => {
         </Col>
         <Col span={12}>
           <Form.Item
-            label="Chi tiêu tối thiếu"
-            name="min_spend"
+            label="Số lượng tối đa có thể tặng"
+            name="maxValue"
             rules={[{ required: true, message: "Không để trống!" }]}
           >
-            <InputNumber style={{ width: "100%" }} min={0} addonAfter={"VND"} />
+            <InputNumber
+              style={{ width: "100%" }}
+              min={1}
+              addonAfter={"Sản phẩm"}
+            />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item
-            label="Chi tiêu tối đa"
-            name="max_spend"
+            label="Chi tiêu tối thiếu"
+            name="minBillValue"
             rules={[{ required: true, message: "Không để trống!" }]}
           >
             <InputNumber style={{ width: "100%" }} min={0} addonAfter={"VND"} />

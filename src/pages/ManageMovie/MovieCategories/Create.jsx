@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callCreateUser } from "../../../services/api";
+import { callCreateGenreMovie } from "../../../services/apiMovie";
 
 // thay đổi #1
 const MovieGenreCreate = () => {
@@ -23,11 +23,11 @@ const MovieGenreCreate = () => {
 
   const onFinish = async (values) => {
     // thay đổi #1
-    const { nameGenre } = values;
+    const { name } = values;
     setIsSubmit(true);
     // thay đổi #1 api call
-    const res = await callCreateUser(fullName, email, password, phone);
-    if (res && res.data) {
+    const res = await callCreateGenreMovie(name);
+    if (res?.status === 201) {
       // thay đổi #1 message
       message.success("Tạo mới loại phim thành công!");
       form.resetFields();
@@ -37,7 +37,7 @@ const MovieGenreCreate = () => {
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: res.response.data.message,
       });
       setIsSubmit(false);
     }
@@ -63,7 +63,7 @@ const MovieGenreCreate = () => {
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên loại phim"
-                name="movieName"
+                name="name"
                 rules={[
                   {
                     required: true,

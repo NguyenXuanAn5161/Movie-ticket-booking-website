@@ -20,8 +20,13 @@ import { CiEdit } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import { doSetPriceDetail } from "../../redux/price/priceDetailSlice";
 import { doSetPrice } from "../../redux/price/priceSlice";
-import { callGetPriceHeaderById } from "../../services/apiMovie";
+import {
+  callDeleteSalePriceDetail,
+  callGetAllPriceDetail,
+  callGetPriceHeaderById,
+} from "../../services/apiMovie";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
 import PriceDetailModalForm from "./PriceDetail/ModalForm";
 
@@ -30,7 +35,20 @@ const PriceShow = () => {
   const dispatch = useDispatch();
 
   const price = useSelector((state) => state.price.price);
+  const priceDetail = useSelector((state) => state.priceDetail.priceDetail);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [openModalCreate, setOpenModalCreate] = useState(false);
+  const [openViewDetail, setOpenViewDetail] = useState(false);
+  const [dataViewDetail, setDataViewDetail] = useState(null);
+  const [openModalExport, setOpenModalExport] = useState(false);
+  const [openModalUpdate, setOpenModalUpdate] = useState(false);
+  const [dataUpdate, setDataUpdate] = useState(null);
+  const [total, setTotal] = useState(price?.salePriceDetail?.length);
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [filter, setFilter] = useState(null);
+  const [sortQuery, setSortQuery] = useState("");
   // fetch data f5
   useEffect(() => {
     if (!price) {
@@ -53,24 +71,45 @@ const PriceShow = () => {
     }
   };
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [openModalCreate, setOpenModalCreate] = useState(false);
-  const [openViewDetail, setOpenViewDetail] = useState(false);
-  const [dataViewDetail, setDataViewDetail] = useState(null);
-  const [openModalExport, setOpenModalExport] = useState(false);
-  const [openModalUpdate, setOpenModalUpdate] = useState(false);
-  const [dataUpdate, setDataUpdate] = useState(null);
-  const [total, setTotal] = useState(price?.salePriceDetail?.length);
-  const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
-  const [filter, setFilter] = useState(null);
-  const [sortQuery, setSortQuery] = useState("");
+  useEffect(() => {
+    if (priceId) {
+      fetchSalePriceDetail();
+    }
+  }, [priceId]);
+
+  // price detail
+  const fetchSalePriceDetail = async () => {
+    const res = await callGetAllPriceDetail(priceId);
+    console.log("res", res);
+    if (res) {
+      dispatch(doSetPriceDetail(res));
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: res.response.data.message,
+      });
+    }
+  };
 
   // Hàm thay đổi trang
   const onChange = (pagination, filters, sorter) => {
     console.log("params", pagination, filters, sorter);
     setCurrent(pagination.current);
     setPageSize(pagination.pageSize);
+  };
+
+  const handleDeleteData = async (dataId) => {
+    const res = await callDeleteSalePriceDetail(dataId);
+    if (res?.status === 200) {
+      // thay đổi #1 message
+      message.success("Xoá giá thành công!");
+      await fetchData();
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: res.response.data.message,
+      });
+    }
   };
 
   // render thông tin promotion header
@@ -145,34 +184,22 @@ const PriceShow = () => {
 
   const columns = [
     {
-      title: "Mã giá sản phẩm",
-      dataIndex: "code",
+      title: "Sản phẩm",
+      dataIndex: "name",
+      key: "name",
       width: 150,
-      fixed: "left",
-    },
-    {
-      title: "Ngày bắt đầu",
-      dataIndex: "startDate",
-      width: 120,
+      fixed: "right",
       render: (text, record, index) => {
-        return <span>{moment(record.startDate).format("DD-MM-YYYY")}</span>;
-      },
-    },
-    {
-      title: "Ngày kết thúc",
-      dataIndex: "endDate",
-      width: 130,
-      render: (text, record, index) => {
-        return <span>{moment(record.endDate).format("DD-MM-YYYY")}</span>;
-      },
-    },
-    {
-      title: "Giá cho",
-      dataIndex: "type_sale",
-      key: "type_sale",
-      width: 150,
-      render: (text, record, index) => {
-        return <span>{record.type_sale === "Seat" ? "Ghế" : "Đồ ăn"}</span>;
+        return (
+          <span>
+            {record?.food?.name ??
+              (record?.typeSeat?.name === "VIP"
+                ? "Ghế Vip"
+                : record?.typeSeat?.name === "STANDARD"
+                ? "Ghế thường"
+                : "Ghế đôi")}
+          </span>
+        );
       },
     },
     {
@@ -193,17 +220,30 @@ const PriceShow = () => {
         );
       },
     },
-    // {
-    //   title: "Cập nhật ngày",
-    //   dataIndex: "updatedAt",
-    //   width: 150,
-    //   render: (text, record, index) => {
-    //     return (
-    //       <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
-    //     );
-    //   },
-    //   sorter: true,
-    // },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      width: 100,
+      sorter: true,
+      render: (status) => (
+        <Tag color={status ? "success" : "error"}>
+          {status ? "Hoạt động" : "Ngưng hoạt động"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Cập nhật ngày",
+      dataIndex: "createdDate",
+      width: 150,
+      render: (text, record, index) => {
+        return (
+          <span>
+            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
+          </span>
+        );
+      },
+      sorter: true,
+    },
     {
       title: "Thao tác",
       width: 100,
@@ -217,7 +257,7 @@ const PriceShow = () => {
               description={"Bạn có chắc chắn muốn xóa giá sản phẩm này?"}
               okText="Xác nhận"
               cancelText="Hủy"
-              onConfirm={() => handleDeleteBook(record.id)}
+              onConfirm={() => handleDeleteData(record.id)}
             >
               <span>
                 <AiOutlineDelete
@@ -277,7 +317,7 @@ const PriceShow = () => {
             bordered
             loading={isLoading}
             columns={columns}
-            dataSource={price?.salePriceDetail || []}
+            dataSource={priceDetail || []}
             onChange={onChange}
             rowKey="id"
             pagination={{
@@ -298,11 +338,16 @@ const PriceShow = () => {
       </div>
 
       <PriceDetailModalForm
+        fetchSalePriceDetail={fetchSalePriceDetail}
         formType={
           openModalCreate ? "create" : openModalUpdate ? "update" : "view"
         }
         data={
-          openModalCreate ? null : openModalUpdate ? dataUpdate : dataViewDetail
+          openModalCreate
+            ? { priceId: priceId }
+            : openModalUpdate
+            ? dataUpdate
+            : dataViewDetail
         }
         setData={
           openModalCreate
@@ -319,6 +364,7 @@ const PriceShow = () => {
             ? setOpenModalUpdate
             : setOpenViewDetail
         }
+        fetchData={getPriceHeaderById}
       />
     </>
   );

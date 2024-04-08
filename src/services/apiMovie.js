@@ -507,3 +507,498 @@ export const callDeleteSalePrice = async (id) => {
     return error;
   }
 };
+
+// sale price detail
+export const callGetAllPriceDetail = async (id) => {
+  try {
+    const response = await api.get(`api/salePrice/${id}/detail`);
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
+export const callCreateSalePriceDetail = async (
+  type_sale,
+  priceHeaderId,
+  price,
+  status,
+  itemId
+) => {
+  const data = [
+    {
+      price: price,
+      [type_sale === "seat" ? "typeSeatId" : "foodId"]: itemId,
+      priceHeaderId: priceHeaderId,
+      status: status,
+    },
+  ];
+
+  try {
+    const response = await api.post("/api/salePrice/detail", data);
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
+export const callUpdateSalePriceDetail = async (
+  priceDetailId,
+  price,
+  status,
+  itemId,
+  type_sale
+) => {
+  const data = [
+    {
+      price: price,
+      [type_sale === "seat" ? "typeSeatId" : "foodId"]: itemId,
+      status: status,
+    },
+  ];
+  try {
+    const response = await api.put(
+      `/api/salePrice/detail/${priceDetailId}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
+export const callDeleteSalePriceDetail = async (id) => {
+  try {
+    const response = await api.delete(`/api/salePrice/detail/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
+// moive
+export const callGetMovieById = async (id) => {
+  try {
+    const response = await api.get(`/api/movie/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callFetchListMovie = async (query) => {
+  try {
+    const response = await api.get(`/api/movie?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callCreateMovie = async (values, releaseDate, image) => {
+  const {
+    name,
+    description,
+    trailer,
+    durationInMins,
+    genreId,
+    country,
+    director,
+    cast,
+    producer,
+    status,
+    cinemaId,
+  } = values;
+  const bodyFormData = new FormData();
+  bodyFormData.append("name", name);
+  bodyFormData.append("image", image);
+  bodyFormData.append("trailer", trailer);
+  bodyFormData.append("description", description);
+  bodyFormData.append("duration", durationInMins);
+  bodyFormData.append("genreId", genreId);
+  bodyFormData.append("releaseDate", releaseDate);
+  bodyFormData.append("country", country);
+  bodyFormData.append("director", director);
+  bodyFormData.append("cast", cast);
+  bodyFormData.append("producer", producer);
+  bodyFormData.append("cinemaId", cinemaId);
+  bodyFormData.append("status", status);
+  try {
+    const response = await api({
+      method: "post",
+      url: "/api/movie",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callUpdateMovie = async (values, image) => {
+  const {
+    id,
+    name,
+    description,
+    trailerLink,
+    durationMinutes,
+    genreId,
+    releaseDate,
+    country,
+    director,
+    cast,
+    producer,
+    status,
+    cinemaId,
+  } = values;
+  const bodyFormData = new FormData();
+  bodyFormData.append("id", id);
+  bodyFormData.append("name", name);
+  bodyFormData.append("description", description);
+  bodyFormData.append("image", image);
+  bodyFormData.append("trailer", trailerLink);
+  bodyFormData.append("duration", durationMinutes);
+  bodyFormData.append("genreId", genreId);
+  bodyFormData.append("releaseDate", releaseDate);
+  bodyFormData.append("country", country);
+  bodyFormData.append("director", director);
+  bodyFormData.append("cast", cast);
+  bodyFormData.append("producer", producer);
+  bodyFormData.append("status", status);
+  bodyFormData.append("cinemaId", cinemaId);
+
+  try {
+    const response = await api({
+      method: "put",
+      url: "/api/movie",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callDeleteMovie = async (id) => {
+  try {
+    const response = await api.delete(`/api/movie/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// genre movie
+export const callGetGenreMovieById = async (id) => {
+  try {
+    const response = await api.get(`/api/genre/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callFetchListGenreMovie = async (query) => {
+  try {
+    const response = await api.get(`/api/genre?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callCreateGenreMovie = async (name) => {
+  try {
+    const response = await api.post(`/api/genre?name=${name}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callUpdateGenreMovie = async (id, name) => {
+  try {
+    const response = await api.put(`/api/genre?id=${id}&name=${name}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callDeleteGenreMovie = async (id) => {
+  try {
+    const response = await api.delete(`/api/genre/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// showtime
+export const callGetShowtimeById = async (id) => {
+  try {
+    const response = await api.get(`/api/showtime/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callFetchListShowtime = async (query) => {
+  try {
+    const response = await api.get(`/api/showtime?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callCreateShowtime = async (data) => {
+  const { showDate, showTime, movieId, roomId, status } = data;
+  const showDateStr = showDate.format("YYYY-MM-DD");
+  const showTimeStr = showTime.format("HH:mm:ss");
+  try {
+    const response = await api.post(`/api/showtime`, [
+      {
+        showDate: showDateStr,
+        showTime: showTimeStr,
+        movieId: movieId.value,
+        roomId,
+        status,
+      },
+    ]);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// promotion header
+export const callGetPromotionHeaderById = async (id) => {
+  try {
+    const response = await api.get(`/api/promotion/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callFetchListPromotionHeader = async (query) => {
+  try {
+    const response = await api.get(`/api/promotion?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callCreatePromotionHeader = async (data) => {
+  const { name, timeValue, description } = data;
+  const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
+  const endDate = timeValue[1].format("YYYY-MM-DDTHH:mm:ss");
+
+  const bodyFormData = new FormData();
+  bodyFormData.append("name", name);
+  bodyFormData.append("startDate", startDate);
+  bodyFormData.append("endDate", endDate);
+  bodyFormData.append("description", description);
+  bodyFormData.append("status", false);
+
+  try {
+    const response = await api({
+      method: "post",
+      url: "/api/promotion",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// get promtion line by promotionId
+export const callGetPromotionLineByPromotionId = async (query) => {
+  try {
+    const response = await api.get(`/api/promotion/line?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+// // create promotion line
+// export const callCreatePromotionLine = async (data, promotionId) => {
+//   const {
+//     code,
+//     name,
+//     description,
+//     typePromotion,
+//     timeValue,
+//     applicableObject,
+//     usePerUser,
+//     usePerPromotion,
+//     PromotionDetailDto,
+//   } = data;
+
+//   const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
+//   const endDate = timeValue[1].format("YYYY-MM-DDTHH:mm:ss");
+
+//   const bodyFormData = new FormData();
+//   bodyFormData.append("promotionId", promotionId);
+//   bodyFormData.append("code", code);
+//   bodyFormData.append("name", name);
+//   bodyFormData.append("description", description);
+//   bodyFormData.append("typePromotion", typePromotion);
+//   bodyFormData.append("startDate", startDate);
+//   bodyFormData.append("endDate", endDate);
+//   bodyFormData.append("status", true);
+//   bodyFormData.append("applicableObject", applicableObject);
+//   bodyFormData.append("usePerUser", usePerUser);
+//   bodyFormData.append("usePerPromotion", usePerPromotion);
+//   bodyFormData.append("PromotionDetailDto", JSON.stringify(PromotionDetailDto));
+
+//   try {
+//     const response = await api({
+//       method: "post",
+//       url: `/api/promotion/line`,
+//       data: bodyFormData,
+//       headers: {
+//         "Content-Type": "multipart/form-data",
+//       },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     return error;
+//   }
+// };
+
+export const callCreatePromotionLine = async (data, promotionId) => {
+  const {
+    code,
+    name,
+    description,
+    typePromotion,
+    timeValue,
+
+    usePerUser,
+    usePerPromotion,
+    PromotionDetailDto,
+  } = data;
+
+  const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
+  const endDate = timeValue[1].format("YYYY-MM-DDTHH:mm:ss");
+  const applicableObject = data.applicableObject[0];
+  const requestData = {
+    promotionId,
+    code,
+    name,
+    description,
+    typePromotion,
+    startDate,
+    endDate,
+    status: true,
+    applicableObject,
+    usePerUser,
+    usePerPromotion,
+    PromotionDetailDto,
+  };
+
+  try {
+    const response = await api.post(`/api/promotion/line`, requestData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// tìm theo mã khuyến mãi
+// api/promotion/fit-bill-code
+export const callGetPromotionByCode = async (
+  promotionLineCode,
+  totalValueBill,
+  dateTime,
+  applicableObject
+) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("promotionLineCode", "A222");
+  bodyFormData.append("totalValueBill", "500");
+  bodyFormData.append("dateTime", "2024-04-06T11:59:11.332");
+  bodyFormData.append("applicableObject", "ALL");
+
+  try {
+    const response = await api.get(
+      `/api/promotion/fit-bill-code`,
+      bodyFormData
+    );
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// // create promotion line
+// export const callCreatePromotionLine = async (data, promotionId) => {
+//   const bodyFormData = new FormData();
+//   console.log("dâta trong api: ", data);
+//   bodyFormData.append("promotionId", promotionId);
+//   bodyFormData.append("code", data.code);
+//   bodyFormData.append("name", data.name);
+//   bodyFormData.append("description", data.description);
+//   bodyFormData.append("typePromotion", data.typePromotion);
+//   bodyFormData.append(
+//     "startDate",
+//     data.timeValue[0].format("YYYY-MM-DDTHH:mm:ss")
+//   );
+//   bodyFormData.append(
+//     "endDate",
+//     data.timeValue[1].format("YYYY-MM-DDTHH:mm:ss")
+//   );
+//   bodyFormData.append("status", true);
+//   bodyFormData.append("applicableObject", data.applicableObject);
+//   bodyFormData.append("usePerUser", data.usePerUser);
+//   bodyFormData.append("usePerPromotion", data.usePerPromotion);
+//   bodyFormData.append(
+//     "PromotionDetailDto",
+//     JSON.stringify(data.PromotionDetailDto)
+//   );
+
+//   try {
+//     const response = await api({
+//       method: "post",
+//       url: `/api/promotion/line`,
+//       data: bodyFormData,
+//       headers: {
+//         "Content-Type": "multipart/form-data",
+//       },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     return error;
+//   }
+// };
+
+// get seat trong phòng cho user xem
+export const callGetSeatForUserByShowtimeId = async (id) => {
+  try {
+    const response = await api.get(`/api/showtime/seat/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};

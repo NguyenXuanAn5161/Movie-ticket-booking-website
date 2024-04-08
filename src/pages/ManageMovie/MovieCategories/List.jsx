@@ -22,7 +22,10 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../components/InputSearch/InputSearch";
 import { doSetMovieGenre } from "../../../redux/movie/movieGenreSlice";
-import { callFetchListUser } from "../../../services/api";
+import {
+  callDeleteGenreMovie,
+  callFetchListGenreMovie,
+} from "../../../services/apiMovie";
 
 const MovieGenreList = () => {
   const genres = [
@@ -51,13 +54,13 @@ const MovieGenreList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
-  const [listData, setListData] = useState(genres);
+  const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
-  const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
+  const [sortQuery, setSortQuery] = useState("sort=-createdDate"); // default sort by updateAt mới nhất
   const [openModalImport, setOpenModalImport] = useState(false);
   const [openModalExport, setOpenModalExport] = useState(false);
 
@@ -70,20 +73,22 @@ const MovieGenreList = () => {
   // mặc định #2
   const fetchData = async () => {
     setIsLoading(true);
-    let query = `current=${current}&pageSize=${pageSize}`;
+    let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
       query += `&${filter}`;
     }
 
-    if (sortQuery) {
-      query += `&${sortQuery}`;
-    }
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
 
     // thay đổi #1 api call
-    const res = await callFetchListUser(query);
-    if (res && res.data) {
-      //   setListData(res.data.result);
-      //   setTotal(res.data.meta.total);
+    console.log("query", query);
+    const res = await callFetchListGenreMovie(query);
+    console.log("res", res);
+    if (res?.content) {
+      setListData(res.content);
+      setTotal(res.totalElements);
     }
 
     setIsLoading(false);
@@ -92,15 +97,15 @@ const MovieGenreList = () => {
   // mặc định #2
   const handleDeleteData = async (dataId) => {
     // thay đổi #1 api call
-    const res = await callDeleteUser(dataId);
-    if (res && res.data) {
+    const res = await callDeleteGenreMovie(dataId);
+    if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Xoá loại phim thành công!");
       await fetchData();
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: res.response.data.message,
       });
     }
   };
@@ -121,18 +126,20 @@ const MovieGenreList = () => {
     },
     {
       title: "Loại phim",
-      dataIndex: "nameGenre",
+      dataIndex: "name",
       sorter: true,
       width: 100,
       fixed: "left",
     },
     {
       title: "Cập nhật ngày",
-      dataIndex: "updatedAt",
+      dataIndex: "createdDate",
       width: 150,
       render: (text, record, index) => {
         return (
-          <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
+          <span>
+            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
+          </span>
         );
       },
       sorter: true,
@@ -221,7 +228,17 @@ const MovieGenreList = () => {
 
   // mặc định #2
   const handleSearch = (query) => {
-    setFilter(query);
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+    setFilter(q);
   };
 
   // mặc định #2
@@ -247,7 +264,7 @@ const MovieGenreList = () => {
   // thay đổi #1
   const itemSearch = [
     { field: "code", label: "Mã loại phim" },
-    { field: "nameGenre", label: "Loại phim" },
+    { field: "name", label: "Loại phim" },
   ];
 
   return (

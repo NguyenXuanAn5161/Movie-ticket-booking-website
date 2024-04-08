@@ -4,6 +4,7 @@ import {
   Popconfirm,
   Row,
   Table,
+  Tag,
   message,
   notification,
 } from "antd";
@@ -21,7 +22,10 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../components/InputSearch/InputSearch";
 import { doSetMovie } from "../../../redux/movie/movieSlice";
-import { callFetchListUser } from "../../../services/api";
+import {
+  callDeleteMovie,
+  callFetchListMovie,
+} from "../../../services/apiMovie";
 
 const MovieList = () => {
   const data = [
@@ -166,7 +170,7 @@ const MovieList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // mặc định #2
-  const [listData, setListData] = useState(data);
+  const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(2);
   const [total, setTotal] = useState(0);
@@ -184,20 +188,21 @@ const MovieList = () => {
   // mặc định #2
   const fetchData = async () => {
     setIsLoading(true);
-    let query = `current=${current}&pageSize=${pageSize}`;
+    let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
       query += `&${filter}`;
     }
 
-    if (sortQuery) {
-      query += `&${sortQuery}`;
-    }
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
 
     // thay đổi #1 api call
-    const res = await callFetchListUser(query);
-    if (res && res.data) {
-      // setListData(res.data.result);
-      // setTotal(res.data.meta.total);
+    const res = await callFetchListMovie(query);
+    console.log("res", res);
+    if (res?.content) {
+      setListData(res.content);
+      setTotal(res.totalElements);
     }
 
     setIsLoading(false);
@@ -206,15 +211,16 @@ const MovieList = () => {
   // mặc định #2
   const handleDeleteData = async (dataId) => {
     // thay đổi #1 api call
-    const res = await callDeleteUser(dataId);
-    if (res && res.data) {
+    const res = await callDeleteMovie(dataId);
+    if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Xoá phim thành công!");
+      setCurrent(1);
       await fetchData();
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: res.response.data.message,
       });
     }
   };
@@ -228,27 +234,27 @@ const MovieList = () => {
   // thay đổi #1
   const columns = [
     {
-      title: "Code",
-      dataIndex: "code",
-      width: 100,
+      title: "Tên phim",
+      dataIndex: "name",
+      sorter: true,
+      width: 250,
       fixed: "left",
     },
     {
-      title: "Tên phim",
-      dataIndex: "movieName",
-      sorter: true,
-      width: 100,
-      fixed: "left",
+      title: "Đạo diễn",
+      dataIndex: "director",
+      width: 150,
+    },
+    {
+      title: "Diễn viên",
+      dataIndex: "cast",
     },
     {
       title: "Ngày sản xuất",
       dataIndex: "releaseDate",
-      width: 150,
-      sorter: true,
-    },
-    {
-      title: "Thể loại",
-      dataIndex: "genreName",
+      render: (text, record, index) => {
+        return <span>{moment(record.releaseDate).format("DD-MM-YYYY")}</span>;
+      },
       width: 150,
       sorter: true,
     },
@@ -256,15 +262,22 @@ const MovieList = () => {
       title: "Trạng thái",
       dataIndex: "status",
       width: 150,
-      sorter: true,
+      render: (status) => (
+        <Tag color={status ? "success" : "error"}>
+          {status ? "Được chiếu" : "Ngưng chiếu"}
+        </Tag>
+      ),
+      // sorter: true,
     },
     {
       title: "Cập nhật ngày",
-      dataIndex: "updatedAt",
+      dataIndex: "createdDate",
       width: 150,
       render: (text, record, index) => {
         return (
-          <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
+          <span>
+            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
+          </span>
         );
       },
       sorter: true,
@@ -283,7 +296,7 @@ const MovieList = () => {
               description={"Bạn có chắc chắn muốn xóa phim này?"}
               okText="Xác nhận"
               cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record._id)}
+              onConfirm={() => handleDeleteData(record.id)}
             >
               <span>
                 <AiOutlineDelete
@@ -344,7 +357,17 @@ const MovieList = () => {
 
   // mặc định #2
   const handleSearch = (query) => {
-    setFilter(query);
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+    setFilter(q);
   };
 
   // mặc định #2
@@ -369,9 +392,9 @@ const MovieList = () => {
 
   // thay đổi #1
   const itemSearch = [
-    { field: "movieName", label: "Tên phim" },
-    { field: "author", label: "Tác giả" },
-    { field: "movieCategories", label: "Thể loại" },
+    { field: "name", label: "Tên phim" },
+    { field: "genreId", label: "Thể loại" },
+    { field: "cinemaId", label: "Rạp" },
   ];
 
   return (

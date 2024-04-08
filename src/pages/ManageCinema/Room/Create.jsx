@@ -40,6 +40,10 @@ const RoomCreate = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [openModalTypeSeat, setOpenModalTypeSeat] = useState(false);
 
+  useEffect(() => {
+    console.log("selectedSeats: ", selectedSeats);
+  }, [selectedSeats]);
+
   const onFinish = async (values) => {
     const { name, type, status } = values;
     // Tạo mảng seats từ selectedSeats

@@ -129,7 +129,7 @@ export default function App() {
           element: <MovieGenreList />,
         },
         {
-          path: "movieGenre/show/:movieId",
+          path: "movieGenre/show/:categoryMovieId",
           element: <MovieGenreShow />,
         },
         {
@@ -137,7 +137,7 @@ export default function App() {
           element: <MovieGenreCreate />,
         },
         {
-          path: "movieGenre/edit/:movieId",
+          path: "movieGenre/edit/:categoryMovieId",
           element: <MovieGenreEdit />,
         },
         // Lịch chiếu phim
