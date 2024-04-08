@@ -127,6 +127,7 @@ const FoodList = () => {
             showDelete={true}
             showEdit={true}
             showView={true}
+            itemName={"đồ ăn"}
           />
         );
       },

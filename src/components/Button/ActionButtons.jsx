@@ -10,14 +10,15 @@ const ActionButtons = ({
   showDelete,
   showEdit,
   showView,
+  itemName,
 }) => {
   return (
     <>
       {showDelete && (
         <Popconfirm
           placement="leftTop"
-          title={"Xác nhận xóa đồ ăn"}
-          description={"Bạn có chắc chắn muốn xóa đồ ăn này?"}
+          title={`Xác nhận xóa ${itemName}?`}
+          description={`Bạn có chắc chắn muốn xóa ${itemName} này?`}
           okText="Xác nhận"
           cancelText="Hủy"
           onConfirm={() => handleDelete(record.id)}
