@@ -9,11 +9,12 @@ const TypeInput = ({ item }) => {
       case "select":
         return (
           <Select placeholder={item.label}>
-            {item.options.map((option) => (
-              <Option key={option.value} value={option.value}>
-                {option.label}
-              </Option>
-            ))}
+            {item.options &&
+              item.options.map((option) => (
+                <Option key={option.value} value={option.value}>
+                  {option.label}
+                </Option>
+              ))}
           </Select>
         );
       case "datePicker":
