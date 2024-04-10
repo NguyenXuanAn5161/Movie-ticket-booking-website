@@ -24,7 +24,7 @@ import { doSetPromotion } from "../../redux/promotion/promotionSlice";
 import {
   callGetPromotionHeaderById,
   callGetPromotionLineByPromotionId,
-} from "../../services/apiMovie";
+} from "../../services/apiPromotion";
 import PromotionLineModalForm from "./PromotionLines/PromotionLineForm";
 
 const PromotionShow = () => {

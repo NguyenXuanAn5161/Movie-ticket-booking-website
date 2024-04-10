@@ -1,6 +1,6 @@
 import { Button, Form, Modal, Steps, message, notification } from "antd";
 import React, { useEffect, useState } from "react";
-import { callCreatePromotionLine } from "../../../services/apiMovie";
+import { callCreatePromotionLine } from "../../../services/apiPromotion";
 import PromotionBasicInfo from "./StepsCreate/BasicInfor";
 import PromotionDetailsDiscount from "./StepsCreate/DetailsDiscount";
 import PromotionDetailsGift from "./StepsCreate/DetailsGift";
