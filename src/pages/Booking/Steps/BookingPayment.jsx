@@ -1,6 +1,6 @@
 import { Button, DatePicker, Form, Input, Select } from "antd";
 import React from "react";
-import { callGetPromotionByCode } from "../../../services/apiMovie";
+import { callGetPromotionByCode } from "../../../services/apiPromotion";
 
 const { Option } = Select;
 

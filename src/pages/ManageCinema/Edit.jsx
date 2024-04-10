@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callUpdateCinema } from "../../services/apiMovie";
+import { callUpdateCinema } from "../../services/apiCinema";
 import addressOptions from "../../utils/data";
 import { getErrorMessageCinema } from "../../utils/errorHandling";
 

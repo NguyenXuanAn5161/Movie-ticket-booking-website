@@ -25,7 +25,7 @@ import PageHeader from "../../../components/PageHeader/PageHeader";
 import ModalTypeSeat from "../../../components/Seat/ModalTypeSeat";
 import SeatComponent from "../../../components/Seat/SeatComponent";
 import SeatLegend from "../../../components/Seat/SeatLegend";
-import { callCreateRoom } from "../../../services/apiMovie";
+import { callCreateRoom } from "../../../services/apiRoom";
 import { getErrorMessageRoom } from "../../../utils/errorHandling";
 import "./index.scss";
 

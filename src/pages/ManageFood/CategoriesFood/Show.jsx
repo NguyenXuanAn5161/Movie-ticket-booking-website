@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
-import { callGetCategoryFoodById } from "../../../services/apiMovie";
+import { callGetCategoryFoodById } from "../../../services/apiFood";
 import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 
 const FoodCategoryShow = () => {

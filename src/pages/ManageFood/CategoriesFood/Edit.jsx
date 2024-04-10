@@ -16,7 +16,7 @@ import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
 import {
   callGetCategoryFoodById,
   callUpdateCategoryFood,
-} from "../../../services/apiMovie";
+} from "../../../services/apiFood";
 import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 
 const FoodCategoryEdit = () => {

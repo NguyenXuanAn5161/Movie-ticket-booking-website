@@ -10,7 +10,10 @@ import {
 } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetCinema } from "../../redux/cinema/cinemaSlice";
-import { callDeleteCinema, callFetchListCinema } from "../../services/apiMovie";
+import {
+  callDeleteCinema,
+  callFetchListCinema,
+} from "../../services/apiCinema";
 import { createColumn } from "../../utils/createColumn";
 import { getErrorMessageCinema } from "../../utils/errorHandling";
 
@@ -177,7 +180,6 @@ const CinemaList = () => {
       <Row gutter={[20, 20]}>
         <Col span={24}>
           <Table
-            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 280,

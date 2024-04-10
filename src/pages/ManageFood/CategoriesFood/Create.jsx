@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-import { callCreateCategoryFood } from "../../../services/apiMovie";
+import { callCreateCategoryFood } from "../../../services/apiFood";
 import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 
 // thay đổi #1

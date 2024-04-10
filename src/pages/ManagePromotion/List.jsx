@@ -24,7 +24,7 @@ import { useNavigate } from "react-router-dom";
 import InputSearch from "../../components/InputSearch/InputSearch";
 import { doSetPromotion } from "../../redux/promotion/promotionSlice";
 import { callDeleteUser } from "../../services/api";
-import { callFetchListPromotionHeader } from "../../services/apiMovie";
+import { callFetchListPromotionHeader } from "../../services/apiPromotion";
 
 const PromotionList = () => {
   const navigate = useNavigate();
@@ -282,7 +282,6 @@ const PromotionList = () => {
         </Col>
         <Col span={24}>
           <Table
-            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 280,

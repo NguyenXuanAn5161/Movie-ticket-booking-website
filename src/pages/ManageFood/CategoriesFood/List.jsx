@@ -9,7 +9,7 @@ import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
 import {
   callDeleteCategoryFood,
   callFetchListCategoryFood,
-} from "../../../services/apiMovie";
+} from "../../../services/apiFood";
 import { createColumn } from "../../../utils/createColumn";
 import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 
@@ -172,7 +172,6 @@ const FoodCategoryList = () => {
       <Row gutter={[20, 20]}>
         <Col span={24}>
           <Table
-            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 280,

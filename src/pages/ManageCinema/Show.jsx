@@ -25,11 +25,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { doSetCinema } from "../../redux/cinema/cinemaSlice";
 import { doSetRoom } from "../../redux/cinema/room/roomSlice";
-import {
-  callDeleteRoom,
-  callFetchCinemaById,
-  callFetchListRoom,
-} from "../../services/apiMovie";
+import { callFetchCinemaById } from "../../services/apiCinema";
+import { callDeleteRoom, callFetchListRoom } from "../../services/apiRoom";
 import {
   getErrorMessageCinema,
   getErrorMessageRoom,
@@ -324,7 +321,6 @@ const CinemaShow = () => {
         <br />
         <Col span={24}>
           <Table
-            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 280,

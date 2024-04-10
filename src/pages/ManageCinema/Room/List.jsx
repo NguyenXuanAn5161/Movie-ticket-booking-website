@@ -22,7 +22,7 @@ import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../components/InputSearch/InputSearch";
-import { callFetchListRoom } from "../../../services/apiMovie";
+import { callFetchListRoom } from "../../../services/apiRoom";
 
 const RoomList = () => {
   const navigate = useNavigate();
@@ -282,7 +282,6 @@ const RoomList = () => {
         </Col>
         <Col span={24}>
           <Table
-            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 280,

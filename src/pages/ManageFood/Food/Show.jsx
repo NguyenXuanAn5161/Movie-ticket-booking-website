@@ -7,7 +7,7 @@ import { doSetFood } from "../../../redux/food/foodSlice";
 import {
   callGetCategoryFoodById,
   callGetFoodById,
-} from "../../../services/apiMovie";
+} from "../../../services/apiFood";
 import { imageError } from "../../../utils/imageError";
 
 const FoodShow = () => {

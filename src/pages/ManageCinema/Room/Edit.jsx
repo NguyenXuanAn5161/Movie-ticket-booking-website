@@ -27,7 +27,7 @@ import ModalTypeSeat from "../../../components/Seat/ModalTypeSeat";
 import SeatComponent from "../../../components/Seat/SeatComponent";
 import SeatLegend from "../../../components/Seat/SeatLegend";
 import { doSetRoom } from "../../../redux/cinema/room/roomSlice";
-import { callFetchRoomById, callUpdateRoom } from "../../../services/apiMovie";
+import { callFetchRoomById, callUpdateRoom } from "../../../services/apiRoom";
 import { getErrorMessageRoom } from "../../../utils/errorHandling";
 import "./index.scss";
 

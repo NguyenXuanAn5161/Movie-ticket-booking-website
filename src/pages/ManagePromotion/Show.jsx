@@ -24,7 +24,7 @@ import { doSetPromotion } from "../../redux/promotion/promotionSlice";
 import {
   callGetPromotionHeaderById,
   callGetPromotionLineByPromotionId,
-} from "../../services/apiMovie";
+} from "../../services/apiPromotion";
 import PromotionLineModalForm from "./PromotionLines/PromotionLineForm";
 
 const PromotionShow = () => {
@@ -298,7 +298,6 @@ const PromotionShow = () => {
           />
           <br />
           <Table
-            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 200,

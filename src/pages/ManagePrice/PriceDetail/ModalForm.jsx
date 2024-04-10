@@ -14,12 +14,12 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
+import { callFetchListFood } from "../../../services/apiFood";
+import { callFetchListTypeSeat } from "../../../services/apiMovie";
 import {
   callCreateSalePriceDetail,
-  callFetchListFood,
-  callFetchListTypeSeat,
   callUpdateSalePriceDetail,
-} from "../../../services/apiMovie";
+} from "../../../services/apiPrice";
 
 const PriceDetailModalForm = (props) => {
   const [form] = Form.useForm();

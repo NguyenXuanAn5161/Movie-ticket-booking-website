@@ -22,7 +22,7 @@ import {
   callFetchListCategoryFood,
   callGetFoodById,
   callUpdateFood,
-} from "../../../services/apiMovie";
+} from "../../../services/apiFood";
 import {
   getErrorMessageCategoryFood,
   getErrorMessageFood,

@@ -20,7 +20,7 @@ import PageHeader from "../../../components/PageHeader/PageHeader";
 import {
   callCreateFood,
   callFetchListCategoryFood,
-} from "../../../services/apiMovie";
+} from "../../../services/apiFood";
 import {
   getErrorMessageCategoryFood,
   getErrorMessageFood,

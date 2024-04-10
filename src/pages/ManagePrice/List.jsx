@@ -26,7 +26,7 @@ import { doSetPrice } from "../../redux/price/priceSlice";
 import {
   callDeleteSalePrice,
   callFetchListSalePrice,
-} from "../../services/apiMovie";
+} from "../../services/apiPrice";
 
 const PriceList = () => {
   const navigate = useNavigate();
@@ -298,7 +298,6 @@ const PriceList = () => {
         </Col>
         <Col span={24}>
           <Table
-            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 280,

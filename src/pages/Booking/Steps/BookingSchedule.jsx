@@ -2,11 +2,9 @@ import { Card, Col, Form, Row } from "antd";
 import { useEffect, useState } from "react";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import MovieShowTimes from "../../../components/MovieShowTimeComponent/MovieShowTimeComponent";
-import {
-  callFetchListCinema,
-  callFetchListMovie,
-  callFetchListShowtime,
-} from "../../../services/apiMovie";
+import { callFetchListCinema } from "../../../services/apiCinema";
+import { callFetchListMovie } from "../../../services/apiMovie";
+import { callFetchListShowtime } from "../../../services/apiShowTime";
 
 const BookingSchedule = (props) => {
   const {

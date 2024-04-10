@@ -26,7 +26,7 @@ import {
   callDeleteSalePriceDetail,
   callGetAllPriceDetail,
   callGetPriceHeaderById,
-} from "../../services/apiMovie";
+} from "../../services/apiPrice";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
 import PriceDetailModalForm from "./PriceDetail/ModalForm";
 
@@ -308,7 +308,6 @@ const PriceShow = () => {
           />
           <br />
           <Table
-            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 200,

@@ -14,7 +14,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callCreatePromotionHeader } from "../../services/apiMovie";
+import { callCreatePromotionHeader } from "../../services/apiPromotion";
 
 const dateFormat = "DD-MM-YYYY HH:mm:ss";
 const defaultStartDate = dayjs().startOf("day").add(1, "day");

@@ -15,7 +15,7 @@ import {
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callCreateCinema } from "../../services/apiMovie";
+import { callCreateCinema } from "../../services/apiCinema";
 import addressOptions from "../../utils/data";
 import { getErrorMessageCinema } from "../../utils/errorHandling";
 
