@@ -21,8 +21,8 @@ import {
   callCreateShowtime,
   callFetchListCinema,
   callFetchListMovie,
-  callFetchListRoom,
 } from "../../../services/apiMovie";
+import { callFetchListRoom } from "../../../services/apiRoom";
 
 const defaultStartDate = dayjs().startOf("day").add(1, "day");
 

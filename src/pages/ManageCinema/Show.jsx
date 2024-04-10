@@ -25,11 +25,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { doSetCinema } from "../../redux/cinema/cinemaSlice";
 import { doSetRoom } from "../../redux/cinema/room/roomSlice";
-import {
-  callDeleteRoom,
-  callFetchCinemaById,
-  callFetchListRoom,
-} from "../../services/apiMovie";
+import { callFetchCinemaById } from "../../services/apiMovie";
+import { callDeleteRoom, callFetchListRoom } from "../../services/apiRoom";
 import {
   getErrorMessageCinema,
   getErrorMessageRoom,
