@@ -14,7 +14,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callCreateUser } from "../../services/apiMovie";
+import { callCreateUser } from "../../services/apiUser";
 import { getErrorMessageUser } from "../../utils/errorHandling";
 
 const UserCreate = () => {

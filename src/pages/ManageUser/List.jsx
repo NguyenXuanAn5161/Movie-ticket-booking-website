@@ -18,7 +18,7 @@ import UserExport from "../../components/Admin/User/data/UserExport";
 import UserImport from "../../components/Admin/User/data/UserImport";
 import InputSearch from "../../components/InputSearch/InputSearch";
 import { doSetUser } from "../../redux/account/userSlice";
-import { callDeleteUser, callFetchListUser } from "../../services/apiMovie";
+import { callDeleteUser, callFetchListUser } from "../../services/apiUser";
 import { getErrorMessageUser } from "../../utils/errorHandling";
 
 const UserList = () => {

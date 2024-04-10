@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { doSetUser } from "../../redux/account/userSlice";
-import { callDeleteUser, callFetchUserById } from "../../services/apiMovie";
+import { callDeleteUser, callFetchUserById } from "../../services/apiUser";
 import { getErrorMessageUser } from "../../utils/errorHandling";
 
 const UserShow = () => {
