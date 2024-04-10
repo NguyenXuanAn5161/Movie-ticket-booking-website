@@ -19,7 +19,7 @@ import { doSetPrice } from "../../redux/price/priceSlice";
 import {
   callGetPriceHeaderById,
   callUpdateSalePrice,
-} from "../../services/apiMovie";
+} from "../../services/apiPrice";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
 
 const dateFormat = "DD-MM-YYYY HH:mm:ss";

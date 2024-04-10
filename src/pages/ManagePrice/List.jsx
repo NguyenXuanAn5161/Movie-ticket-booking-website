@@ -26,7 +26,7 @@ import { doSetPrice } from "../../redux/price/priceSlice";
 import {
   callDeleteSalePrice,
   callFetchListSalePrice,
-} from "../../services/apiMovie";
+} from "../../services/apiPrice";
 
 const PriceList = () => {
   const navigate = useNavigate();

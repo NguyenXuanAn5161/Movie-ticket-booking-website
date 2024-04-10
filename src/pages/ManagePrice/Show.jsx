@@ -26,7 +26,7 @@ import {
   callDeleteSalePriceDetail,
   callGetAllPriceDetail,
   callGetPriceHeaderById,
-} from "../../services/apiMovie";
+} from "../../services/apiPrice";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
 import PriceDetailModalForm from "./PriceDetail/ModalForm";
 

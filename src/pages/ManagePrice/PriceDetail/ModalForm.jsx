@@ -15,11 +15,13 @@ import {
 import React, { useEffect, useState } from "react";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import {
-  callCreateSalePriceDetail,
   callFetchListFood,
   callFetchListTypeSeat,
-  callUpdateSalePriceDetail,
 } from "../../../services/apiMovie";
+import {
+  callCreateSalePriceDetail,
+  callUpdateSalePriceDetail,
+} from "../../../services/apiPrice";
 
 const PriceDetailModalForm = (props) => {
   const [form] = Form.useForm();

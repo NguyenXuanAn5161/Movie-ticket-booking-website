@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CustomDatePicker from "../../components/DatePicker/CustomDatePicker";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callCreateSalePrice } from "../../services/apiMovie";
+import { callCreateSalePrice } from "../../services/apiPrice";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
 
 const dateFormat = "DD-MM-YYYY HH:mm:ss";
