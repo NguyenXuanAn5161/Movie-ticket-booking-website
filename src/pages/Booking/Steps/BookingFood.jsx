@@ -1,7 +1,7 @@
 import { Card, Image, List, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import QuantityCounter from "../../../components/QuantityCounter/QuantityCounter";
-import { callFetchListFood } from "../../../services/apiMovie";
+import { callFetchListFood } from "../../../services/apiFood";
 import { imageError } from "../../../utils/imageError";
 
 const { Meta } = Card;

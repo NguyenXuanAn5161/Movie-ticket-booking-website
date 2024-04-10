@@ -15,7 +15,7 @@ import {
   callDeleteFood,
   callFetchListCategoryFood,
   callFetchListFood,
-} from "../../../services/apiMovie";
+} from "../../../services/apiFood";
 import { createColumn } from "../../../utils/createColumn";
 import { getErrorMessageFood } from "../../../utils/errorHandling";
 

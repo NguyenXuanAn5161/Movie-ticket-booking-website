@@ -9,7 +9,7 @@ import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
 import {
   callDeleteCategoryFood,
   callFetchListCategoryFood,
-} from "../../../services/apiMovie";
+} from "../../../services/apiFood";
 import { createColumn } from "../../../utils/createColumn";
 import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 

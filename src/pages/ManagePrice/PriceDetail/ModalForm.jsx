@@ -14,10 +14,8 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
-import {
-  callFetchListFood,
-  callFetchListTypeSeat,
-} from "../../../services/apiMovie";
+import { callFetchListFood } from "../../../services/apiFood";
+import { callFetchListTypeSeat } from "../../../services/apiMovie";
 import {
   callCreateSalePriceDetail,
   callUpdateSalePriceDetail,
