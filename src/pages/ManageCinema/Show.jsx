@@ -321,7 +321,6 @@ const CinemaShow = () => {
         <br />
         <Col span={24}>
           <Table
-            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 280,

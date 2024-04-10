@@ -180,7 +180,6 @@ const CinemaList = () => {
       <Row gutter={[20, 20]}>
         <Col span={24}>
           <Table
-            locale={{ emptyText: "Không có dữ liệu" }}
             scroll={{
               x: "100%",
               y: 280,
