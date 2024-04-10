@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import SeatGrid from "../../../components/Seat/SeatGrid";
-import { callGetSeatForUserByShowtimeId } from "../../../services/apiMovie";
+import { callGetSeatForUserByShowtimeId } from "../../../services/apiShowTime";
 
 const BookingSeat = (props) => {
   const { selectedSeats, setSelectedSeats } = props;

@@ -18,11 +18,9 @@ import { useNavigate } from "react-router-dom";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 import { callFetchListCinema } from "../../../services/apiCinema";
-import {
-  callCreateShowtime,
-  callFetchListMovie,
-} from "../../../services/apiMovie";
+import { callFetchListMovie } from "../../../services/apiMovie";
 import { callFetchListRoom } from "../../../services/apiRoom";
+import { callCreateShowtime } from "../../../services/apiShowTime";
 
 const defaultStartDate = dayjs().startOf("day").add(1, "day");
 

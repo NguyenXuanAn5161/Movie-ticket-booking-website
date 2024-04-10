@@ -3,10 +3,8 @@ import { useEffect, useState } from "react";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import MovieShowTimes from "../../../components/MovieShowTimeComponent/MovieShowTimeComponent";
 import { callFetchListCinema } from "../../../services/apiCinema";
-import {
-  callFetchListMovie,
-  callFetchListShowtime,
-} from "../../../services/apiMovie";
+import { callFetchListMovie } from "../../../services/apiMovie";
+import { callFetchListShowtime } from "../../../services/apiShowTime";
 
 const BookingSchedule = (props) => {
   const {

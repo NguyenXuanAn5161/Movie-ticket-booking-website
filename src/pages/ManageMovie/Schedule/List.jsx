@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import InputSearch from "../../../components/InputSearch/InputSearch";
 import { doSetSchedule } from "../../../redux/schedule/scheduleSlice";
-import { callFetchListShowtime } from "../../../services/apiMovie";
+import { callFetchListShowtime } from "../../../services/apiShowTime";
 
 const ScheduleList = () => {
   const navigate = useNavigate();
