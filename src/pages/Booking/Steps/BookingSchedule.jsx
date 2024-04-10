@@ -2,8 +2,8 @@ import { Card, Col, Form, Row } from "antd";
 import { useEffect, useState } from "react";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import MovieShowTimes from "../../../components/MovieShowTimeComponent/MovieShowTimeComponent";
+import { callFetchListCinema } from "../../../services/apiCinema";
 import {
-  callFetchListCinema,
   callFetchListMovie,
   callFetchListShowtime,
 } from "../../../services/apiMovie";

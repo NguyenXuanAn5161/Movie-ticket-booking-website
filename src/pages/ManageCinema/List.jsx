@@ -10,7 +10,10 @@ import {
 } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetCinema } from "../../redux/cinema/cinemaSlice";
-import { callDeleteCinema, callFetchListCinema } from "../../services/apiMovie";
+import {
+  callDeleteCinema,
+  callFetchListCinema,
+} from "../../services/apiCinema";
 import { createColumn } from "../../utils/createColumn";
 import { getErrorMessageCinema } from "../../utils/errorHandling";
 

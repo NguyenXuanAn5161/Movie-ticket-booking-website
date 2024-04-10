@@ -17,9 +17,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+import { callFetchListCinema } from "../../../services/apiCinema";
 import {
   callCreateShowtime,
-  callFetchListCinema,
   callFetchListMovie,
 } from "../../../services/apiMovie";
 import { callFetchListRoom } from "../../../services/apiRoom";
