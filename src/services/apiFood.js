@@ -87,12 +87,21 @@ export const callFetchListFood = async (query) => {
   }
 };
 
-export const callCreateFood = async (formData) => {
+export const callCreateFood = async (data, imageUrl) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("cinemaIds", data.cinemaId.value);
+  bodyFormData.append("name", data.name);
+  bodyFormData.append("image", imageUrl);
+  bodyFormData.append("categoryId", data.categoryId);
+  bodyFormData.append("sizeFood", data.sizeFood);
+  bodyFormData.append("status", data.status);
+  bodyFormData.append("quantity", data.quantity);
+
   try {
     const response = await api({
       method: "post",
       url: "/api/food",
-      data: formData,
+      data: bodyFormData,
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -103,25 +112,20 @@ export const callCreateFood = async (formData) => {
   }
 };
 
-export const callUpdateFood = async (
-  id,
-  name,
-  price,
-  quantity,
-  categoryId,
-  status,
-  size,
-  image
-) => {
+export const callUpdateFood = async (data, imageUrl) => {
   const bodyFormData = new FormData();
-  bodyFormData.append("id", id);
-  bodyFormData.append("name", name);
-  bodyFormData.append("quantity", quantity);
-  bodyFormData.append("image", image);
-  bodyFormData.append("price", price);
-  bodyFormData.append("categoryId", categoryId);
-  bodyFormData.append("sizeFood", size);
-  bodyFormData.append("status", status);
+  if (imageUrl) {
+    bodyFormData.append("image", imageUrl);
+  } else {
+    bodyFormData.append("image", data.image);
+  }
+  bodyFormData.append("cinemaId", data.cinemaId);
+  bodyFormData.append("id", data.id);
+  bodyFormData.append("name", data.name);
+  bodyFormData.append("categoryId", data.categoryId);
+  bodyFormData.append("quantity", data.quantity);
+  bodyFormData.append("sizeFood", data.sizeFood);
+  bodyFormData.append("status", data.status);
 
   try {
     const response = await api({

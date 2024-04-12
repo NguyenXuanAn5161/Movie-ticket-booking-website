@@ -55,7 +55,7 @@ export const callCreateMovie = async (values, releaseDate, image) => {
   bodyFormData.append("director", director);
   bodyFormData.append("cast", cast);
   bodyFormData.append("producer", producer);
-  bodyFormData.append("cinemaId", cinemaId);
+  bodyFormData.append("cinemaId", cinemaId.value);
   bodyFormData.append("status", status);
   try {
     const response = await api({
@@ -173,3 +173,20 @@ export const callDeleteGenreMovie = async (id) => {
     return error;
   }
 };
+
+// --------------------------------------------------------
+// api upload image
+export const callUploadImage = (file) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("file", file);
+  return api({
+    method: "post",
+    url: "/api/aws",
+    data: bodyFormData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "upload-type": "image",
+    },
+  });
+};
+// --------------------------------------------------------

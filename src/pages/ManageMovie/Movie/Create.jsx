@@ -19,10 +19,13 @@ import {
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+import { callFetchListCinema } from "../../../services/apiCinema";
 import {
   callCreateMovie,
   callFetchListGenreMovie,
+  callUploadImage,
 } from "../../../services/apiMovie";
 
 // thay đổi #1
@@ -35,11 +38,10 @@ const MovieCreate = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState([]);
-  // const [imageUrl, setImageUrl] = useState("");
-  // const [dataThumbnail, setDataThumbnail] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
+  const [cinema, setCinema] = useState(null);
 
   useEffect(() => {
     fetchDataGenre();
@@ -56,83 +58,34 @@ const MovieCreate = () => {
     setIsLoading(false);
   };
 
-  // const getBase64 = (img, callback) => {
-  //   const reader = new FileReader();
-  //   reader.addEventListener("load", () => callback(reader.result));
-  //   reader.readAsDataURL(img);
-  // };
-
-  // const beforeUpload = (file) => {
-  //   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-  //   if (!isJpgOrPng) {
-  //     message.error("You can only upload JPG/PNG file!");
-  //   }
-  //   const isLt2M = file.size / 1024 / 1024 < 2;
-  //   if (!isLt2M) {
-  //     message.error("Image must smaller than 2MB!");
-  //   }
-  //   return isJpgOrPng && isLt2M;
-  // };
-
-  // const handleChange = (info) => {
-  //   if (info.file.status === "done") {
-  //     // Get this url from response in real world.
-  //     getBase64(info.file.originFileObj, (url) => {
-  //       setLoading(false);
-  //       setImageUrl(url);
-  //     });
-  //   }
-  // };
-
-  // const handleUploadFileThumbnail = async ({ file, onSuccess, onError }) => {
-  //   const res = await callUploadBookImg(file);
-  //   if (res && res.data) {
-  //     setDataThumbnail([
-  //       {
-  //         name: res.data.fileUploaded,
-  //         uid: file.uid,
-  //       },
-  //     ]);
-  //     onSuccess("ok");
-  //   } else {
-  //     onError("Đã có lỗi khi upload file");
-  //   }
-  // };
-
-  // const handleRemoveFile = (file) => {
-  //   setDataThumbnail([]);
-  // };
-
-  // const handlePreview = async (file) => {
-  //   getBase64(file.originFileObj, (url) => {
-  //     setPreviewImage(url);
-  //     setPreviewOpen(true);
-  //     setPreviewTitle(
-  //       file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-  //     );
-  //   });
-  // };
-
   const onFinish = async (values) => {
     // thay đổi #1
     setIsSubmit(true);
     // thay đổi #1 api call
     const releaseDate = dayjs(values.releaseDate).format("YYYY-MM-DD");
     // const dateFormat = dayjsvalues.releaseDate
-    const res = await callCreateMovie(values, releaseDate, imageFile);
-    if (res?.status === 201) {
-      // thay đổi #1 message
-      message.success("Tạo mới phim thành công!");
-      form.resetFields();
-      setIsSubmit(false);
-      // thay đổi #1 thay đổi url
-      navigate("/admin/movie");
-    } else {
-      notification.error({
-        message: "Đã có lỗi xảy ra!",
-        description: res.response.data.message,
-      });
-      setIsSubmit(false);
+    const resImage = await callUploadImage(values.image.file);
+    console.log("resImage", resImage.data);
+    if (resImage?.status === 200) {
+      const resMovie = await callCreateMovie(
+        values,
+        releaseDate,
+        resImage.data.message
+      );
+      if (resMovie?.status === 201) {
+        // thay đổi #1 message
+        message.success("Tạo mới phim thành công!");
+        form.resetFields();
+        setIsSubmit(false);
+        // thay đổi #1 thay đổi url
+        navigate("/admin/movie");
+      } else {
+        notification.error({
+          message: "Đã có lỗi xảy ra!",
+          description: resMovie.response.data.message,
+        });
+        setIsSubmit(false);
+      }
     }
   };
 
@@ -192,7 +145,15 @@ const MovieCreate = () => {
                   },
                 ]}
               >
-                <Input />
+                <DebounceSelect
+                  style={{ textAlign: "start" }}
+                  value={cinema}
+                  onChange={(newValue) => {
+                    setCinema(newValue);
+                  }}
+                  placeholder="Chọn rạp"
+                  fetchOptions={fetchCinemaList}
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -428,3 +389,22 @@ const MovieCreate = () => {
 };
 
 export default MovieCreate;
+
+// Hàm fetch danh sách cinema
+async function fetchCinemaList(cinemaName) {
+  try {
+    let query = `size=5&name=${cinemaName}`;
+    const res = await callFetchListCinema(query);
+    const food = res.content.map((data) => ({
+      label: data.name,
+      value: data.id,
+    }));
+
+    return food;
+  } catch (error) {
+    // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+    console.error("Error fetching movies:", error);
+    // Trả về một mảng trống nếu xảy ra lỗi
+    return [];
+  }
+}

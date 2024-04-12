@@ -16,15 +16,15 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+import { callFetchListCinema } from "../../../services/apiCinema";
 import {
   callCreateFood,
   callFetchListCategoryFood,
 } from "../../../services/apiFood";
-import {
-  getErrorMessageCategoryFood,
-  getErrorMessageFood,
-} from "../../../utils/errorHandling";
+import { callUploadImage } from "../../../services/apiMovie";
+import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 
 const FoodCreate = () => {
   // mặc định #2
@@ -32,6 +32,7 @@ const FoodCreate = () => {
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [foodCategory, setFoodCategory] = useState([]);
+  const [cinema, setCinema] = useState(null);
 
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -59,36 +60,32 @@ const FoodCreate = () => {
   };
 
   const onFinish = async (values) => {
-    const { name, price, quantity, categoryId, status, sizeFood } = values;
+    console.log("values create food: ", values);
     setIsSubmit(true);
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("price", price);
-    formData.append("categoryId", categoryId);
-    formData.append("sizeFood", sizeFood);
-    formData.append("quantity", quantity);
-    formData.append("status", status);
-    formData.append("image", imageFile);
-
-    const res = await callCreateFood(formData);
-    if (res?.status === 200) {
-      // thay đổi #1 message
-      message.success("Tạo mới đồ ăn thành công!");
-      form.resetFields();
-      setImageFile(null);
-      setIsSubmit(false);
-      // thay đổi #1 thay đổi url
-      navigate("/admin/food");
-    } else {
-      const error = getErrorMessageFood(res.response.data.message, {
-        name: name,
-      });
-      notification.error({
-        message: "Đã có lỗi xảy ra!",
-        description: error,
-      });
-      setIsSubmit(false);
+    const resImage = await callUploadImage(values.image.file);
+    console.log("resImage", resImage);
+    if (resImage?.status === 200) {
+      const res = await callCreateFood(values, resImage.data.message);
+      console.log("res create food: ", res);
+      if (res?.status === 200) {
+        message.success("Tạo mới đồ ăn thành công!");
+        form.resetFields();
+        setImageFile(null);
+        setIsSubmit(false);
+        navigate("/admin/food");
+      } else {
+        notification.error({
+          message: "Đã có lỗi xảy ra!",
+          description: res.response.data.message,
+        });
+        setIsSubmit(false);
+      }
     }
+  };
+
+  // xử lý ảnh
+  const handleRemoveFile = (file) => {
+    setImageFile([]);
   };
 
   const normFile = (e) => {
@@ -113,7 +110,30 @@ const FoodCreate = () => {
           style={{ margin: "0 auto" }}
         >
           <Row gutter={[16]}>
-            <Col span={8}>
+            <Col span={12}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Chọn rạp"
+                name="cinemaId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn rạp!",
+                  },
+                ]}
+              >
+                <DebounceSelect
+                  style={{ textAlign: "start" }}
+                  value={cinema}
+                  onChange={(newValue) => {
+                    setCinema(newValue);
+                  }}
+                  placeholder="Chọn rạp"
+                  fetchOptions={fetchCinemaList}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên đồ ăn"
@@ -128,29 +148,7 @@ const FoodCreate = () => {
                 <Input placeholder="Nhập tên đồ ăn" />
               </Form.Item>
             </Col>
-            <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Giá"
-                name="price"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập giá!",
-                  },
-                ]}
-              >
-                <InputNumber
-                  formatter={(value) =>
-                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
-                  min={1000}
-                  style={{ width: "100%" }}
-                  addonAfter={"VND"}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Số lượng"
@@ -165,7 +163,7 @@ const FoodCreate = () => {
                 <InputNumber min={1} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Loại đồ ăn"
@@ -173,10 +171,9 @@ const FoodCreate = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên quốc gia sản xuất phim!",
+                    message: "Vui lòng chọn loại đồ ăn!",
                   },
                 ]}
-                initialValue={1}
               >
                 <Select
                   showSearch
@@ -234,7 +231,7 @@ const FoodCreate = () => {
                 </Radio.Group>
               </Form.Item>
             </Col>
-            <Col span={24}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Hình ảnh"
@@ -242,15 +239,16 @@ const FoodCreate = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn hình ảnh!",
+                    message: "Vui lòng nhập chọn hình ảnh!",
                   },
                 ]}
               >
                 <Upload
                   accept="image/*"
+                  maxCount={1}
                   beforeUpload={() => false}
+                  onRemove={(file) => handleRemoveFile(file)}
                   onChange={(info) => normFile(info)}
-                  fileList={imageFile ? [imageFile] : []}
                   listType="picture-card"
                 >
                   <div>
@@ -275,3 +273,21 @@ const FoodCreate = () => {
 };
 
 export default FoodCreate;
+
+async function fetchCinemaList(cinemaName) {
+  try {
+    let query = `size=5&name=${cinemaName}`;
+    const res = await callFetchListCinema(query);
+    const food = res.content.map((data) => ({
+      label: data.name,
+      value: data.id,
+    }));
+
+    return food;
+  } catch (error) {
+    // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+    console.error("Error fetching movies:", error);
+    // Trả về một mảng trống nếu xảy ra lỗi
+    return [];
+  }
+}

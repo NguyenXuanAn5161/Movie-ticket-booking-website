@@ -1,10 +1,16 @@
 import { Button, Table, Typography } from "antd";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { doSetSelectedShowTime } from "../../redux/booking/bookingSlice";
 
 const { Title } = Typography;
 
 const MovieShowTimes = (props) => {
   const { showTime, cinemaName, handleShowTimeSelection } = props;
+  const dispatch = useDispatch();
+  const selectedShowTime = useSelector(
+    (state) => state.booking.selectedShowTime
+  );
 
   // Sort data by showDate
   const sortedData = showTime?.sort((a, b) =>
@@ -40,7 +46,10 @@ const MovieShowTimes = (props) => {
             <Button
               type="primary"
               key={index}
-              onClick={() => handleShowTimeSelection(showtime)}
+              onClick={() => {
+                handleShowTimeSelection(showtime);
+                dispatch(doSetSelectedShowTime(showtime));
+              }}
             >
               {showtime.showTime}
             </Button>

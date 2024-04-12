@@ -89,37 +89,30 @@ const FoodEdit = () => {
   };
 
   const onFinish = async (values) => {
-    const { id, name, price, categoryId, status, sizeFood, quantity } = values;
-    // thay đổi #1
-    setIsSubmit(true);
-    // thay đổi #1 api call
-    const res = await callUpdateFood(
-      id,
-      name,
-      price,
-      quantity,
-      categoryId,
-      status,
-      sizeFood,
-      imageFile
-    );
+    console.log("values update food: ", values);
+    if (values.image.startsWith("http")) {
+      const res = await callUpdateFood(values, null);
+      handleResponse(res);
+    } else {
+      const resImage = await callUploadImage(values.image.file);
+      if (resImage?.status === 200) {
+        const res = await callUpdateFood(values, resImage.data.message);
+        handleResponse(res);
+      }
+    }
+  };
+
+  const handleResponse = (res) => {
     console.log("res update: ", res);
     if (res?.status === 200) {
-      // thay đổi #1 message và url
       message.success("Cập nhật đồ ăn thành công!");
       navigate("/admin/food");
     } else {
-      const error = getErrorMessageFood(res.response.data.message, {
-        foodId: id,
-        name: name,
-        categoryId: categoryId,
-      });
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: error,
+        description: res.response.data.message,
       });
     }
-    setIsSubmit(false);
   };
 
   // load data cho form edit
@@ -136,6 +129,7 @@ const FoodEdit = () => {
         quantity: food.quantity,
         sizeFood: food.size,
         image: food.image,
+        cinemaId: food.cinemaId,
       };
       setInitForm(init);
       setInitImage(food.image);
@@ -143,8 +137,6 @@ const FoodEdit = () => {
       // có s là set nhiều field
       form.setFieldsValue(init);
     }
-
-    console.log("image: ", food?.image);
     // reset field upload - bug
     return () => {
       form.resetFields();
@@ -183,6 +175,14 @@ const FoodEdit = () => {
             >
               <Input />
             </Form.Item>
+            <Form.Item
+              hidden
+              labelCol={{ span: 24 }}
+              label="Id rạp"
+              name="cinemaId"
+            >
+              <Input />
+            </Form.Item>
             <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
@@ -196,28 +196,6 @@ const FoodEdit = () => {
                 ]}
               >
                 <Input placeholder="Nhập tên đồ ăn" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Giá"
-                name="price"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập giá!",
-                  },
-                ]}
-              >
-                <InputNumber
-                  formatter={(value) =>
-                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
-                  min={1000}
-                  style={{ width: "100%" }}
-                  addonAfter={"VND"}
-                />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -294,7 +272,7 @@ const FoodEdit = () => {
                     message: "Vui lòng chọn size cho đồ ăn!",
                   },
                 ]}
-                initialValue={"MEDIUM"}
+                initialValue={"SMALL"}
               >
                 <Radio.Group value={food?.sizeFood}>
                   <Radio value="SMALL">Nhỏ</Radio>
@@ -303,7 +281,7 @@ const FoodEdit = () => {
                 </Radio.Group>
               </Form.Item>
             </Col>
-            <Col span={24}>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Hình ảnh"

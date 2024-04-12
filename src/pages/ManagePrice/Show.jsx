@@ -1,25 +1,26 @@
 import {
-  Button,
   Card,
   Descriptions,
   Divider,
-  Popconfirm,
   Table,
   Tag,
+  message,
+  notification,
 } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlineExport,
-  AiOutlinePlus,
-  AiOutlineReload,
-} from "react-icons/ai";
-import { BsEye } from "react-icons/bs";
-import { CiEdit } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import ActionButtons from "../../components/Button/ActionButtons";
+import {
+  renderCurrency,
+  renderDate,
+  renderPriceName,
+  renderStatus,
+  renderTypePrice,
+} from "../../components/FunctionRender/FunctionRender";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetPriceDetail } from "../../redux/price/priceDetailSlice";
 import { doSetPrice } from "../../redux/price/priceSlice";
 import {
@@ -27,15 +28,16 @@ import {
   callGetAllPriceDetail,
   callGetPriceHeaderById,
 } from "../../services/apiPrice";
+import { createColumn } from "../../utils/createColumn";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
-import PriceDetailModalForm from "./PriceDetail/ModalForm";
+import PriceDetailModalCreate from "./PriceDetail/PriceDetailModalCreate";
 
 const PriceShow = () => {
   const { priceId } = useParams();
   const dispatch = useDispatch();
 
   const price = useSelector((state) => state.price.price);
-  const priceDetail = useSelector((state) => state.priceDetail.priceDetail);
+  // const priceDetail = useSelector((state) => state.priceDetail.priceDetail);
 
   const [isLoading, setIsLoading] = useState(false);
   const [openModalCreate, setOpenModalCreate] = useState(false);
@@ -44,11 +46,14 @@ const PriceShow = () => {
   const [openModalExport, setOpenModalExport] = useState(false);
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
   const [dataUpdate, setDataUpdate] = useState(null);
-  const [total, setTotal] = useState(price?.salePriceDetail?.length);
+
+  const [listPriceDetail, setListPriceDetail] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState(null);
   const [sortQuery, setSortQuery] = useState("");
+
   // fetch data f5
   useEffect(() => {
     if (!price) {
@@ -75,27 +80,48 @@ const PriceShow = () => {
     if (priceId) {
       fetchSalePriceDetail();
     }
-  }, [priceId]);
+  }, [priceId, current, pageSize, filter, sortQuery]);
 
   // price detail
   const fetchSalePriceDetail = async () => {
-    const res = await callGetAllPriceDetail(priceId);
-    console.log("res", res);
-    if (res) {
-      dispatch(doSetPriceDetail(res));
-    } else {
-      notification.error({
-        message: "Đã có lỗi xảy ra!",
-        description: res.response.data.message,
-      });
+    setIsLoading(true);
+    let query = `page=${current - 1}&size=${pageSize}&priceHeaderId=${priceId}`;
+    if (filter) {
+      query += `&${filter}`;
     }
+
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
+
+    // thay đổi #1 api call
+    const res = await callGetAllPriceDetail(query);
+    console.log("res", res);
+    if (res?.content) {
+      setListPriceDetail(res.content);
+      setTotal(res.totalElements);
+    }
+
+    setIsLoading(false);
   };
 
-  // Hàm thay đổi trang
-  const onChange = (pagination, filters, sorter) => {
-    console.log("params", pagination, filters, sorter);
-    setCurrent(pagination.current);
-    setPageSize(pagination.pageSize);
+  const onChange = (pagination, filters, sorter, extra) => {
+    if (pagination && pagination.current !== current) {
+      setCurrent(pagination.current);
+    }
+
+    if (pagination && pagination.pageSize !== pageSize) {
+      setPageSize(pagination.pageSize);
+      setCurrent(1);
+    }
+
+    if (sorter && sorter.field) {
+      const q =
+        sorter.order === "ascend"
+          ? `sort=${sorter.field}`
+          : `sort=-${sorter.field}`;
+      setSortQuery(q);
+    }
   };
 
   const handleDeleteData = async (dataId) => {
@@ -150,140 +176,91 @@ const PriceShow = () => {
     },
   ];
 
-  const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span style={{ fontWeight: "500" }}>Chi tiết giá sản phẩm</span>
-      <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          icon={<AiOutlineExport />}
-          type="primary"
-          onClick={() => setOpenModalExport(true)}
-        >
-          Export
-        </Button>
-        <Button
-          icon={<AiOutlinePlus />}
-          type="primary"
-          onClick={() => setOpenModalCreate(true)}
-        >
-          Thêm mới
-        </Button>
-        <Button
-          type="ghost"
-          onClick={() => {
-            setCurrent(1);
-            setFilter("");
-            setSortQuery("");
-          }}
-        >
-          <AiOutlineReload />
-        </Button>
-      </span>
-    </div>
-  );
+  const handleView = (data, url) => {
+    // thay đổi #1
+    dispatch(doSetPriceDetail(data));
+    setOpenModalUpdate(true);
+  };
 
   const columns = [
-    {
-      title: "Sản phẩm",
-      dataIndex: "name",
-      key: "name",
-      width: 150,
-      fixed: "right",
-      render: (text, record, index) => {
-        return (
-          <span>
-            {record?.food?.name ??
-              (record?.typeSeat?.name === "VIP"
-                ? "Ghế Vip"
-                : record?.typeSeat?.name === "STANDARD"
-                ? "Ghế thường"
-                : "Ghế đôi")}
-          </span>
-        );
-      },
-    },
-    {
-      title: "Giá",
-      dataIndex: "price",
-      key: "price",
-      sorter: true,
-      width: 150,
-      fixed: "right",
-      render: (text, record, index) => {
-        return (
-          <span>
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(record?.price ?? 0)}
-          </span>
-        );
-      },
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      width: 100,
-      sorter: true,
-      render: (status) => (
-        <Tag color={status ? "success" : "error"}>
-          {status ? "Hoạt động" : "Ngưng hoạt động"}
-        </Tag>
-      ),
-    },
-    {
-      title: "Cập nhật ngày",
-      dataIndex: "createdDate",
-      width: 150,
-      render: (text, record, index) => {
-        return (
-          <span>
-            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
-          </span>
-        );
-      },
-      sorter: true,
-    },
+    createColumn("Giá cho", "type", 150, false, renderTypePrice, "left"),
+    createColumn("Tên", "itemName", 150, false, renderPriceName, "left"),
+    createColumn("Giá", "price", 150, false, renderCurrency),
+    createColumn("Trạng thái", "status", 150, false, renderStatus()),
+    createColumn("Cập nhật ngày", "createdDate", 150, false, renderDate),
     {
       title: "Thao tác",
       width: 100,
       fixed: "right",
       render: (text, record, index) => {
         return (
-          <>
-            <Popconfirm
-              placement="leftTop"
-              title={"Xác nhận xóa giá sản phẩm"}
-              description={"Bạn có chắc chắn muốn xóa giá sản phẩm này?"}
-              okText="Xác nhận"
-              cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record.id)}
-            >
-              <span>
-                <AiOutlineDelete
-                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
-                />
-              </span>
-            </Popconfirm>
-            <BsEye
-              style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={() => {
-                setDataViewDetail(record);
-                setOpenViewDetail(true);
-              }}
-            />
-            <CiEdit
-              style={{ color: "#f57800", cursor: "pointer" }}
-              onClick={() => {
-                setDataUpdate(record);
-                setOpenModalUpdate(true);
-              }}
-            />
-          </>
+          <ActionButtons
+            record={record}
+            handleDelete={handleDeleteData}
+            handleView={handleView}
+            showDelete={true}
+            showEdit={true}
+            showView={true}
+            itemName={"giá"}
+          />
         );
       },
     },
   ];
+
+  const handleReload = () => {
+    setFilter("");
+    setSortQuery("");
+    setCurrent(1);
+  };
+
+  const handleToPageCreate = () => {
+    setOpenModalCreate(true);
+  };
+
+  const optionsPriceCode = [
+    { value: "FOOD", label: "Đồ ăn" },
+    { value: "ROOM", label: "Phòng" },
+    { value: "TYPE_SEAT", label: "Loại ghế" },
+  ];
+
+  // fix tìm động rạp
+  const itemSearch = [
+    {
+      field: "typeDetail",
+      label: "Giá cho",
+      type: "select",
+      options: optionsPriceCode,
+    },
+    { field: "name", label: "Mã sản phẩm" },
+  ];
+
+  const renderHeader = () => (
+    <TableHeader
+      onReload={handleReload}
+      filter={filter}
+      setFilter={setFilter}
+      handleSearch={handleSearch}
+      headerTitle={"Danh sách chi tiết giá"}
+      itemSearch={itemSearch}
+      create={handleToPageCreate}
+    />
+  );
+
+  // mặc định #2
+  const handleSearch = (query) => {
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+    setFilter(q);
+  };
 
   return (
     <>
@@ -316,7 +293,7 @@ const PriceShow = () => {
             bordered
             loading={isLoading}
             columns={columns}
-            dataSource={priceDetail || []}
+            dataSource={listPriceDetail || []}
             onChange={onChange}
             rowKey="id"
             pagination={{
@@ -336,7 +313,14 @@ const PriceShow = () => {
         </Card>
       </div>
 
-      <PriceDetailModalForm
+      <PriceDetailModalCreate
+        priceHeaderId={priceId}
+        openModalCreate={openModalCreate}
+        setOpenModalCreate={setOpenModalCreate}
+        fetchData={fetchSalePriceDetail}
+      />
+
+      {/* <PriceDetailModalForm
         fetchSalePriceDetail={fetchSalePriceDetail}
         formType={
           openModalCreate ? "create" : openModalUpdate ? "update" : "view"
@@ -364,7 +348,7 @@ const PriceShow = () => {
             : setOpenViewDetail
         }
         fetchData={getPriceHeaderById}
-      />
+      /> */}
     </>
   );
 };

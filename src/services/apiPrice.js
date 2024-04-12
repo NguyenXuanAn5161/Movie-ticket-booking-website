@@ -3,7 +3,7 @@ import api from "../utils/axios-custom";
 // module giá
 export const callGetPriceHeaderById = async (id) => {
   try {
-    const response = await api.get(`/api/salePrice/${id}`);
+    const response = await api.get(`/api/price/${id}`);
     return response.data;
   } catch (error) {
     console.error("error: ", error);
@@ -13,7 +13,7 @@ export const callGetPriceHeaderById = async (id) => {
 
 export const callFetchListSalePrice = async (query) => {
   try {
-    const response = await api.get(`/api/salePrice?${query}`);
+    const response = await api.get(`/api/price?${query}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -32,11 +32,11 @@ export const callCreateSalePrice = async (
   bodyFormData.append("startDate", startDate);
   bodyFormData.append("endDate", endDate);
   bodyFormData.append("description", description);
-  bodyFormData.append("status", false);
+  // bodyFormData.append("status", false);
   try {
     const response = await api({
       method: "post",
-      url: "/api/salePrice",
+      url: "/api/price",
       data: bodyFormData,
       headers: {
         "Content-Type": "multipart/form-data",
@@ -65,7 +65,7 @@ export const callUpdateSalePrice = async (
   try {
     const response = await api({
       method: "put",
-      url: "/api/salePrice",
+      url: "/api/price",
       data: bodyFormData,
       headers: {
         "Content-Type": "multipart/form-data",
@@ -79,7 +79,7 @@ export const callUpdateSalePrice = async (
 
 export const callDeleteSalePrice = async (id) => {
   try {
-    const response = await api.delete(`/api/salePrice/${id}`);
+    const response = await api.delete(`/api/price/${id}`);
     return response.data;
   } catch (error) {
     console.error("error: ", error);
@@ -88,9 +88,10 @@ export const callDeleteSalePrice = async (id) => {
 };
 
 // sale price detail
-export const callGetAllPriceDetail = async (id) => {
+export const callGetAllPriceDetail = async (query) => {
   try {
-    const response = await api.get(`api/salePrice/${id}/detail`);
+    const response = await api.get(`/api/price/detail?${query}`);
+    // const response = await api.get(`api/price/detail/${id}`);
     return response.data;
   } catch (error) {
     console.error("error: ", error);
@@ -98,24 +99,30 @@ export const callGetAllPriceDetail = async (id) => {
   }
 };
 
-export const callCreateSalePriceDetail = async (
-  type_sale,
-  priceHeaderId,
-  price,
-  status,
-  itemId
-) => {
+export const callCreateSalePriceDetail = async (values, priceHeaderId) => {
+  const itemId =
+    values.type === "TYPE_SEAT"
+      ? values.typeSeatId
+      : values.type === "ROOM"
+      ? values.roomId.value
+      : values.foodId.value;
+
   const data = [
     {
-      price: price,
-      [type_sale === "seat" ? "typeSeatId" : "foodId"]: itemId,
+      price: values.price,
+      [values.type === "TYPE_SEAT"
+        ? "typeSeatId"
+        : values.type === "ROOM"
+        ? "roomId"
+        : "foodId"]: itemId,
       priceHeaderId: priceHeaderId,
-      status: status,
+      type: values.type,
     },
   ];
+  console.log("data", data);
 
   try {
-    const response = await api.post("/api/salePrice/detail", data);
+    const response = await api.post("/api/price/detail", data);
     return response.data;
   } catch (error) {
     console.error("error: ", error);
@@ -138,10 +145,7 @@ export const callUpdateSalePriceDetail = async (
     },
   ];
   try {
-    const response = await api.put(
-      `/api/salePrice/detail/${priceDetailId}`,
-      data
-    );
+    const response = await api.put(`/api/price/detail/${priceDetailId}`, data);
     return response.data;
   } catch (error) {
     console.error("error: ", error);
@@ -151,7 +155,7 @@ export const callUpdateSalePriceDetail = async (
 
 export const callDeleteSalePriceDetail = async (id) => {
   try {
-    const response = await api.delete(`/api/salePrice/detail/${id}`);
+    const response = await api.delete(`/api/price/detail/${id}`);
     return response.data;
   } catch (error) {
     console.error("error: ", error);

@@ -69,6 +69,30 @@ const ScheduleCreate = () => {
     setIsLoading(false);
   };
 
+  useEffect(() => {
+    if (cinema) {
+      fetchMovieList();
+    }
+  }, [cinema]);
+
+  const fetchMovieList = async (movieName) => {
+    try {
+      let query = `size=5&name=${movieName}&cinemaId=${cinema?.value}`;
+      const res = await callFetchListMovie(query);
+      const movie = res.content.map((data) => ({
+        label: data.name,
+        value: data.id,
+      }));
+
+      return movie;
+    } catch (error) {
+      // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+      console.error("Error fetching movies:", error);
+      // Trả về một mảng trống nếu xảy ra lỗi
+      return [];
+    }
+  };
+
   const onFinish = async (values) => {
     // const check = {
     //   ...values,
@@ -128,28 +152,6 @@ const ScheduleCreate = () => {
             <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Chọn phim"
-                name="movieId"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn phim!",
-                  },
-                ]}
-              >
-                <DebounceSelect
-                  value={movie}
-                  onChange={(newValue) => {
-                    setMovie(newValue);
-                  }}
-                  placeholder="Chọn phim"
-                  fetchOptions={fetchMovieList}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 24 }}
                 label="Chọn rạp"
                 name="cinemaId"
                 rules={[
@@ -199,6 +201,28 @@ const ScheduleCreate = () => {
                     // Tìm kiếm không phân biệt hoa thường
                     option.label.toLowerCase().includes(input.toLowerCase())
                   }
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Chọn phim"
+                name="movieId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn phim!",
+                  },
+                ]}
+              >
+                <DebounceSelect
+                  value={movie}
+                  onChange={(newValue) => {
+                    setMovie(newValue);
+                  }}
+                  placeholder="Chọn phim"
+                  fetchOptions={fetchMovieList}
                 />
               </Form.Item>
             </Col>
@@ -286,25 +310,6 @@ async function fetchCinemaList(cinemaName) {
   try {
     let query = `size=5&name=${cinemaName}`;
     const res = await callFetchListCinema(query);
-    const food = res.content.map((data) => ({
-      label: data.name,
-      value: data.id,
-    }));
-
-    return food;
-  } catch (error) {
-    // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
-    console.error("Error fetching movies:", error);
-    // Trả về một mảng trống nếu xảy ra lỗi
-    return [];
-  }
-}
-
-// Hàm fetch danh sách phim
-async function fetchMovieList(movieName) {
-  try {
-    let query = `size=5&name=${movieName}`;
-    const res = await callFetchListMovie(query);
     const food = res.content.map((data) => ({
       label: data.name,
       value: data.id,

@@ -1,6 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import accountReducer from "../redux/account/accountSlice";
 import userReducer from "../redux/account/userSlice";
+import bookingReducer from "./booking/bookingSlice";
+import localStorageMiddleware from "./booking/localStorageMiddleware";
 import cinemaReducer from "./cinema/cinemaSlice";
 import roomReducer from "./cinema/room/roomSlice";
 import foodCategoryReducer from "./food/foodCategorySlice";
@@ -14,6 +16,8 @@ import promotionReducer from "./promotion/promotionSlice";
 import scheduleReducer from "./schedule/scheduleSlice";
 import seatReducer from "./seat/seatSlice";
 import seatTypeReducer from "./seat/seatTypeSlice";
+
+const preloadedState = JSON.parse(localStorage.getItem("bookingState")) || {};
 
 export const store = configureStore({
   reducer: {
@@ -32,5 +36,9 @@ export const store = configureStore({
     price: priceReducer,
     priceDetail: priceDetailReducer,
     schedule: scheduleReducer,
+    booking: bookingReducer,
   },
+  preloadedState,
+  middleware: (curryGetDefaultMiddleware) =>
+    curryGetDefaultMiddleware().concat(localStorageMiddleware),
 });
