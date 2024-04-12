@@ -1,27 +1,16 @@
-import {
-  Button,
-  Col,
-  Popconfirm,
-  Row,
-  Table,
-  Tag,
-  message,
-  notification,
-} from "antd";
-import moment from "moment";
+import { Col, Row, Table, message, notification } from "antd";
 import { useEffect, useState } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlineExport,
-  AiOutlinePlus,
-  AiOutlineReload,
-} from "react-icons/ai";
-import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import InputSearch from "../../../components/InputSearch/InputSearch";
+import ActionButtons from "../../../components/Button/ActionButtons";
+import {
+  renderDate,
+  renderStatus,
+} from "../../../components/FunctionRender/FunctionRender";
+import TableHeader from "../../../components/TableHeader/TableHeader";
 import { doSetSchedule } from "../../../redux/schedule/scheduleSlice";
 import { callFetchListShowtime } from "../../../services/apiShowTime";
+import { createColumn } from "../../../utils/createColumn";
 
 const ScheduleList = () => {
   const navigate = useNavigate();
@@ -29,7 +18,7 @@ const ScheduleList = () => {
   // mặc định #2
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
@@ -47,12 +36,16 @@ const ScheduleList = () => {
     setIsLoading(true);
     let query = `page=${current - 1}&size=${pageSize}`;
 
-    if (!filter) {
-      query += `&cinemaId=7&movieId=1`;
-    }
-
     if (filter) {
       query += `&${filter}`;
+    }
+
+    if (!filter.includes("cinemaId")) {
+      query += `&cinemaId=1`;
+    }
+
+    if (!filter.includes("movieId")) {
+      query += `&movieId=3`;
     }
 
     // if (sortQuery) {
@@ -91,152 +84,66 @@ const ScheduleList = () => {
     navigate(`${url}/${data.id}`);
   };
 
-  // thay đổi #1
   const columns = [
-    {
-      title: "Tên phim",
-      // dataIndex: "name",
-      dataIndex: "movieId",
-      sorter: true,
-      width: 200,
-      fixed: "left",
-    },
-    {
-      title: "Ngày chiếu",
-      dataIndex: "showDate",
-      width: 150,
-      sorter: true,
-      // render: (showTimes) => {
-      //   if (showTimes && showTimes.length > 0) {
-      //     const renderShowTimes = showTimes.map((showTime, index) => (
-      //       <Col
-      //         key={showTime.id}
-      //         style={{ marginBottom: showTimes.length > 2 ? 5 : null }}
-      //       >
-      //         <Tag>{showTime.show_date}</Tag>
-      //       </Col>
-      //     ));
-
-      //     return <Row gutter={[8, 8]}>{renderShowTimes}</Row>;
-      //   } else {
-      //     return <span>Chưa có lịch chiếu</span>; // Trường hợp không có lịch chiếu
-      //   }
-      // },
-    },
-    {
-      title: "Giờ chiếu",
-      dataIndex: "showTime",
-      width: 150,
-      sorter: true,
-    },
-    {
-      title: "Rạp chiếu",
-      dataIndex: "cinemaId",
-      width: 150,
-    },
-    {
-      title: "Phòng chiếu",
-      dataIndex: "roomId",
-      width: 150,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      width: 150,
-      render: (text, record, index) => {
-        return (
-          <Tag color={record.status ? "success" : "error"}>
-            {record.status ? "Được chiếu" : "Ngừng chiếu"}
-          </Tag>
-        );
-      },
-    },
-    {
-      title: "Cập nhật ngày",
-      dataIndex: "createdDate",
-      width: 150,
-      sorter: true,
-      render: (text, record, index) => {
-        return (
-          <span>
-            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
-          </span>
-        );
-      },
-    },
+    createColumn("Tên phim", "movieName", 200, "left"),
+    createColumn("Ngày chiếu", "showDate", 150, false, renderDate),
+    createColumn("Giờ chiếu", "showTime"),
+    createColumn("Rạp chiếu", "cinemaName"),
+    createColumn("Phòng chiếu", "roomName"),
+    createColumn("Trạng thái", "status", 150, false, renderStatus()),
+    createColumn("Cập nhật ngày", "createdDate", 150, false, renderDate),
     {
       title: "Thao tác",
       width: 100,
       fixed: "right",
       render: (text, record, index) => {
         return (
-          <>
-            <Popconfirm
-              placement="leftTop"
-              // thay đổi #1 sửa title và description
-              title={"Xác nhận xóa phim"}
-              description={"Bạn có chắc chắn muốn xóa phim này?"}
-              okText="Xác nhận"
-              cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record._id)}
-            >
-              <span>
-                <AiOutlineDelete
-                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
-                />
-              </span>
-            </Popconfirm>
-            {/* <BsEye
-              style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={() => handleView(record, "show")}
-            /> */}
-            <CiEdit
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                handleView(record, "edit");
-              }}
-            />
-          </>
+          <ActionButtons
+            record={record}
+            handleDelete={handleDeleteData}
+            handleView={handleView}
+            showDelete={true}
+            showEdit={true}
+            showView={true}
+            itemName={"lịch chiếu"}
+          />
         );
       },
     },
   ];
 
+  const handleReload = () => {
+    setFilter("");
+    setSortQuery("");
+    setCurrent(1);
+  };
+
+  const handleToPageCreate = () => {
+    navigate(`create`);
+  };
+
+  // fix tìm động rạp
+  const itemSearch = [
+    { field: "cinemaId", label: "Tên rạp" },
+    {
+      field: "movieId",
+      label: "Tên phim",
+      type: "select",
+      options: null,
+    },
+    { field: "date", label: "Ngày chiếu" },
+  ];
+
   const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      {/* thay đổi #1 */}
-      <span style={{ fontWeight: "700", fontSize: "16" }}>
-        Danh sách lịch chiếu theo từng phim
-      </span>
-      <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          icon={<AiOutlineExport />}
-          type="primary"
-          onClick={() => setOpenModalExport(true)}
-        >
-          Export
-        </Button>
-        <Button
-          icon={<AiOutlinePlus />}
-          type="primary"
-          onClick={(event) => {
-            // Điều hướng đến trang mới và truyền userId qua URL
-            navigate(`create`);
-          }}
-        >
-          Thêm mới
-        </Button>
-        <Button
-          type="ghost"
-          onClick={() => {
-            setFilter("");
-            setSortQuery("");
-          }}
-        >
-          <AiOutlineReload />
-        </Button>
-      </span>
-    </div>
+    <TableHeader
+      onReload={handleReload}
+      filter={filter}
+      setFilter={setFilter}
+      handleSearch={handleSearch}
+      headerTitle={"Danh sách lịch chiếu phim cho từng phim"}
+      itemSearch={itemSearch}
+      create={handleToPageCreate}
+    />
   );
 
   // mặc định #2
@@ -275,23 +182,9 @@ const ScheduleList = () => {
     }
   };
 
-  // thay đổi #1
-  const itemSearch = [
-    { field: "cinemaId", label: "Tên rạp" },
-    { field: "movieId", label: "Tên phim" },
-    { field: "date", label: "Ngày chiếu" },
-  ];
-
   return (
     <>
       <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <InputSearch
-            itemSearch={itemSearch}
-            handleSearch={handleSearch}
-            setFilter={setFilter}
-          />
-        </Col>
         <Col span={24}>
           <Table
             scroll={{
