@@ -38,8 +38,6 @@ const MovieCreate = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState([]);
-  // const [imageUrl, setImageUrl] = useState("");
-  // const [dataThumbnail, setDataThumbnail] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
