@@ -26,7 +26,7 @@ const UserList = () => {
 
   const [listUser, setListUser] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
