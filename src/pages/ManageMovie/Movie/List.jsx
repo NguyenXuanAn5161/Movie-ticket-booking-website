@@ -109,7 +109,7 @@ const MovieList = () => {
     createColumn("Đạo diễn", "director", 150),
     createColumn("Diễn viên", "cast"),
     createColumn("Ngày sản xuất", "releaseDate", 150, undefined, renderDate),
-    createColumn("Trạng thái", "status", 150, undefined, renderStatus),
+    createColumn("Trạng thái", "status", 150, undefined, renderStatus("movie")),
     createColumn("Cập nhật ngày", "createdDate", 150, undefined, renderDate),
     {
       title: "Thao tác",

@@ -89,7 +89,7 @@ const CinemaList = () => {
     createColumn("Tên rạp", "name", 150, "left"),
     createColumn("Tổng số phòng", "totalRoom", 120),
     createColumn("Địa chỉ", "address", 150, undefined, renderAddress),
-    createColumn("Trạng thái", "status", 100, undefined, renderStatus),
+    createColumn("Trạng thái", "status", 100, undefined, renderStatus()),
     createColumn("Cập nhật ngày", "updatedAt", 150, undefined, renderDate),
     {
       title: "Thao tác",
@@ -141,6 +141,7 @@ const CinemaList = () => {
 
   // mặc định #2
   const handleSearch = (query) => {
+    console.log("query", query);
     let q = "";
     for (const key in query) {
       if (query.hasOwnProperty(key)) {

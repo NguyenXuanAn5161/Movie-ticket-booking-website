@@ -27,7 +27,7 @@ const FoodList = () => {
   // mặc định #2
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
@@ -112,7 +112,7 @@ const FoodList = () => {
     createColumn("Code", "code", 100, true, undefined, "left"),
     createColumn("Tên đồ ăn", "name", 100, true, undefined, "left"),
     createColumn("Giá", "price", 150, true, renderCurrency),
-    createColumn("Trạng thái", "status", 150, true, renderStatus),
+    createColumn("Trạng thái", "status", 150, true, renderStatus("food")),
     createColumn("Cập nhật ngày", "createdDate", 150, true, renderDate),
     {
       title: "Thao tác",
