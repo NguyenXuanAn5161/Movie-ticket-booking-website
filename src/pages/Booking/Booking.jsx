@@ -1,8 +1,14 @@
-import { Button, Col, Form, Row, Steps, message } from "antd";
+import { Button, Col, Form, Row, Steps, notification } from "antd";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import OrderCard from "../../components/OrderCard/OrderCard";
+import {
+  doSetSelectedFoodItems,
+  doSetSelectedSeat,
+} from "../../redux/booking/bookingSlice";
 import { callFetchListTypeSeat } from "../../services/apiMovie";
+import { callCreateInvoice } from "../../services/apiOder";
 import BookingFood from "./Steps/BookingFood";
 import BookingPayment from "./Steps/BookingPayment";
 import BookingSchedule from "./Steps/BookingSchedule";
@@ -16,6 +22,7 @@ const order = {
 };
 
 const BookingPage = () => {
+  const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [current, setCurrent] = useState(0);
@@ -29,6 +36,29 @@ const BookingPage = () => {
   const [selectedFoodItems, setSelectedFoodItems] = useState([]);
   const [price, setPrice] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+
+  const dispatch = useDispatch();
+  const selectedSeat = useSelector((state) => state.booking.selectedSeat);
+  const reduxSelectedFoodItems = useSelector(
+    (state) => state.booking.selectedFoodItems
+  );
+  const emailUser = useSelector((state) => state.booking.user);
+  const showtime = useSelector((state) => state.booking.selectedShowTime);
+
+  useEffect(() => {
+    dispatch(doSetSelectedSeat(selectedSeats));
+  }, [selectedSeats]);
+
+  useEffect(() => {
+    dispatch(doSetSelectedFoodItems(selectedFoodItems));
+  }, [selectedFoodItems]);
+
+  useEffect(() => {
+    console.log("redux selectedSeat: ", selectedSeat);
+    console.log("redux selectedFoodItems: ", reduxSelectedFoodItems);
+    console.log("redux emailUser: ", emailUser);
+    console.log("redux showtime: ", showtime);
+  }, [selectedSeat, reduxSelectedFoodItems, emailUser, showtime]);
 
   // fetch giá
   useEffect(() => {
@@ -89,9 +119,26 @@ const BookingPage = () => {
   ];
 
   const onFinish = async (values) => {
-    message.success("Đặt vé thành công!");
-    setCurrent(0);
-    form.resetFields();
+    setIsSubmit(true);
+    const res = await callCreateInvoice(
+      showtime,
+      selectedSeat,
+      reduxSelectedFoodItems,
+      emailUser,
+      "1",
+      "1"
+    );
+    console.log("res dat ve: ", res);
+    if (res?.status === 200) {
+      message.success("Đặt vé thành công!");
+      navigate("/admin/order");
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: res.response.data,
+      });
+      setIsSubmit(false);
+    }
   };
 
   const next = () => setCurrent(current + 1);

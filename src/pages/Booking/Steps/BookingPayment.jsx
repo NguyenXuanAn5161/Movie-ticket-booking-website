@@ -1,65 +1,50 @@
-import { Button, DatePicker, Form, Input, Select } from "antd";
-import React from "react";
-import { callGetPromotionByCode } from "../../../services/apiPromotion";
+import { Card, Divider } from "antd";
+import React, { useEffect, useState } from "react";
+import MoMoLogo from "../../../assets/imagePayment/MoMo_Logo.png";
+import Thanhtoantructiep from "../../../assets/imagePayment/ThanhToanTrucTiep.png";
+import ZaloPayLogo from "../../../assets/imagePayment/ZaloPay_Logo.png";
+import InforUser from "../../../components/Booking/InforUser";
+import PaymentMethods from "../../../components/Booking/PaymentMethods";
 
-const { Option } = Select;
+const methods = [
+  { id: 1, name: "Thanh toán trực tiếp", image: Thanhtoantructiep },
+  { id: 2, name: "Ví Điện Tử MoMo", image: MoMoLogo },
+  { id: 3, name: "ZaloPay", image: ZaloPayLogo },
+];
 
-const BookingPayment = ({ onSubmit }) => {
-  const [form] = Form.useForm();
+const BookingPayment = () => {
+  const [selectedMethod, setSelectedMethod] = useState(null);
 
-  const onFinish = async (values) => {
-    const res = await callGetPromotionByCode(
-      values.promotionLineCode,
-      values.totalValueBill,
-      values.dateTime,
-      values.applicableObject
+  useEffect(() => {
+    // Chọn phương thức thanh toán mặc định (ở đây là MoMo)
+    const defaultMethod = methods.find(
+      (method) => method.name === "Thanh toán trực tiếp"
     );
+    setSelectedMethod(defaultMethod);
+  }, []);
 
-    console.log("res", res);
+  const handleSelect = (method) => {
+    setSelectedMethod(method);
+    console.log("Phương thức thanh toán đã chọn:", method);
   };
 
   return (
-    <Form form={form} onFinish={onFinish} layout="vertical">
-      <Form.Item
-        label="Mã khuyến mãi"
-        name="promotionLineCode"
-        rules={[{ required: true, message: "Vui lòng nhập mã khuyến mãi!" }]}
-      >
-        <Input placeholder="Nhập mã khuyến mãi" />
-      </Form.Item>
-      <Form.Item
-        label="Tổng giá trị hóa đơn"
-        name="totalValueBill"
-        rules={[
-          { required: true, message: "Vui lòng nhập tổng giá trị hóa đơn!" },
-        ]}
-      >
-        <Input placeholder="Nhập tổng giá trị hóa đơn" />
-      </Form.Item>
-      <Form.Item
-        label="Ngày và giờ"
-        name="dateTime"
-        rules={[{ required: true, message: "Vui lòng chọn ngày và giờ!" }]}
-      >
-        <DatePicker showTime />
-      </Form.Item>
-      <Form.Item
-        label="Đối tượng áp dụng"
-        name="applicableObject"
-        rules={[
-          { required: true, message: "Vui lòng chọn đối tượng áp dụng!" },
-        ]}
-      >
-        <Select placeholder="Chọn đối tượng áp dụng">
-          <Option value="ALL">Tất cả</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Gửi
-        </Button>
-      </Form.Item>
-    </Form>
+    <div style={{ justifyContent: "start" }}>
+      <Card style={{ marginBottom: 10 }}>
+        <h5 style={{ textAlign: "left" }}>Khuyến mãi</h5>
+        <Divider />
+        <InforUser />
+      </Card>
+      <Card>
+        <h5 style={{ textAlign: "left" }}>Phương thức thanh toán</h5>
+        <Divider />
+        <PaymentMethods
+          methods={methods}
+          onSelect={handleSelect}
+          selectedMethod={selectedMethod}
+        />
+      </Card>
+    </div>
   );
 };
 

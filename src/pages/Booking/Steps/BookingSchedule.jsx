@@ -1,5 +1,6 @@
 import { Card, Col, Form, Row } from "antd";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import MovieShowTimes from "../../../components/MovieShowTimeComponent/MovieShowTimeComponent";
 import { callFetchListCinema } from "../../../services/apiCinema";
@@ -22,12 +23,14 @@ const BookingSchedule = (props) => {
     setOneShowTime,
   } = props;
 
+  const dispatch = useDispatch();
+  const selectedMovie = useSelector((state) => state.booking.selectedMovie);
+
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (cinema) {
       fetchMovieList();
-      console.log("cinema", cinema);
     }
   }, [cinema]);
 
@@ -46,6 +49,7 @@ const BookingSchedule = (props) => {
         label: data.name,
         value: data.id,
       }));
+      // dispatch(doSetSelectedMovie(movie));
 
       return movie;
     } catch (error) {
@@ -79,10 +83,6 @@ const BookingSchedule = (props) => {
     let query = `size=100`;
 
     query += `&cinemaId=${cinema.value}&movieId=${movies.value}`;
-    // Lấy ngày hiện tại
-    // const currentDate = new Date();
-    // const formattedCurrentDate = currentDate.toISOString().split("T")[0]; // Format ngày hiện tại thành 'yyyy-mm-dd'
-    // query += `&date=${formattedCurrentDate}`; // Chỉ lấy lịch chiếu từ ngày hiện tại
 
     // thay đổi #1 api call
     const res = await callFetchListShowtime(query);

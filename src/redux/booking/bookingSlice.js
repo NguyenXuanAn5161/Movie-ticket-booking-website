@@ -2,10 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   formData: {},
+  user: {},
   selectedCinema: {},
   selectedMovie: {},
   selectedShowTime: {},
-  selectSeat: [],
+  selectedSeat: [],
   selectedFoodItems: [],
   selectedPromotion: {},
   selectedPaymentMethod: {},
@@ -19,6 +20,9 @@ export const bookingSlice = createSlice({
     doSetFormData: (state, action) => {
       state.formData = action.payload;
     },
+    doSetUser: (state, action) => {
+      state.user = action.payload;
+    },
     doSetSelectedCinema: (state, action) => {
       state.selectedCinema = action.payload;
     },
@@ -28,8 +32,8 @@ export const bookingSlice = createSlice({
     doSetSelectedShowTime: (state, action) => {
       state.selectedShowTime = action.payload;
     },
-    doSetSelectSeat: (state, action) => {
-      state.selectSeat = action.payload;
+    doSetSelectedSeat: (state, action) => {
+      state.selectedSeat = action.payload;
     },
     doSetSelectedFoodItems: (state, action) => {
       state.selectedFoodItems = action.payload;
@@ -45,10 +49,11 @@ export const bookingSlice = createSlice({
     },
     doResetBooking: (state) => {
       state.formData = {};
+      state.user = {};
       state.selectedCinema = {};
       state.selectedMovie = {};
       state.selectedShowTime = {};
-      state.selectSeat = [];
+      state.selectedSeat = [];
       state.selectedFoodItems = [];
       state.selectedPromotion = {};
       state.selectedPaymentMethod = {};
@@ -63,7 +68,8 @@ export const bookingSlice = createSlice({
 export const {
   doSetCurrentStep,
   doSetFormData,
-  doSetSelectSeat,
+  doSetUser,
+  doSetSelectedSeat,
   doSetSelectedCinema,
   doSetSelectedFoodItems,
   doSetSelectedMovie,
