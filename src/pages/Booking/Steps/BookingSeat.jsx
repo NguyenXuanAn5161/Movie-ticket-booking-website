@@ -1,25 +1,35 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import SpinLoading from "../../../components/Loading/Spin";
 import SeatGrid from "../../../components/Seat/SeatGrid";
 import { callGetSeatForUserByShowtimeId } from "../../../services/apiShowTime";
 
-const BookingSeat = (props) => {
-  const { selectedSeats, setSelectedSeats } = props;
+const BookingSeat = () => {
+  const selectedShowTime = useSelector(
+    (state) => state.booking.selectedShowTime
+  );
 
   const [seatData, setSeatData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log("seatData", seatData);
-  }, [seatData]);
-
-  useEffect(() => {
-    // Call API to get seat data
-    fetchSeatForUser();
-  }, []);
+    if (selectedShowTime) {
+      fetchSeatForUser();
+    }
+  }, [selectedShowTime]);
 
   const fetchSeatForUser = async () => {
-    const res = await callGetSeatForUserByShowtimeId(props.oneShowTime.id);
-    if (res) {
-      setSeatData(res);
+    setLoading(true);
+    try {
+      const res = await callGetSeatForUserByShowtimeId(selectedShowTime.id);
+      console.log("res", res);
+      if (res) {
+        setSeatData(res);
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log("error", error);
     }
   };
 
@@ -33,11 +43,7 @@ const BookingSeat = (props) => {
           flexDirection: "column",
         }}
       >
-        <SeatGrid
-          seatData={seatData}
-          selectedSeats={selectedSeats}
-          setSelectedSeats={setSelectedSeats}
-        />
+        {loading ? <SpinLoading /> : <SeatGrid seatData={seatData} />}
       </div>
     </>
   );
