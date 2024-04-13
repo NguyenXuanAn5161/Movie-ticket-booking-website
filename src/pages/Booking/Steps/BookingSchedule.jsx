@@ -78,7 +78,6 @@ const BookingSchedule = (props) => {
         label: data.name,
         value: data.id,
       }));
-      dispatch(doSetSelectedMovie(movie));
 
       return movie;
     } catch (error) {
@@ -111,6 +110,7 @@ const BookingSchedule = (props) => {
   useEffect(() => {
     if (cinema && movie) {
       fetchShowTime();
+      dispatch(doSetSelectedMovie(movie));
     }
   }, [movie]);
 

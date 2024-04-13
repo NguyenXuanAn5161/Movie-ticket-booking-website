@@ -1,13 +1,20 @@
 import { Card, Image, List, Typography } from "antd";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import QuantityCounter from "../../../components/QuantityCounter/QuantityCounter";
+import { doSetSelectedFoodItems } from "../../../redux/booking/bookingSlice";
 import { callFetchListFood } from "../../../services/apiFood";
 import { imageError } from "../../../utils/imageError";
 
 const { Meta } = Card;
 const { Text } = Typography;
 
-const BookingFood = ({ setSelectedFoodItems }) => {
+const BookingFood = () => {
+  const dispatch = useDispatch();
+  const selectedFoodItems = useSelector(
+    (state) => state.booking.selectedFoodItems
+  );
+
   const [listFood, setListFood] = useState([]);
 
   useEffect(() => {
@@ -28,11 +35,16 @@ const BookingFood = ({ setSelectedFoodItems }) => {
 
   // Function to update selected food items with their quantities and prices
   const handleSelectFood = (foodId, quantity, price, name) => {
-    setSelectedFoodItems((prev) => {
-      const newSelectedFoodItems = [...prev];
-      const index = newSelectedFoodItems.findIndex(
-        (item) => item.id === foodId
-      );
+    const newSelectedFoodItems = [...selectedFoodItems];
+
+    const index = newSelectedFoodItems.findIndex((item) => item.id === foodId);
+
+    if (quantity === 0) {
+      if (index !== -1) {
+        newSelectedFoodItems.splice(index, 1);
+        dispatch(doSetSelectedFoodItems(newSelectedFoodItems));
+      }
+    } else {
       if (index !== -1) {
         newSelectedFoodItems[index] = {
           ...newSelectedFoodItems[index],
@@ -47,8 +59,8 @@ const BookingFood = ({ setSelectedFoodItems }) => {
           price: price,
         });
       }
-      return newSelectedFoodItems;
-    });
+    }
+    dispatch(doSetSelectedFoodItems(newSelectedFoodItems));
   };
 
   return (
@@ -57,7 +69,7 @@ const BookingFood = ({ setSelectedFoodItems }) => {
       dataSource={listFood}
       renderItem={(item) => (
         <List.Item key={item.id}>
-          <Card style={{ width: "100%", cursor: "pointer" }}>
+          <Card style={{ width: "100%" }}>
             <div
               style={{
                 display: "flex",

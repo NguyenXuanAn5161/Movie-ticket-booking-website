@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import OrderCard from "../../components/OrderCard/OrderCard";
 import {
   doSetSelectedFoodItems,
-  doSetSelectedSeat,
+  doSetSelectedSeats,
 } from "../../redux/booking/bookingSlice";
 import { callFetchListTypeSeat } from "../../services/apiMovie";
 import { callCreateInvoice } from "../../services/apiOder";
@@ -39,7 +39,7 @@ const BookingPage = () => {
   const showtime = useSelector((state) => state.booking.selectedShowTime);
 
   useEffect(() => {
-    dispatch(doSetSelectedSeat(selectedSeats));
+    dispatch(doSetSelectedSeats(selectedSeats));
   }, [selectedSeats]);
 
   useEffect(() => {
