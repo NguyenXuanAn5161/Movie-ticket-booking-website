@@ -1,37 +1,36 @@
-import { Card, Col, Divider, Image, Row, Typography } from "antd";
+import { Card, Col, Image, Row, Typography } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { callGetMovieById } from "../../services/apiMovie";
 import { imageError } from "../../utils/imageError";
+import "./styles.scss";
 
 const OrderCard = (props) => {
-  const {
-    movies,
-    oneShowTime,
-    cinema,
-    selectedSeats,
-    price,
-    totalPrice,
-    setTotalPrice,
-    selectedFoodItems,
-  } = props;
+  const { cinema, price, totalPrice, setTotalPrice } = props;
+
+  const dispatch = useDispatch();
+  const selectedMovie = useSelector((state) => state.booking.selectedMovie);
+  const selectedShowTime = useSelector(
+    (state) => state.booking.selectedShowTime
+  );
+  const selectedSeats = useSelector((state) => state.booking.selectedSeats);
+  const selectedFoodItems = useSelector(
+    (state) => state.booking.selectedFoodItems
+  );
+
   const [movie, setMovie] = useState(null);
 
   useEffect(() => {
-    if (movies) {
-      fetchMovie();
+    if (selectedMovie) {
+      fetchMovie(selectedMovie.value);
     }
-  }, [movies]);
+  }, [selectedMovie]);
 
-  useEffect(() => {
-    if (selectedSeats || selectedFoodItems) {
-      calculateTotalPrice();
-    }
-  }, [selectedSeats, selectedFoodItems]);
-
-  const fetchMovie = async () => {
+  const fetchMovie = async (id) => {
     try {
-      const res = await callGetMovieById(movies.value);
+      const res = await callGetMovieById(id);
+      console.log("res", res);
       if (res) {
         setMovie(res);
       }
@@ -39,6 +38,12 @@ const OrderCard = (props) => {
       console.log("Error fetching movie:", error);
     }
   };
+
+  useEffect(() => {
+    if (selectedSeats || selectedFoodItems) {
+      calculateTotalPrice();
+    }
+  }, [selectedSeats, selectedFoodItems]);
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;
@@ -58,7 +63,7 @@ const OrderCard = (props) => {
   };
 
   return (
-    <Card bordered={false}>
+    <Card bordered={false} className="order-card">
       <Row>
         <Col span={10}>
           <Image
@@ -77,16 +82,16 @@ const OrderCard = (props) => {
           </Col>
           <Col span={24}>
             <Typography.Title level={5}>{cinema?.label}</Typography.Title>
-            <Typography.Text>{oneShowTime?.roomName}</Typography.Text>
+            <Typography.Text>{selectedShowTime?.roomName}</Typography.Text>
           </Col>
           <Col span={24}>
             <Typography.Text>
-              {oneShowTime?.showDate && oneShowTime?.showTime ? (
+              {selectedShowTime?.showDate && selectedShowTime?.showTime ? (
                 <Row>
                   <p style={{ fontWeight: "700", marginRight: 10 }}>Suất:</p>
-                  {oneShowTime?.showTime}
+                  {selectedShowTime?.showTime}
                   {" - "}
-                  {moment(oneShowTime?.showDate).format("DD-MM-YYYY")}
+                  {moment(selectedShowTime?.showDate).format("DD-MM-YYYY")}
                 </Row>
               ) : (
                 ""
@@ -96,7 +101,7 @@ const OrderCard = (props) => {
         </Col>
       </Row>
       <Row gutter={[16, 16]} style={{ marginTop: 10, marginBottom: 10 }}></Row>
-      <Divider />
+      {selectedSeats && selectedSeats.length > 0 && <div className="line" />}
       <Row>
         {/* tính tổng tiền cho loại ghế đôi nếu có */}
         {selectedSeats?.some((seat) => seat.seatTypeId === 1) && (
@@ -156,7 +161,9 @@ const OrderCard = (props) => {
           </Col>
         )}
       </Row>
-      <Divider />
+      {selectedFoodItems && selectedFoodItems.length > 0 && (
+        <div className="line" />
+      )}
       <Row>
         {selectedFoodItems &&
           selectedFoodItems.length > 0 &&
@@ -165,31 +172,28 @@ const OrderCard = (props) => {
               <Typography.Title level={5}>Thức ăn: </Typography.Title>
             </Col>
           )}
-        {selectedFoodItems?.map(
-          (food, index) =>
-            food.quantity > 0 && (
-              <Col span={24} key={index}>
-                <Typography.Text style={{ fontWeight: 400 }}>
-                  <Row>
-                    <Col span={12}>
-                      {food.name}:{" "}
-                      <Typography.Text
-                        style={{ color: "#F58020", fontWeight: 700 }}
-                      >
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(food.price)}
-                      </Typography.Text>
-                    </Col>
-                    <Col span={12}>Số lượng: {food.quantity}</Col>
-                  </Row>
-                </Typography.Text>
-              </Col>
-            )
-        )}
+        {selectedFoodItems?.map((food, index) => (
+          <Col span={24} key={index}>
+            <Typography.Text style={{ fontWeight: 400 }}>
+              <Row>
+                <Col span={12}>
+                  {food.name}:{" "}
+                  <Typography.Text
+                    style={{ color: "#F58020", fontWeight: 700 }}
+                  >
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(food.price)}
+                  </Typography.Text>
+                </Col>
+                <Col span={12}>Số lượng: {food.quantity}</Col>
+              </Row>
+            </Typography.Text>
+          </Col>
+        ))}
       </Row>
-      <Divider />
+      <div className="line" />
       <Row style={{ justifyContent: "space-between" }}>
         <Typography.Title level={5}>Tổng cộng: </Typography.Title>
         <Typography.Text style={{ color: "#F58020", fontWeight: 700 }}>
