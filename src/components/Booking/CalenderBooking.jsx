@@ -47,7 +47,7 @@ const CalendarBooking = () => {
   }, [selectedDate]);
 
   const fetchShowTimeByDate = async (date) => {
-    let query = `size=100&cinemaId=${selectedCinema[0]?.value}&movieId=${selectedMovie[0]?.value}&date=${date}`;
+    let query = `size=100&cinemaId=${selectedCinema[0]?.value}&movieId=${selectedMovie?.value}&date=${date}`;
     try {
       const resShowTime = await callFetchListShowtime(query);
       if (resShowTime?.content) {
