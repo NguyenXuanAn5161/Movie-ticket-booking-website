@@ -190,3 +190,17 @@ export const callUploadImage = (file) => {
   });
 };
 // --------------------------------------------------------
+
+// --------------------------------------------------------
+
+// api lấy ngày chiếu của phim
+export const callGetShowDateMovieById = async (id) => {
+  try {
+    const response = await api.get(`/api/showtime/dates/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// --------------------------------------------------------
