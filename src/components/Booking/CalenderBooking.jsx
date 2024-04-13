@@ -2,7 +2,10 @@ import { Card } from "antd";
 import moment from "moment";
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { doSetSelectedShowTime } from "../../redux/booking/bookingSlice";
+import {
+  doSetSelectedSeats,
+  doSetSelectedShowTime,
+} from "../../redux/booking/bookingSlice";
 import { callFetchListShowtime } from "../../services/apiShowTime";
 import { FORMAT_DATE } from "../../utils/constant";
 import "./styles.scss";
@@ -79,6 +82,7 @@ const CalendarBooking = () => {
 
   const handleSelectedShowTime = (showTime) => {
     dispatch(doSetSelectedShowTime(showTime));
+    dispatch(doSetSelectedSeats([]));
   };
 
   return (
@@ -109,7 +113,7 @@ const CalendarBooking = () => {
         {Object.keys(groupedShowTimes).map((roomName) => (
           <>
             <div key={roomName} className={`row_showTime`}>
-              <h5 style={{ textAlign: "left", maxWidth: 200 }}>{roomName}</h5>
+              <h7 style={{ textAlign: "left", maxWidth: 200 }}>{roomName}</h7>
               <div style={{ display: "flex", flexDirection: "row" }}>
                 {groupedShowTimes[roomName].map((item, index) => (
                   <span
