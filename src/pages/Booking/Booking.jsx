@@ -14,13 +14,6 @@ import BookingPayment from "./Steps/BookingPayment";
 import BookingSchedule from "./Steps/BookingSchedule";
 import BookingSeat from "./Steps/BookingSeat";
 
-const order = {
-  movieName: "Monkey Man Báo Thù",
-  time: "10:30 – Thứ Sáu, 05/04/2024",
-  seat: "E3",
-  total: 75.0,
-};
-
 const BookingPage = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [form] = Form.useForm();
@@ -159,9 +152,8 @@ const BookingPage = () => {
             {steps[current].formComponent}
           </div>
         </Col>
-        <Col span={9} style={{ marginTop: 57 }}>
+        <Col span={9}>
           <OrderCard
-            order={order}
             movies={movies}
             oneShowTime={oneShowTime}
             cinema={cinema}

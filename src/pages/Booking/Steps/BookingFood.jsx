@@ -96,12 +96,18 @@ const BookingFood = ({ setSelectedFoodItems }) => {
                   </Text>
                 </div>
               </div>
-              <QuantityCounter
-                selectedFoodId={item.id}
-                handleSelectFood={handleSelectFood}
-                price={item.price}
-                name={item.name}
-              />
+              {item.active_price === true ? (
+                <QuantityCounter
+                  selectedFoodId={item.id}
+                  handleSelectFood={handleSelectFood}
+                  price={item.price}
+                  name={item.name}
+                />
+              ) : (
+                <Text disabled style={{ fontWeight: 700, color: "#FFC107" }}>
+                  Không có sẵn
+                </Text>
+              )}
             </div>
           </Card>
         </List.Item>

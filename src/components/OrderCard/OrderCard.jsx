@@ -70,31 +70,32 @@ const OrderCard = (props) => {
           />
         </Col>
         <Col span={14}>
-          <Typography.Title level={4}>
-            {movie?.name === "AxiosError" ? "" : movie?.name}
-          </Typography.Title>
+          <Col span={24}>
+            <Typography.Title level={4}>
+              {movie?.name === "AxiosError" ? "" : movie?.name}
+            </Typography.Title>
+          </Col>
+          <Col span={24}>
+            <Typography.Title level={5}>{cinema?.label}</Typography.Title>
+            <Typography.Text>{oneShowTime?.roomName}</Typography.Text>
+          </Col>
+          <Col span={24}>
+            <Typography.Text>
+              {oneShowTime?.showDate && oneShowTime?.showTime ? (
+                <Row>
+                  <p style={{ fontWeight: "700", marginRight: 10 }}>Suất:</p>
+                  {oneShowTime?.showTime}
+                  {" - "}
+                  {moment(oneShowTime?.showDate).format("DD-MM-YYYY")}
+                </Row>
+              ) : (
+                ""
+              )}
+            </Typography.Text>
+          </Col>
         </Col>
       </Row>
-      <Row gutter={[16, 16]} style={{ marginTop: 10, marginBottom: 10 }}>
-        <Col span={24}>
-          <Typography.Title level={5}>{cinema?.label}</Typography.Title>
-          <Typography.Text>{oneShowTime?.roomName}</Typography.Text>
-        </Col>
-        <Col span={24}>
-          <Typography.Text>
-            {oneShowTime?.showDate && oneShowTime?.showTime ? (
-              <Row>
-                <p style={{ fontWeight: "700", marginRight: 10 }}>Suất:</p>
-                {oneShowTime?.showTime}
-                {" - "}
-                {moment(oneShowTime?.showDate).format("DD-MM-YYYY")}
-              </Row>
-            ) : (
-              ""
-            )}
-          </Typography.Text>
-        </Col>
-      </Row>
+      <Row gutter={[16, 16]} style={{ marginTop: 10, marginBottom: 10 }}></Row>
       <Divider />
       <Row>
         {/* tính tổng tiền cho loại ghế đôi nếu có */}
@@ -170,7 +171,17 @@ const OrderCard = (props) => {
               <Col span={24} key={index}>
                 <Typography.Text style={{ fontWeight: 400 }}>
                   <Row>
-                    <Col span={12}>{food.name}</Col>
+                    <Col span={12}>
+                      {food.name}:{" "}
+                      <Typography.Text
+                        style={{ color: "#F58020", fontWeight: 700 }}
+                      >
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(food.price)}
+                      </Typography.Text>
+                    </Col>
                     <Col span={12}>Số lượng: {food.quantity}</Col>
                   </Row>
                 </Typography.Text>
