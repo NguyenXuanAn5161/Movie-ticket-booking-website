@@ -2,7 +2,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import accountReducer from "../redux/account/accountSlice";
 import userReducer from "../redux/account/userSlice";
 import bookingReducer from "./booking/bookingSlice";
-import localStorageMiddleware from "./booking/localStorageMiddleware";
 import cinemaReducer from "./cinema/cinemaSlice";
 import roomReducer from "./cinema/room/roomSlice";
 import foodCategoryReducer from "./food/foodCategorySlice";
@@ -38,7 +37,7 @@ export const store = configureStore({
     schedule: scheduleReducer,
     booking: bookingReducer,
   },
-  preloadedState,
-  middleware: (curryGetDefaultMiddleware) =>
-    curryGetDefaultMiddleware().concat(localStorageMiddleware),
+  // preloadedState,
+  // middleware: (curryGetDefaultMiddleware) =>
+  //   curryGetDefaultMiddleware().concat(localStorageMiddleware),
 });

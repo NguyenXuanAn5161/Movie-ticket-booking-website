@@ -194,7 +194,7 @@ export const callUploadImage = (file) => {
 // --------------------------------------------------------
 
 // api lấy ngày chiếu của phim
-export const callGetShowDateMovieById = async (id) => {
+export const callGetShowDateByMovieId = async (id) => {
   try {
     const response = await api.get(`/api/showtime/dates/${id}`);
     return response.data;

@@ -5,7 +5,8 @@ const initialState = {
   user: {},
   selectedCinema: {},
   selectedMovie: {},
-  selectedShowTime: {},
+  showDateByMovieId: [],
+  selectedShowTime: [],
   selectedSeat: [],
   selectedFoodItems: [],
   selectedPromotion: {},
@@ -28,6 +29,9 @@ export const bookingSlice = createSlice({
     },
     doSetSelectedMovie: (state, action) => {
       state.selectedMovie = action.payload;
+    },
+    doSetShowDateByMovieId: (state, action) => {
+      state.showDateByMovieId = action.payload;
     },
     doSetSelectedShowTime: (state, action) => {
       state.selectedShowTime = action.payload;
@@ -52,6 +56,7 @@ export const bookingSlice = createSlice({
       state.user = {};
       state.selectedCinema = {};
       state.selectedMovie = {};
+      state.showDateByMovieId = [];
       state.selectedShowTime = {};
       state.selectedSeat = [];
       state.selectedFoodItems = [];
@@ -76,6 +81,7 @@ export const {
   doSetSelectedPaymentMethod,
   doSetSelectedPromotion,
   doSetSelectedShowTime,
+  doSetShowDateByMovieId,
 } = bookingSlice.actions;
 
 export default bookingSlice.reducer;
