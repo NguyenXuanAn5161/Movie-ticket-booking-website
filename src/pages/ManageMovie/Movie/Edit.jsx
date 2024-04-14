@@ -16,8 +16,10 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 import { doSetMovie } from "../../../redux/movie/movieSlice";
+import { callFetchListCinema } from "../../../services/apiCinema";
 import {
   callFetchListGenreMovie,
   callGetMovieById,
@@ -39,6 +41,25 @@ const MovieEdit = () => {
   const [imageFile, setImageFile] = useState(
     movie?.imageLink ? [movie.imageLink] : []
   );
+  const [cinema, setCinema] = useState(null);
+
+  // fetch cinema lần đầu khi có movie
+  useEffect(() => {
+    if (movie?.cinemaIds) {
+      fetchCinemaByCinemaIds(movie.cinemaIds);
+    }
+  }, [movie]);
+
+  const fetchCinemaByCinemaIds = async (cinemaIds) => {
+    let size = cinemaIds.length;
+    let query = `size=${size}&cinemaId=${cinemaIds.map((item) => item.id)}`;
+    const res = await callFetchListCinema(query);
+    if (res?.content) {
+      setCinema(
+        res.content.map((item) => ({ label: item.name, value: item.id }))
+      );
+    }
+  };
 
   // f5 fetch data
   useEffect(() => {
@@ -75,10 +96,13 @@ const MovieEdit = () => {
   };
 
   useEffect(() => {
-    form.resetFields();
-    // thay đổi #1 [], setfields
-    form.setFieldsValue(movie); // Cập nhật dữ liệu vào form khi userData thay đổi
-  }, [movie, form]);
+    if (cinema) {
+      form.resetFields();
+      // thay đổi #1 [], setfields
+      form.setFieldsValue(movie);
+      form.setFieldsValue({ cinemaId: cinema });
+    }
+  }, [movie, form, cinema]);
 
   const onFinish = async (values) => {
     // thay đổi #1
@@ -148,7 +172,16 @@ const MovieEdit = () => {
                   },
                 ]}
               >
-                <Input />
+                <DebounceSelect
+                  mode="multiple"
+                  style={{ textAlign: "start" }}
+                  value={cinema}
+                  onChange={(newValue) => {
+                    setCinema(newValue);
+                  }}
+                  placeholder="Chọn rạp"
+                  fetchOptions={fetchCinemaList}
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -180,7 +213,7 @@ const MovieEdit = () => {
                     message: "Vui lòng thể loại phim!",
                   },
                 ]}
-                initialValue={movie?.genreIds}
+                initialValue={movie?.genres.map((item) => item.id)}
               >
                 <Select
                   mode="multiple"
@@ -376,3 +409,21 @@ const MovieEdit = () => {
 };
 
 export default MovieEdit;
+
+async function fetchCinemaList(cinemaName) {
+  try {
+    let query = `size=5&name=${cinemaName}`;
+    const res = await callFetchListCinema(query);
+    const food = res.content.map((data) => ({
+      label: data.name,
+      value: data.id,
+    }));
+
+    return food;
+  } catch (error) {
+    // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+    console.error("Error fetching movies:", error);
+    // Trả về một mảng trống nếu xảy ra lỗi
+    return [];
+  }
+}
