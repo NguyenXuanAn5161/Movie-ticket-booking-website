@@ -1,29 +1,30 @@
-import { Col, Popconfirm, Row, Table, Tag, message, notification } from "antd";
-import moment from "moment";
+import { Col, Row, Table, message, notification } from "antd";
 import React, { useEffect, useState } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
-import { BsEye } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import UserExport from "../../components/Admin/User/data/UserExport";
-import UserImport from "../../components/Admin/User/data/UserImport";
+import ActionButtons from "../../components/Button/ActionButtons";
+import {
+  renderCurrency,
+  renderDate,
+  renderStatus,
+} from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetUser } from "../../redux/account/userSlice";
-import { callDeleteUser, callFetchListUser } from "../../services/apiUser";
+import { callGetAllOrder } from "../../services/apiOder";
+import { callDeleteUser } from "../../services/apiUser";
+import { createColumn } from "../../utils/createColumn";
 import { getErrorMessageUser } from "../../utils/errorHandling";
 
 const OrderList = () => {
   const navigate = useNavigate();
 
-  const [listUser, setListUser] = useState([]);
+  const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
-  const [openModalImport, setOpenModalImport] = useState(false);
-  const [openModalExport, setOpenModalExport] = useState(false);
 
   useEffect(() => {
     fetchUser();
@@ -32,17 +33,23 @@ const OrderList = () => {
   // khi thay doi current va pageSize thi search died!
   const fetchUser = async () => {
     setIsLoading(true);
-    const res = await callFetchListUser(
-      current - 1,
-      pageSize,
-      filter.username || "",
-      filter.phone || "",
-      filter.email || ""
-    );
+    let query = `page=${current - 1}&size=${pageSize}`;
+    if (filter) {
+      query += `&${filter}`;
+    }
+
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
+
+    // thay đổi #1 api call
+    const res = await callGetAllOrder(query);
+    console.log("res", res);
     if (res?.content) {
-      setListUser(res.content);
+      setListData(res.content);
       setTotal(res.totalElements);
     }
+
     setIsLoading(false);
   };
 
@@ -69,83 +76,27 @@ const OrderList = () => {
     navigate(`${url}/${user.id}`);
   };
 
-  // sau này load động cột này -> cần có sự hợp tác của backend
   const columns = [
-    {
-      title: "Họ và tên",
-      dataIndex: "username",
-      sorter: true,
-      width: 180,
-      fixed: "left",
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      width: 180,
-      sorter: true,
-    },
-    {
-      title: "Số điện thoại",
-      dataIndex: "phone",
-      width: 120,
-      sorter: true,
-    },
-    {
-      title: "Giới tính",
-      dataIndex: "gender",
-      width: 90,
-      render: (text, record, index) => {
-        return <span>{record?.gender === true ? "Nam" : "Nữ"}</span>;
-      },
-    },
-    {
-      title: "Ngày sinh",
-      dataIndex: "birthday",
-      width: 120,
-      render: (text, record, index) => {
-        return <span>{moment(record.birthday).format("DD-MM-YYYY")}</span>;
-      },
-      sorter: true,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "enabled",
-      width: 150,
-      sorter: true,
-      render: (text, record, index) => (
-        <Tag color={record.enabled === true ? "success" : "error"}>
-          {record.enabled === true ? "Hoạt động" : "Không hoạt động"}
-        </Tag>
-      ),
-    },
+    createColumn("Họ và tên", "userName", 180, false, undefined, "left"),
+    createColumn("Tên phim", "movieName"),
+    createColumn("Rạp", "cinemaName"),
+    createColumn("Trạng thái", "status", 150, false, renderStatus("payment")),
+    createColumn("Ngày đặt", "createdDate", 150, false, renderDate),
+    createColumn("Ngày hủy", "cancelledDate", 150, false, renderDate),
+    createColumn("Tổng tiền", "totalPrice", 150, false, renderCurrency),
+    createColumn("Nhân viên", "staffName", "right"),
     {
       title: "Thao tác",
       width: 100,
       fixed: "right",
       render: (text, record, index) => {
         return (
-          <>
-            <Popconfirm
-              placement="leftTop"
-              title={"Xác nhận tắt hoạt động người dùng"}
-              description={
-                "Bạn có chắc chắn muốn tắt hoạt động người dùng này?"
-              }
-              okText="Xác nhận"
-              cancelText="Hủy"
-              onConfirm={() => handleDeleteUser(record.id)}
-            >
-              <span>
-                <AiOutlineDelete
-                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
-                />
-              </span>
-            </Popconfirm>
-            <BsEye
-              style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={() => handleView(record, "show")}
-            />
-          </>
+          <ActionButtons
+            record={record}
+            handleView={handleView}
+            showView={true}
+            itemName={"hóa đơn"}
+          />
         );
       },
     },
@@ -157,20 +108,15 @@ const OrderList = () => {
     setCurrent(1);
   };
 
-  const handleToPageCreate = () => {
-    navigate(`create`);
-  };
-
   const itemSearch = [
-    { field: "username", label: "Tên" },
-    { field: "age", label: "Tuổi", type: "number" },
+    { field: "userId", label: "Họ tên" },
     {
-      field: "gender",
-      label: "Giới tính",
+      field: "status",
+      label: "Trạng thái",
       type: "select",
       options: [
-        { value: "male", label: "Nam" },
-        { value: "female", label: "Nữ" },
+        { value: "true", label: "Đã thanh toán" },
+        { value: "false", label: "Chưa thanh toán" },
       ],
     },
   ];
@@ -183,12 +129,22 @@ const OrderList = () => {
       handleSearch={handleSearch}
       headerTitle={"Danh sách người dùng"}
       itemSearch={itemSearch}
-      create={handleToPageCreate}
+      // create={handleToPageCreate}
     />
   );
 
   const handleSearch = (query) => {
-    setFilter(query);
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+    setFilter(q);
   };
 
   const onChange = (pagination, filters, sorter, extra) => {
@@ -215,7 +171,7 @@ const OrderList = () => {
             bordered
             loading={isLoading}
             columns={columns}
-            dataSource={listUser}
+            dataSource={listData}
             onChange={onChange}
             rowKey="id"
             pagination={{
@@ -234,18 +190,6 @@ const OrderList = () => {
           />
         </Col>
       </Row>
-
-      <UserImport
-        openModalImport={openModalImport}
-        setOpenModalImport={setOpenModalImport}
-        fetchUser={fetchUser}
-      />
-
-      <UserExport
-        openModalExport={openModalExport}
-        setOpenModalExport={setOpenModalExport}
-        listUser={listUser}
-      />
     </>
   );
 };

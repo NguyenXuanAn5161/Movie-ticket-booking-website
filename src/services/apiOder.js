@@ -1,5 +1,14 @@
 import api from "../utils/axios-custom";
 
+export const callGetAllOrder = async (query) => {
+  try {
+    const response = await api.get(`/api/invoice?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const callCreateInvoice = async (
   showTime,
   selectedSeats,
