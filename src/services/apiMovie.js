@@ -55,7 +55,11 @@ export const callCreateMovie = async (values, releaseDate, image) => {
   bodyFormData.append("director", director);
   bodyFormData.append("cast", cast);
   bodyFormData.append("producer", producer);
-  bodyFormData.append("cinemaId", cinemaId.value);
+  // cinemaId là 1 mảng
+  cinemaId.forEach((item) => {
+    bodyFormData.append("cinemaId", item.value);
+  });
+  // bodyFormData.append("cinemaId", cinemaId.value);
   bodyFormData.append("status", status);
   try {
     const response = await api({
@@ -102,7 +106,10 @@ export const callUpdateMovie = async (values, image) => {
   bodyFormData.append("cast", cast);
   bodyFormData.append("producer", producer);
   bodyFormData.append("status", status);
-  bodyFormData.append("cinemaId", cinemaId);
+  cinemaId.forEach((item) => {
+    bodyFormData.append("cinemaId", item.value);
+  });
+  // bodyFormData.append("cinemaId", cinemaId.value);
 
   try {
     const response = await api({
@@ -189,4 +196,18 @@ export const callUploadImage = (file) => {
     },
   });
 };
+// --------------------------------------------------------
+
+// --------------------------------------------------------
+
+// api lấy ngày chiếu của phim
+export const callGetShowDateByMovieId = async (id) => {
+  try {
+    const response = await api.get(`/api/showtime/dates/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 // --------------------------------------------------------

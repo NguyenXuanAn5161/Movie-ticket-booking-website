@@ -31,7 +31,7 @@ import { callFetchRoomById, callUpdateRoom } from "../../../services/apiRoom";
 import { getErrorMessageRoom } from "../../../utils/errorHandling";
 import "./index.scss";
 
-const alphabet = "ABCDEFGHIJKLMNOPQR";
+const alphabet = "ABCDEFGHIJ";
 
 const RoomEdit = () => {
   const { cinemaId, roomId } = useParams();
@@ -46,29 +46,16 @@ const RoomEdit = () => {
 
   const room = useSelector((state) => state.room.room);
   // lần đầu tiên load giao diện setSelectedSeats với giá trị ban đầu của room
+
   useEffect(() => {
-    if (room) {
-      setSelectedSeats(room.seats);
-    }
+    getRoomById();
   }, []);
-
-  useEffect(() => {
-    if (!room) {
-      getRoomById();
-    }
-    form.setFieldsValue(room);
-  }, [room]);
-
-  useEffect(() => {
-    if (selectedSeats.length > 0) {
-      form.setFieldsValue({ totalSeats: selectedSeats.length });
-    }
-  }, [selectedSeats]);
 
   const getRoomById = async () => {
     const res = await callFetchRoomById(roomId);
     if (res?.data) {
       dispatch(doSetRoom(res.data));
+      form.setFieldsValue(res.data);
       setSelectedSeats(res.data?.seats);
     } else {
       const error = getErrorMessageRoom(res.response.data.message, {
@@ -80,6 +67,12 @@ const RoomEdit = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (room) {
+      setSelectedSeats(room.seats);
+    }
+  }, []);
 
   const onFinish = async (values) => {
     const { id, name, type, status } = values;

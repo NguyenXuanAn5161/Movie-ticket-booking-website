@@ -64,7 +64,11 @@ const MovieShow = () => {
     },
     {
       label: "Thể loại",
-      children: movie?.genre?.genreName,
+      children: movie?.genres.map((genre) => (
+        <Tag key={genre.id} color="blue">
+          {genre.name}
+        </Tag>
+      )),
       span: {
         xs: 1,
         sm: 2,

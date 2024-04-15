@@ -29,7 +29,7 @@ import { callCreateRoom } from "../../../services/apiRoom";
 import { getErrorMessageRoom } from "../../../utils/errorHandling";
 import "./index.scss";
 
-const alphabet = "ABCDEFGHIJKLMNOPQR";
+const alphabet = "ABCDEFGHIJ";
 
 const RoomCreate = () => {
   const { cinemaId } = useParams();

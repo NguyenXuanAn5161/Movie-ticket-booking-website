@@ -20,11 +20,19 @@ const QuantityCounter = ({ selectedFoodId, handleSelectFood, price, name }) => {
 
   return (
     <div>
-      <Button type="primary" onClick={decreaseQuantity}>
+      <Button
+        style={{ cursor: "pointer" }}
+        type="primary"
+        onClick={decreaseQuantity}
+      >
         -
       </Button>
       <span style={{ margin: "0 10px" }}>{quantity}</span>
-      <Button type="primary" onClick={increaseQuantity}>
+      <Button
+        style={{ cursor: "pointer" }}
+        type="primary"
+        onClick={increaseQuantity}
+      >
         +
       </Button>
     </div>

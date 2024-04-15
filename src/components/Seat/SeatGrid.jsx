@@ -1,13 +1,19 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { doSetSelectedSeats } from "../../redux/booking/bookingSlice";
 import SeatLegend from "./SeatLegend";
 
-const SeatGrid = ({ seatData, selectedSeats, setSelectedSeats }) => {
+const SeatGrid = ({ seatData }) => {
+  const dispatch = useDispatch();
+  const selectedSeats = useSelector((state) => state.booking.selectedSeats);
+
   // Hàm để lấy màu tùy theo loại ghế
+  // sửa loại ghế đôi
   const getTypeSeatColor = (seatTypeId) => {
     switch (seatTypeId) {
-      case 2:
-        return "#FF8247"; // Màu cam cho ghế vip
       case 1:
+        return "#FF8247"; // Màu cam cho ghế vip
+      case 2:
         return "#FF1493"; // Màu hồng cho ghế đôi
       default:
         return "#6959CD"; // Màu tím cho ghế thường (mặc định)
@@ -15,7 +21,7 @@ const SeatGrid = ({ seatData, selectedSeats, setSelectedSeats }) => {
   };
 
   // Tạo một mảng chứa thông tin về tất cả các ghế trong lưới
-  const allSeats = Array.from({ length: 400 }, (_, index) => ({
+  const allSeats = Array.from({ length: 200 }, (_, index) => ({
     seatRow: Math.floor(index / 20) + 1,
     seatColumn: (index % 20) + 1,
   }));
@@ -41,27 +47,27 @@ const SeatGrid = ({ seatData, selectedSeats, setSelectedSeats }) => {
 
     // Nếu ghế đã được chọn trước đó, loại bỏ nó khỏi danh sách các ghế đã chọn
     if (seatIndex !== -1) {
-      setSelectedSeats((prevSeats) =>
-        prevSeats.filter(
-          (selectedSeat) =>
-            selectedSeat.seatRow !== seat.seatRow ||
-            selectedSeat.seatColumn !== seat.seatColumn
-        )
+      const updatedSeats = selectedSeats.filter(
+        (selectedSeat) =>
+          selectedSeat.seatRow !== seat.seatRow ||
+          selectedSeat.seatColumn !== seat.seatColumn
       );
+      dispatch(doSetSelectedSeats(updatedSeats));
     } else {
       // Nếu ghế chưa được chọn trước đó, thêm nó vào danh sách các ghế đã chọn
-      setSelectedSeats((prevSeats) => [
-        ...prevSeats,
-        {
-          id: seatInfo.seat.id,
-          name: seatInfo.seat.name,
-          code: seatInfo.seat.code,
-          status: seatInfo.seat.status,
-          seatTypeId: seatInfo.seat.seatTypeId,
-          seatRow: seat.seatRow,
-          seatColumn: seat.seatColumn,
-        },
-      ]);
+      dispatch(doSetSelectedSeats([...selectedSeats, seatInfo.seat]));
+      // setSelectedSeats((prevSeats) => [
+      //   ...prevSeats,
+      //   {
+      //     id: seatInfo.seat.id,
+      //     name: seatInfo.seat.name,
+      //     code: seatInfo.seat.code,
+      //     status: seatInfo.seat.status,
+      //     seatTypeId: seatInfo.seat.seatTypeId,
+      //     seatRow: seat.seatRow,
+      //     seatColumn: seat.seatColumn,
+      //   },
+      // ]);
     }
   };
 

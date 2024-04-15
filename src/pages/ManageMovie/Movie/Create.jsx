@@ -146,6 +146,7 @@ const MovieCreate = () => {
                 ]}
               >
                 <DebounceSelect
+                  mode="multiple"
                   style={{ textAlign: "start" }}
                   value={cinema}
                   onChange={(newValue) => {

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import OrderCard from "../../components/OrderCard/OrderCard";
 import {
   doSetSelectedFoodItems,
-  doSetSelectedSeat,
+  doSetSelectedSeats,
 } from "../../redux/booking/bookingSlice";
 import { callFetchListTypeSeat } from "../../services/apiMovie";
 import { callCreateInvoice } from "../../services/apiOder";
@@ -13,13 +13,6 @@ import BookingFood from "./Steps/BookingFood";
 import BookingPayment from "./Steps/BookingPayment";
 import BookingSchedule from "./Steps/BookingSchedule";
 import BookingSeat from "./Steps/BookingSeat";
-
-const order = {
-  movieName: "Monkey Man Báo Thù",
-  time: "10:30 – Thứ Sáu, 05/04/2024",
-  seat: "E3",
-  total: 75.0,
-};
 
 const BookingPage = () => {
   const [isSubmit, setIsSubmit] = useState(false);
@@ -46,7 +39,7 @@ const BookingPage = () => {
   const showtime = useSelector((state) => state.booking.selectedShowTime);
 
   useEffect(() => {
-    dispatch(doSetSelectedSeat(selectedSeats));
+    dispatch(doSetSelectedSeats(selectedSeats));
   }, [selectedSeats]);
 
   useEffect(() => {
@@ -159,9 +152,8 @@ const BookingPage = () => {
             {steps[current].formComponent}
           </div>
         </Col>
-        <Col span={9} style={{ marginTop: 57 }}>
+        <Col span={9}>
           <OrderCard
-            order={order}
             movies={movies}
             oneShowTime={oneShowTime}
             cinema={cinema}

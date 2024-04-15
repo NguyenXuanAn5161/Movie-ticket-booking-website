@@ -1,20 +1,24 @@
 import { Card, Col, Form, Row } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import CalendarBooking from "../../../components/Booking/CalenderBooking";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
-import MovieShowTimes from "../../../components/MovieShowTimeComponent/MovieShowTimeComponent";
+import {
+  doSetSelectedCinema,
+  doSetSelectedMovie,
+  doSetShowDateByMovieId,
+} from "../../../redux/booking/bookingSlice";
 import { callFetchListCinema } from "../../../services/apiCinema";
-import { callFetchListMovie } from "../../../services/apiMovie";
+import {
+  callFetchListMovie,
+  callGetShowDateByMovieId,
+} from "../../../services/apiMovie";
 import { callFetchListShowtime } from "../../../services/apiShowTime";
 
 const BookingSchedule = (props) => {
   const {
     form,
     data,
-    movies,
-    setMovies,
-    cinema,
-    setCinema,
     setSchedules,
     showTime,
     setShowTime,
@@ -27,6 +31,31 @@ const BookingSchedule = (props) => {
   const selectedMovie = useSelector((state) => state.booking.selectedMovie);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [cinema, setCinema] = useState(null);
+  const [movie, setMovie] = useState(null);
+
+  useEffect(() => {
+    console.log("cinema: ", cinema);
+  }, [cinema]);
+
+  const fetchCinemaList = async (cinemaName) => {
+    try {
+      let query = `size=5&name=${cinemaName}`;
+      const res = await callFetchListCinema(query);
+      const cinema = res.content.map((data) => ({
+        label: data.name,
+        value: data.id,
+      }));
+      dispatch(doSetSelectedCinema(cinema));
+
+      return cinema;
+    } catch (error) {
+      // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+      console.error("Error fetching cinema list:", error);
+      // Trả về một mảng trống nếu xảy ra lỗi
+      return [];
+    }
+  };
 
   useEffect(() => {
     if (cinema) {
@@ -49,40 +78,47 @@ const BookingSchedule = (props) => {
         label: data.name,
         value: data.id,
       }));
-      // dispatch(doSetSelectedMovie(movie));
 
       return movie;
     } catch (error) {
-      // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
-      console.error("Error fetching movies:", error);
-      // Trả về một mảng trống nếu xảy ra lỗi
+      console.error("Error fetching movie list:", error);
       return [];
     }
   };
 
+  // sau khi có id phim thì tìm ngày chiếu
   useEffect(() => {
-    console.log("showTime", showTime);
-  }, [showTime]);
-  useEffect(() => {
-    console.log("cinema", cinema);
-  }, [cinema]);
-  useEffect(() => {
-    console.log("movies", movies);
-  }, [movies]);
-
-  useEffect(() => {
-    if (cinema && movies) {
-      fetchShowTime();
+    if (cinema && movie) {
+      fetchShowDateByMovieId(movie.value);
     }
-  }, [cinema, movies]);
+  }, [movie]);
 
-  // khi thay doi current va pageSize thi search died!
-  // mặc định #2
+  const fetchShowDateByMovieId = async (id) => {
+    try {
+      const resShowDate = await callGetShowDateByMovieId(id);
+      if (resShowDate && resShowDate.length > 0) {
+        const sortedDates = resShowDate
+          .slice()
+          .sort((a, b) => new Date(a) - new Date(b));
+        dispatch(doSetShowDateByMovieId(sortedDates));
+      }
+    } catch (error) {
+      console.error("error fetch show date by movieId: ", error);
+    }
+  };
+
+  useEffect(() => {
+    if (cinema && movie) {
+      fetchShowTime();
+      dispatch(doSetSelectedMovie(movie));
+    }
+  }, [movie]);
+
   const fetchShowTime = async () => {
     setIsLoading(true);
     let query = `size=100`;
 
-    query += `&cinemaId=${cinema.value}&movieId=${movies.value}`;
+    query += `&cinemaId=${cinema.value}&movieId=${movie.value}`;
 
     // thay đổi #1 api call
     const res = await callFetchListShowtime(query);
@@ -103,56 +139,52 @@ const BookingSchedule = (props) => {
   return (
     <>
       <Form form={form} layout="vertical">
-        <Card>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Chọn rạp"
-                name="cinemaId"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn rạp!",
-                  },
-                ]}
-              >
-                <DebounceSelect
-                  style={{ textAlign: "start" }}
-                  value={cinema}
-                  onChange={(newValue) => {
-                    setCinema(newValue);
-                  }}
-                  placeholder="Chọn rạp"
-                  fetchOptions={fetchCinemaList}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Chọn phim"
-                name="movieName"
-                rules={[{ required: true, message: "Vui lòng chọn phim!" }]}
-              >
-                <DebounceSelect
-                  style={{ textAlign: "start" }}
-                  value={movies}
-                  onChange={(newValue) => {
-                    setMovies(newValue);
-                  }}
-                  placeholder="Chọn phim"
-                  fetchOptions={fetchMovieList}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Card>
-        <Row>
-          <MovieShowTimes
-            showTime={showTime}
-            cinemaName={cinema?.label}
-            handleShowTimeSelection={handleShowTimeSelection}
-          />
+        <Row gutter={[16, 10]} style={{ width: "100%", marginLeft: 1 }}>
+          <Card style={{ width: "100%" }}>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  labelCol={{ span: 24 }}
+                  label="Chọn rạp"
+                  name="cinemaId"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn rạp!",
+                    },
+                  ]}
+                >
+                  <DebounceSelect
+                    style={{ textAlign: "start" }}
+                    value={cinema}
+                    onChange={(newValue) => {
+                      setCinema(newValue);
+                    }}
+                    placeholder="Chọn rạp"
+                    fetchOptions={fetchCinemaList}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Chọn phim"
+                  name="movieName"
+                  rules={[{ required: true, message: "Vui lòng chọn phim!" }]}
+                >
+                  <DebounceSelect
+                    style={{ textAlign: "start" }}
+                    value={movie}
+                    onChange={(newValue) => {
+                      setMovie(newValue);
+                    }}
+                    placeholder="Chọn phim"
+                    fetchOptions={fetchMovieList}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Card>
+          <CalendarBooking />
         </Row>
       </Form>
     </>
@@ -160,22 +192,3 @@ const BookingSchedule = (props) => {
 };
 
 export default BookingSchedule;
-
-// Hàm fetch danh sách cinema
-async function fetchCinemaList(cinemaName) {
-  try {
-    let query = `size=5&name=${cinemaName}`;
-    const res = await callFetchListCinema(query);
-    const food = res.content.map((data) => ({
-      label: data.name,
-      value: data.id,
-    }));
-
-    return food;
-  } catch (error) {
-    // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
-    console.error("Error fetching movies:", error);
-    // Trả về một mảng trống nếu xảy ra lỗi
-    return [];
-  }
-}
