@@ -4,6 +4,7 @@ import { callCreatePromotionLine } from "../../../services/apiPromotion";
 import PromotionBasicInfo from "./StepsCreate/BasicInfor";
 import PromotionDetailsDiscount from "./StepsCreate/DetailsDiscount";
 import PromotionDetailsGift from "./StepsCreate/DetailsGift";
+import ImageDetail from "./StepsCreate/ImageDetail";
 import PromotionUsageConditions from "./StepsCreate/UsageConditions";
 
 const PromotionLineModalForm = (props) => {
@@ -15,6 +16,16 @@ const PromotionLineModalForm = (props) => {
   const [imageFile, setImageFile] = useState([]);
 
   const steps = [
+    {
+      title: "Ảnh",
+      formComponent: (
+        <ImageDetail
+          form={form}
+          formType={formType === "view" ? formType : null}
+          setImageFile={setImageFile}
+        />
+      ),
+    },
     {
       title: "Thông tin cơ bản",
       formComponent: (
@@ -88,68 +99,35 @@ const PromotionLineModalForm = (props) => {
     setCurrent(0);
   };
 
-  const onFinish = (values) => {
-    // form
-    //   .validateFields()
-    //   .then((values) => {
-    //     setIsSubmit(true);
-    //     // api
-    //     // Lấy giá trị của type_promotion từ values
-    //     const dataPromotionLine = {
-    //       ...formData,
-    //       PromotionDetailDto: values,
-    //     };
-    //     console.log("dataPromotionLine: ", dataPromotionLine);
-    //     const res = callCreatePromotionLine(dataPromotionLine, data);
-    //     console.log("res: ", res);
-    //     if (res?.status === 200) {
-    //       message.success("Tạo mới chương trình khuyến mãi thành công");
-    //       form.resetFields();
-    //       setIsSubmit(false);
-    //       setOpenModal(false);
-    //       setCurrent(0);
-    //     } else {
-    //       notification.error({
-    //         message: "Đã có lỗi xảy ra!",
-    //         description: res.response.data.message,
-    //       });
-    //       setIsSubmit(false);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     notification.error({
-    //       message: "Có lỗi xảy ra!",
-    //       description: "Vui lòng nhập đầy đủ thông tin",
-    //     });
-    //     setIsSubmit(false);
-    //   });
-
-    form.validateFields().then((values) => {
+  const onFinish = async (values) => {
+    form.validateFields().then(async (values) => {
       setIsSubmit(true);
       // Lấy giá trị của type_promotion từ values
       const dataPromotionLine = {
         ...formData,
-        PromotionDetailDto: values,
+        promotionDiscountDetailDto: values,
       };
       console.log("dataPromotionLine: ", dataPromotionLine);
 
       // Gửi yêu cầu tạo mới chương trình khuyến mãi
-      callCreatePromotionLine(dataPromotionLine, data).then((res) => {
-        console.log("res: ", res);
-        if (res && res.status === 200) {
-          message.success("Tạo mới chương trình khuyến mãi thành công");
-          form.resetFields();
-          setIsSubmit(false);
-          setOpenModal(false);
-          setCurrent(0);
-        } else {
-          notification.error({
-            message: "Đã có lỗi xảy ra!",
-            description: res.response.data.message,
-          });
-          setIsSubmit(false);
-        }
-      });
+      const resPromotionLine = await callCreatePromotionLine(
+        dataPromotionLine,
+        data
+      );
+      console.log("resPromotionLine: ", resPromotionLine);
+      if (resPromotionLine?.status === 200) {
+        message.success("Tạo mới chương trình khuyến mãi thành công");
+        form.resetFields();
+        setIsSubmit(false);
+        setOpenModal(false);
+        setCurrent(0);
+      } else {
+        setIsSubmit(false);
+        notification.error({
+          message: "Đã có lỗi xảy ra!",
+          description: resPromotionLine.response.data.message,
+        });
+      }
     });
   };
 

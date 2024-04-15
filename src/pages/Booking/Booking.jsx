@@ -1,57 +1,79 @@
-import { Button, Col, Form, Row, Steps, notification } from "antd";
+import { Button, Col, Form, Row, Steps, message, notification } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import OrderCard from "../../components/OrderCard/OrderCard";
-import {
-  doSetSelectedFoodItems,
-  doSetSelectedSeats,
-} from "../../redux/booking/bookingSlice";
+import { doSetSelectedPromotion } from "../../redux/booking/bookingSlice";
 import { callFetchListTypeSeat } from "../../services/apiMovie";
 import { callCreateInvoice } from "../../services/apiOder";
+import { callFitPromotion } from "../../services/apiPromotion";
 import BookingFood from "./Steps/BookingFood";
 import BookingPayment from "./Steps/BookingPayment";
 import BookingSchedule from "./Steps/BookingSchedule";
 import BookingSeat from "./Steps/BookingSeat";
 
 const BookingPage = () => {
-  const [isSubmit, setIsSubmit] = useState(false);
-  const [form] = Form.useForm();
   const navigate = useNavigate();
-  const [current, setCurrent] = useState(0);
-  const [listData, setListData] = useState([]);
-  const [movies, setMovies] = useState([]);
-  const [schedules, setSchedules] = useState([]);
-  const [cinema, setCinema] = useState(null);
-  const [showTime, setShowTime] = useState([]);
-  const [oneShowTime, setOneShowTime] = useState(null);
-  const [selectedSeats, setSelectedSeats] = useState([]);
-  const [selectedFoodItems, setSelectedFoodItems] = useState([]);
-  const [price, setPrice] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
-
   const dispatch = useDispatch();
-  const selectedSeat = useSelector((state) => state.booking.selectedSeat);
-  const reduxSelectedFoodItems = useSelector(
+  const [form] = Form.useForm();
+
+  const selectedShowTime = useSelector(
+    (state) => state.booking.selectedShowTime
+  );
+  const selectedSeat = useSelector((state) => state.booking.selectedSeats);
+  const selectedFoodItems = useSelector(
     (state) => state.booking.selectedFoodItems
   );
-  const emailUser = useSelector((state) => state.booking.user);
-  const showtime = useSelector((state) => state.booking.selectedShowTime);
+  const user = useSelector((state) => state.booking.user);
+  const selectedPromotion = useSelector(
+    (state) => state.booking.selectedPromotion
+  );
 
-  useEffect(() => {
-    dispatch(doSetSelectedSeats(selectedSeats));
-  }, [selectedSeats]);
+  const [isSubmit, setIsSubmit] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [price, setPrice] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [promotion, setPromotion] = useState(null);
 
+  // call lấy khuyến mãi khi có giá thay đổi
   useEffect(() => {
-    dispatch(doSetSelectedFoodItems(selectedFoodItems));
-  }, [selectedFoodItems]);
+    if (totalPrice > 0) {
+      fetchFitPromotion(totalPrice);
+    } else {
+      setPromotion(null);
+    }
+  }, [totalPrice]);
 
-  useEffect(() => {
-    console.log("redux selectedSeat: ", selectedSeat);
-    console.log("redux selectedFoodItems: ", reduxSelectedFoodItems);
-    console.log("redux emailUser: ", emailUser);
-    console.log("redux showtime: ", showtime);
-  }, [selectedSeat, reduxSelectedFoodItems, emailUser, showtime]);
+  const fetchFitPromotion = async (totalPrice) => {
+    const res = await callFitPromotion(totalPrice);
+    if (res) {
+      if (res.id !== selectedPromotion?.id) {
+        message.success("Chúc mừng bạn nhận được khuyến mãi " + res.name);
+        dispatch(doSetSelectedPromotion(res));
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   // Tính lại giá khi có khuyến mãi
+  //   if (selectedPromotion) {
+  //     if (
+  //       selectedPromotion.typePromotion === "DISCOUNT" &&
+  //       selectedPromotion.promotionDiscountDetailDto.typeDiscount === "PERCENT"
+  //     ) {
+  //       const discountValue =
+  //         selectedPromotion.promotionDiscountDetailDto.discountValue;
+  //       const maxValue = selectedPromotion.promotionDiscountDetailDto.maxValue;
+  //       const discountedPrice = totalPrice * (1 - discountValue / 100);
+
+  //       // Kiểm tra nếu giá giảm đã bằng hoặc vượt quá maxValue thì giữ nguyên giá trị tổng giá
+  //       const finalPrice =
+  //         discountedPrice <= maxValue ? discountedPrice : totalPrice - maxValue;
+
+  //       setTotalPrice(finalPrice);
+  //     }
+  //   }
+  // }, []);
 
   // fetch giá
   useEffect(() => {
@@ -65,45 +87,18 @@ const BookingPage = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("selectedFoodItems", selectedFoodItems);
-  }, [selectedFoodItems]);
-
   const steps = [
     {
       title: "Chọn rạp / Phim / Suất",
-      formComponent: (
-        <BookingSchedule
-          form={form}
-          schedules={schedules}
-          cinema={cinema}
-          movies={movies}
-          setMovies={setMovies}
-          setCinema={setCinema}
-          showTime={showTime}
-          setShowTime={setShowTime}
-          current={current}
-          setCurrent={setCurrent}
-          setOneShowTime={setOneShowTime}
-        />
-      ),
+      formComponent: <BookingSchedule form={form} />,
     },
     {
       title: "Chọn ghế",
-      formComponent: (
-        <BookingSeat
-          form={form}
-          oneShowTime={oneShowTime}
-          selectedSeats={selectedSeats}
-          setSelectedSeats={setSelectedSeats}
-        />
-      ),
+      formComponent: <BookingSeat form={form} />,
     },
     {
       title: "Chọn thức ăn",
-      formComponent: (
-        <BookingFood form={form} setSelectedFoodItems={setSelectedFoodItems} />
-      ),
+      formComponent: <BookingFood form={form} />,
     },
     {
       title: "Thanh toán",
@@ -114,21 +109,23 @@ const BookingPage = () => {
   const onFinish = async (values) => {
     setIsSubmit(true);
     const res = await callCreateInvoice(
-      showtime,
+      selectedShowTime,
       selectedSeat,
-      reduxSelectedFoodItems,
-      emailUser,
+      selectedFoodItems,
+      user,
       "1",
-      "1"
+      selectedPromotion.id
     );
-    console.log("res dat ve: ", res);
+    // console.log("res dat ve: ", res);
     if (res?.status === 200) {
       message.success("Đặt vé thành công!");
       navigate("/admin/order");
+      setIsSubmit(false);
     } else {
+      console.log("res dat ve: ", res.response.data.message);
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.response.data,
+        description: res.response.data.message,
       });
       setIsSubmit(false);
     }
@@ -154,14 +151,9 @@ const BookingPage = () => {
         </Col>
         <Col span={9}>
           <OrderCard
-            movies={movies}
-            oneShowTime={oneShowTime}
-            cinema={cinema}
-            selectedSeats={selectedSeats}
             price={price}
             totalPrice={totalPrice}
             setTotalPrice={setTotalPrice}
-            selectedFoodItems={selectedFoodItems}
           />
           <div style={{ marginTop: 24, textAlign: "right" }}>
             {current > 0 && (

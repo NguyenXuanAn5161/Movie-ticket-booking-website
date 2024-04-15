@@ -13,19 +13,9 @@ import {
   callFetchListMovie,
   callGetShowDateByMovieId,
 } from "../../../services/apiMovie";
-import { callFetchListShowtime } from "../../../services/apiShowTime";
 
 const BookingSchedule = (props) => {
-  const {
-    form,
-    data,
-    setSchedules,
-    showTime,
-    setShowTime,
-    current,
-    setCurrent,
-    setOneShowTime,
-  } = props;
+  const { form } = props;
 
   const dispatch = useDispatch();
   const selectedMovie = useSelector((state) => state.booking.selectedMovie);
@@ -109,32 +99,9 @@ const BookingSchedule = (props) => {
 
   useEffect(() => {
     if (cinema && movie) {
-      fetchShowTime();
       dispatch(doSetSelectedMovie(movie));
     }
   }, [movie]);
-
-  const fetchShowTime = async () => {
-    setIsLoading(true);
-    let query = `size=100`;
-
-    query += `&cinemaId=${cinema.value}&movieId=${movie.value}`;
-
-    // thay đổi #1 api call
-    const res = await callFetchListShowtime(query);
-    if (res?.content) {
-      setShowTime(res.content);
-    }
-
-    setIsLoading(false);
-  };
-
-  const handleShowTimeSelection = (selectedShowTime) => {
-    // Cập nhật showTime
-    setOneShowTime(selectedShowTime);
-    // Chuyển đến bước tiếp theo
-    setCurrent(current + 1);
-  };
 
   return (
     <>

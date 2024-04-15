@@ -11,7 +11,7 @@ const UserModalFind = (props) => {
   const [user, setUser] = useState(null);
 
   const dispatch = useDispatch();
-  const inforUser = useSelector((state) => state.booking.user);
+  const selectedUser = useSelector((state) => state.booking.user);
 
   useEffect(() => {
     fetchUserById();
@@ -34,21 +34,8 @@ const UserModalFind = (props) => {
   const [form] = Form.useForm();
 
   const onFinish = async (values) => {
-    const { fullName, email, password, phone } = values;
-    // setIsSubmit(true);
-    // const res = await callCreateUser(fullName, email, password, phone);
-    // if (res && res.data) {
-    //   message.success("Tạo mới người dùng thành công!");
-    //   form.resetFields();
-    setOpenModalCreate(false);
-    //   await props.fetchUser();
-    // } else {
-    //   notification.error({
-    //     message: "Đã có lỗi xảy ra!",
-    //     description: res.message,
-    //   });
-    // }
-    // setIsSubmit(false);
+    form.setFieldsValue([]);
+    setOpenModalFind(false);
   };
 
   return (
@@ -101,16 +88,16 @@ const UserModalFind = (props) => {
             />
           </Form.Item>
           <Form.Item noStyle shouldUpdate>
-            {inforUser && (
+            {selectedUser && (
               <Typography>
                 <p>
-                  <strong>Tên người dùng:</strong> {inforUser.username}
+                  <strong>Tên người dùng:</strong> {selectedUser.username}
                 </p>
                 <p>
-                  <strong>Email:</strong> {inforUser.email}
+                  <strong>Email:</strong> {selectedUser.email}
                 </p>
                 <p>
-                  <strong>Số điện thoại:</strong> {inforUser.phone}
+                  <strong>Số điện thoại:</strong> {selectedUser.phone}
                 </p>
               </Typography>
             )}
