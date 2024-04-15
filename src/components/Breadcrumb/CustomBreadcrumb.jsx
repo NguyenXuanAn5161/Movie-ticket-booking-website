@@ -20,6 +20,13 @@ function CustomBreadcrumb(props) {
           path: "/order",
           title: "Hóa đơn",
           key: "order",
+          children: [
+            {
+              path: "/show",
+              title: "Xem chi tiết hóa đơn",
+              key: "orderShow",
+            },
+          ],
         },
         {
           path: "/user",

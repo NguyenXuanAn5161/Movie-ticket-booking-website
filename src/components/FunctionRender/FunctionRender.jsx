@@ -95,3 +95,15 @@ export const renderPriceName = (text, record) => {
     </span>
   );
 };
+
+export const renderSeatType = (text, record) => {
+  return (
+    <span>
+      {text === "VIP"
+        ? "Ghế vip"
+        : text === "STANDARD"
+        ? "Ghế thường"
+        : "Ghế đôi"}
+    </span>
+  );
+};

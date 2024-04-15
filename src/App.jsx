@@ -46,6 +46,7 @@ import UserShow from "./pages/ManageUser/Show";
 import DashBoardShow from "./pages/dashboard/Show";
 import LoginPage from "./pages/login";
 import OrderList from "./pages/order/List";
+import OrderShow from "./pages/order/Show";
 import { doGetAccountAction } from "./redux/account/accountSlice";
 import { callFetchAccount } from "./services/api";
 import "./styles/reset.scss";
@@ -92,6 +93,10 @@ export default function App() {
         {
           path: "order",
           element: <OrderList />,
+        },
+        {
+          path: "order/show/:orderId",
+          element: <OrderShow />,
         },
         // Người dùng
         {

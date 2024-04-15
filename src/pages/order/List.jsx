@@ -127,9 +127,8 @@ const OrderList = () => {
       filter={filter}
       setFilter={setFilter}
       handleSearch={handleSearch}
-      headerTitle={"Danh sách người dùng"}
+      headerTitle={"Danh sách hóa đơn"}
       itemSearch={itemSearch}
-      // create={handleToPageCreate}
     />
   );
 
