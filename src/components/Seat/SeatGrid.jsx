@@ -1,3 +1,4 @@
+import { notification } from "antd";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { doSetSelectedSeats } from "../../redux/booking/bookingSlice";
@@ -38,6 +39,16 @@ const SeatGrid = ({ seatData }) => {
   // Hàm xử lý sự kiện khi người dùng chọn một ghế
   const handleSeatClick = (seat) => {
     const seatInfo = isSeatExist(seat);
+    // Kiểm tra xem số lượng ghế đã chọn có đạt tối đa (8 ghế) hay chưa
+    if (selectedSeats.length >= 8) {
+      // Nếu đã đạt tối đa, không thực hiện thêm ghế mới
+      notification.warning({
+        message: "Thông báo",
+        description: "Bạn chỉ được chọn tối đa 8 ghế!",
+      });
+      return;
+    }
+
     // Kiểm tra xem ghế đã được chọn trước đó chưa
     const seatIndex = selectedSeats.findIndex(
       (selectedSeat) =>
