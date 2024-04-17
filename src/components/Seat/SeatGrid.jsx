@@ -113,14 +113,19 @@ const SeatGrid = ({ seatData }) => {
               selectedSeat.seatRow === seat.seatRow &&
               selectedSeat.seatColumn === seat.seatColumn
           );
+          // kiểm tra ghế đã được bán hay chưa
+          const isBooked = seatInfo && !seatInfo.status;
+          if (isBooked) console.log("ghế đã bán", isBooked);
           return (
             <div
               key={index}
               style={{
-                backgroundColor: seatInfo
-                  ? getTypeSeatColor(seatInfo.seat.seatTypeId)
-                  : "transparent",
+                // backgroundColor: isBooked ? "#ccc" : "transparent",
+                // backgroundColor: seatInfo
+                //   ? getTypeSeatColor(seatInfo.seat.seatTypeId)
+                //   : "transparent",
                 cursor: seatInfo ? "pointer" : null,
+                pointerEvents: isBooked ? "none" : "auto",
                 borderRadius: 3,
                 width: 30,
                 height: 30,
@@ -130,7 +135,9 @@ const SeatGrid = ({ seatData }) => {
                 justifyContent: "center",
                 // Thêm sự kiện onClick để xử lý việc chọn ghế
                 // và thay đổi màu nền của ghế khi được chọn
-                backgroundColor: isSelected
+                backgroundColor: isBooked
+                  ? "#ccc"
+                  : isSelected
                   ? "green"
                   : seatInfo
                   ? getTypeSeatColor(seatInfo.seat.seatTypeId)
