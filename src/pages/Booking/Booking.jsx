@@ -35,12 +35,16 @@ const BookingPage = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [promotion, setPromotion] = useState(null);
 
+  useEffect(() => {
+    console.log("promotion: ", selectedPromotion);
+  }, [selectedPromotion]);
+
   // call lấy khuyến mãi khi có giá thay đổi
   useEffect(() => {
     if (totalPrice > 0) {
       fetchFitPromotion(totalPrice);
     } else {
-      setPromotion(null);
+      dispatch(doSetSelectedPromotion({}));
     }
   }, [totalPrice]);
 
@@ -48,6 +52,7 @@ const BookingPage = () => {
     const res = await callFitPromotion(totalPrice);
     if (res) {
       if (res.id !== selectedPromotion?.id) {
+        console.log("res khuyen mai: ", res);
         message.success("Chúc mừng bạn nhận được khuyến mãi " + res.name);
         dispatch(doSetSelectedPromotion(res));
       }
