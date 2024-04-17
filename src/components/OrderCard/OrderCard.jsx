@@ -2,7 +2,10 @@ import { Card, Col, Image, Row, Typography } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { doSetSelectedRoom } from "../../redux/booking/bookingSlice";
+import {
+  doSetSelectedPromotion,
+  doSetSelectedRoom,
+} from "../../redux/booking/bookingSlice";
 import { callGetMovieById } from "../../services/apiMovie";
 import { callFetchRoomById } from "../../services/apiRoom";
 import { imageError } from "../../utils/imageError";
@@ -88,18 +91,26 @@ const OrderCard = (props) => {
         selectedPromotion.typePromotion === "DISCOUNT" &&
         selectedPromotion.promotionDiscountDetailDto.typeDiscount === "PERCENT"
       ) {
-        const discountValue =
-          selectedPromotion.promotionDiscountDetailDto.discountValue;
-        const maxValue = selectedPromotion.promotionDiscountDetailDto.maxValue;
-        const discountedPrice = newTotalPrice * (1 - discountValue / 100);
+        const minBillValue =
+          selectedPromotion.promotionDiscountDetailDto.minBillValue;
+        // Kiểm tra nếu tổng giá trị hóa đơn đạt tối thiểu thì mới áp dụng khuyến mãi
+        if (newTotalPrice >= minBillValue) {
+          const discountValue =
+            selectedPromotion.promotionDiscountDetailDto.discountValue;
+          const maxValue =
+            selectedPromotion.promotionDiscountDetailDto.maxValue;
+          const discountedPrice = newTotalPrice * (1 - discountValue / 100);
 
-        // Kiểm tra nếu giá giảm đã bằng hoặc vượt quá maxValue thì giữ nguyên giá trị tổng giá
-        const finalPrice =
-          discountedPrice <= maxValue
-            ? discountedPrice
-            : newTotalPrice - maxValue;
+          // Kiểm tra nếu giá giảm đã bằng hoặc vượt quá maxValue thì giữ nguyên giá trị tổng giá
+          const finalPrice =
+            discountedPrice <= maxValue
+              ? discountedPrice
+              : newTotalPrice - maxValue;
 
-        newTotalPrice = finalPrice;
+          newTotalPrice = finalPrice;
+        } else {
+          dispatch(doSetSelectedPromotion({}));
+        }
       }
     }
 
@@ -172,16 +183,43 @@ const OrderCard = (props) => {
               )}
             </Typography.Text>
           </Col>
+          {selectedPromotion && selectedPromotion?.name && (
+            <Col span={24}>
+              <Typography.Text>
+                <p style={{ fontWeight: "700" }}>Bạn được nhận khuyến mãi:</p>
+                {selectedPromotion?.name} giảm{" "}
+                {selectedPromotion?.promotionDiscountDetailDto?.discountValue}%
+                giá trị hóa đơn khi hóa đơn tối thiểu:{" "}
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(
+                  selectedPromotion?.promotionDiscountDetailDto?.minBillValue
+                )}{" "}
+                <p style={{ fontWeight: "700", marginRight: 10 }}>
+                  Giảm tối đa:{" "}
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(
+                    selectedPromotion?.promotionDiscountDetailDto?.maxValue
+                  )}
+                </p>
+              </Typography.Text>
+            </Col>
+          )}
         </Col>
       </Row>
+      {/* sửa loại ghế nếu thay đổi */}
       <Row gutter={[16, 16]} style={{ marginTop: 10, marginBottom: 10 }}></Row>
       {selectedSeats && selectedSeats.length > 0 && <div className="line" />}
       <Row>
-        {/* tính tổng tiền cho loại ghế đôi nếu có */}
+        {/* tính tổng tiền cho loại ghế vip nếu có */}
         {selectedSeats?.some((seat) => seat.seatTypeId === 1) && (
           <Col span={24}>
             <Typography.Title level={5}>
-              Ghế đôi:{" "}
+              {selectedSeats.filter((seat) => seat.seatTypeId === 1).length}x
+              Ghế vip:{" "}
               <span style={{ color: "#F58020" }}>
                 {new Intl.NumberFormat("vi-VN", {
                   style: "currency",
@@ -202,6 +240,7 @@ const OrderCard = (props) => {
         {selectedSeats?.some((seat) => seat.seatTypeId === 3) && (
           <Col span={24}>
             <Typography.Title level={5}>
+              {selectedSeats.filter((seat) => seat.seatTypeId === 3).length}x
               Ghế thường:{" "}
               <span style={{ color: "#F58020" }}>
                 {new Intl.NumberFormat("vi-VN", {
@@ -223,7 +262,8 @@ const OrderCard = (props) => {
         {selectedSeats?.some((seat) => seat.seatTypeId === 2) && (
           <Col span={24}>
             <Typography.Title level={5}>
-              Ghế vip:{" "}
+              {selectedSeats.filter((seat) => seat.seatTypeId === 2).length}x
+              Ghế đôi:{" "}
               <span style={{ color: "#F58020" }}>
                 {new Intl.NumberFormat("vi-VN", {
                   style: "currency",
