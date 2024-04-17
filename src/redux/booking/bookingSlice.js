@@ -88,6 +88,7 @@ export const {
   doSetSelectedShowTime,
   doSetShowDateByMovieId,
   doSetSelectedRoom,
+  doResetBooking,
 } = bookingSlice.actions;
 
 export default bookingSlice.reducer;

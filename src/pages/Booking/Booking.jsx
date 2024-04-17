@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import OrderCard from "../../components/OrderCard/OrderCard";
-import { doSetSelectedPromotion } from "../../redux/booking/bookingSlice";
+import {
+  doResetBooking,
+  doSetSelectedPromotion,
+} from "../../redux/booking/bookingSlice";
 import { callFetchListTypeSeat } from "../../services/apiMovie";
 import { callCreateInvoice } from "../../services/apiOder";
 import { callFitPromotion } from "../../services/apiPromotion";
@@ -124,6 +127,7 @@ const BookingPage = () => {
     // console.log("res dat ve: ", res);
     if (res?.status === 200) {
       message.success("Đặt vé thành công!");
+      dispatch(doResetBooking());
       navigate("/admin/order");
       setIsSubmit(false);
     } else {
