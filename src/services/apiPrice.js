@@ -130,25 +130,23 @@ export const callCreateSalePriceDetail = async (values, priceHeaderId) => {
   }
 };
 
-export const callUpdateSalePriceDetail = async (
-  priceDetailId,
-  price,
-  status,
-  itemId,
-  type_sale
-) => {
-  const data = [
-    {
-      price: price,
-      [type_sale === "seat" ? "typeSeatId" : "foodId"]: itemId,
-      status: status,
-    },
-  ];
+export const callUpdateSalePriceDetail = async (values) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("id", values.id);
+  bodyFormData.append("price", values.price);
+  bodyFormData.append("status", values.status);
+
   try {
-    const response = await api.put(`/api/price/detail/${priceDetailId}`, data);
+    const response = await api({
+      method: "put",
+      url: "/api/price/detail",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error) {
-    console.error("error: ", error);
     return error;
   }
 };

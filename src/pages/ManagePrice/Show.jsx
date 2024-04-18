@@ -2,6 +2,7 @@ import {
   Card,
   Descriptions,
   Divider,
+  Popconfirm,
   Table,
   Tag,
   message,
@@ -9,9 +10,11 @@ import {
 } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { AiOutlineDelete } from "react-icons/ai";
+import { BsEye } from "react-icons/bs";
+import { CiEdit } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import ActionButtons from "../../components/Button/ActionButtons";
 import {
   renderCurrency,
   renderDate,
@@ -21,7 +24,6 @@ import {
 } from "../../components/FunctionRender/FunctionRender";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import TableHeader from "../../components/TableHeader/TableHeader";
-import { doSetPriceDetail } from "../../redux/price/priceDetailSlice";
 import { doSetPrice } from "../../redux/price/priceSlice";
 import {
   callDeleteSalePriceDetail,
@@ -31,6 +33,8 @@ import {
 import { createColumn } from "../../utils/createColumn";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
 import PriceDetailModalCreate from "./PriceDetail/PriceDetailModalCreate";
+import PriceDetailModalUpdate from "./PriceDetail/PriceDetailModalUpdate";
+import PriceDetailModalView from "./PriceDetail/PriceDetailModalView";
 
 const PriceShow = () => {
   const { priceId } = useParams();
@@ -43,7 +47,6 @@ const PriceShow = () => {
   const [openModalCreate, setOpenModalCreate] = useState(false);
   const [openViewDetail, setOpenViewDetail] = useState(false);
   const [dataViewDetail, setDataViewDetail] = useState(null);
-  const [openModalExport, setOpenModalExport] = useState(false);
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
   const [dataUpdate, setDataUpdate] = useState(null);
 
@@ -176,13 +179,18 @@ const PriceShow = () => {
     },
   ];
 
-  const handleView = (data, url) => {
-    // thay đổi #1
-    dispatch(doSetPriceDetail(data));
-    setOpenModalUpdate(true);
+  const handleView = (data, type) => {
+    if (type === "edit") {
+      setDataUpdate(data);
+      setOpenModalUpdate(true);
+    } else {
+      setDataViewDetail(data);
+      setOpenViewDetail(true);
+    }
   };
 
   const columns = [
+    createColumn("Mã giá", "code", 100, false, undefined, "left"),
     createColumn("Giá cho", "type", 150, false, renderTypePrice, "left"),
     createColumn("Tên", "itemName", 150, false, renderPriceName, "left"),
     createColumn("Giá", "price", 150, false, renderCurrency),
@@ -194,15 +202,33 @@ const PriceShow = () => {
       fixed: "right",
       render: (text, record, index) => {
         return (
-          <ActionButtons
-            record={record}
-            handleDelete={handleDeleteData}
-            handleView={handleView}
-            showDelete={true}
-            showEdit={true}
-            showView={true}
-            itemName={"giá"}
-          />
+          <>
+            <Popconfirm
+              placement="leftTop"
+              // thay đổi #1 sửa title và description
+              title={"Xác nhận xóa giá"}
+              description={"Bạn có chắc chắn muốn xóa giá này?"}
+              okText="Xác nhận"
+              cancelText="Hủy"
+              onConfirm={() => handleDeleteData(record.id)}
+            >
+              <span>
+                <AiOutlineDelete
+                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
+                />
+              </span>
+            </Popconfirm>
+            <BsEye
+              style={{ cursor: "pointer", marginRight: 10 }}
+              onClick={() => handleView(record, "show")}
+            />
+            <CiEdit
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                handleView(record, "edit");
+              }}
+            />
+          </>
         );
       },
     },
@@ -232,7 +258,7 @@ const PriceShow = () => {
       type: "select",
       options: optionsPriceCode,
     },
-    { field: "name", label: "Mã sản phẩm" },
+    { field: "name", label: "Mã giá" },
   ];
 
   const renderHeader = () => (
@@ -320,35 +346,18 @@ const PriceShow = () => {
         fetchData={fetchSalePriceDetail}
       />
 
-      {/* <PriceDetailModalForm
-        fetchSalePriceDetail={fetchSalePriceDetail}
-        formType={
-          openModalCreate ? "create" : openModalUpdate ? "update" : "view"
-        }
-        data={
-          openModalCreate
-            ? { priceId: priceId }
-            : openModalUpdate
-            ? dataUpdate
-            : dataViewDetail
-        }
-        setData={
-          openModalCreate
-            ? null
-            : openModalUpdate
-            ? setDataUpdate
-            : setDataViewDetail
-        }
-        openModal={openModalCreate || openModalUpdate || openViewDetail}
-        setOpenModal={
-          openModalCreate
-            ? setOpenModalCreate
-            : openModalUpdate
-            ? setOpenModalUpdate
-            : setOpenViewDetail
-        }
-        fetchData={getPriceHeaderById}
-      /> */}
+      <PriceDetailModalUpdate
+        dataUpdate={dataUpdate}
+        openModalUpdate={openModalUpdate}
+        setOpenModalUpdate={setOpenModalUpdate}
+        fetchData={fetchSalePriceDetail}
+      />
+
+      <PriceDetailModalView
+        openViewDetail={openViewDetail}
+        setOpenViewDetail={setOpenViewDetail}
+        dataViewDetail={dataViewDetail}
+      />
     </>
   );
 };

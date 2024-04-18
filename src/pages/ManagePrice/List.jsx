@@ -7,7 +7,6 @@ import {
   renderDate,
   renderStatus,
 } from "../../components/FunctionRender/FunctionRender";
-import InputSearch from "../../components/InputSearch/InputSearch";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetPrice } from "../../redux/price/priceSlice";
 import {
@@ -82,12 +81,12 @@ const PriceList = () => {
   };
 
   const columns = [
-    createColumn("Mã giá", "code", 150, "left"),
-    createColumn("Tên giá", "name", 150, "left"),
+    createColumn("Mã giá", "code", 150, false, undefined, "left"),
+    createColumn("Tên giá", "name", 150, false, undefined, "left"),
     createColumn("Ngày bắt đầu", "startDate", 150, false, renderDate),
     createColumn("Ngày kết thúc", "endDate", 150, false, renderDate),
     createColumn("Mô Tả", "description", 250),
-    createColumn("Trạng Thái", "status", 100, false, renderStatus()),
+    createColumn("Trạng Thái", "status", 150, false, renderStatus()),
     createColumn("Cập nhật ngày", "createdDate", 150, false, renderDate),
     {
       title: "Thao tác",
@@ -121,13 +120,12 @@ const PriceList = () => {
 
   const itemSearch = [
     { field: "code", label: "Mã giá" },
-    { field: "startDate", label: "Ngày bắt đầu" },
-    { field: "endDate", label: "Ngày kết thúc" },
+    { field: "dateRange", label: "Khoảng thời gian", type: "rangePicker" },
   ];
 
   const renderHeader = () => (
     <TableHeader
-      headerTitle={"Danh sách rạp phim"}
+      headerTitle={"Danh sách giá"}
       onReload={handleReload}
       filter={filter}
       setFilter={setFilter}
@@ -177,13 +175,6 @@ const PriceList = () => {
   return (
     <>
       <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <InputSearch
-            itemSearch={itemSearch}
-            handleSearch={handleSearch}
-            setFilter={setFilter}
-          />
-        </Col>
         <Col span={24}>
           <Table
             scroll={{

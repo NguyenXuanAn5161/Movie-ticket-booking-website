@@ -108,16 +108,16 @@ const PriceEdit = () => {
             <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tên giá sản phẩm"
+                label="Tên giá"
                 name="name"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên giá sản phẩm!",
+                    message: "Vui lòng nhập tên giá!",
                   },
                 ]}
               >
-                <Input placeholder="Nhập tên giá sản phẩm" />
+                <Input placeholder="Nhập tên giá" />
               </Form.Item>
             </Col>
             <Col span={8}>
