@@ -215,11 +215,33 @@ const OrderCard = (props) => {
       {selectedSeats && selectedSeats.length > 0 && <div className="line" />}
       <Row>
         {/* tính tổng tiền cho loại ghế vip nếu có */}
+        {selectedSeats?.some((seat) => seat.seatTypeId === 2) && (
+          <Col span={24}>
+            <Typography.Title level={5}>
+              {selectedSeats.filter((seat) => seat.seatTypeId === 2).length}x
+              Ghế vip:{" "}
+              <span style={{ color: "#F58020" }}>
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(
+                  price.find((p) => p.id === 2)?.price + roomPrice || 0
+                )}
+              </span>
+            </Typography.Title>
+            {selectedSeats?.map((seat, index) => (
+              <Typography.Text key={index}>
+                {seat.seatTypeId === 2 && `${seat.name}, `}
+              </Typography.Text>
+            ))}
+          </Col>
+        )}
+        {/* tính tổng tiền cho loại ghế thường nếu có */}
         {selectedSeats?.some((seat) => seat.seatTypeId === 1) && (
           <Col span={24}>
             <Typography.Title level={5}>
               {selectedSeats.filter((seat) => seat.seatTypeId === 1).length}x
-              Ghế vip:{" "}
+              Ghế thường:{" "}
               <span style={{ color: "#F58020" }}>
                 {new Intl.NumberFormat("vi-VN", {
                   style: "currency",
@@ -236,12 +258,12 @@ const OrderCard = (props) => {
             ))}
           </Col>
         )}
-        {/* tính tổng tiền cho loại ghế thường nếu có */}
+        {/* tính tổng tiền cho loại ghế đôi nếu có */}
         {selectedSeats?.some((seat) => seat.seatTypeId === 3) && (
           <Col span={24}>
             <Typography.Title level={5}>
               {selectedSeats.filter((seat) => seat.seatTypeId === 3).length}x
-              Ghế thường:{" "}
+              Ghế đôi:{" "}
               <span style={{ color: "#F58020" }}>
                 {new Intl.NumberFormat("vi-VN", {
                   style: "currency",
@@ -254,28 +276,6 @@ const OrderCard = (props) => {
             {selectedSeats?.map((seat, index) => (
               <Typography.Text key={index}>
                 {seat.seatTypeId === 3 && `${seat.name}, `}
-              </Typography.Text>
-            ))}
-          </Col>
-        )}
-        {/* tính tổng tiền cho loại ghế đôi nếu có */}
-        {selectedSeats?.some((seat) => seat.seatTypeId === 2) && (
-          <Col span={24}>
-            <Typography.Title level={5}>
-              {selectedSeats.filter((seat) => seat.seatTypeId === 2).length}x
-              Ghế đôi:{" "}
-              <span style={{ color: "#F58020" }}>
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(
-                  price.find((p) => p.id === 2)?.price + roomPrice || 0
-                )}
-              </span>
-            </Typography.Title>
-            {selectedSeats?.map((seat, index) => (
-              <Typography.Text key={index}>
-                {seat.seatTypeId === 2 && `${seat.name}, `}
               </Typography.Text>
             ))}
           </Col>
