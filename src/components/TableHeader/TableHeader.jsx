@@ -40,14 +40,14 @@ const TableHeader = ({
 }) => {
   return (
     <Row className="flex-container">
-      <Col span={8} style={{ fontWeight: "700", fontSize: "16" }}>
+      <Col span={5} style={{ fontWeight: "700", fontSize: "16" }}>
         {headerTitle}
       </Col>
       <Col
-        span={16}
+        span={19}
         style={{
           display: "flex",
-          gap: 10,
+          gap: "0 20px",
           justifyContent: "flex-end",
         }}
       >
@@ -57,22 +57,29 @@ const TableHeader = ({
           setFilter={setFilter}
           filter={filter}
         />
-        <TooltipButton
-          icon={<AiOutlinePlus />}
-          tooltipTitle="Thêm mới"
-          onClick={create}
-        />
-        <TooltipButton
-          icon={<AiOutlineReload />}
-          tooltipTitle="Tải lại"
-          onClick={onReload}
-        />
-        <TooltipButton
-          icon={<CiMenuBurger />}
-          tooltipTitle="Chức năng khác"
-          trigger={"hover"}
-          dropdown={menuProps}
-        />
+        <div
+          style={{
+            display: "flex",
+            gap: "0 10px",
+          }}
+        >
+          <TooltipButton
+            icon={<AiOutlinePlus />}
+            tooltipTitle="Thêm mới"
+            onClick={create}
+          />
+          <TooltipButton
+            icon={<AiOutlineReload />}
+            tooltipTitle="Tải lại"
+            onClick={onReload}
+          />
+          <TooltipButton
+            icon={<CiMenuBurger />}
+            tooltipTitle="Chức năng khác"
+            trigger={"hover"}
+            dropdown={menuProps}
+          />
+        </div>
       </Col>
     </Row>
   );

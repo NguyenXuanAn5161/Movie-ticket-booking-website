@@ -8,6 +8,8 @@ const TooltipButton = ({
   htmlType,
   trigger,
   dropdown,
+  width,
+  height,
 }) => {
   const button = (
     <Button
@@ -15,7 +17,7 @@ const TooltipButton = ({
       icon={icon}
       onClick={onClick}
       htmlType={htmlType}
-      style={{ marginRight: dropdown ? 8 : 0 }}
+      style={{ marginRight: dropdown ? 8 : 0, width: width, height: height }}
     />
   );
 

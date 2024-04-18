@@ -1,4 +1,5 @@
 import { DatePicker, Form, Input, Select } from "antd";
+import { FORMAT_DATE } from "../../utils/constant";
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -26,6 +27,7 @@ const TypeInput = ({ item }) => {
           <RangePicker
             style={{ width: "100%" }}
             placeholder={["Từ ngày", "Đến ngày"]}
+            format={FORMAT_DATE}
           />
         );
       default:
