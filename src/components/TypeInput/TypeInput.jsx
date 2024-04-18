@@ -25,7 +25,7 @@ const TypeInput = ({ item }) => {
         return (
           <RangePicker
             style={{ width: "100%" }}
-            placeholder={[item.label, item.label]}
+            placeholder={["Từ ngày", "Đến ngày"]}
           />
         );
       default:
@@ -33,7 +33,11 @@ const TypeInput = ({ item }) => {
     }
   };
 
-  return <Form.Item name={item.field}>{renderInput()}</Form.Item>;
+  return (
+    <Form.Item name={item.field} style={{ height: "auto", marginBottom: 0 }}>
+      {renderInput()}
+    </Form.Item>
+  );
 };
 
 export default TypeInput;
