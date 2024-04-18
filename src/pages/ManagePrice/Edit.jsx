@@ -158,7 +158,11 @@ const PriceEdit = () => {
                   },
                 ]}
               >
-                <Radio.Group value={price?.status}>
+                {/* nếu ngày bắt đầu > ngày hiện tại thì không cho chọn trạng thái */}
+                <Radio.Group
+                  disabled={dayjs(price?.startDate).isAfter(dayjs())}
+                  value={price?.status}
+                >
                   <Radio value={true}>Hoạt động</Radio>
                   <Radio value={false}>Ngưng hoạt động</Radio>
                 </Radio.Group>
