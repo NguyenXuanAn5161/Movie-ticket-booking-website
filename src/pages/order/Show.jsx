@@ -57,6 +57,7 @@ const OrderShow = () => {
     createColumn("Số lượng", "quantity", 100),
   ];
   const columnsTicket = [
+    createColumn("Mã vé", "ticketCode", 100),
     createColumn(
       "Loại ghế",
       "seatType",
@@ -111,7 +112,7 @@ const OrderShow = () => {
         <Col span={12}>
           <Table
             bordered
-            title={() => <span style={{ fontWeight: 700 }}>Danh sách ghế</span>}
+            title={() => <span style={{ fontWeight: 700 }}>Danh sách vé</span>}
             columns={columnsTicket}
             dataSource={order?.invoiceTicketDetailDtos}
             rowKey="id"
