@@ -152,6 +152,15 @@ export const callCreatePromotionLine = async (data, imageUrl) => {
   }
 };
 
+export const callDeletePromotionLine = async (id) => {
+  try {
+    const response = await api.delete(`/api/promotion/line/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 // --------------------------------------------
 // áp khuyến mãi phù hợp
 export const callFitPromotion = async (totalPrice) => {
