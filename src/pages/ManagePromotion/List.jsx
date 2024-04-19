@@ -7,12 +7,16 @@ import {
   renderDate,
   renderStatus,
 } from "../../components/FunctionRender/FunctionRender";
-import InputSearch from "../../components/InputSearch/InputSearch";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetPromotion } from "../../redux/promotion/promotionSlice";
 import { callDeleteUser } from "../../services/api";
 import { callFetchListPromotionHeader } from "../../services/apiPromotion";
 import { createColumn } from "../../utils/createColumn";
+
+const statusPromotion = [
+  { value: "true", label: "Hoạt động" },
+  { value: "false", label: "Không hoạt động" },
+];
 
 const PromotionList = () => {
   const navigate = useNavigate();
@@ -20,13 +24,11 @@ const PromotionList = () => {
   // mặc định #2
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
-  const [openModalImport, setOpenModalImport] = useState(false);
-  const [openModalExport, setOpenModalExport] = useState(false);
 
   // mặc định #2
   useEffect(() => {
@@ -39,9 +41,9 @@ const PromotionList = () => {
     setIsLoading(true);
     let query = `page=${current - 1}&size=${pageSize}`;
 
-    // if (!filter) {
-    //   query += `&status=false`;
-    // }
+    if (!filter.includes("status")) {
+      query += `&status=true`;
+    }
 
     if (filter) {
       query += `&${filter}`;
@@ -121,9 +123,13 @@ const PromotionList = () => {
   };
 
   const itemSearch = [
-    { field: "start_date", label: "Ngày bắt đầu" },
-    { field: "end_date", label: "Ngày kết thúc" },
-    { field: "status", label: "Trạng thái" },
+    { field: "dateRange", label: "Khoảng thời gian", type: "rangePicker" },
+    {
+      field: "status",
+      label: "Trạng thái",
+      type: "select",
+      options: statusPromotion,
+    },
   ];
 
   const renderHeader = () => (
@@ -176,13 +182,6 @@ const PromotionList = () => {
   return (
     <>
       <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <InputSearch
-            itemSearch={itemSearch}
-            handleSearch={handleSearch}
-            setFilter={setFilter}
-          />
-        </Col>
         <Col span={24}>
           <Table
             scroll={{

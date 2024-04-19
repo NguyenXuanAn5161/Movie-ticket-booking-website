@@ -32,10 +32,6 @@ const Search = (props) => {
       Object.entries(values).filter(([key, value]) => value !== undefined)
     );
 
-    if (Object.keys(filteredValues).length !== 0) {
-      props.handleSearch(filteredValues);
-    }
-
     // nếu value là dateRange thì gán giá trị từ khóa là startDate và endDate
     if (filteredValues.dateRange) {
       const [startDate, endDate] = filteredValues.dateRange;
@@ -43,6 +39,10 @@ const Search = (props) => {
         startDate: startDate.format(FORMAT_DATE_TIME_SEND_SERVER),
         endDate: endDate.format(FORMAT_DATE_TIME_SEND_SERVER),
       });
+    }
+
+    if (Object.keys(filteredValues).length !== 0) {
+      props.handleSearch(filteredValues);
     }
   };
 

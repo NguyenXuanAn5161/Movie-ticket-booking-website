@@ -258,7 +258,7 @@ const PriceShow = () => {
       type: "select",
       options: optionsPriceCode,
     },
-    { field: "name", label: "Mã giá" },
+    { field: "code", label: "Mã giá" },
   ];
 
   const renderHeader = () => (
@@ -273,18 +273,38 @@ const PriceShow = () => {
     />
   );
 
-  // mặc định #2
   const handleSearch = (query) => {
     let q = "";
+    let codeExists = false;
+
+    // Kiểm tra xem mã code có tồn tại không
     for (const key in query) {
       if (query.hasOwnProperty(key)) {
-        const label = key;
-        const value = query[key];
-        if (value) {
-          q += `&${label}=${value}`;
+        if (key === "code" && query[key]) {
+          codeExists = true;
+          break;
         }
       }
     }
+
+    // Nếu mã code tồn tại, thay đổi thành các giá trị mới
+    if (codeExists) {
+      q += "&foodCode=" + query.code;
+      q += "&roomCode=" + query.code;
+      q += "&typeSeatCode=" + query.code;
+    } else {
+      // Nếu không, duyệt qua các thuộc tính và thêm chúng vào chuỗi truy vấn
+      for (const key in query) {
+        if (query.hasOwnProperty(key)) {
+          const label = key;
+          const value = query[key];
+          if (value) {
+            q += `&${label}=${value}`;
+          }
+        }
+      }
+    }
+    console.log("q", q);
     setFilter(q);
   };
 
