@@ -2,13 +2,7 @@ import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Col, Form, Row, Upload } from "antd";
 import React, { useState } from "react";
 
-const ImageDetail = ({ form, formType, setImageFile }) => {
-  const isDisabled = formType ? true : false;
-  const radioStyle = {
-    pointerEvents: isDisabled ? "none" : "auto", // Tắt hoặc bật sự kiện click
-    opacity: isDisabled ? 0.5 : 1, // Làm mờ hoặc không làm mờ nút radio
-  };
-
+const ImageDetail = ({ form, setImageFile }) => {
   const [loading, setLoading] = useState(false);
 
   // xử lý ảnh
@@ -25,7 +19,7 @@ const ImageDetail = ({ form, formType, setImageFile }) => {
   };
 
   return (
-    <Form form={form} layout="vertical" disabled={isDisabled}>
+    <Form form={form} layout="vertical">
       <Row gutter={16}>
         <Col span={24}>
           <Form.Item
