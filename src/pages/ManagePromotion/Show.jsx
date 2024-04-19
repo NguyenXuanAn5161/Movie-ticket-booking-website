@@ -1,4 +1,13 @@
-import { Card, Descriptions, Divider, Popconfirm, Table, Tag } from "antd";
+import {
+  Card,
+  Descriptions,
+  Divider,
+  Popconfirm,
+  Table,
+  Tag,
+  message,
+  notification,
+} from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -15,12 +24,15 @@ import PageHeader from "../../components/PageHeader/PageHeader";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetPromotion } from "../../redux/promotion/promotionSlice";
 import {
+  callDeletePromotionLine,
   callGetPromotionHeaderById,
   callGetPromotionLineByPromotionId,
 } from "../../services/apiPromotion";
 import { HH_MM_SS_FORMAT_DATE } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import PromotionLineModalCreate from "./PromotionLines/PromotionLineModalCreate";
+import PromotionLineModalUpdate from "./PromotionLines/PromotionLineModalUpdate";
+import PromotionLineModalView from "./PromotionLines/PromotionLineModalView";
 
 const optionsPromotion = [
   { value: "DISCOUNT", label: "Giảm giá" },
@@ -136,6 +148,21 @@ const PromotionShow = () => {
     },
   ];
 
+  const handleDeleteData = async (dataId) => {
+    // thay đổi #1 api call
+    const res = await callDeletePromotionLine(dataId);
+    if (res?.status === 200) {
+      // thay đổi #1 message
+      message.success("Xoá rạp thành công!");
+      await getPromotionLines();
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: res.response.data.message,
+      });
+    }
+  };
+
   const columns = [
     createColumn(
       "Loại",
@@ -165,7 +192,7 @@ const PromotionShow = () => {
               description={"Bạn có chắc chắn muốn xóa CTKM này?"}
               okText="Xác nhận"
               cancelText="Hủy"
-              onConfirm={() => handleDeleteBook(record.id)}
+              onConfirm={() => handleDeleteData(record.id)}
             >
               <span>
                 <AiOutlineDelete
@@ -338,10 +365,25 @@ const PromotionShow = () => {
       /> */}
 
       <PromotionLineModalCreate
+        type="create"
         promotionId={promotionId}
         openModalCreate={openModalCreate}
         setOpenModalCreate={setOpenModalCreate}
         getPromotionLines={getPromotionLines}
+      />
+
+      <PromotionLineModalUpdate
+        type="update"
+        dataUpdate={dataUpdate}
+        openModalUpdate={openModalUpdate}
+        setOpenModalUpdate={setOpenModalUpdate}
+        getPromotionLines={getPromotionLines}
+      />
+
+      <PromotionLineModalView
+        dataViewDetail={dataViewDetail}
+        openViewDetail={openViewDetail}
+        setOpenViewDetail={setOpenViewDetail}
       />
     </>
   );

@@ -1,24 +1,29 @@
 import { Col, Form, InputNumber, Radio, Row } from "antd";
 import React, { useEffect, useState } from "react";
 
-const PromotionDetailsDiscount = ({ form, promotionDetails }) => {
+const PromotionDetailsDiscount = ({
+  form,
+  promotionDiscountDetailDto,
+  type,
+}) => {
   const [typePromotion, setTypePromotion] = useState("PERCENT");
   const [discountValue, setDiscountValue] = useState(1000);
 
   useEffect(() => {
-    if (typePromotion === "AMOUNT") {
-      form.setFieldsValue({
-        maxValue: discountValue,
-      });
-    }
-  }, [discountValue, form]);
+    form.setFieldsValue(promotionDiscountDetailDto);
+    setTypePromotion(promotionDiscountDetailDto?.typeDiscount);
+  }, [promotionDiscountDetailDto, form]);
 
   const handleTypeChange = (e) => {
     setTypePromotion(e.target.value);
   };
 
   return (
-    <Form form={form} layout="vertical">
+    <Form
+      form={form}
+      layout="vertical"
+      disabled={type === "update" ? true : false}
+    >
       <Row gutter={16}>
         <Col
           span={12}

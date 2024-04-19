@@ -1,14 +1,62 @@
 import { Col, Form, InputNumber, Row } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DebounceSelect from "../../../../components/DebounceSelect/DebounceSelect";
-import { callFetchListFood } from "../../../../services/apiFood";
+import {
+  callFetchListFood,
+  callGetFoodById,
+} from "../../../../services/apiFood";
 
-const PromotionDetailsGiftFood = ({ form }) => {
+const PromotionDetailsGiftFood = ({ form, promotionFoodDetailDto, type }) => {
   const [foodRequired, setFoodRequired] = useState(null);
   const [foodPromotion, setFoodPromotion] = useState(null);
 
+  useEffect(() => {
+    form.setFieldsValue(promotionFoodDetailDto);
+  }, [promotionFoodDetailDto, form]);
+
+  useEffect(() => {
+    if (foodRequired && foodPromotion) {
+      form.setFieldsValue({
+        foodRequired: foodRequired,
+      });
+
+      form.setFieldsValue({
+        foodPromotion: foodPromotion,
+      });
+    }
+    console.log("foodRequired", foodRequired);
+  }, [foodRequired, foodPromotion]);
+
+  // fetch đồ ăn lần đầu khi có dữ liệu đồ ăn
+  useEffect(() => {
+    if (promotionFoodDetailDto?.foodRequired) {
+      fetchFoodRequired(promotionFoodDetailDto.foodRequired);
+    }
+
+    if (promotionFoodDetailDto?.foodPromotion) {
+      fetchFoodPromotion(promotionFoodDetailDto.foodPromotion);
+    }
+  }, [promotionFoodDetailDto]);
+
+  const fetchFoodRequired = async (foodId) => {
+    const res = await callGetFoodById(foodId);
+    if (res) {
+      setFoodRequired({ label: res.name, value: res.id });
+    }
+  };
+  const fetchFoodPromotion = async (foodId) => {
+    const res = await callGetFoodById(foodId);
+    if (res) {
+      setFoodPromotion({ label: res.name, value: res.id });
+    }
+  };
+
   return (
-    <Form form={form} layout="vertical">
+    <Form
+      form={form}
+      layout="vertical"
+      disabled={type === "update" ? true : false}
+    >
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item
