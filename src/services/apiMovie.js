@@ -10,6 +10,16 @@ export const callFetchListTypeSeat = async () => {
     throw error;
   }
 };
+
+export const callFetchTypeSeatById = async (id) => {
+  try {
+    const response = await api.get(`/api/typeSeat/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 // moive
 export const callGetMovieById = async (id) => {
   try {
