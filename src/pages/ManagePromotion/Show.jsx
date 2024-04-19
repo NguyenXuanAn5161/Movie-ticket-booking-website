@@ -20,7 +20,7 @@ import {
 } from "../../services/apiPromotion";
 import { HH_MM_SS_FORMAT_DATE } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
-import PromotionLineModalForm from "./PromotionLines/PromotionLineForm";
+import PromotionLineModalCreate from "./PromotionLines/PromotionLineModalCreate";
 
 const optionsPromotion = [
   { value: "DISCOUNT", label: "Giảm giá" },
@@ -59,7 +59,7 @@ const PromotionShow = () => {
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
   const [dataUpdate, setDataUpdate] = useState(null);
   const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState(null);
   const [sortQuery, setSortQuery] = useState("");
@@ -239,6 +239,25 @@ const PromotionShow = () => {
     setFilter(q);
   };
 
+  const onChange = (pagination, filters, sorter, extra) => {
+    if (pagination && pagination.current !== current) {
+      setCurrent(pagination.current);
+    }
+
+    if (pagination && pagination.pageSize !== pageSize) {
+      setPageSize(pagination.pageSize);
+      setCurrent(1);
+    }
+
+    if (sorter && sorter.field) {
+      const q =
+        sorter.order === "ascend"
+          ? `sort=${sorter.field}`
+          : `sort=-${sorter.field}`;
+      setSortQuery(q);
+    }
+  };
+
   return (
     <>
       <PageHeader title="Xem chi tiết khuyến mãi" numberBack={-1} type="show" />
@@ -271,6 +290,7 @@ const PromotionShow = () => {
             loading={isLoading}
             columns={columns}
             dataSource={promotionLines}
+            onChange={onChange}
             rowKey="id" // Đảm bảo id là trường định danh duy nhất của mỗi chương trình khuyến mãi
             pagination={{
               current: current,
@@ -289,7 +309,7 @@ const PromotionShow = () => {
         </Card>
       </div>
 
-      <PromotionLineModalForm
+      {/* <PromotionLineModalForm
         formType={
           openModalCreate ? "create" : openModalUpdate ? "update" : "view"
         }
@@ -315,12 +335,14 @@ const PromotionShow = () => {
             ? setOpenModalUpdate
             : setOpenViewDetail
         }
-      />
+      /> */}
 
-      {/* <PromotionLineModalCreate
+      <PromotionLineModalCreate
+        promotionId={promotionId}
         openModalCreate={openModalCreate}
         setOpenModalCreate={setOpenModalCreate}
-      /> */}
+        getPromotionLines={getPromotionLines}
+      />
     </>
   );
 };

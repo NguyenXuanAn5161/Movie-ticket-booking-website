@@ -1,25 +1,22 @@
 import { Col, Form, Input, Radio, Row } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 
-const PromotionBasicInfo = ({ form, formType }) => {
-  const isDisabled = formType ? true : false;
-  const radioStyle = {
-    pointerEvents: isDisabled ? "none" : "auto", // Tắt hoặc bật sự kiện click
-    opacity: isDisabled ? 0.5 : 1, // Làm mờ hoặc không làm mờ nút radio
-  };
+const PromotionBasicInfo = ({ form, promotionId }) => {
+  useEffect(() => {
+    form.setFieldsValue({ promotionId });
+  }, [promotionId]);
 
   return (
-    <Form form={form} layout="vertical" disabled={isDisabled}>
+    <Form form={form} layout="vertical">
       <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item
-            label="Mã chương trình khuyến mãi"
-            name="code"
-            rules={[{ required: true, message: "Vui lòng nhập mã CTKM!" }]}
-          >
-            <Input />
-          </Form.Item>
-        </Col>
+        <Form.Item
+          hidden
+          label="Id"
+          name="promotionId"
+          rules={[{ required: true, message: "Vui lòng nhập id!" }]}
+        >
+          <Input />
+        </Form.Item>
         <Col span={12}>
           <Form.Item
             label="Tên Chương trình khuyến mãi"
@@ -27,6 +24,23 @@ const PromotionBasicInfo = ({ form, formType }) => {
             rules={[{ required: true, message: "Vui lòng nhập tên CTKM!" }]}
           >
             <Input />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            label="Loại khuyến mãi"
+            name="typePromotion"
+            rules={[
+              { required: true, message: "Vui lòng chọn loại khuyến mãi!" },
+            ]}
+            style={{ width: "100%", textAlign: "left" }}
+            initialValue={"DISCOUNT"}
+          >
+            <Radio.Group>
+              <Radio value="DISCOUNT">Giảm giá</Radio>
+              <Radio value="FOOD">Tặng đồ ăn</Radio>
+              <Radio value="TICKET">Tặng vé</Radio>
+            </Radio.Group>
           </Form.Item>
         </Col>
         <Col span={24}>
@@ -38,22 +52,6 @@ const PromotionBasicInfo = ({ form, formType }) => {
             <Input.TextArea />
           </Form.Item>
         </Col>
-        <Form.Item
-          label="Loại khuyến mãi"
-          name="typePromotion"
-          rules={[
-            { required: true, message: "Vui lòng chọn loại khuyến mãi!" },
-          ]}
-        >
-          <Radio.Group disabled={false}>
-            <Radio value="DISCOUNT" style={radioStyle}>
-              Giảm giá
-            </Radio>
-            <Radio value="GIFT" style={radioStyle}>
-              Quà tặng
-            </Radio>
-          </Radio.Group>
-        </Form.Item>
       </Row>
     </Form>
   );
