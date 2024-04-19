@@ -46,7 +46,7 @@ export const callCreatePromotionHeader = async (data) => {
   }
 };
 
-// get promtion line by promotionId
+// line
 export const callGetPromotionLineByPromotionId = async (query) => {
   try {
     const response = await api.get(`/api/promotion/line?${query}`);
@@ -55,81 +55,90 @@ export const callGetPromotionLineByPromotionId = async (query) => {
     return error;
   }
 };
-// // create promotion line
-// export const callCreatePromotionLine = async (data, promotionId) => {
-//   const {
-//     code,
-//     name,
-//     description,
-//     typePromotion,
-//     timeValue,
-//     applicableObject,
-//     usePerUser,
-//     usePerPromotion,
-//     PromotionDetailDto,
-//   } = data;
 
-//   const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
-//   const endDate = timeValue[1].format("YYYY-MM-DDTHH:mm:ss");
-
-//   const bodyFormData = new FormData();
-//   bodyFormData.append("promotionId", promotionId);
-//   bodyFormData.append("code", code);
-//   bodyFormData.append("name", name);
-//   bodyFormData.append("description", description);
-//   bodyFormData.append("typePromotion", typePromotion);
-//   bodyFormData.append("startDate", startDate);
-//   bodyFormData.append("endDate", endDate);
-//   bodyFormData.append("status", true);
-//   bodyFormData.append("applicableObject", applicableObject);
-//   bodyFormData.append("usePerUser", usePerUser);
-//   bodyFormData.append("usePerPromotion", usePerPromotion);
-//   bodyFormData.append("PromotionDetailDto", JSON.stringify(PromotionDetailDto));
-
-//   try {
-//     const response = await api({
-//       method: "post",
-//       url: `/api/promotion/line`,
-//       data: bodyFormData,
-//       headers: {
-//         "Content-Type": "multipart/form-data",
-//       },
-//     });
-//     return response.data;
-//   } catch (error) {
-//     return error;
-//   }
-// };
-
-export const callCreatePromotionLine = async (data, promotionId) => {
+export const callCreatePromotionLine = async (data, imageUrl) => {
   const {
-    code,
     name,
     description,
-    typePromotion,
     timeValue,
-    usePerUser,
-    usePerPromotion,
-    promotionDiscountDetailDto,
+    typePromotion,
+    promotionId,
+    maxValue,
+    typeDiscount,
+    minBillValue,
+    discountValue,
+    quantityRequired,
+    quantityPromotion,
+    typeSeatRequired,
+    typeSeatPromotion,
   } = data;
 
   const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
   const endDate = timeValue[1].format("YYYY-MM-DDTHH:mm:ss");
-  const applicableObject = data.applicableObject[0];
-  const requestData = {
-    promotionId,
-    code,
-    name,
-    description,
-    typePromotion,
-    startDate,
-    endDate,
-    status: true,
-    applicableObject,
-    usePerUser,
-    usePerPromotion,
-    promotionDiscountDetailDto,
+  const image = imageUrl;
+  let foodPromotion;
+  let foodRequired;
+  if (typePromotion === "FOOD") {
+    foodPromotion = data?.foodPromotion.value;
+    foodRequired = data?.foodRequired.value;
+  }
+
+  const promotionDiscountDetailDto = {
+    maxValue,
+    typeDiscount,
+    minBillValue,
+    discountValue,
   };
+  const promotionFoodDetailDto = {
+    foodRequired,
+    quantityRequired,
+    foodPromotion,
+    quantityPromotion,
+    price: 0,
+  };
+  const promotionTicketDetailDto = {
+    typeSeatRequired,
+    quantityRequired,
+    typeSeatPromotion,
+    quantityPromotion,
+    price: 0,
+  };
+
+  let requestData = {};
+  typePromotion === "DISCOUNT"
+    ? (requestData = {
+        name,
+        image,
+        description,
+        startDate,
+        endDate,
+        typePromotion,
+        promotionId,
+        promotionDiscountDetailDto,
+      })
+    : typePromotion === "FOOD"
+    ? (requestData = {
+        name,
+        image,
+        description,
+        startDate,
+        endDate,
+        typePromotion,
+        promotionId,
+        promotionFoodDetailDto,
+      })
+    : (requestData = {
+        name,
+        image,
+        description,
+        startDate,
+        endDate,
+        typePromotion,
+        promotionId,
+        promotionTicketDetailDto,
+      });
+
+  console.log("requestData", requestData);
 
   try {
     const response = await api.post(`/api/promotion/line`, requestData, {
@@ -143,46 +152,47 @@ export const callCreatePromotionLine = async (data, promotionId) => {
   }
 };
 
-// // create promotion line
-// export const callCreatePromotionLine = async (data, promotionId) => {
-//   const bodyFormData = new FormData();
-//   console.log("dâta trong api: ", data);
-//   bodyFormData.append("promotionId", promotionId);
-//   bodyFormData.append("code", data.code);
-//   bodyFormData.append("name", data.name);
-//   bodyFormData.append("description", data.description);
-//   bodyFormData.append("typePromotion", data.typePromotion);
-//   bodyFormData.append(
-//     "startDate",
-//     data.timeValue[0].format("YYYY-MM-DDTHH:mm:ss")
-//   );
-//   bodyFormData.append(
-//     "endDate",
-//     data.timeValue[1].format("YYYY-MM-DDTHH:mm:ss")
-//   );
-//   bodyFormData.append("status", true);
-//   bodyFormData.append("applicableObject", data.applicableObject);
-//   bodyFormData.append("usePerUser", data.usePerUser);
-//   bodyFormData.append("usePerPromotion", data.usePerPromotion);
-//   bodyFormData.append(
-//     "PromotionDetailDto",
-//     JSON.stringify(data.PromotionDetailDto)
-//   );
+export const callUpdatePromotionLine = async (data, imageUrl) => {
+  const { id, name, description, timeValue, status } = data;
+  const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
+  const endDate = timeValue[1].format("YYYY-MM-DDTHH:mm:ss");
 
-//   try {
-//     const response = await api({
-//       method: "post",
-//       url: `/api/promotion/line`,
-//       data: bodyFormData,
-//       headers: {
-//         "Content-Type": "multipart/form-data",
-//       },
-//     });
-//     return response.data;
-//   } catch (error) {
-//     return error;
-//   }
-// };
+  const bodyFormData = new FormData();
+  if (imageUrl) {
+    bodyFormData.append("image", imageUrl);
+  } else {
+    bodyFormData.append("image", data.image);
+  }
+  bodyFormData.append("id", id);
+  bodyFormData.append("name", name);
+  bodyFormData.append("description", description);
+  bodyFormData.append("startDate", startDate);
+  bodyFormData.append("endDate", endDate);
+  bodyFormData.append("status", status);
+
+  try {
+    const response = await api({
+      method: "put",
+      url: "/api/promotion/line",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callDeletePromotionLine = async (id) => {
+  try {
+    const response = await api.delete(`/api/promotion/line/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
 
 // --------------------------------------------
 // áp khuyến mãi phù hợp

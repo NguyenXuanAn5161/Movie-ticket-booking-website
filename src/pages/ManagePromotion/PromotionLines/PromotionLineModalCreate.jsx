@@ -1,37 +1,54 @@
 import { Button, Form, Modal, Steps, message, notification } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { callUploadImage } from "../../../services/apiMovie";
+import { callCreatePromotionLine } from "../../../services/apiPromotion";
 import PromotionBasicInfo from "./StepsCreate/BasicInfor";
 import PromotionDetailsDiscount from "./StepsCreate/DetailsDiscount";
-import PromotionDetailsGift from "./StepsCreate/DetailsGift";
+import PromotionDetailsGiftFood from "./StepsCreate/DetailsGiftFood";
+import PromotionDetailsGiftTicket from "./StepsCreate/DetailsGiftTicket";
+import ImageDetail from "./StepsCreate/ImageDetail";
 import PromotionUsageConditions from "./StepsCreate/UsageConditions";
 
 const PromotionLineModalCreate = (props) => {
+  const { openModalCreate, setOpenModalCreate, promotionId, type } = props;
   const [form] = Form.useForm();
 
   const [current, setCurrent] = useState(0);
-  const { openModalCreate, setOpenModalCreate } = props;
   const [isSubmit, setIsSubmit] = useState(false);
   const [formData, setFormData] = useState({});
+  const [imageFile, setImageFile] = useState(null);
 
   const steps = [
     {
-      title: "Thông tin cơ bản",
-      formComponent: <PromotionBasicInfo form={form} />,
+      title: "Ảnh",
+      formComponent: <ImageDetail form={form} setImageFile={setImageFile} />,
     },
     {
-      title: "Điều kiện sử dụng",
-      formComponent: <PromotionUsageConditions form={form} />,
+      title: "Thông tin cơ bản",
+      formComponent: (
+        <PromotionBasicInfo form={form} promotionId={promotionId} type={type} />
+      ),
+    },
+    {
+      title: "Thời gian áp dụng",
+      formComponent: <PromotionUsageConditions form={form} type={type} />,
     },
     {
       title: "Chi tiết khuyến mãi",
       formComponent:
-        formData?.type === "discount" ? (
-          <PromotionDetailsDiscount form={form} />
+        formData?.typePromotion === "DISCOUNT" ? (
+          <PromotionDetailsDiscount form={form} type={type} />
+        ) : formData?.typePromotion === "FOOD" ? (
+          <PromotionDetailsGiftFood form={form} type={type} />
         ) : (
-          <PromotionDetailsGift form={form} />
+          <PromotionDetailsGiftTicket form={form} type={type} />
         ),
     },
   ];
+
+  useEffect(() => {
+    console.log("formData", formData);
+  }, [formData]);
 
   const next = () => {
     form
@@ -42,6 +59,7 @@ const PromotionLineModalCreate = (props) => {
         setFormData({ ...formData, ...values });
       })
       .catch((error) => {
+        console.log("error", error);
         notification.error({
           message: "Có lỗi xảy ra!",
           description: "Vui lòng nhập đầy đủ thông tin",
@@ -57,22 +75,44 @@ const PromotionLineModalCreate = (props) => {
     setCurrent(0);
   };
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     form
       .validateFields()
-      .then((values) => {
+      .then(async (values) => {
         setIsSubmit(true);
         // api
         console.log("formData trong then: ", { ...formData, ...values });
-        setTimeout(() => {
-          setIsSubmit(false);
-          setOpenModalCreate(false);
-          setCurrent(0);
-          form.resetFields();
-          message.success("Tạo mới chương trình khuyến mãi thành công");
-        }, 2000);
+        const resImage = await callUploadImage(imageFile);
+        console.log("resImage", resImage);
+        if (resImage?.data?.status === 200) {
+          // setIsSubmit(false);
+          // return;
+          const resPromotion = await callCreatePromotionLine(
+            {
+              ...formData,
+              ...values,
+            },
+            resImage.data.message
+          );
+          console.log("resPromotion", resPromotion);
+          if (resPromotion?.status === 200) {
+            props.getPromotionLines();
+            setIsSubmit(false);
+            setOpenModalCreate(false);
+            setCurrent(0);
+            form.resetFields();
+            message.success("Tạo mới chương trình khuyến mãi thành công");
+          } else {
+            setIsSubmit(false);
+            notification.error({
+              message: "Đã có lỗi xảy ra!",
+              description: resPromotion.response.data.message,
+            });
+          }
+        }
       })
       .catch((error) => {
+        console.log("error", error);
         notification.error({
           message: "Có lỗi xảy ra!",
           description: "Vui lòng nhập đầy đủ thông tin",

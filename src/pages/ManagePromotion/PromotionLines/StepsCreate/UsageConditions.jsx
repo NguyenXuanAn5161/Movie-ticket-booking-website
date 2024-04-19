@@ -1,70 +1,14 @@
-import { Col, DatePicker, Form, InputNumber, Row, TreeSelect } from "antd";
+import { Col, DatePicker, Form, Radio, Row } from "antd";
 import dayjs from "dayjs";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { FORMAT_DATE_HH_MM_SS } from "../../../../utils/constant";
 
-const { SHOW_PARENT } = TreeSelect;
-
-const treeData = [
-  {
-    title: "Toàn bộ",
-    value: "ALL",
-    key: "ALL",
-    children: [
-      {
-        title: "Thành viên",
-        value: "MEMBERSHIP",
-        key: "MEMBERSHIP",
-        children: [
-          {
-            title: "Cấp bậc bạc",
-            value: "LEVEL_SILVER",
-            key: "LEVEL_SILVER",
-          },
-          {
-            title: "Cấp bậc vàng",
-            value: "LEVEL_GOLD",
-            key: "LEVEL_GOLD",
-          },
-          {
-            title: "Cấp bậc bạch kim",
-            value: "LEVEL_PLATINUM",
-            key: "LEVEL_PLATINUM",
-          },
-        ],
-      },
-    ],
-  },
-];
-
-const dateFormat = "DD-MM-YYYY HH:mm:ss";
 const defaultStartDate = dayjs().startOf("day").add(1, "day");
 const defaultEndDate = dayjs().endOf("day").add(1, "day");
 
-const PromotionUsageConditions = ({ form, formType }) => {
-  const isDisabled = formType ? true : false;
-  const radioStyle = {
-    pointerEvents: isDisabled ? "none" : "auto", // Tắt hoặc bật sự kiện click
-    opacity: isDisabled ? 0.5 : 1, // Làm mờ hoặc không làm mờ nút radio
-  };
-  const [data, setData] = useState(treeData);
-  const [value, setValue] = useState(["ALL"]); // Set default value to "Toàn bộ"
-
-  useEffect(() => {
-    setData(treeData);
-  }, []);
-
-  const onChange = (newValue) => {
-    setValue(newValue);
-  };
-
-  useEffect(() => {
-    form.setFieldsValue({
-      applicableObject: value,
-    });
-  }, [value]);
-
+const PromotionUsageConditions = ({ form, dataUpdate, type }) => {
   return (
-    <Form form={form} layout="vertical" disabled={isDisabled}>
+    <Form form={form} layout="vertical">
       <Row gutter={16}>
         <Col span={24}>
           <Form.Item
@@ -77,53 +21,46 @@ const PromotionUsageConditions = ({ form, formType }) => {
                 message: "Vui lòng chọn thời gian áp dụng!",
               },
             ]}
-            initialValue={[defaultStartDate, defaultEndDate]}
+            initialValue={
+              dataUpdate
+                ? [dayjs(dataUpdate?.startDate), dayjs(dataUpdate?.endDate)]
+                : [defaultStartDate, defaultEndDate]
+            }
           >
             <DatePicker.RangePicker
+              disabled={type === "update" ? true : false}
               style={{ width: "100%" }}
               showTime
-              format={dateFormat}
+              format={FORMAT_DATE_HH_MM_SS}
               minDate={defaultStartDate}
               // defaultValue={[defaultStartDate, defaultEndDate]}
               placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
             />
           </Form.Item>
         </Col>
-        <Col span={24}>
-          <Form.Item
-            label="Đối tượng sử dụng"
-            name="applicableObject"
-            rules={[{ required: true, message: "Không để trống!" }]}
-          >
-            <TreeSelect
-              treeData={data}
-              value={value}
-              onChange={onChange}
-              treeCheckable={true}
-              showCheckedStrategy={SHOW_PARENT}
-              placeholder="Vui lòng chọn ít nhất 1 đối tượng áp dụng"
-              style={{ width: "100%" }}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            label="Số lần khách hàng có thể dùng"
-            name="usePerUser"
-            rules={[{ required: true, message: "Không để trống!" }]}
-          >
-            <InputNumber style={{ width: "100%" }} min={1} />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            label="Tổng số lượng khuyến mãi có thể dùng"
-            name="usePerPromotion"
-            rules={[{ required: true, message: "Không để trống!" }]}
-          >
-            <InputNumber style={{ width: "100%" }} min={0} />
-          </Form.Item>
-        </Col>
+        {type === "update" && (
+          <Col span={24}>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label="Trạng thái"
+              name="status"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn trạng thái!",
+                },
+              ]}
+              style={{ width: "100%", textAlign: "left" }}
+            >
+              <Radio.Group
+                disabled={dayjs(dataUpdate?.startDate).isAfter(dayjs())}
+              >
+                <Radio value={true}>Hoạt động</Radio>
+                <Radio value={false}>Không hoạt động</Radio>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
+        )}
       </Row>
     </Form>
   );

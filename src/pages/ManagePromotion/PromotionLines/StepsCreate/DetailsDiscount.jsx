@@ -1,44 +1,29 @@
 import { Col, Form, InputNumber, Radio, Row } from "antd";
 import React, { useEffect, useState } from "react";
 
-const PromotionDetailsDiscount = ({ form, promotionDetails, formType }) => {
-  const isDisabled = formType ? true : false;
-  const radioStyle = {
-    pointerEvents: isDisabled ? "none" : "auto", // Tắt hoặc bật sự kiện click
-    opacity: isDisabled ? 0.5 : 1, // Làm mờ hoặc không làm mờ nút radio
-  };
-
+const PromotionDetailsDiscount = ({
+  form,
+  promotionDiscountDetailDto,
+  type,
+}) => {
   const [typePromotion, setTypePromotion] = useState("PERCENT");
   const [discountValue, setDiscountValue] = useState(1000);
 
   useEffect(() => {
-    if (typePromotion === "AMOUNT") {
-      form.setFieldsValue({
-        maxValue: discountValue,
-      });
-    }
-  }, [discountValue, form]);
-
-  useEffect(() => {
-    // Kiểm tra xem promotionDetails có dữ liệu không
-    if (promotionDetails && Object.keys(promotionDetails).length > 0) {
-      // Set các giá trị vào các trường của form
-      form.setFieldsValue({
-        // typePromotion: promotionDetails.typePromotion || "percent",
-        discount_value: promotionDetails.discount_value || 0,
-        min_spend: promotionDetails.min_spend || 0,
-        max_spend: promotionDetails.max_spend || 0,
-      });
-      // setTypePromotion(promotionDetails.typePromotion || "percent");
-    }
-  }, [promotionDetails, form]);
+    form.setFieldsValue(promotionDiscountDetailDto);
+    setTypePromotion(promotionDiscountDetailDto?.typeDiscount);
+  }, [promotionDiscountDetailDto, form]);
 
   const handleTypeChange = (e) => {
     setTypePromotion(e.target.value);
   };
 
   return (
-    <Form form={form} layout="vertical" disabled={isDisabled}>
+    <Form
+      form={form}
+      layout="vertical"
+      disabled={type === "update" ? true : false}
+    >
       <Row gutter={16}>
         <Col
           span={12}
@@ -54,12 +39,8 @@ const PromotionDetailsDiscount = ({ form, promotionDetails, formType }) => {
             initialValue={"PERCENT"}
           >
             <Radio.Group disabled={false} onChange={handleTypeChange}>
-              <Radio style={radioStyle} value="PERCENT">
-                % Chiết khấu
-              </Radio>
-              <Radio style={radioStyle} value="AMOUNT">
-                Giảm trực tiếp
-              </Radio>
+              <Radio value="PERCENT">% Chiết khấu</Radio>
+              <Radio value="AMOUNT">Giảm trực tiếp</Radio>
             </Radio.Group>
           </Form.Item>
         </Col>
@@ -84,7 +65,7 @@ const PromotionDetailsDiscount = ({ form, promotionDetails, formType }) => {
                   ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   : value
               }
-              max={typePromotion === "PERCENT" ? 100 : 99900}
+              max={typePromotion === "PERCENT" ? 100 : 9999999}
               addonAfter={typePromotion === "PERCENT" ? "%" : "VND"}
             />
           </Form.Item>
