@@ -107,3 +107,15 @@ export const renderSeatType = (text, record) => {
     </span>
   );
 };
+
+export const renderTypePromotion = (text, record) => {
+  return (
+    <span>
+      {record?.typePromotion === "DISCOUNT"
+        ? "Giảm Giá"
+        : record?.typePromotion === "FOOD"
+        ? "Tặng đồ ăn"
+        : "Tặng vé"}
+    </span>
+  );
+};
