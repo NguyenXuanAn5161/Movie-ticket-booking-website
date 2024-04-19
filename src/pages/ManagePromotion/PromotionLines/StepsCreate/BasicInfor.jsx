@@ -1,22 +1,39 @@
 import { Col, Form, Input, Radio, Row } from "antd";
 import React, { useEffect } from "react";
 
-const PromotionBasicInfo = ({ form, promotionId }) => {
+const PromotionBasicInfo = ({ form, dataUpdate, promotionId, type }) => {
   useEffect(() => {
-    form.setFieldsValue({ promotionId });
+    if (promotionId) {
+      form.setFieldsValue({ promotionId });
+    }
   }, [promotionId]);
+
+  useEffect(() => {
+    form.setFieldsValue(dataUpdate);
+  }, [dataUpdate]);
 
   return (
     <Form form={form} layout="vertical">
       <Row gutter={16}>
-        <Form.Item
-          hidden
-          label="Id"
-          name="promotionId"
-          rules={[{ required: true, message: "Vui lòng nhập id!" }]}
-        >
-          <Input />
-        </Form.Item>
+        {type === "create" ? (
+          <Form.Item
+            hidden
+            label="Id"
+            name="promotionId"
+            rules={[{ required: true, message: "Vui lòng nhập id!" }]}
+          >
+            <Input />
+          </Form.Item>
+        ) : (
+          <Form.Item
+            hidden
+            label="Id"
+            name="id"
+            rules={[{ required: true, message: "Vui lòng nhập id!" }]}
+          >
+            <Input />
+          </Form.Item>
+        )}
         <Col span={12}>
           <Form.Item
             label="Tên Chương trình khuyến mãi"
@@ -36,7 +53,7 @@ const PromotionBasicInfo = ({ form, promotionId }) => {
             style={{ width: "100%", textAlign: "left" }}
             initialValue={"DISCOUNT"}
           >
-            <Radio.Group>
+            <Radio.Group disabled={type === "update" ? true : false}>
               <Radio value="DISCOUNT">Giảm giá</Radio>
               <Radio value="FOOD">Tặng đồ ăn</Radio>
               <Radio value="TICKET">Tặng vé</Radio>

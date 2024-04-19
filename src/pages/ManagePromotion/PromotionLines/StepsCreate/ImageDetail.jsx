@@ -2,7 +2,7 @@ import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Col, Form, Row, Upload } from "antd";
 import React, { useState } from "react";
 
-const ImageDetail = ({ form, setImageFile }) => {
+const ImageDetail = ({ form, setImageFile, dataUpdate }) => {
   const [loading, setLoading] = useState(false);
 
   // xử lý ảnh
@@ -32,6 +32,8 @@ const ImageDetail = ({ form, setImageFile }) => {
                 message: "Vui lòng nhập chọn hình ảnh!",
               },
             ]}
+            // check lại nếu có lỗi
+            initialValue={dataUpdate?.image}
           >
             <Upload
               accept="image/*"
@@ -40,6 +42,9 @@ const ImageDetail = ({ form, setImageFile }) => {
               onRemove={(file) => handleRemoveFile(file)}
               onChange={(info) => normFile(info)}
               listType="picture-card"
+              defaultFileList={
+                dataUpdate?.image ? [{ url: dataUpdate?.image }] : []
+              }
             >
               <div>
                 {loading ? <LoadingOutlined /> : <PlusOutlined />}

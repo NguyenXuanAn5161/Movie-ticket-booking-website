@@ -2,7 +2,15 @@ import { Col, Form, InputNumber, Row, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { callFetchListTypeSeat } from "../../../../services/apiMovie";
 
-const PromotionDetailsGiftTicket = ({ form }) => {
+const PromotionDetailsGiftTicket = ({
+  form,
+  promotionTicketDetailDto,
+  type,
+}) => {
+  useEffect(() => {
+    form.setFieldsValue(promotionTicketDetailDto);
+  }, [promotionTicketDetailDto, form]);
+
   const [typeSeat, setTypeSeat] = useState(null);
   useEffect(() => {
     fetchTypeSeat();
@@ -27,7 +35,11 @@ const PromotionDetailsGiftTicket = ({ form }) => {
   };
 
   return (
-    <Form form={form} layout="vertical">
+    <Form
+      form={form}
+      layout="vertical"
+      disabled={type === "update" ? true : false}
+    >
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item

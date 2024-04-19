@@ -31,6 +31,7 @@ import {
 import { HH_MM_SS_FORMAT_DATE } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import PromotionLineModalCreate from "./PromotionLines/PromotionLineModalCreate";
+import PromotionLineModalUpdate from "./PromotionLines/PromotionLineModalUpdate";
 
 const optionsPromotion = [
   { value: "DISCOUNT", label: "Giảm giá" },
@@ -363,9 +364,18 @@ const PromotionShow = () => {
       /> */}
 
       <PromotionLineModalCreate
+        type="create"
         promotionId={promotionId}
         openModalCreate={openModalCreate}
         setOpenModalCreate={setOpenModalCreate}
+        getPromotionLines={getPromotionLines}
+      />
+
+      <PromotionLineModalUpdate
+        type="update"
+        dataUpdate={dataUpdate}
+        openModalUpdate={openModalUpdate}
+        setOpenModalUpdate={setOpenModalUpdate}
         getPromotionLines={getPromotionLines}
       />
     </>

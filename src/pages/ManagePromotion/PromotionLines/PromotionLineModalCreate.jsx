@@ -10,7 +10,7 @@ import ImageDetail from "./StepsCreate/ImageDetail";
 import PromotionUsageConditions from "./StepsCreate/UsageConditions";
 
 const PromotionLineModalCreate = (props) => {
-  const { openModalCreate, setOpenModalCreate, promotionId } = props;
+  const { openModalCreate, setOpenModalCreate, promotionId, type } = props;
   const [form] = Form.useForm();
 
   const [current, setCurrent] = useState(0);
@@ -26,22 +26,22 @@ const PromotionLineModalCreate = (props) => {
     {
       title: "Thông tin cơ bản",
       formComponent: (
-        <PromotionBasicInfo form={form} promotionId={promotionId} />
+        <PromotionBasicInfo form={form} promotionId={promotionId} type={type} />
       ),
     },
     {
       title: "Thời gian áp dụng",
-      formComponent: <PromotionUsageConditions form={form} />,
+      formComponent: <PromotionUsageConditions form={form} type={type} />,
     },
     {
       title: "Chi tiết khuyến mãi",
       formComponent:
         formData?.typePromotion === "DISCOUNT" ? (
-          <PromotionDetailsDiscount form={form} />
+          <PromotionDetailsDiscount form={form} type={type} />
         ) : formData?.typePromotion === "FOOD" ? (
-          <PromotionDetailsGiftFood form={form} />
+          <PromotionDetailsGiftFood form={form} type={type} />
         ) : (
-          <PromotionDetailsGiftTicket form={form} />
+          <PromotionDetailsGiftTicket form={form} type={type} />
         ),
     },
   ];
@@ -59,6 +59,7 @@ const PromotionLineModalCreate = (props) => {
         setFormData({ ...formData, ...values });
       })
       .catch((error) => {
+        console.log("error", error);
         notification.error({
           message: "Có lỗi xảy ra!",
           description: "Vui lòng nhập đầy đủ thông tin",

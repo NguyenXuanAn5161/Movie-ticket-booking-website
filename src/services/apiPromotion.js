@@ -46,7 +46,7 @@ export const callCreatePromotionHeader = async (data) => {
   }
 };
 
-// get promtion line by promotionId
+// line
 export const callGetPromotionLineByPromotionId = async (query) => {
   try {
     const response = await api.get(`/api/promotion/line?${query}`);
@@ -144,6 +144,39 @@ export const callCreatePromotionLine = async (data, imageUrl) => {
     const response = await api.post(`/api/promotion/line`, requestData, {
       headers: {
         "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callUpdatePromotionLine = async (data, imageUrl) => {
+  const { id, name, description, timeValue, status } = data;
+  const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
+  const endDate = timeValue[1].format("YYYY-MM-DDTHH:mm:ss");
+
+  const bodyFormData = new FormData();
+  if (imageUrl) {
+    bodyFormData.append("image", imageUrl);
+  } else {
+    bodyFormData.append("image", data.image);
+  }
+  bodyFormData.append("id", id);
+  bodyFormData.append("name", name);
+  bodyFormData.append("description", description);
+  bodyFormData.append("startDate", startDate);
+  bodyFormData.append("endDate", endDate);
+  bodyFormData.append("status", status);
+
+  try {
+    const response = await api({
+      method: "put",
+      url: "/api/promotion/line",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;
