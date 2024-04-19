@@ -1,31 +1,32 @@
-import {
-  Button,
-  Card,
-  Descriptions,
-  Divider,
-  Popconfirm,
-  Table,
-  Tag,
-} from "antd";
+import { Card, Descriptions, Divider, Popconfirm, Table, Tag } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlineExport,
-  AiOutlinePlus,
-  AiOutlineReload,
-} from "react-icons/ai";
+import { AiOutlineDelete } from "react-icons/ai";
 import { BsEye } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import {
+  renderDate,
+  renderStatus,
+  renderTypePromotion,
+} from "../../components/FunctionRender/FunctionRender";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetPromotion } from "../../redux/promotion/promotionSlice";
 import {
   callGetPromotionHeaderById,
   callGetPromotionLineByPromotionId,
 } from "../../services/apiPromotion";
+import { HH_MM_SS_FORMAT_DATE } from "../../utils/constant";
+import { createColumn } from "../../utils/createColumn";
 import PromotionLineModalForm from "./PromotionLines/PromotionLineForm";
+
+const optionsPromotion = [
+  { value: "DISCOUNT", label: "Giảm giá" },
+  { value: "FOOD", label: "Tặng đồ ăn" },
+  { value: "TICKET", label: "Tặng vé" },
+];
 
 const PromotionShow = () => {
   const promotionHeader = useSelector((state) => state.promotion.promotion);
@@ -106,14 +107,12 @@ const PromotionShow = () => {
     {
       label: "Ngày bắt đầu",
       key: "3",
-      children: moment(promotionHeader?.startDate).format(
-        "DD-MM-YYYY HH:mm:ss"
-      ),
+      children: moment(promotionHeader?.startDate).format(HH_MM_SS_FORMAT_DATE),
     },
     {
       label: "Ngày kết thúc",
       key: "4",
-      children: moment(promotionHeader?.endDate).format("DD-MM-YYYY HH:mm:ss"),
+      children: moment(promotionHeader?.endDate).format(HH_MM_SS_FORMAT_DATE),
     },
     {
       label: "Trạng thái",
@@ -137,103 +136,22 @@ const PromotionShow = () => {
     },
   ];
 
-  const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span style={{ fontWeight: "500" }}>
-        Danh sách chương trình khuyến mãi (CTKM)
-      </span>
-      <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          icon={<AiOutlineExport />}
-          type="primary"
-          onClick={() => setOpenModalExport(true)}
-        >
-          Export
-        </Button>
-        <Button
-          icon={<AiOutlinePlus />}
-          type="primary"
-          onClick={() => setOpenModalCreate(true)}
-        >
-          Thêm mới
-        </Button>
-        <Button
-          type="ghost"
-          onClick={() => {
-            setCurrent(1);
-            setFilter("");
-            setSortQuery("");
-          }}
-        >
-          <AiOutlineReload />
-        </Button>
-      </span>
-    </div>
-  );
-
   const columns = [
-    {
-      title: "Mã CTKM",
-      dataIndex: "code",
-      width: 150,
-      fixed: "left",
-    },
-    {
-      title: "Tên CTKM",
-      dataIndex: "name",
-      key: "name",
-      sorter: true,
-      width: 150,
-      fixed: "left",
-    },
-    {
-      title: "Ngày bắt đầu",
-      dataIndex: "startDate",
-      width: 120,
-      render: (text, record, index) => {
-        return (
-          <span>{moment(record.startDate).format("DD-MM-YYYY HH:mm:ss")}</span>
-        );
-      },
-    },
-    {
-      title: "Ngày kết thúc",
-      dataIndex: "endDate",
-      width: 130,
-      render: (text, record, index) => {
-        return (
-          <span>{moment(record.endDate).format("DD-MM-YYYY HH:mm:ss")}</span>
-        );
-      },
-    },
-    {
-      title: "Mô Tả",
-      dataIndex: "description",
-      key: "description",
-      width: 250,
-    },
-    {
-      title: "Trạng Thái",
-      dataIndex: "status",
-      key: "status",
-      width: 150,
-      render: (status) => (
-        <Tag color={status ? "success" : "error"}>
-          {status ? "Hoạt động" : "Không hoạt động"}
-        </Tag>
-      ),
-    },
-    // {
-    //   title: "Cập nhật ngày",
-    //   dataIndex: "updatedAt",
-    //   width: 150,
-    //   render: (text, record, index) => {
-    //     return (
-    //       <span>{moment(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</span>
-    //     );
-    //   },
-    //   sorter: true,
-    // },
+    createColumn(
+      "Loại",
+      "typePromotion",
+      100,
+      false,
+      renderTypePromotion,
+      "left"
+    ),
+    createColumn("Mã CTKM", "code", 130, false, undefined, "left"),
+    createColumn("Tên CTKM", "name", 150, false, undefined, "left"),
+    createColumn("Ngày bắt đầu", "startDate", 120, false, renderDate),
+    createColumn("Ngày kết thúc", "endDate", 130, false, renderDate),
+    createColumn("Mô tả", "description", 230),
+    createColumn("Trạng thái", "status", 150, false, renderStatus()),
+    createColumn("Cập nhật ngày", "createdAt", 150, false, renderDate),
     {
       title: "Thao tác",
       width: 100,
@@ -274,6 +192,52 @@ const PromotionShow = () => {
       },
     },
   ];
+
+  const handleReload = () => {
+    setFilter("");
+    setSortQuery("");
+    setCurrent(1);
+  };
+
+  const handleToPageCreate = () => {
+    setOpenModalCreate(true);
+  };
+
+  const itemSearch = [
+    {
+      field: "typePromotion",
+      label: "Loại CTKM",
+      type: "select",
+      options: optionsPromotion,
+    },
+    { field: "code", label: "Mã CTKM" },
+  ];
+
+  const renderHeader = () => (
+    <TableHeader
+      onReload={handleReload}
+      filter={filter}
+      setFilter={setFilter}
+      handleSearch={handleSearch}
+      headerTitle={"Danh sách chương trình khuyến mãi (CTKM)"}
+      itemSearch={itemSearch}
+      create={handleToPageCreate}
+    />
+  );
+
+  const handleSearch = (query) => {
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+    setFilter(q);
+  };
 
   return (
     <>

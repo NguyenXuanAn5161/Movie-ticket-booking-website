@@ -5,6 +5,11 @@ import { FORMAT_DATE_HH_MM_SS } from "../../utils/constant";
 
 const getStatusMap = (type) => {
   switch (type) {
+    case "payment":
+      return {
+        true: { color: "success", label: "Đã thanh toán" },
+        false: { color: "error", label: "Chưa thanh toán" },
+      };
     case "movie":
       return {
         true: { color: "success", label: "Được chiếu" },
@@ -43,7 +48,11 @@ export const renderAddress = (text, record) => {
 };
 
 export const renderDate = (text, record) => {
-  return <span>{moment(text).format(FORMAT_DATE_HH_MM_SS)}</span>;
+  return (
+    <span>
+      {text ? moment(text).format(FORMAT_DATE_HH_MM_SS) : "Chưa có thông tin"}
+    </span>
+  );
 };
 
 export const renderCurrency = (text, record) => {
@@ -83,6 +92,30 @@ export const renderPriceName = (text, record) => {
           ? "Ghế thường"
           : "Ghế vip"
         : record?.name}
+    </span>
+  );
+};
+
+export const renderSeatType = (text, record) => {
+  return (
+    <span>
+      {text === "VIP"
+        ? "Ghế vip"
+        : text === "STANDARD"
+        ? "Ghế thường"
+        : "Ghế đôi"}
+    </span>
+  );
+};
+
+export const renderTypePromotion = (text, record) => {
+  return (
+    <span>
+      {record?.typePromotion === "DISCOUNT"
+        ? "Giảm Giá"
+        : record?.typePromotion === "FOOD"
+        ? "Tặng đồ ăn"
+        : "Tặng vé"}
     </span>
   );
 };

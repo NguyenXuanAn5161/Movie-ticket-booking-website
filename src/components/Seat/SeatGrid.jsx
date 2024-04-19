@@ -1,3 +1,4 @@
+import { notification } from "antd";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { doSetSelectedSeats } from "../../redux/booking/bookingSlice";
@@ -11,9 +12,9 @@ const SeatGrid = ({ seatData }) => {
   // sửa loại ghế đôi
   const getTypeSeatColor = (seatTypeId) => {
     switch (seatTypeId) {
-      case 1:
-        return "#FF8247"; // Màu cam cho ghế vip
       case 2:
+        return "#FF8247"; // Màu cam cho ghế vip
+      case 3:
         return "#FF1493"; // Màu hồng cho ghế đôi
       default:
         return "#6959CD"; // Màu tím cho ghế thường (mặc định)
@@ -38,6 +39,16 @@ const SeatGrid = ({ seatData }) => {
   // Hàm xử lý sự kiện khi người dùng chọn một ghế
   const handleSeatClick = (seat) => {
     const seatInfo = isSeatExist(seat);
+    // Kiểm tra xem số lượng ghế đã chọn có đạt tối đa (8 ghế) hay chưa
+    if (selectedSeats.length >= 8) {
+      // Nếu đã đạt tối đa, không thực hiện thêm ghế mới
+      notification.warning({
+        message: "Thông báo",
+        description: "Bạn chỉ được chọn tối đa 8 ghế!",
+      });
+      return;
+    }
+
     // Kiểm tra xem ghế đã được chọn trước đó chưa
     const seatIndex = selectedSeats.findIndex(
       (selectedSeat) =>
@@ -102,14 +113,19 @@ const SeatGrid = ({ seatData }) => {
               selectedSeat.seatRow === seat.seatRow &&
               selectedSeat.seatColumn === seat.seatColumn
           );
+          // kiểm tra ghế đã được bán hay chưa
+          const isBooked = seatInfo && !seatInfo.status;
+          if (isBooked) console.log("ghế đã bán", isBooked);
           return (
             <div
               key={index}
               style={{
-                backgroundColor: seatInfo
-                  ? getTypeSeatColor(seatInfo.seat.seatTypeId)
-                  : "transparent",
+                // backgroundColor: isBooked ? "#ccc" : "transparent",
+                // backgroundColor: seatInfo
+                //   ? getTypeSeatColor(seatInfo.seat.seatTypeId)
+                //   : "transparent",
                 cursor: seatInfo ? "pointer" : null,
+                pointerEvents: isBooked ? "none" : "auto",
                 borderRadius: 3,
                 width: 30,
                 height: 30,
@@ -119,7 +135,9 @@ const SeatGrid = ({ seatData }) => {
                 justifyContent: "center",
                 // Thêm sự kiện onClick để xử lý việc chọn ghế
                 // và thay đổi màu nền của ghế khi được chọn
-                backgroundColor: isSelected
+                backgroundColor: isBooked
+                  ? "#ccc"
+                  : isSelected
                   ? "green"
                   : seatInfo
                   ? getTypeSeatColor(seatInfo.seat.seatTypeId)

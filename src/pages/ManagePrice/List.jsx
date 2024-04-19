@@ -1,32 +1,19 @@
-import {
-  Button,
-  Col,
-  Popconfirm,
-  Row,
-  Table,
-  Tag,
-  message,
-  notification,
-} from "antd";
-import moment from "moment";
+import { Col, Row, Table, message, notification } from "antd";
 import { useEffect, useState } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlineExport,
-  AiOutlineImport,
-  AiOutlinePlus,
-  AiOutlineReload,
-} from "react-icons/ai";
-import { BsEye } from "react-icons/bs";
-import { CiEdit } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import InputSearch from "../../components/InputSearch/InputSearch";
+import ActionButtons from "../../components/Button/ActionButtons";
+import {
+  renderDate,
+  renderStatus,
+} from "../../components/FunctionRender/FunctionRender";
+import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetPrice } from "../../redux/price/priceSlice";
 import {
   callDeleteSalePrice,
   callFetchListSalePrice,
 } from "../../services/apiPrice";
+import { createColumn } from "../../utils/createColumn";
 
 const PriceList = () => {
   const navigate = useNavigate();
@@ -93,152 +80,59 @@ const PriceList = () => {
     navigate(`${url}/${data.id}`);
   };
 
-  // thay đổi #1
   const columns = [
-    {
-      title: "Mã giá",
-      dataIndex: "code",
-      width: 150,
-      fixed: "left",
-    },
-    {
-      title: "Tên giá",
-      dataIndex: "name",
-      key: "name",
-      sorter: true,
-      width: 150,
-      fixed: "left",
-    },
-    {
-      title: "Ngày bắt đầu",
-      dataIndex: "startDate",
-      width: 120,
-      render: (text, record, index) => {
-        return (
-          <span>{moment(record.startDate).format("DD-MM-YYYY HH:mm:ss")}</span>
-        );
-      },
-    },
-    {
-      title: "Ngày kết thúc",
-      dataIndex: "endDate",
-      width: 130,
-      render: (text, record, index) => {
-        return (
-          <span>{moment(record.endDate).format("DD-MM-YYYY HH:mm:ss")}</span>
-        );
-      },
-    },
-    {
-      title: "Mô Tả",
-      dataIndex: "description",
-      key: "description",
-      width: 250,
-    },
-    {
-      title: "Trạng Thái",
-      dataIndex: "status",
-      key: "status",
-      width: 150,
-      render: (status) => (
-        <Tag color={status ? "success" : "error"}>
-          {status ? "Hoạt động" : "Không hoạt động"}
-        </Tag>
-      ),
-    },
-    {
-      title: "Cập nhật ngày",
-      dataIndex: "createdDate",
-      width: 150,
-      render: (text, record, index) => {
-        return (
-          <span>
-            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
-          </span>
-        );
-      },
-      sorter: true,
-    },
+    createColumn("Mã giá", "code", 150, false, undefined, "left"),
+    createColumn("Tên giá", "name", 150, false, undefined, "left"),
+    createColumn("Ngày bắt đầu", "startDate", 150, false, renderDate),
+    createColumn("Ngày kết thúc", "endDate", 150, false, renderDate),
+    createColumn("Mô Tả", "description", 250),
+    createColumn("Trạng Thái", "status", 150, false, renderStatus()),
+    createColumn("Cập nhật ngày", "createdDate", 150, false, renderDate),
     {
       title: "Thao tác",
       width: 100,
       fixed: "right",
       render: (text, record, index) => {
         return (
-          <>
-            <Popconfirm
-              placement="leftTop"
-              // thay đổi #1 sửa title và description
-              title={"Xác nhận xóa giá sản phẩm"}
-              description={"Bạn có chắc chắn muốn xóa giá sản phẩm này?"}
-              okText="Xác nhận"
-              cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record.id)}
-            >
-              <span>
-                <AiOutlineDelete
-                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
-                />
-              </span>
-            </Popconfirm>
-            <BsEye
-              style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={() => handleView(record, "show")}
-            />
-            <CiEdit
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                handleView(record, "edit");
-              }}
-            />
-          </>
+          <ActionButtons
+            record={record}
+            handleDelete={handleDeleteData}
+            handleView={handleView}
+            showDelete={true}
+            showEdit={true}
+            showView={true}
+            itemName={"giá"}
+          />
         );
       },
     },
   ];
 
+  const handleReload = () => {
+    setFilter("");
+    setSortQuery("");
+    setCurrent(1);
+  };
+
+  const handleToPageCreate = () => {
+    navigate(`create`);
+  };
+
+  const itemSearch = [
+    { field: "code", label: "Mã giá" },
+    { field: "dateRange", label: "Khoảng thời gian", type: "rangePicker" },
+  ];
+
   const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      {/* thay đổi #1 */}
-      <span style={{ fontWeight: "700", fontSize: "16" }}>
-        Danh sách giá sản phẩm
-      </span>
-      <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          icon={<AiOutlineExport />}
-          type="primary"
-          onClick={() => setOpenModalExport(true)}
-        >
-          Export
-        </Button>
-        <Button
-          icon={<AiOutlineImport />}
-          type="primary"
-          onClick={() => setOpenModalImport(true)}
-        >
-          Import
-        </Button>
-        <Button
-          icon={<AiOutlinePlus />}
-          type="primary"
-          onClick={(event) => {
-            // Điều hướng đến trang mới và truyền userId qua URL
-            navigate(`create`);
-          }}
-        >
-          Thêm mới
-        </Button>
-        <Button
-          type="ghost"
-          onClick={() => {
-            setFilter("");
-            setSortQuery("");
-          }}
-        >
-          <AiOutlineReload />
-        </Button>
-      </span>
-    </div>
+    <TableHeader
+      headerTitle={"Danh sách giá"}
+      onReload={handleReload}
+      filter={filter}
+      setFilter={setFilter}
+      handleSearch={handleSearch}
+      itemSearch={itemSearch}
+      create={handleToPageCreate}
+    />
   );
 
   // mặc định #2
@@ -278,24 +172,9 @@ const PriceList = () => {
     }
   };
 
-  // thay đổi #1
-  const itemSearch = [
-    // trạng thái
-    { field: "code", label: "Mã khuyến mãi" },
-    { field: "startDate", label: "Ngày bắt đầu" },
-    { field: "endDate", label: "Ngày kết thúc" },
-  ];
-
   return (
     <>
       <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <InputSearch
-            itemSearch={itemSearch}
-            handleSearch={handleSearch}
-            setFilter={setFilter}
-          />
-        </Col>
         <Col span={24}>
           <Table
             scroll={{
@@ -305,7 +184,7 @@ const PriceList = () => {
             title={renderHeader}
             bordered
             // thay đổi #1
-            // loading={isLoading}
+            loading={isLoading}
             columns={columns}
             dataSource={listData}
             onChange={onChange}

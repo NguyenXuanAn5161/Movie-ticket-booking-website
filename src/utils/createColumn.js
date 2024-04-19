@@ -5,7 +5,9 @@ export const createColumn = (
   width,
   sorter = false,
   render = undefined,
-  fixed
+  fixed,
+  filters = [],
+  onFilter = undefined
 ) => {
   const column = {
     title: title,
@@ -17,6 +19,14 @@ export const createColumn = (
 
   if (render) {
     column.render = render;
+  }
+
+  if (filters.length > 0) {
+    column.filters = filters;
+  }
+
+  if (onFilter) {
+    column.onFilter = onFilter;
   }
 
   return column;

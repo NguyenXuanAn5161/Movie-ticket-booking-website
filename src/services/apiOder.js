@@ -1,5 +1,24 @@
 import api from "../utils/axios-custom";
 
+// get detail order by id
+export const callGetDetailOrder = async (id) => {
+  try {
+    const response = await api.get(`/api/invoice/detail/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callGetAllOrder = async (query) => {
+  try {
+    const response = await api.get(`/api/invoice?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const callCreateInvoice = async (
   showTime,
   selectedSeats,
@@ -17,12 +36,14 @@ export const callCreateInvoice = async (
 
   bodyFormData.append("showTimeId", showTime.id);
   // Lặp qua danh sách sản phẩm
-  foods.forEach((food) => {
-    // Thêm id của sản phẩm vào FormData theo số lượng của sản phẩm
-    for (let i = 0; i < food.quantity; i++) {
-      bodyFormData.append("foodIds", food.id);
-    }
-  });
+  foods.length > 0
+    ? foods.forEach((food) => {
+        // Thêm id của sản phẩm vào FormData theo số lượng của sản phẩm
+        for (let i = 0; i < food.quantity; i++) {
+          bodyFormData.append("foodIds", food.id);
+        }
+      })
+    : bodyFormData.append("foodIds", "");
   bodyFormData.append("emailUser", emailUser.email);
   bodyFormData.append("staffId", staffId);
   bodyFormData.append("promotionIds", promotionIds);

@@ -14,8 +14,6 @@ import { AiOutlineDelete, AiOutlineReload } from "react-icons/ai";
 import { BsEye } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import UserExport from "../../components/Admin/User/data/UserExport";
-import UserImport from "../../components/Admin/User/data/UserImport";
 import InputSearch from "../../components/InputSearch/InputSearch";
 import { doSetUser } from "../../redux/account/userSlice";
 import { callDeleteUser, callFetchListUser } from "../../services/apiUser";
@@ -241,18 +239,6 @@ const UserList = () => {
           />
         </Col>
       </Row>
-
-      <UserImport
-        openModalImport={openModalImport}
-        setOpenModalImport={setOpenModalImport}
-        fetchUser={fetchUser}
-      />
-
-      <UserExport
-        openModalExport={openModalExport}
-        setOpenModalExport={setOpenModalExport}
-        listUser={listUser}
-      />
     </>
   );
 };

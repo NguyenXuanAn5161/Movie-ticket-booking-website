@@ -247,7 +247,7 @@ const LayoutAdmin = () => {
                 display: collapsed ? "none" : "",
               }}
             >
-              CinE-Tix
+              InfiityCine
             </span>
           </Link>
         </div>

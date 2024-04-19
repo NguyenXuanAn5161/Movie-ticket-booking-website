@@ -108,10 +108,9 @@ export const callCreatePromotionLine = async (data, promotionId) => {
     description,
     typePromotion,
     timeValue,
-
     usePerUser,
     usePerPromotion,
-    PromotionDetailDto,
+    promotionDiscountDetailDto,
   } = data;
 
   const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
@@ -129,7 +128,7 @@ export const callCreatePromotionLine = async (data, promotionId) => {
     applicableObject,
     usePerUser,
     usePerPromotion,
-    PromotionDetailDto,
+    promotionDiscountDetailDto,
   };
 
   try {
@@ -138,31 +137,6 @@ export const callCreatePromotionLine = async (data, promotionId) => {
         "Content-Type": "application/json",
       },
     });
-    return response.data;
-  } catch (error) {
-    return error;
-  }
-};
-
-// tìm theo mã khuyến mãi
-// api/promotion/fit-bill-code
-export const callGetPromotionByCode = async (
-  promotionLineCode,
-  totalValueBill,
-  dateTime,
-  applicableObject
-) => {
-  const bodyFormData = new FormData();
-  bodyFormData.append("promotionLineCode", "A222");
-  bodyFormData.append("totalValueBill", "500");
-  bodyFormData.append("dateTime", "2024-04-06T11:59:11.332");
-  bodyFormData.append("applicableObject", "ALL");
-
-  try {
-    const response = await api.get(
-      `/api/promotion/fit-bill-code`,
-      bodyFormData
-    );
     return response.data;
   } catch (error) {
     return error;
@@ -209,3 +183,16 @@ export const callGetPromotionByCode = async (
 //     return error;
 //   }
 // };
+
+// --------------------------------------------
+// áp khuyến mãi phù hợp
+export const callFitPromotion = async (totalPrice) => {
+  try {
+    const response = await api.get(
+      `/api/promotion/line_discount/active?totalPrice=${totalPrice}`
+    );
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
