@@ -1,3 +1,4 @@
+import { Card } from "antd";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import SpinLoading from "../../../components/Loading/Spin";
@@ -34,8 +35,8 @@ const BookingSeat = () => {
   };
 
   return (
-    <>
-      <h2>Chọn ghế</h2>
+    <Card>
+      <h5>Chọn ghế</h5>
       <div
         style={{
           display: "flex",
@@ -45,7 +46,7 @@ const BookingSeat = () => {
       >
         {loading ? <SpinLoading /> : <SeatGrid seatData={seatData} />}
       </div>
-    </>
+    </Card>
   );
 };
 

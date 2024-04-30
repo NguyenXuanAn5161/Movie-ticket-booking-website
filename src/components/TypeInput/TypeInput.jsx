@@ -9,14 +9,22 @@ const TypeInput = ({ item }) => {
     switch (item.type) {
       case "select":
         return (
-          <Select placeholder={item.label} showSearch allowClear>
-            {Array.isArray(item.options) &&
-              item.options.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-          </Select>
+          <Select
+            placeholder={item.label}
+            showSearch
+            allowClear
+            options={item.options}
+            filterSort={(optionA, optionB) =>
+              (optionA?.label ?? "")
+                .toLowerCase()
+                .localeCompare((optionB?.label ?? "").toLowerCase())
+            }
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              // Tìm kiếm không phân biệt hoa thường
+              option.label.toLowerCase().includes(input.toLowerCase())
+            }
+          />
         );
       case "datePicker":
         return (
