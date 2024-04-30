@@ -1,5 +1,6 @@
 import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
+import SimpleBarChart from "../../components/Charts/BarChart";
 import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { callGetRevenueByCinema } from "../../services/Statistical";
@@ -180,6 +181,7 @@ const RevenueDb = () => {
           }}
         />
       </Col>
+      <SimpleBarChart data={listData} />
     </Row>
   );
 };

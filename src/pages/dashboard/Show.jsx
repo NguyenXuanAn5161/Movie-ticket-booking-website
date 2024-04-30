@@ -122,13 +122,13 @@ const DashBoardShow = () => {
             />
           </Card>
         </Col>
-        <Col span={12}>
+        <Col span={24}>
           <Card bordered={false}>
             <SimpleBarChart />
           </Card>
         </Col>
         <Col span={12}>
-          <Card bordered={false}>
+          <Card style={{ flex: 1 }} bordered={false}>
             <SimpleLineChart />
           </Card>
         </Col>
