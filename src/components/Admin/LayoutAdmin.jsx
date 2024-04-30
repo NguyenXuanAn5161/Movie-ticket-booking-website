@@ -247,7 +247,7 @@ const LayoutAdmin = () => {
                 display: collapsed ? "none" : "",
               }}
             >
-              InfiityCine
+              InfinityCine
             </span>
           </Link>
         </div>
