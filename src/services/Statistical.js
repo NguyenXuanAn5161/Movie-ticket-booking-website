@@ -41,3 +41,12 @@ export const callGetRevenueByStaff = async (query) => {
     return error;
   }
 };
+
+export const callGetRevenueByInvoiceCancel = async (query) => {
+  try {
+    const response = await api.get(`/api/statistical/return-invoice?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};

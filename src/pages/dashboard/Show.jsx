@@ -8,18 +8,18 @@ import SimplePieChart from "../../components/Charts/PieChart";
 import { callFetchListCinema } from "../../services/apiCinema";
 import { callFetchListUser } from "../../services/apiUser";
 import RevenueDbByCinema from "./RevenueDbByCinema";
+import RevenueDbByInvoiceCancel from "./RevenueDbByInvoiceCancel";
 import RevenueDbByMovie from "./RevenueDbByMovie";
 import RevenueDbByStaff from "./RevenueDbByStaff";
 import RevenueDbByUser from "./RevenueDbByUser";
-import InvoiceDb from "./invoiceDb";
 
 const formatter = (value) => <CountUp end={value} separator="," />;
 
 const items = [
   {
     key: "1",
-    label: "Thống kê hóa đơn",
-    children: <InvoiceDb />,
+    label: "Thống kê trả vé",
+    children: <RevenueDbByInvoiceCancel />,
   },
   {
     key: "2",

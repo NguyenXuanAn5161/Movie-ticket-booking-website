@@ -9,7 +9,7 @@ import {
   YAxis,
 } from "recharts";
 
-const GroupedBarChart = ({ data }) => {
+const GroupedBarChart = ({ data, type }) => {
   return (
     <div
       style={{
@@ -24,7 +24,11 @@ const GroupedBarChart = ({ data }) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="totalRevenue" fill="#82ca9d" name="Tổng doanh thu" />
+        {type === "returnInvoce" ? (
+          <Bar dataKey="quantity" fill="#8884d8" name="Số lượng" />
+        ) : (
+          <Bar dataKey="totalRevenue" fill="#82ca9d" name="Tổng doanh thu" />
+        )}
       </BarChart>
     </div>
   );
