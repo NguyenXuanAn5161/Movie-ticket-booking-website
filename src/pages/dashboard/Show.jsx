@@ -9,6 +9,7 @@ import { callFetchListCinema } from "../../services/apiCinema";
 import { callFetchListUser } from "../../services/apiUser";
 import RevenueDbByCinema from "./RevenueDbByCinema";
 import RevenueDbByMovie from "./RevenueDbByMovie";
+import RevenueDbByStaff from "./RevenueDbByStaff";
 import RevenueDbByUser from "./RevenueDbByUser";
 import InvoiceDb from "./invoiceDb";
 
@@ -34,6 +35,11 @@ const items = [
     key: "4",
     label: "Doanh thu theo khách hàng",
     children: <RevenueDbByUser />,
+  },
+  {
+    key: "5",
+    label: "Doanh thu theo nhân viên",
+    children: <RevenueDbByStaff />,
   },
 ];
 

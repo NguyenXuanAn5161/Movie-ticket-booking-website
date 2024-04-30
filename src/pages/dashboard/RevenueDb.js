@@ -188,12 +188,14 @@ export const StatisticByCinema = (listData, dateRanger, cinema) => {
   }
 };
 
-export const StatisticByUser = (listData, dateRanger, user) => {
+export const StatisticByUser = (listData, dateRanger, user, type = null) => {
   console.log("Export data", listData, dateRanger);
 
   if (listData.length > 0) {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Doanh thu theo khách hàng");
+    const worksheet = workbook.addWorksheet(
+      `Doanh thu theo ${type ? "nhân viên" : "khách hàng"}`
+    );
     var checked = false;
     if (listData.length === 1 && listData[0].code === user) {
       checked = true;
@@ -208,7 +210,9 @@ export const StatisticByUser = (listData, dateRanger, user) => {
 
     // Thêm tiêu đề vào hàng tiêu đề
     const titleCell = titleRow.getCell(1);
-    titleCell.value = "BÁO CÁO TỔNG KẾT DANH THU THEO KHÁCH HÀNG"; // Tiêu đề
+    titleCell.value = `BÁO CÁO TỔNG KẾT DANH THU THEO ${
+      type ? "NHÂN VIÊN" : "KHÁCH HÀNG"
+    }`; // Tiêu đề
 
     // Merge các ô từ tiêu đề đến ô cuối cùng của tiêu đề
     const titleCount =
@@ -226,9 +230,11 @@ export const StatisticByUser = (listData, dateRanger, user) => {
     const timeRow = worksheet.addRow([]);
     const authorRow = worksheet.addRow([]);
 
-    // Tên khách hàng
+    // Tên khách hàng/nhân viên
     const userNameCell = userName.getCell(1);
-    userNameCell.value = `Khách hàng: ${checked ? listData[0].name : "Tất cả"}`;
+    userNameCell.value = `${type ? "Nhân viên" : "Khách hàng"}: ${
+      checked ? listData[0].name : "Tất cả"
+    }`;
     userNameCell.font = { italic: true, size: 10, name: "Times New Roman" };
 
     // filter xuất báo cáo
@@ -262,8 +268,8 @@ export const StatisticByUser = (listData, dateRanger, user) => {
     // Thêm header vào hàng header
     const headerValues = [
       "STT",
-      "Mã khách hàng",
-      "Tên khách hàng",
+      `Mã ${type ? "nhân viên" : "khách hàng"}`,
+      `Tên ${type ? "Nhân viên" : "khách hàng"}`,
       "Email",
       "Số điện thoại",
       "Tổng hóa đơn",
@@ -369,7 +375,7 @@ export const StatisticByUser = (listData, dateRanger, user) => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `ExportRevenueByUser.xlsx`;
+      a.download = `ExportRevenueBy${type ? "Staff" : "User"}.xlsx`;
       a.click();
       window.URL.revokeObjectURL(url);
     });
