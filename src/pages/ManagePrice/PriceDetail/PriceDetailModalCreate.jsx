@@ -75,6 +75,24 @@ const PriceDetailModalCreate = (props) => {
     }
   };
 
+  const fetchFoodList = async (foodName) => {
+    try {
+      let query = `size=5&name=${foodName}&cinemaId=${cinema.value}`;
+      const res = await callFetchListFood(query);
+      const food = res.content.map((data) => ({
+        label: data.name,
+        value: data.id,
+      }));
+
+      return food;
+    } catch (error) {
+      // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+      console.error("Error fetching movies:", error);
+      // Trả về một mảng trống nếu xảy ra lỗi
+      return [];
+    }
+  };
+
   const onFinish = async (values) => {
     // setIsSubmit(true);
     console.log("values: ", values);
@@ -265,24 +283,6 @@ async function fetchCinemaList(cinemaName) {
   try {
     let query = `size=5&name=${cinemaName}`;
     const res = await callFetchListCinema(query);
-    const food = res.content.map((data) => ({
-      label: data.name,
-      value: data.id,
-    }));
-
-    return food;
-  } catch (error) {
-    // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
-    console.error("Error fetching movies:", error);
-    // Trả về một mảng trống nếu xảy ra lỗi
-    return [];
-  }
-}
-
-async function fetchFoodList(foodName) {
-  try {
-    let query = `size=5&name=${foodName}`;
-    const res = await callFetchListFood(query);
     const food = res.content.map((data) => ({
       label: data.name,
       value: data.id,
