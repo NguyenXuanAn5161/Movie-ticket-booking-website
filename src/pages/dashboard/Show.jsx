@@ -7,8 +7,9 @@ import SimpleLineChart from "../../components/Charts/LineChart";
 import SimplePieChart from "../../components/Charts/PieChart";
 import { callFetchListCinema } from "../../services/apiCinema";
 import { callFetchListUser } from "../../services/apiUser";
+import RevenueDbByCinema from "./RevenueDbByCinema";
+import RevenueDbByMovie from "./RevenueDbByMovie";
 import InvoiceDb from "./invoiceDb";
-import RevenueDb from "./revenueDb";
 
 const formatter = (value) => <CountUp end={value} separator="," />;
 
@@ -21,7 +22,12 @@ const items = [
   {
     key: "2",
     label: "Doanh thu theo rạp",
-    children: <RevenueDb />,
+    children: <RevenueDbByCinema />,
+  },
+  {
+    key: "3",
+    label: "Doanh thu theo phim",
+    children: <RevenueDbByMovie />,
   },
 ];
 

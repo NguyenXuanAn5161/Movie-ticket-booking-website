@@ -8,9 +8,9 @@ import { callFetchListCinema } from "../../services/apiCinema";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import { getFirstAndLastDayOfMonth } from "../../utils/date";
-import { RevenueDbByCinema } from "./RevenueDbByCinema";
+import { StatisticByCinema } from "./RevenueDb";
 
-const RevenueDb = () => {
+const RevenueDbByCinema = () => {
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -101,7 +101,7 @@ const RevenueDb = () => {
   ];
 
   const handleExportData = () => {
-    RevenueDbByCinema(listData, dateRanger, cinema);
+    StatisticByCinema(listData, dateRanger, cinema);
   };
 
   const renderHeader = () => (
@@ -186,4 +186,4 @@ const RevenueDb = () => {
   );
 };
 
-export default RevenueDb;
+export default RevenueDbByCinema;

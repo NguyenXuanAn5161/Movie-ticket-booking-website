@@ -10,3 +10,14 @@ export const callGetRevenueByCinema = async (query) => {
     return error;
   }
 };
+
+export const callGetRevenueByMovie = async (query) => {
+  try {
+    const response = await api.get(
+      `/api/statistical/revenue-by-movie?${query}`
+    );
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
