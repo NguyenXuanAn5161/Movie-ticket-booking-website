@@ -1,28 +1,112 @@
-import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
-import { Card, Col, Row } from "antd";
-import { Statistic } from "antd";
+import { ArrowDownOutlined } from "@ant-design/icons";
+import { Card, Col, Row, Statistic, Tabs } from "antd";
+import { useEffect, useState } from "react";
 import CountUp from "react-countup";
 import SimpleBarChart from "../../components/Charts/BarChart";
 import SimpleLineChart from "../../components/Charts/LineChart";
 import SimplePieChart from "../../components/Charts/PieChart";
+import { callFetchListCinema } from "../../services/apiCinema";
+import { callFetchListUser } from "../../services/apiUser";
+import InvoiceDb from "./invoiceDb";
+import RevenueDb from "./revenueDb";
 
 const formatter = (value) => <CountUp end={value} separator="," />;
 
+const TabPaneContent1 = () => {
+  return <div>Content of Tab Pane 1</div>;
+};
+
+const TabPaneContent2 = () => {
+  return <div>Content of Tab Pane 2</div>;
+};
+
+const TabPaneContent3 = () => {
+  return <div>Content of Tab Pane 3</div>;
+};
+
+const items = [
+  {
+    key: "1",
+    label: "Thống kê hóa đơn",
+    children: <InvoiceDb />,
+  },
+  {
+    key: "2",
+    label: "Thống kê doanh thu",
+    children: <RevenueDb />,
+  },
+];
+
 const DashBoardShow = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState([]);
+  const [cinema, setCinema] = useState([]);
+
+  const onChange = (key) => {
+    console.log(key);
+  };
+
+  useEffect(() => {
+    console.log("cinema: ", cinema);
+  }, [cinema]);
+
+  useEffect(() => {
+    fetchUser();
+    fetchCinema();
+  }, []);
+
+  const fetchCinema = async () => {
+    setIsLoading(true);
+    const response = await callFetchListCinema(0, 1000);
+    if (response?.content) {
+      setCinema(response.content);
+    }
+    setIsLoading(false);
+  };
+
+  const fetchUser = async () => {
+    setIsLoading(true);
+    const response = await callFetchListUser(0, 1000, "", "", "");
+    if (response?.content) {
+      setUser(response.content);
+    }
+    setIsLoading(false);
+  };
+
   return (
     <>
       <Row gutter={[16, 16]}>
         <Col span={12}>
-          <Card bordered={false}>
+          <Card bordered={false} style={{}}>
             <Statistic
-              title="Active"
-              value={11.28}
-              precision={2}
-              valueStyle={{
-                color: "#3f8600",
+              loading={isLoading}
+              title="Tổng số người dùng"
+              value={user.length}
+              formatter={formatter}
+            />
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card bordered={false} style={{}}>
+            <Statistic
+              loading={isLoading}
+              title="Tổng doanh thu"
+              value={cinema.length}
+              formatter={formatter}
+            />
+          </Card>
+        </Col>
+        <Col span={24}>
+          <Card bordered={false}>
+            <Tabs
+              style={{ minHeight: 400 }}
+              defaultActiveKey="1"
+              items={items}
+              onChange={onChange}
+              indicator={{
+                size: (origin) => origin - 20,
+                align: "center",
               }}
-              prefix={<ArrowUpOutlined />}
-              suffix="%"
             />
           </Card>
         </Col>
@@ -37,15 +121,6 @@ const DashBoardShow = () => {
               }}
               prefix={<ArrowDownOutlined />}
               suffix="%"
-            />
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card bordered={false}>
-            <Statistic
-              title="Active Users"
-              value={112893}
-              formatter={formatter}
             />
           </Card>
         </Col>
