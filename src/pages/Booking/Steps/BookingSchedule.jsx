@@ -79,13 +79,13 @@ const BookingSchedule = (props) => {
   // sau khi có id phim thì tìm ngày chiếu
   useEffect(() => {
     if (cinema && movie) {
-      fetchShowDateByMovieId(movie.value);
+      fetchShowDateByMovieId(movie.value, cinema.value);
     }
   }, [movie]);
 
-  const fetchShowDateByMovieId = async (id) => {
+  const fetchShowDateByMovieId = async (movieId, cinemaId) => {
     try {
-      const resShowDate = await callGetShowDateByMovieId(id);
+      const resShowDate = await callGetShowDateByMovieId(movieId, cinemaId);
       if (resShowDate && resShowDate.length > 0) {
         const sortedDates = resShowDate
           .slice()
