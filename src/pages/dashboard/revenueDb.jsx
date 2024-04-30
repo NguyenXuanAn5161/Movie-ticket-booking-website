@@ -58,7 +58,8 @@ const RevenueDb = () => {
     }
 
     if (!filter.includes("startDate") && !filter.includes("endDate")) {
-      query += `&startDate=${dateRanger.startDate}&endDate=${dateRanger.endDate}`;
+      const [startDate, endDate] = getFirstAndLastDayOfMonth();
+      query += `&startDate=${startDate}&endDate=${endDate}`;
     }
 
     if (!filter.includes("cinemaCode")) {
