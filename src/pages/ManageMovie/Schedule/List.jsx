@@ -45,7 +45,7 @@ const ScheduleList = () => {
     }
 
     if (!filter.includes("movieId")) {
-      query += `&movieId=3`;
+      query += `&movieId=1`;
     }
 
     // if (sortQuery) {

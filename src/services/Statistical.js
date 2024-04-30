@@ -21,3 +21,12 @@ export const callGetRevenueByMovie = async (query) => {
     return error;
   }
 };
+
+export const callGetRevenueByUser = async (query) => {
+  try {
+    const response = await api.get(`/api/statistical/revenue-by-user?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};

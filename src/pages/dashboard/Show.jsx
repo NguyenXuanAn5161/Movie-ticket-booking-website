@@ -9,6 +9,7 @@ import { callFetchListCinema } from "../../services/apiCinema";
 import { callFetchListUser } from "../../services/apiUser";
 import RevenueDbByCinema from "./RevenueDbByCinema";
 import RevenueDbByMovie from "./RevenueDbByMovie";
+import RevenueDbByUser from "./RevenueDbByUser";
 import InvoiceDb from "./invoiceDb";
 
 const formatter = (value) => <CountUp end={value} separator="," />;
@@ -28,6 +29,11 @@ const items = [
     key: "3",
     label: "Doanh thu theo phim",
     children: <RevenueDbByMovie />,
+  },
+  {
+    key: "4",
+    label: "Doanh thu theo khách hàng",
+    children: <RevenueDbByUser />,
   },
 ];
 
