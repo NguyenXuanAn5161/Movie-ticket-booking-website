@@ -17,11 +17,12 @@ const RevenueDb = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("ASC");
-  const [cinema, setCinema] = useState([]);
+  const [cinemas, setCinemas] = useState([]);
   const [dateRanger, setDateRanger] = useState({
     startDate: "",
     endDate: "",
   });
+  const [cinema, setCinema] = useState(null);
 
   useEffect(() => {
     const [startDate, endDate] = getFirstAndLastDayOfMonth();
@@ -40,13 +41,12 @@ const RevenueDb = () => {
         value: data.code,
       }));
 
-      setCinema(data);
+      setCinemas(data);
     }
   };
 
   useEffect(() => {
     revenueByCinema();
-    console.log("filter", filter);
   }, [current, pageSize, filter, sortQuery, dateRanger]);
 
   // khi thay doi current va pageSize thi search died!
@@ -95,12 +95,12 @@ const RevenueDb = () => {
   };
 
   const itemSearch = [
-    { field: "cinemaCode", label: "Tên rạp", type: "select", options: cinema },
+    { field: "cinemaCode", label: "Tên rạp", type: "select", options: cinemas },
     { field: "dateRange", label: "Khoảng thời gian", type: "rangePicker" },
   ];
 
   const handleExportData = () => {
-    RevenueDbByCinema(listData, dateRanger);
+    RevenueDbByCinema(listData, dateRanger, cinema);
   };
 
   const renderHeader = () => (
@@ -130,12 +130,11 @@ const RevenueDb = () => {
             FORMAT_DATE_SEND_SERVER
           )}&endDate=${value[1].format(FORMAT_DATE_SEND_SERVER)}`;
         } else if (value) {
+          setCinema(value);
           q += `&${label}=${value}`;
         }
-        //console.log("q", q);
       }
     }
-    console.log("q final", q);
     setFilter(q);
   };
 

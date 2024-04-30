@@ -12,18 +12,6 @@ import RevenueDb from "./revenueDb";
 
 const formatter = (value) => <CountUp end={value} separator="," />;
 
-const TabPaneContent1 = () => {
-  return <div>Content of Tab Pane 1</div>;
-};
-
-const TabPaneContent2 = () => {
-  return <div>Content of Tab Pane 2</div>;
-};
-
-const TabPaneContent3 = () => {
-  return <div>Content of Tab Pane 3</div>;
-};
-
 const items = [
   {
     key: "1",
@@ -32,7 +20,7 @@ const items = [
   },
   {
     key: "2",
-    label: "Thống kê doanh thu",
+    label: "Doanh thu theo rạp",
     children: <RevenueDb />,
   },
 ];

@@ -1,22 +1,20 @@
 import ExcelJS from "exceljs";
 import moment from "moment";
 
-export const RevenueDbByCinema = (listData, dateRanger) => {
+export const RevenueDbByCinema = (listData, dateRanger, cinema) => {
   console.log("Export data", listData, dateRanger);
 
   if (listData.length > 0) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Doanh thu theo rạp");
+    var checked = false;
+    if (listData.length === 1 && listData[0].code === cinema) {
+      checked = true;
+    }
 
     // Tùy chỉnh bảng
     worksheet.properties.defaultRowHeight = 20;
     worksheet.properties.defaultColWidth = 25;
-    worksheet.eachRow((row) => {
-      row.eachCell((cell) => {
-        cell.font = { name: "Times New Roman", size: 10 };
-        cell.border = null; // không hoạt động
-      });
-    });
 
     // Tạo một hàng mới cho tiêu đề
     const titleRow = worksheet.addRow([]);
@@ -37,11 +35,17 @@ export const RevenueDbByCinema = (listData, dateRanger) => {
     titleRow.height = 30;
 
     // Thêm hai hàng mới dưới tiêu đề
+    const nameCinema = worksheet.addRow([]);
     const filterRow = worksheet.addRow([]);
     const timeRow = worksheet.addRow([]);
     const authorRow = worksheet.addRow([]);
 
-    // Người xuất báo cáo (tạm thời để trống)
+    // Tên rạp
+    const nameCinemaCell = nameCinema.getCell(1);
+    nameCinemaCell.value = `Rạp: ${checked ? listData[0].name : "Tất cả"}`;
+    nameCinemaCell.font = { italic: true, size: 10, name: "Times New Roman" }; // Thiết lập font chữ cho tên rạp
+
+    // filter xuất báo cáo
     const filterCell = filterRow.getCell(1);
     filterCell.value = `Từ ngày ${dateRanger.startDate} - Đến ngày ${dateRanger.endDate}`; // Tạm thời để trống
     filterCell.font = {
@@ -102,7 +106,7 @@ export const RevenueDbByCinema = (listData, dateRanger) => {
         data.address,
         data.totalInvoice,
         data.totalTicket,
-        data.totalRevenue.toFixed(2), // Giữ hai số sau dấu phẩy cho tổng doanh thu
+        data.totalRevenue, // Giữ hai số sau dấu phẩy cho tổng doanh thu
       ];
 
       // Thêm dòng mới vào bảng
@@ -130,6 +134,47 @@ export const RevenueDbByCinema = (listData, dateRanger) => {
 
       // Thiết lập chiều rộng cho cột "Địa chỉ"
       worksheet.getColumn(2).width = 50; // Cột "Địa chỉ" có index là 2 và có chiều rộng là 50
+      worksheet.getColumn(5).width = 30;
+      worksheet.getColumn(5).numFmt = "#,##0.00"; // Định dạng số cho cột "Tổng doanh thu"
+    });
+
+    // Thêm dòng tổng cộng
+    const totalRow = worksheet.addRow([]);
+    totalRow.getCell(1).value = "Tổng cộng";
+    totalRow.eachCell((cell) => {
+      cell.font = { bold: true, size: 11, name: "Times New Roman" };
+    });
+
+    // Tính tổng của các cột tương ứng
+    const totalInvoice = listData.reduce(
+      (acc, curr) => acc + curr.totalInvoice,
+      0
+    );
+    const totalTicket = listData.reduce(
+      (acc, curr) => acc + curr.totalTicket,
+      0
+    );
+    const totalRevenue = listData.reduce(
+      (acc, curr) => acc + curr.totalRevenue,
+      0
+    );
+
+    // Ghi các giá trị tổng vào hàng tổng cộng
+    totalRow.getCell(3).value = totalInvoice;
+    totalRow.getCell(4).value = totalTicket;
+    totalRow.getCell(5).value = totalRevenue;
+
+    // Định dạng font và size cho hàng tổng cộng
+    totalRow.eachCell((cell) => {
+      cell.font = { size: 10, name: "Times New Roman" };
+    });
+
+    worksheet.getColumn(5).width = 30;
+    worksheet.getColumn(5).numFmt = "#,##0.00"; // Định dạng số cho cột "Tổng doanh thu"
+    worksheet.eachRow((row) => {
+      row.eachCell((cell) => {
+        cell.font = { name: "Times New Roman" };
+      });
     });
 
     // Xuất file Excel
