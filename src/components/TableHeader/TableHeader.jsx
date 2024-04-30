@@ -1,15 +1,10 @@
-import { Col, Row, message } from "antd";
+import { Col, Row } from "antd";
 import React from "react";
 import { AiOutlinePlus, AiOutlineReload } from "react-icons/ai";
 import { CiExport, CiImport, CiMenuBurger } from "react-icons/ci";
 import TooltipButton from "../Button/TooltipButton";
 import Search from "../InputSearch/Search";
 import "./TableHeader.scss";
-
-const handleMenuClick = (e) => {
-  message.info("Click on menu item.");
-  console.log("click", e);
-};
 
 const items = [
   {
@@ -24,11 +19,6 @@ const items = [
   },
 ];
 
-const menuProps = {
-  items,
-  onClick: handleMenuClick,
-};
-
 const TableHeader = ({
   headerTitle,
   onReload,
@@ -37,7 +27,29 @@ const TableHeader = ({
   setFilter,
   filter,
   create,
+  handleExportData,
 }) => {
+  const handleMenuClick = (e) => {
+    switch (e.key) {
+      case "1":
+        console.log("import");
+        break;
+      case "2":
+        if (handleExportData) {
+          handleExportData();
+        } else {
+          console.log("export");
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+  const menuProps = {
+    items,
+    onClick: handleMenuClick,
+  };
   return (
     <Row className="flex-container">
       <Col span={5} style={{ fontWeight: "700", fontSize: "16" }}>
