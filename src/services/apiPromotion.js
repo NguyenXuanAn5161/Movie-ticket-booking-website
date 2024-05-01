@@ -46,6 +46,39 @@ export const callCreatePromotionHeader = async (data) => {
   }
 };
 
+export const callUpdatePromotionHeader = async (
+  id,
+  name,
+  startDate,
+  endDate,
+  description,
+  status
+) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("id", id);
+  bodyFormData.append("name", name);
+  if (startDate) {
+    bodyFormData.append("startDate", startDate);
+  }
+  bodyFormData.append("endDate", endDate);
+  bodyFormData.append("description", description);
+  bodyFormData.append("status", status);
+
+  try {
+    const response = await api({
+      method: "put",
+      url: "/api/promotion",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 // line
 export const callGetPromotionLineByPromotionId = async (query) => {
   try {
