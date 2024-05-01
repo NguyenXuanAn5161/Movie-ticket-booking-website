@@ -89,23 +89,25 @@ const CalendarBooking = () => {
     <>
       <Card className={`calendar_booking`}>
         <h6 style={{ textAlign: "left" }}>Lịch chiếu</h6>
-        <div className={`show_date`}>
-          {showDateByMovieId.map((dateString, index) => (
-            <div
-              key={index}
-              className={`row_date`}
-              onClick={() => handleDateSelect(dateString)}
-            >
+        <div style={{ width: "100%", overflowX: "auto" }}>
+          <div className={`show_date`}>
+            {showDateByMovieId.map((dateString, index) => (
               <div
-                className={`item ${
-                  dateString === selectedDate ? "selected" : ""
-                }`}
+                key={index}
+                className={`row_date`}
+                onClick={() => handleDateSelect(dateString)}
               >
-                <span>{getDayOfWeek(dateString)}</span>
-                <span>{moment(dateString).format(FORMAT_DATE)}</span>
+                <div
+                  className={`item ${
+                    dateString === selectedDate ? "selected" : ""
+                  }`}
+                >
+                  <span>{getDayOfWeek(dateString)}</span>
+                  <span>{moment(dateString).format(FORMAT_DATE)}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </Card>
       <Card className={`calendar_booking`}>
@@ -113,8 +115,17 @@ const CalendarBooking = () => {
         {Object.keys(groupedShowTimes).map((roomName) => (
           <>
             <div key={roomName} className={`row_showTime`}>
-              <h7 style={{ textAlign: "left", maxWidth: 200 }}>{roomName}</h7>
-              <div style={{ display: "flex", flexDirection: "row" }}>
+              <h7 style={{ textAlign: "left", minWidth: 200, maxWidth: 200 }}>
+                {roomName}
+              </h7>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: 5,
+                }}
+              >
                 {groupedShowTimes[roomName].map((item, index) => (
                   <span
                     key={index}

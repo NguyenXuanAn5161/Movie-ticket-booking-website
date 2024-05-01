@@ -4,6 +4,7 @@
     .show_date {
         display: flex;
         flex-direction: row;
+        white-space: nowrap;
     }
 
     .item {
@@ -26,7 +27,6 @@
         padding: 8px 16px;
         border: 1px solid #cecece;
         border-radius: 5px;
-        margin: 0 10px;
         cursor: pointer;
     }
 
