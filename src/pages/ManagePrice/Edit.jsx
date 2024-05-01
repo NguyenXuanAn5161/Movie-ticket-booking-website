@@ -20,11 +20,13 @@ import {
   callGetPriceHeaderById,
   callUpdateSalePrice,
 } from "../../services/apiPrice";
+import { FORMAT_DATE_HH_MM_SS } from "../../utils/constant";
+import {
+  defaultEndDate,
+  defaultStartDate,
+  formatDateYYYY_MM_DDT_HH_MM_SS,
+} from "../../utils/date";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
-
-const dateFormat = "DD-MM-YYYY HH:mm:ss";
-const defaultStartDate = dayjs().startOf("day").add(1, "day");
-const defaultEndDate = dayjs().endOf("day").add(1, "day");
 
 const PriceEdit = () => {
   const { priceId } = useParams();
@@ -96,6 +98,13 @@ const PriceEdit = () => {
     }
   };
 
+  // check price?.startDate nhỏ hơn ngày hiện tại - return true
+  const checkStartDate = (priceStartDate) => {
+    const currentDate = formatDateYYYY_MM_DDT_HH_MM_SS(defaultStartDate);
+    const result = priceStartDate && priceStartDate < currentDate;
+    return result;
+  };
+
   return (
     <>
       <PageHeader title="Cập nhật thông tin giá" numberBack={-1} type="edit" />
@@ -138,8 +147,9 @@ const PriceEdit = () => {
                 }
               >
                 <CustomDatePicker
+                  disabled={[checkStartDate(price?.startDate), false]}
                   showTime
-                  format={dateFormat}
+                  format={FORMAT_DATE_HH_MM_SS}
                   minDate={defaultStartDate}
                   defaultValue={[price?.startDate, price?.endDate]}
                   placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
