@@ -132,7 +132,7 @@ const PriceShow = () => {
     if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Xoá giá thành công!");
-      await fetchData();
+      await fetchSalePriceDetail();
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
