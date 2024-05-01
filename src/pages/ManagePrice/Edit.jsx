@@ -70,12 +70,17 @@ const PriceEdit = () => {
   const onFinish = async (values) => {
     console.log("check value: ", values);
     const { id, name, timeApply, description, status } = values;
-    const startDate = dayjs(timeApply[0]).format("YYYY-MM-DDTHH:mm:ss.SSS");
+    const checked = checkStartDate(timeApply[0]);
+    var startDate = null;
+    if (!checked) {
+      startDate = dayjs(timeApply[0]).format("YYYY-MM-DDTHH:mm:ss.SSS");
+    }
     const endDate = dayjs(timeApply[1]).format("YYYY-MM-DDTHH:mm:ss.SSS");
     setIsSubmit(true);
     const res = await callUpdateSalePrice(
       id,
       name,
+      startDate,
       endDate,
       description,
       status

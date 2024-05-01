@@ -51,6 +51,7 @@ export const callCreateSalePrice = async (
 export const callUpdateSalePrice = async (
   id,
   name,
+  startDate,
   endDate,
   description,
   status
@@ -58,6 +59,9 @@ export const callUpdateSalePrice = async (
   const bodyFormData = new FormData();
   bodyFormData.append("id", id);
   bodyFormData.append("name", name);
+  if (startDate) {
+    bodyFormData.append("startDate", startDate);
+  }
   bodyFormData.append("endDate", endDate);
   bodyFormData.append("description", description);
   bodyFormData.append("status", status);
