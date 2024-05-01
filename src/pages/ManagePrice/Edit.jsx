@@ -158,11 +158,8 @@ const PriceEdit = () => {
                   },
                 ]}
               >
-                {/* nếu ngày bắt đầu > ngày hiện tại thì không cho chọn trạng thái */}
-                <Radio.Group
-                  disabled={dayjs(price?.startDate).isAfter(dayjs())}
-                  value={price?.status}
-                >
+                {/* vẫn cho phép cập nhật giá bình thường vì đã có valid kiểm tra ngày của nó rồi chứ không phải chỉ dựa vào trạng thái */}
+                <Radio.Group value={price?.status}>
                   <Radio value={true}>Hoạt động</Radio>
                   <Radio value={false}>Ngưng hoạt động</Radio>
                 </Radio.Group>
