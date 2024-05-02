@@ -3,6 +3,10 @@ import moment from "moment";
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  doSetSelectedFoodItems,
+  doSetSelectedPromotionBill,
+  doSetSelectedPromotionFood,
+  doSetSelectedPromotionSeat,
   doSetSelectedSeats,
   doSetSelectedShowTime,
 } from "../../redux/booking/bookingSlice";
@@ -79,6 +83,10 @@ const CalendarBooking = () => {
   const handleSelectedShowTime = (showTime) => {
     dispatch(doSetSelectedShowTime(showTime));
     dispatch(doSetSelectedSeats([]));
+    dispatch(doSetSelectedFoodItems([]));
+    dispatch(doSetSelectedPromotionBill({}));
+    dispatch(doSetSelectedPromotionSeat({}));
+    dispatch(doSetSelectedPromotionFood({}));
   };
 
   return (

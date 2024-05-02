@@ -3,7 +3,7 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  doSetSelectedPromotion,
+  doSetSelectedPromotionBill,
   doSetSelectedRoom,
 } from "../../redux/booking/bookingSlice";
 import { callGetMovieById } from "../../services/apiMovie";
@@ -25,8 +25,8 @@ const OrderCard = (props) => {
   const selectedFoodItems = useSelector(
     (state) => state.booking.selectedFoodItems
   );
-  const selectedPromotion = useSelector(
-    (state) => state.booking.selectedPromotion
+  const selectedPromotionBill = useSelector(
+    (state) => state.booking.selectedPromotionBill
   );
 
   // lấy giá phòng
@@ -66,10 +66,10 @@ const OrderCard = (props) => {
   };
 
   useEffect(() => {
-    if (selectedSeats || selectedFoodItems || selectedPromotion) {
+    if (selectedSeats || selectedFoodItems || selectedPromotionBill) {
       calculateTotalPrice();
     }
-  }, [selectedSeats, selectedFoodItems, selectedPromotion]);
+  }, [selectedSeats, selectedFoodItems, selectedPromotionBill]);
 
   const calculateTotalPrice = () => {
     let newTotalPrice = 0;
@@ -86,19 +86,20 @@ const OrderCard = (props) => {
     });
 
     // Áp dụng khuyến mãi nếu có
-    if (selectedPromotion !== null) {
+    if (selectedPromotionBill !== null) {
       if (
-        selectedPromotion.typePromotion === "DISCOUNT" &&
-        selectedPromotion.promotionDiscountDetailDto.typeDiscount === "PERCENT"
+        selectedPromotionBill.typePromotion === "DISCOUNT" &&
+        selectedPromotionBill.promotionDiscountDetailDto.typeDiscount ===
+          "PERCENT"
       ) {
         const minBillValue =
-          selectedPromotion.promotionDiscountDetailDto.minBillValue;
+          selectedPromotionBill.promotionDiscountDetailDto.minBillValue;
         // Kiểm tra nếu tổng giá trị hóa đơn đạt tối thiểu thì mới áp dụng khuyến mãi
         if (newTotalPrice >= minBillValue) {
           const discountValue =
-            selectedPromotion.promotionDiscountDetailDto.discountValue;
+            selectedPromotionBill.promotionDiscountDetailDto.discountValue;
           const maxValue =
-            selectedPromotion.promotionDiscountDetailDto.maxValue;
+            selectedPromotionBill.promotionDiscountDetailDto.maxValue;
           const discountedPrice = newTotalPrice * (1 - discountValue / 100);
 
           // Kiểm tra nếu giá giảm đã bằng hoặc vượt quá maxValue thì giữ nguyên giá trị tổng giá
@@ -109,7 +110,7 @@ const OrderCard = (props) => {
 
           newTotalPrice = finalPrice;
         } else {
-          dispatch(doSetSelectedPromotion({}));
+          dispatch(doSetSelectedPromotionBill({}));
         }
       }
     }
@@ -137,7 +138,7 @@ const OrderCard = (props) => {
   // };
 
   // const applyPromotion = (subtotal) => {
-  //   if (selectedPromotion !== null) {
+  //   if (selectedPromotionBill !== null) {
   //     // Xử lý logic áp dụng khuyến mãi tại đây
   //   } else {
   //     // Nếu không có khuyến mãi, chỉ cập nhật tổng giá mới
@@ -183,18 +184,22 @@ const OrderCard = (props) => {
               )}
             </Typography.Text>
           </Col>
-          {selectedPromotion && selectedPromotion?.name && (
+          {selectedPromotionBill && selectedPromotionBill?.name && (
             <Col span={24}>
               <Typography.Text>
                 <p style={{ fontWeight: "700" }}>Bạn được nhận khuyến mãi:</p>
-                {selectedPromotion?.name} giảm{" "}
-                {selectedPromotion?.promotionDiscountDetailDto?.discountValue}%
-                giá trị hóa đơn khi hóa đơn tối thiểu:{" "}
+                {selectedPromotionBill?.name} giảm{" "}
+                {
+                  selectedPromotionBill?.promotionDiscountDetailDto
+                    ?.discountValue
+                }
+                % giá trị hóa đơn khi hóa đơn tối thiểu:{" "}
                 {new Intl.NumberFormat("vi-VN", {
                   style: "currency",
                   currency: "VND",
                 }).format(
-                  selectedPromotion?.promotionDiscountDetailDto?.minBillValue
+                  selectedPromotionBill?.promotionDiscountDetailDto
+                    ?.minBillValue
                 )}{" "}
                 <p style={{ fontWeight: "700", marginRight: 10 }}>
                   Giảm tối đa:{" "}
@@ -202,7 +207,7 @@ const OrderCard = (props) => {
                     style: "currency",
                     currency: "VND",
                   }).format(
-                    selectedPromotion?.promotionDiscountDetailDto?.maxValue
+                    selectedPromotionBill?.promotionDiscountDetailDto?.maxValue
                   )}
                 </p>
               </Typography.Text>

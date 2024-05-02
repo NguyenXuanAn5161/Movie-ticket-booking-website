@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import OrderCard from "../../components/OrderCard/OrderCard";
 import {
   doResetBooking,
-  doSetSelectedPromotion,
+  doSetSelectedPromotionBill,
 } from "../../redux/booking/bookingSlice";
 import { callFetchListTypeSeat } from "../../services/apiMovie";
 import { callCreateInvoice } from "../../services/apiOder";
@@ -28,9 +28,13 @@ const BookingPage = () => {
     (state) => state.booking.selectedFoodItems
   );
   const user = useSelector((state) => state.booking.user);
-  const selectedPromotion = useSelector(
-    (state) => state.booking.selectedPromotion
+  const selectedPromotionBill = useSelector(
+    (state) => state.booking.selectedPromotionBill
   );
+
+  useEffect(() => {
+    dispatch(doResetBooking());
+  }, []);
 
   const [isSubmit, setIsSubmit] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -39,39 +43,39 @@ const BookingPage = () => {
   const [promotion, setPromotion] = useState(null);
 
   useEffect(() => {
-    console.log("promotion: ", selectedPromotion);
-  }, [selectedPromotion]);
+    console.log("promotion: ", selectedPromotionBill);
+  }, [selectedPromotionBill]);
 
   // call lấy khuyến mãi khi có giá thay đổi
   useEffect(() => {
     if (totalPrice > 0) {
       fetchFitPromotion(totalPrice);
     } else {
-      dispatch(doSetSelectedPromotion({}));
+      dispatch(doSetSelectedPromotionBill({}));
     }
   }, [totalPrice]);
 
   const fetchFitPromotion = async (totalPrice) => {
     const res = await callFitPromotion(totalPrice);
     if (res) {
-      if (res.id !== selectedPromotion?.id) {
+      if (res.id !== selectedPromotionBill?.id) {
         console.log("res khuyen mai: ", res);
         message.success("Chúc mừng bạn nhận được khuyến mãi " + res.name);
-        dispatch(doSetSelectedPromotion(res));
+        dispatch(doSetSelectedPromotionBill(res));
       }
     }
   };
 
   // useEffect(() => {
   //   // Tính lại giá khi có khuyến mãi
-  //   if (selectedPromotion) {
+  //   if (selectedPromotionBill) {
   //     if (
-  //       selectedPromotion.typePromotion === "DISCOUNT" &&
-  //       selectedPromotion.promotionDiscountDetailDto.typeDiscount === "PERCENT"
+  //       selectedPromotionBill.typePromotion === "DISCOUNT" &&
+  //       selectedPromotionBill.promotionDiscountDetailDto.typeDiscount === "PERCENT"
   //     ) {
   //       const discountValue =
-  //         selectedPromotion.promotionDiscountDetailDto.discountValue;
-  //       const maxValue = selectedPromotion.promotionDiscountDetailDto.maxValue;
+  //         selectedPromotionBill.promotionDiscountDetailDto.discountValue;
+  //       const maxValue = selectedPromotionBill.promotionDiscountDetailDto.maxValue;
   //       const discountedPrice = totalPrice * (1 - discountValue / 100);
 
   //       // Kiểm tra nếu giá giảm đã bằng hoặc vượt quá maxValue thì giữ nguyên giá trị tổng giá
@@ -122,7 +126,7 @@ const BookingPage = () => {
       selectedFoodItems,
       user,
       "1",
-      selectedPromotion.id
+      selectedPromotionBill.id
     );
     // console.log("res dat ve: ", res);
     if (res?.status === 200) {
@@ -170,14 +174,15 @@ const BookingPage = () => {
                 Quay lại
               </Button>
             )}
-            {current < steps.length - 1 && (
-              <Button type="primary" onClick={next}>
-                Tiếp tục
-              </Button>
-            )}
+            {current < steps.length - 1 &&
+              Object.keys(selectedShowTime).length > 0 && (
+                <Button type="primary" onClick={next}>
+                  Tiếp tục
+                </Button>
+              )}
             {current === steps.length - 1 && (
               <Button type="primary" onClick={onFinish}>
-                Hoàn thành
+                Thanh toán
               </Button>
             )}
           </div>
