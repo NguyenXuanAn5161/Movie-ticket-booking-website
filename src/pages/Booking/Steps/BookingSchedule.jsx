@@ -1,6 +1,6 @@
 import { Card, Col, Form, Row } from "antd";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import CalendarBooking from "../../../components/Booking/CalenderBooking";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import {
@@ -13,21 +13,22 @@ import {
   callFetchListMovie,
   callGetShowDateByMovieId,
 } from "../../../services/apiMovie";
+import { filterAndSortDates } from "../../../utils/formatData.js";
 
 const BookingSchedule = (props) => {
   const { form } = props;
 
   const dispatch = useDispatch();
-  const selectedMovie = useSelector((state) => state.booking.selectedMovie);
-
-  const [isLoading, setIsLoading] = useState(false);
   const [cinema, setCinema] = useState(null);
   const [movie, setMovie] = useState(null);
 
   useEffect(() => {
-    console.log("cinema: ", cinema);
-  }, [cinema]);
+    if (cinema && movie) {
+      dispatch(doSetSelectedMovie(movie));
+    }
+  }, [movie]);
 
+  // tìm rạp theo tên
   const fetchCinemaList = async (cinemaName) => {
     try {
       let query = `size=5&name=${cinemaName}`;
@@ -40,7 +41,6 @@ const BookingSchedule = (props) => {
 
       return cinema;
     } catch (error) {
-      // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
       console.error("Error fetching cinema list:", error);
       // Trả về một mảng trống nếu xảy ra lỗi
       return [];
@@ -56,7 +56,6 @@ const BookingSchedule = (props) => {
   // tìm phim theo rạp
   const fetchMovieList = async (movieName) => {
     let query = `size=5&cinemaId=${cinema.value}`;
-    // let query = `size=5&`;
 
     if (movieName) {
       query += `&name=${movieName}`;
@@ -87,21 +86,13 @@ const BookingSchedule = (props) => {
     try {
       const resShowDate = await callGetShowDateByMovieId(movieId, cinemaId);
       if (resShowDate && resShowDate.length > 0) {
-        const sortedDates = resShowDate
-          .slice()
-          .sort((a, b) => new Date(a) - new Date(b));
-        dispatch(doSetShowDateByMovieId(sortedDates));
+        const dataFormat = filterAndSortDates(resShowDate);
+        dispatch(doSetShowDateByMovieId(dataFormat));
       }
     } catch (error) {
       console.error("error fetch show date by movieId: ", error);
     }
   };
-
-  useEffect(() => {
-    if (cinema && movie) {
-      dispatch(doSetSelectedMovie(movie));
-    }
-  }, [movie]);
 
   return (
     <>

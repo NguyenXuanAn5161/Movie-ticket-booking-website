@@ -7,18 +7,9 @@ import {
   doSetSelectedShowTime,
 } from "../../redux/booking/bookingSlice";
 import { callFetchListShowtime } from "../../services/apiShowTime";
-import { FORMAT_DATE } from "../../utils/constant";
+import { FORMAT_DATE_DD_MM } from "../../utils/constant";
+import { convertWeekday, filterAndSortShowTimes } from "../../utils/formatData";
 import "./styles.scss";
-
-const days = [
-  "Chủ Nhật",
-  "Thứ Hai",
-  "Thứ Ba",
-  "Thứ Tư",
-  "Thứ Năm",
-  "Thứ Sáu",
-  "Thứ Bảy",
-];
 
 const CalendarBooking = () => {
   const dispatch = useDispatch();
@@ -40,6 +31,7 @@ const CalendarBooking = () => {
     }
   }, [showDateByMovieId]);
 
+  // fetch showtime by date
   useEffect(() => {
     if (showDateByMovieId.length > 0) {
       fetchShowTimeByDate(selectedDate);
@@ -51,7 +43,9 @@ const CalendarBooking = () => {
     try {
       const resShowTime = await callFetchListShowtime(query);
       if (resShowTime?.content) {
-        setShowTime(resShowTime.content);
+        const dataFormat = filterAndSortShowTimes(resShowTime.content);
+        console.log("dataFormat", dataFormat);
+        setShowTime(dataFormat);
       }
     } catch (error) {
       console.log("Error fetching showtime list:", error);
@@ -59,9 +53,11 @@ const CalendarBooking = () => {
   };
 
   const getDayOfWeek = (dateString) => {
-    const date = new Date(dateString);
-    const dayOfWeek = date.getDay();
-    return days[dayOfWeek];
+    const weekday = new Date(dateString).toLocaleDateString("en", {
+      weekday: "long",
+    });
+    const date = convertWeekday(weekday, dateString);
+    return date;
   };
 
   const handleDateSelect = (date) => {
@@ -103,7 +99,7 @@ const CalendarBooking = () => {
                   }`}
                 >
                   <span>{getDayOfWeek(dateString)}</span>
-                  <span>{moment(dateString).format(FORMAT_DATE)}</span>
+                  <span>{moment(dateString).format(FORMAT_DATE_DD_MM)}</span>
                 </div>
               </div>
             ))}
