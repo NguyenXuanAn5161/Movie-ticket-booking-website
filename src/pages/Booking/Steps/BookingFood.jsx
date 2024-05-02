@@ -11,6 +11,11 @@ const { Text } = Typography;
 
 const BookingFood = () => {
   const dispatch = useDispatch();
+  const selectedCinema = useSelector((state) => state.booking.selectedCinema);
+
+  useEffect(() => {
+    console.log("selectedCinema: ", selectedCinema);
+  }, []);
   const selectedFoodItems = useSelector(
     (state) => state.booking.selectedFoodItems
   );
@@ -18,12 +23,14 @@ const BookingFood = () => {
   const [listFood, setListFood] = useState([]);
 
   useEffect(() => {
-    fetchListFood();
+    if (selectedCinema?.value) {
+      fetchListFood(selectedCinema.value);
+    }
   }, []);
 
-  const fetchListFood = async () => {
+  const fetchListFood = async (cinemaId) => {
     try {
-      const query = "size=100";
+      const query = `size=100&cinemaId=${cinemaId}`;
       const res = await callFetchListFood(query);
       if (res?.content) {
         setListFood(res.content);

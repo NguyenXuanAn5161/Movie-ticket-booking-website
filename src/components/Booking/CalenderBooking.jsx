@@ -43,16 +43,15 @@ const CalendarBooking = () => {
   }, [selectedDate]);
 
   const fetchShowTimeByDate = async (date) => {
-    let query = `size=100&cinemaId=${selectedCinema[0]?.value}&movieId=${selectedMovie?.value}&date=${date}`;
+    let query = `size=100&cinemaId=${selectedCinema?.value}&movieId=${selectedMovie?.value}&date=${date}`;
     try {
       const resShowTime = await callFetchListShowtime(query);
       if (resShowTime?.content) {
         const dataFormat = filterAndSortShowTimes(resShowTime.content);
-        console.log("dataFormat", dataFormat);
         setShowTime(dataFormat);
       }
     } catch (error) {
-      console.log("Error fetching showtime list:", error);
+      console.error("Error fetching showtime list:", error);
     }
   };
 

@@ -37,7 +37,6 @@ const BookingSchedule = (props) => {
         label: data.name,
         value: data.id,
       }));
-      dispatch(doSetSelectedCinema(cinema));
 
       return cinema;
     } catch (error) {
@@ -116,6 +115,7 @@ const BookingSchedule = (props) => {
                     style={{ textAlign: "start" }}
                     value={cinema}
                     onChange={(newValue) => {
+                      dispatch(doSetSelectedCinema(newValue));
                       setCinema(newValue);
                     }}
                     placeholder="Chọn rạp"
