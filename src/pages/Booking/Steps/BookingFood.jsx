@@ -106,13 +106,15 @@ const BookingFood = () => {
                   }}
                 >
                   <Meta title={item.name} />
-                  <Text>
-                    Giá:{" "}
-                    {new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(item?.price ?? "NaN")}
-                  </Text>
+                  {item?.price && (
+                    <Text>
+                      Giá:{" "}
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(item?.price ?? "NaN")}
+                    </Text>
+                  )}
                 </div>
               </div>
               {item.active_price === true ? (
