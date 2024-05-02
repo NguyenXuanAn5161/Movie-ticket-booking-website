@@ -69,7 +69,7 @@ const LayoutAdmin = () => {
           <AppstoreOutlined />
         ),
         getItem(
-          <Link to="/admin/order">Quản lý đơn hàng</Link>,
+          <Link to="/admin/order">Quản lý hoá đơn</Link>,
           "order",
           <DollarCircleOutlined />
         ),
