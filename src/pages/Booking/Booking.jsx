@@ -144,7 +144,16 @@ const BookingPage = () => {
     }
   };
 
-  const next = () => setCurrent(current + 1);
+  const next = () => {
+    if (current === 1 && selectedSeat.length === 0) {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: "Vui lòng chọn ghế!",
+      });
+      return;
+    }
+    setCurrent(current + 1);
+  };
 
   const prev = () => setCurrent(current - 1);
 
