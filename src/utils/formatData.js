@@ -1,4 +1,4 @@
-// import moment from "moment";
+import moment from "moment";
 
 export const convertWeekday = (weekday, date) => {
   const today = new Date();
@@ -89,4 +89,9 @@ export const groupShowTimesByRoom = (showTimes) => {
   }, []);
 
   return groupedShowTimes;
+};
+
+export const formatTime = (time) => {
+  const timeObject = moment(time, "HH:mm");
+  return timeObject.format("HH:mm");
 };

@@ -12,7 +12,11 @@ import {
 } from "../../redux/booking/bookingSlice";
 import { callFetchListShowtime } from "../../services/apiShowTime";
 import { FORMAT_DATE_DD_MM } from "../../utils/constant";
-import { convertWeekday, filterAndSortShowTimes } from "../../utils/formatData";
+import {
+  convertWeekday,
+  filterAndSortShowTimes,
+  formatTime,
+} from "../../utils/formatData";
 import "./styles.scss";
 
 const CalendarBooking = () => {
@@ -137,7 +141,7 @@ const CalendarBooking = () => {
                     }`}
                     onClick={() => handleSelectedShowTime(item)}
                   >
-                    {item.showTime}
+                    {formatTime(item.showTime)}
                   </span>
                 ))}
               </div>
