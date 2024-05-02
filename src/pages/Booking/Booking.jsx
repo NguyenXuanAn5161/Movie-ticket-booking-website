@@ -8,7 +8,10 @@ import {
   doSetSelectedPromotionBill,
 } from "../../redux/booking/bookingSlice";
 import { callFetchListTypeSeat } from "../../services/apiMovie";
-import { callCreateInvoice } from "../../services/apiOder";
+import {
+  callCreateInvoice,
+  callCreateInvoiceByVnPay,
+} from "../../services/apiOder";
 import { callFitPromotion } from "../../services/apiPromotion";
 import BookingFood from "./Steps/BookingFood";
 import BookingPayment from "./Steps/BookingPayment";
@@ -31,6 +34,13 @@ const BookingPage = () => {
   const selectedPromotionBill = useSelector(
     (state) => state.booking.selectedPromotionBill
   );
+  const selectedPaymentMethod = useSelector(
+    (state) => state.booking.selectedPaymentMethod
+  );
+
+  useEffect(() => {
+    console.log("selectedPaymentMethod: ", selectedPaymentMethod);
+  }, [selectedPaymentMethod]);
 
   useEffect(() => {
     dispatch(doResetBooking());
@@ -120,27 +130,46 @@ const BookingPage = () => {
 
   const onFinish = async (values) => {
     setIsSubmit(true);
-    const res = await callCreateInvoice(
-      selectedShowTime,
-      selectedSeat,
-      selectedFoodItems,
-      user,
-      "1",
-      selectedPromotionBill.id
-    );
-    // console.log("res dat ve: ", res);
-    if (res?.status === 200) {
-      message.success("Đặt vé thành công!");
-      dispatch(doResetBooking());
-      navigate("/admin/order");
-      setIsSubmit(false);
+    if (selectedPaymentMethod.id === "CASH") {
+      const res = await callCreateInvoice(
+        selectedShowTime,
+        selectedSeat,
+        selectedFoodItems,
+        user,
+        "1",
+        selectedPaymentMethod.id
+      );
+      // console.log("res dat ve: ", res);
+      if (res?.status === 200) {
+        message.success("Đặt vé thành công!");
+        dispatch(doResetBooking());
+        navigate("/admin/order");
+        setIsSubmit(false);
+      } else {
+        console.log("res dat ve: ", res.response.data.message);
+        notification.error({
+          message: "Đã có lỗi xảy ra!",
+          description: res.response.data.message,
+        });
+        setIsSubmit(false);
+      }
     } else {
-      console.log("res dat ve: ", res.response.data.message);
-      notification.error({
-        message: "Đã có lỗi xảy ra!",
-        description: res.response.data.message,
-      });
-      setIsSubmit(false);
+      const resVnPay = await callCreateInvoiceByVnPay(
+        "99999",
+        selectedShowTime,
+        selectedSeat,
+        selectedFoodItems,
+        user,
+        "1"
+      );
+      console.log("resVnPay: ", resVnPay);
+      if (resVnPay?.status === 200) {
+        window.location.href = resVnPay.message;
+      }
+
+      // check url
+      const url = window.location.href;
+      console.log("url: ", url);
     }
   };
 
