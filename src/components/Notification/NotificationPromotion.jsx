@@ -81,7 +81,6 @@ const NotificationPromotion = ({ promotion, modalVisible, handleClose }) => {
       : "";
 
   useEffect(() => {
-    console.log("fz_32", theme.fontSize);
     if (modalVisible) {
       Modal.info({
         title: "Thông báo",

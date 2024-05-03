@@ -48,7 +48,7 @@ const OrderCard = (props) => {
   }, [selectedSeats]);
 
   const findSeatTypeIdByName = (typeName) => {
-    const type = typeSeat.find((type) => type.name === typeName);
+    const type = typeSeat?.find((type) => type.name === typeName);
     return type ? type.id : null;
   };
 
@@ -245,7 +245,7 @@ const OrderCard = (props) => {
                   style: "currency",
                   currency: "VND",
                 }).format(
-                  selectedSeats.find(
+                  selectedSeats?.find(
                     (seat) => seat.seatTypeId === findSeatTypeIdByName("VIP")
                   )?.price + selectedRoom.price || 0
                 )}
@@ -276,7 +276,7 @@ const OrderCard = (props) => {
                   style: "currency",
                   currency: "VND",
                 }).format(
-                  selectedSeats.find(
+                  selectedSeats?.find(
                     (seat) =>
                       seat.seatTypeId === findSeatTypeIdByName("SWEETBOX")
                   )?.price + selectedRoom.price || 0
