@@ -1,9 +1,10 @@
-import { Card, Col, Form, Row } from "antd";
+import { Card, Col, Form, Row, notification } from "antd";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CalendarBooking from "../../../components/Booking/CalenderBooking";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import {
+  doResetBooking,
   doSetSelectedCinema,
   doSetSelectedMovie,
   doSetShowDateByMovieId,
@@ -16,9 +17,13 @@ import {
 import { filterAndSortDates } from "../../../utils/formatData.js";
 
 const BookingSchedule = (props) => {
-  const { form } = props;
-
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
+
+  const showDateByMovieId = useSelector(
+    (state) => state.booking.showDateByMovieId
+  );
+
   const [cinema, setCinema] = useState(null);
   const [movie, setMovie] = useState(null);
 
@@ -49,8 +54,15 @@ const BookingSchedule = (props) => {
   useEffect(() => {
     if (cinema) {
       fetchMovieList();
+      handleReset();
+      dispatch(doSetSelectedCinema(cinema));
     }
   }, [cinema]);
+
+  const handleReset = () => {
+    setMovie(null);
+    dispatch(doResetBooking());
+  };
 
   // tìm phim theo rạp
   const fetchMovieList = async (movieName) => {
@@ -84,14 +96,26 @@ const BookingSchedule = (props) => {
   const fetchShowDateByMovieId = async (movieId, cinemaId) => {
     try {
       const resShowDate = await callGetShowDateByMovieId(movieId, cinemaId);
-      if (resShowDate && resShowDate.length > 0) {
+      if (resShowDate) {
         const dataFormat = filterAndSortDates(resShowDate);
+        console.log("dataFormat: ", dataFormat);
         dispatch(doSetShowDateByMovieId(dataFormat));
       }
     } catch (error) {
       console.error("error fetch show date by movieId: ", error);
     }
   };
+
+  // thông báo nếu lịch chiếu không có
+  useEffect(() => {
+    if (movie && showDateByMovieId.length === 0) {
+      console.log("showDateByMovieId: ", showDateByMovieId);
+      notification.error({
+        message: "Không có suất chiếu!",
+        description: "Vui lòng chọn phim khác hoặc rạp khác",
+      });
+    }
+  }, [showDateByMovieId]);
 
   return (
     <>

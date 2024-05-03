@@ -228,7 +228,7 @@ export const callDeletePromotionLine = async (id) => {
 };
 
 // --------------------------------------------
-// áp khuyến mãi phù hợp
+// bill
 export const callFitPromotion = async (totalPrice) => {
   try {
     const response = await api.get(
@@ -236,6 +236,21 @@ export const callFitPromotion = async (totalPrice) => {
     );
     return response.data;
   } catch (error) {
+    return error;
+  }
+};
+
+// seats
+export const fetchPromotionByTicket = async (seats, showTimeId) => {
+  const seatIds = seats.map((seat) => seat.id).join(",");
+
+  try {
+    const response = await api.get(
+      `/api/promotion/line_ticket/active?seatId=${seatIds}&showTimeId=${showTimeId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching promotion by ticket:", error);
     return error;
   }
 };

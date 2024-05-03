@@ -1,18 +1,13 @@
-import { Button, Col, Form, Row, Steps, message, notification } from "antd";
+import { Button, Col, Row, Steps, message, notification } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import OrderCard from "../../components/OrderCard/OrderCard";
-import {
-  doResetBooking,
-  doSetSelectedPromotionBill,
-} from "../../redux/booking/bookingSlice";
-import { callFetchListTypeSeat } from "../../services/apiMovie";
+import { doResetBooking } from "../../redux/booking/bookingSlice";
 import {
   callCreateInvoice,
   callCreateInvoiceByVnPay,
 } from "../../services/apiOder";
-import { callFitPromotion } from "../../services/apiPromotion";
 import BookingFood from "./Steps/BookingFood";
 import BookingPayment from "./Steps/BookingPayment";
 import BookingSchedule from "./Steps/BookingSchedule";
@@ -21,15 +16,12 @@ import BookingSeat from "./Steps/BookingSeat";
 const BookingPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [form] = Form.useForm();
 
   const selectedShowTime = useSelector(
     (state) => state.booking.selectedShowTime
   );
   const selectedSeat = useSelector((state) => state.booking.selectedSeats);
-  const selectedFoodItems = useSelector(
-    (state) => state.booking.selectedFoodItems
-  );
+  const selectedFoods = useSelector((state) => state.booking.selectedFoods);
   const user = useSelector((state) => state.booking.user);
   const selectedPromotionBill = useSelector(
     (state) => state.booking.selectedPromotionBill
@@ -37,10 +29,7 @@ const BookingPage = () => {
   const selectedPaymentMethod = useSelector(
     (state) => state.booking.selectedPaymentMethod
   );
-
-  useEffect(() => {
-    console.log("selectedPaymentMethod: ", selectedPaymentMethod);
-  }, [selectedPaymentMethod]);
+  const totalPrice = useSelector((state) => state.booking.totalPrice);
 
   useEffect(() => {
     dispatch(doResetBooking());
@@ -48,85 +37,6 @@ const BookingPage = () => {
 
   const [isSubmit, setIsSubmit] = useState(false);
   const [current, setCurrent] = useState(0);
-  const [price, setPrice] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [promotion, setPromotion] = useState(null);
-
-  useEffect(() => {
-    console.log("promotion: ", selectedPromotionBill);
-  }, [selectedPromotionBill]);
-
-  // call lấy khuyến mãi khi có giá thay đổi
-  useEffect(() => {
-    if (totalPrice > 0) {
-      fetchFitPromotion(totalPrice);
-    } else {
-      dispatch(doSetSelectedPromotionBill({}));
-    }
-  }, [totalPrice]);
-
-  const fetchFitPromotion = async (totalPrice) => {
-    const res = await callFitPromotion(totalPrice);
-    if (res) {
-      if (res.id !== selectedPromotionBill?.id) {
-        console.log("res khuyen mai: ", res);
-        message.success("Chúc mừng bạn nhận được khuyến mãi " + res.name);
-        dispatch(doSetSelectedPromotionBill(res));
-      }
-    }
-  };
-
-  // useEffect(() => {
-  //   // Tính lại giá khi có khuyến mãi
-  //   if (selectedPromotionBill) {
-  //     if (
-  //       selectedPromotionBill.typePromotion === "DISCOUNT" &&
-  //       selectedPromotionBill.promotionDiscountDetailDto.typeDiscount === "PERCENT"
-  //     ) {
-  //       const discountValue =
-  //         selectedPromotionBill.promotionDiscountDetailDto.discountValue;
-  //       const maxValue = selectedPromotionBill.promotionDiscountDetailDto.maxValue;
-  //       const discountedPrice = totalPrice * (1 - discountValue / 100);
-
-  //       // Kiểm tra nếu giá giảm đã bằng hoặc vượt quá maxValue thì giữ nguyên giá trị tổng giá
-  //       const finalPrice =
-  //         discountedPrice <= maxValue ? discountedPrice : totalPrice - maxValue;
-
-  //       setTotalPrice(finalPrice);
-  //     }
-  //   }
-  // }, []);
-
-  // fetch giá
-  useEffect(() => {
-    fetchPriceTypeSeat();
-  }, []);
-
-  const fetchPriceTypeSeat = async () => {
-    const res = await callFetchListTypeSeat();
-    if (res) {
-      setPrice(res);
-    }
-  };
-
-  const steps = [
-    {
-      title: "Chọn rạp / Phim / Suất",
-      formComponent: <BookingSchedule form={form} />,
-    },
-    {
-      title: "Chọn ghế",
-      formComponent: <BookingSeat form={form} />,
-    },
-    {
-      title: "Chọn thức ăn",
-      formComponent: <BookingFood form={form} />,
-    },
-    {
-      title: "Thanh toán",
-      formComponent: <BookingPayment form={form} />,
-    },
-  ];
 
   const onFinish = async (values) => {
     setIsSubmit(true);
@@ -134,12 +44,11 @@ const BookingPage = () => {
       const res = await callCreateInvoice(
         selectedShowTime,
         selectedSeat,
-        selectedFoodItems,
+        selectedFoods,
         user,
         "1",
         selectedPaymentMethod.id
       );
-      // console.log("res dat ve: ", res);
       if (res?.status === 200) {
         message.success("Đặt vé thành công!");
         dispatch(doResetBooking());
@@ -155,10 +64,10 @@ const BookingPage = () => {
       }
     } else {
       const resVnPay = await callCreateInvoiceByVnPay(
-        "99999",
+        "45000",
         selectedShowTime,
         selectedSeat,
-        selectedFoodItems,
+        selectedFoods,
         user,
         "1"
       );
@@ -172,6 +81,25 @@ const BookingPage = () => {
       console.log("url: ", url);
     }
   };
+
+  const steps = [
+    {
+      title: "Chọn rạp / Phim / Suất",
+      formComponent: <BookingSchedule />,
+    },
+    {
+      title: "Chọn ghế",
+      formComponent: <BookingSeat />,
+    },
+    {
+      title: "Chọn thức ăn",
+      formComponent: <BookingFood />,
+    },
+    {
+      title: "Thanh toán",
+      formComponent: <BookingPayment />,
+    },
+  ];
 
   const next = () => {
     if (current === 1 && selectedSeat.length === 0) {
@@ -201,11 +129,7 @@ const BookingPage = () => {
           </div>
         </Col>
         <Col span={9}>
-          <OrderCard
-            price={price}
-            totalPrice={totalPrice}
-            setTotalPrice={setTotalPrice}
-          />
+          <OrderCard />
           <div style={{ marginTop: 24, textAlign: "right" }}>
             {current > 0 && (
               <Button type="primary" style={{ marginRight: 8 }} onClick={prev}>
@@ -219,7 +143,7 @@ const BookingPage = () => {
                 </Button>
               )}
             {current === steps.length - 1 && (
-              <Button type="primary" onClick={onFinish}>
+              <Button type="primary" loading={isSubmit} onClick={onFinish}>
                 Thanh toán
               </Button>
             )}

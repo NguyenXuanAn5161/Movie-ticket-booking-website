@@ -9,7 +9,7 @@ const initialState = {
   selectedShowTime: {},
   selectedRoom: {},
   selectedSeats: [],
-  selectedFoodItems: [],
+  selectedFoods: [],
   selectedPromotionBill: {},
   selectedPromotionSeat: {},
   selectedPromotionFood: {},
@@ -49,8 +49,8 @@ export const bookingSlice = createSlice({
     doSetSelectedSeats: (state, action) => {
       state.selectedSeats = action.payload;
     },
-    doSetSelectedFoodItems: (state, action) => {
-      state.selectedFoodItems = action.payload;
+    doSetSelectedFoods: (state, action) => {
+      state.selectedFoods = action.payload;
     },
     doSetSelectedPromotionBill: (state, action) => {
       state.selectedPromotionBill = action.payload;
@@ -77,7 +77,7 @@ export const bookingSlice = createSlice({
       state.selectedShowTime = {};
       state.selectedRoom = {};
       state.selectedSeats = [];
-      state.selectedFoodItems = [];
+      state.selectedFoods = [];
       state.selectedPromotionSeat = {};
       state.selectedPromotionFood = {};
       state.selectedPromotionBill = {};
@@ -97,7 +97,7 @@ export const {
   doSetUser,
   doSetSelectedSeats,
   doSetSelectedCinema,
-  doSetSelectedFoodItems,
+  doSetSelectedFoods,
   doSetSelectedMovie,
   doSetSelectedPaymentMethod,
   doSetSelectedPromotionFood,

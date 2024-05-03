@@ -3,7 +3,7 @@ import moment from "moment";
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  doSetSelectedFoodItems,
+  doSetSelectedFoods,
   doSetSelectedPromotionBill,
   doSetSelectedPromotionFood,
   doSetSelectedPromotionSeat,
@@ -43,6 +43,8 @@ const CalendarBooking = () => {
   useEffect(() => {
     if (showDateByMovieId.length > 0) {
       fetchShowTimeByDate(selectedDate);
+    } else {
+      setShowTime(null);
     }
   }, [selectedDate]);
 
@@ -86,7 +88,7 @@ const CalendarBooking = () => {
   const handleSelectedShowTime = (showTime) => {
     dispatch(doSetSelectedShowTime(showTime));
     dispatch(doSetSelectedSeats([]));
-    dispatch(doSetSelectedFoodItems([]));
+    dispatch(doSetSelectedFoods([]));
     dispatch(doSetSelectedPromotionBill({}));
     dispatch(doSetSelectedPromotionSeat({}));
     dispatch(doSetSelectedPromotionFood({}));
@@ -119,36 +121,38 @@ const CalendarBooking = () => {
       </Card>
       <Card className={`calendar_booking`}>
         <h6 style={{ textAlign: "left" }}>Suất chiếu</h6>
-        {Object.keys(groupedShowTimes).map((roomName) => (
-          <>
-            <div key={roomName} className={`row_showTime`}>
-              <h7 style={{ textAlign: "left", minWidth: 200, maxWidth: 200 }}>
-                {roomName}
-              </h7>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  gap: 5,
-                }}
-              >
-                {groupedShowTimes[roomName].map((item, index) => (
-                  <span
-                    key={index}
-                    className={`item_showTime ${
-                      selectedShowTime?.id === item.id ? "selectedTime" : ""
-                    }`}
-                    onClick={() => handleSelectedShowTime(item)}
-                  >
-                    {formatTime(item.showTime)}
-                  </span>
-                ))}
+        {Object.keys(groupedShowTimes)
+          .sort((a, b) => a.localeCompare(b))
+          .map((roomName) => (
+            <>
+              <div key={roomName} className={`row_showTime`}>
+                <h7 style={{ textAlign: "left", minWidth: 200, maxWidth: 200 }}>
+                  {roomName}
+                </h7>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    gap: 5,
+                  }}
+                >
+                  {groupedShowTimes[roomName].map((item, index) => (
+                    <span
+                      key={index}
+                      className={`item_showTime ${
+                        selectedShowTime?.id === item.id ? "selectedTime" : ""
+                      }`}
+                      onClick={() => handleSelectedShowTime(item)}
+                    >
+                      {formatTime(item.showTime)}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className={`line`}></div>
-          </>
-        ))}
+              <div className={`line`}></div>
+            </>
+          ))}
       </Card>
     </>
   );
