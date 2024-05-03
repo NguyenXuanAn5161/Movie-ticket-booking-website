@@ -14,6 +14,7 @@ const initialState = {
   selectedPromotionSeat: {},
   selectedPromotionFood: {},
   selectedPaymentMethod: {},
+  totalPrice: 0,
   currentStep: 0,
 };
 
@@ -21,6 +22,9 @@ export const bookingSlice = createSlice({
   name: "booking",
   initialState,
   reducers: {
+    doSetTotalPrice: (state, action) => {
+      state.totalPrice = action.payload;
+    },
     doSetFormData: (state, action) => {
       state.formData = action.payload;
     },
@@ -64,6 +68,7 @@ export const bookingSlice = createSlice({
       state.currentStep = action.payload;
     },
     doResetBooking: (state) => {
+      state.totalPrice = 0;
       state.formData = {};
       state.user = {};
       state.selectedCinema = {};
@@ -86,6 +91,7 @@ export const bookingSlice = createSlice({
 });
 
 export const {
+  doSetTotalPrice,
   doSetCurrentStep,
   doSetFormData,
   doSetUser,
