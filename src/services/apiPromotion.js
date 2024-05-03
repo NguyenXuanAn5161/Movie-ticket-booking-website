@@ -254,3 +254,25 @@ export const fetchPromotionByTicket = async (seats, showTimeId) => {
     return error;
   }
 };
+
+// foods
+export const fetchPromotionByFood = async (foods, cinemaId) => {
+  const foodIds = [];
+  foods.forEach((food) => {
+    for (let i = 0; i < food.quantity; i++) {
+      foodIds.push(food.id);
+    }
+  });
+
+  const foodIdsString = foodIds.join(",");
+
+  try {
+    const response = await api.get(
+      `/api/promotion/line_food/active?foodId=${foodIdsString}&cinemaId=${cinemaId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching promotion by food:", error);
+    return error;
+  }
+};
