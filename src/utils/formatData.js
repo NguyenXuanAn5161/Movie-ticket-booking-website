@@ -95,3 +95,39 @@ export const formatTime = (time) => {
   const timeObject = moment(time, "HH:mm");
   return timeObject.format("HH:mm");
 };
+
+export const dateFormat = (date) => {
+  return moment(date).format("DD-MM-YYYY");
+};
+
+export const dateFormatYYMMDD = (date) => {
+  return moment(date).format("YYYY-MM-DD");
+};
+
+export const formatCurrency = (currency) => {
+  if (!currency) return "";
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(currency ?? 0);
+};
+
+export const getDayInfo = (date) => {
+  const days = [
+    "Chủ Nhật",
+    "Thứ Hai",
+    "Thứ Ba",
+    "Thứ Tư",
+    "Thứ Năm",
+    "Thứ Sáu",
+    "Thứ Bảy",
+  ];
+  const currentDate = new Date();
+  const inputDate = new Date(date);
+
+  const dayOfWeek = days[inputDate.getDay()];
+
+  return inputDate.toDateString() === currentDate.toDateString()
+    ? "Hôm nay"
+    : dayOfWeek;
+};

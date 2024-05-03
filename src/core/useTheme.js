@@ -19,6 +19,16 @@ const useTheme = () => {
       sweetBox: "#FF1493",
       selectedSeat: "green",
     },
+    fontSize: {
+      small: "12px",
+      medium: "16px",
+      large: "20px",
+      fz_18: "18px",
+      fz_20: "20px",
+      fz_24: "24px",
+      fz_28: "28px",
+      fz_32: "32px",
+    },
     fonts: {
       body: "Arial, sans-serif",
       heading: "Helvetica, sans-serif",
