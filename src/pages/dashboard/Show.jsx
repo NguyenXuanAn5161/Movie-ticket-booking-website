@@ -1,10 +1,6 @@
-import { ArrowDownOutlined } from "@ant-design/icons";
-import { Card, Col, Row, Statistic, Tabs } from "antd";
+import { Card, Col, Row, Tabs } from "antd";
 import { useEffect, useState } from "react";
 import CountUp from "react-countup";
-import SimpleBarChart from "../../components/Charts/BarChart";
-import SimpleLineChart from "../../components/Charts/LineChart";
-import SimplePieChart from "../../components/Charts/PieChart";
 import { callFetchListCinema } from "../../services/apiCinema";
 import { callFetchListUser } from "../../services/apiUser";
 import RevenueDbByCinema from "./RevenueDbByCinema";
@@ -18,28 +14,28 @@ const formatter = (value) => <CountUp end={value} separator="," />;
 const items = [
   {
     key: "1",
-    label: "Thống kê trả vé",
-    children: <RevenueDbByInvoiceCancel />,
-  },
-  {
-    key: "2",
     label: "Doanh thu theo rạp",
     children: <RevenueDbByCinema />,
   },
   {
-    key: "3",
+    key: "2",
     label: "Doanh thu theo phim",
     children: <RevenueDbByMovie />,
   },
   {
-    key: "4",
+    key: "3",
     label: "Doanh thu theo khách hàng",
     children: <RevenueDbByUser />,
   },
   {
-    key: "5",
+    key: "4",
     label: "Doanh thu theo nhân viên",
     children: <RevenueDbByStaff />,
+  },
+  {
+    key: "5",
+    label: "Thống kê trả vé",
+    children: <RevenueDbByInvoiceCancel />,
   },
 ];
 
@@ -82,7 +78,7 @@ const DashBoardShow = () => {
   return (
     <>
       <Row gutter={[16, 16]}>
-        <Col span={12}>
+        {/* <Col span={12}>
           <Card bordered={false} style={{}}>
             <Statistic
               loading={isLoading}
@@ -101,7 +97,7 @@ const DashBoardShow = () => {
               formatter={formatter}
             />
           </Card>
-        </Col>
+        </Col> */}
         <Col span={24}>
           <Card bordered={false}>
             <Tabs
@@ -116,7 +112,7 @@ const DashBoardShow = () => {
             />
           </Card>
         </Col>
-        <Col span={12}>
+        {/* <Col span={12}>
           <Card bordered={false}>
             <Statistic
               title="Idle"
@@ -129,8 +125,8 @@ const DashBoardShow = () => {
               suffix="%"
             />
           </Card>
-        </Col>
-        <Col span={12}>
+        </Col> */}
+        {/* <Col span={12}>
           <Card bordered={false}>
             <Statistic
               title="Account Balance (CNY)"
@@ -154,7 +150,7 @@ const DashBoardShow = () => {
           <Card bordered={false}>
             <SimplePieChart />
           </Card>
-        </Col>
+        </Col> */}
       </Row>
     </>
   );
