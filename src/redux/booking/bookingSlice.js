@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   formData: {},
   user: {},
+  selectedMethodInfoUser: {},
   selectedCinema: {},
   selectedMovie: {},
   showDateByMovieId: [],
@@ -30,6 +31,9 @@ export const bookingSlice = createSlice({
     },
     doSetUser: (state, action) => {
       state.user = action.payload;
+    },
+    doSetSelectedMethodInfoUser: (state, action) => {
+      state.selectedMethodInfoUser = action.payload;
     },
     doSetSelectedCinema: (state, action) => {
       state.selectedCinema = action.payload;
@@ -82,6 +86,7 @@ export const bookingSlice = createSlice({
       state.selectedPromotionFood = {};
       state.selectedPromotionBill = {};
       state.selectedPaymentMethod = {};
+      state.selectedMethodInfoUser = {};
       state.currentStep = 0;
       localStorage.removeItem("bookingState");
     },
@@ -91,6 +96,7 @@ export const bookingSlice = createSlice({
 });
 
 export const {
+  doSetSelectedMethodInfoUser,
   doSetTotalPrice,
   doSetCurrentStep,
   doSetFormData,

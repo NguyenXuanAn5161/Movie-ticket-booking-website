@@ -93,3 +93,32 @@ export const callDeleteUser = async (id) => {
     return error;
   }
 };
+
+export const callCreateGuest = async () => {
+  try {
+    const response = await api.post("/api/users/guest");
+    return response.data;
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+};
+
+export const callCreateUserInBooking = async (username, email) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("username", username);
+  bodyFormData.append("email", email);
+  try {
+    const response = await api({
+      method: "post",
+      url: "/api/users/userInTicket",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};

@@ -1,9 +1,9 @@
-import { Card, Divider } from "antd";
+import { Card } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import Thanhtoantructiep from "../../../assets/imagePayment/ThanhToanTrucTiep.png";
 import vnPayLogo from "../../../assets/imagePayment/logo-VNPAY.png";
-import InforUser from "../../../components/Booking/InforUser";
+import InfoUser from "../../../components/Booking/InfoUser";
 import PaymentMethods from "../../../components/Booking/PaymentMethods";
 import { doSetSelectedPaymentMethod } from "../../../redux/booking/bookingSlice";
 
@@ -30,22 +30,18 @@ const BookingPayment = () => {
   };
 
   return (
-    <div style={{ justifyContent: "start" }}>
-      <Card style={{ marginBottom: 10 }}>
-        <h5 style={{ textAlign: "left" }}>Thông tin khách hàng</h5>
-        <Divider />
-        <InforUser />
+    <>
+      <Card style={{ marginBottom: 10 }} title="Thông tin khách hàng">
+        <InfoUser />
       </Card>
-      <Card>
-        <h5 style={{ textAlign: "left" }}>Phương thức thanh toán</h5>
-        <Divider />
+      <Card title="Phương thức thanh toán">
         <PaymentMethods
           methods={methods}
           onSelect={handleSelect}
           selectedMethod={selectedMethod}
         />
       </Card>
-    </div>
+    </>
   );
 };
 

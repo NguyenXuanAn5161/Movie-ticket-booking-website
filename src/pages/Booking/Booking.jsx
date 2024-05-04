@@ -8,6 +8,10 @@ import {
   callCreateInvoice,
   callCreateInvoiceByVnPay,
 } from "../../services/apiOder";
+import {
+  callCreateGuest,
+  callCreateUserInBooking,
+} from "../../services/apiUser";
 import BookingFood from "./Steps/BookingFood";
 import BookingPayment from "./Steps/BookingPayment";
 import BookingSchedule from "./Steps/BookingSchedule";
@@ -17,19 +21,19 @@ const BookingPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const selectedUser = useSelector((state) => state.booking.user);
+  const selectedMethodInfoUser = useSelector(
+    (state) => state.booking.selectedMethodInfoUser
+  );
   const selectedShowTime = useSelector(
     (state) => state.booking.selectedShowTime
   );
   const selectedSeat = useSelector((state) => state.booking.selectedSeats);
   const selectedFoods = useSelector((state) => state.booking.selectedFoods);
   const user = useSelector((state) => state.booking.user);
-  const selectedPromotionBill = useSelector(
-    (state) => state.booking.selectedPromotionBill
-  );
   const selectedPaymentMethod = useSelector(
     (state) => state.booking.selectedPaymentMethod
   );
-  const totalPrice = useSelector((state) => state.booking.totalPrice);
 
   useEffect(() => {
     dispatch(doResetBooking());
@@ -38,47 +42,112 @@ const BookingPage = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [current, setCurrent] = useState(0);
 
-  const onFinish = async (values) => {
-    setIsSubmit(true);
-    if (selectedPaymentMethod.id === "CASH") {
-      const res = await callCreateInvoice(
-        selectedShowTime,
-        selectedSeat,
-        selectedFoods,
-        user,
-        "1",
-        selectedPaymentMethod.id
-      );
-      if (res?.status === 200) {
-        message.success("Đặt vé thành công!");
-        dispatch(doResetBooking());
-        navigate("/admin/order");
-        setIsSubmit(false);
-      } else {
-        console.log("res dat ve: ", res.response.data.message);
+  const checkSelectedUser = async () => {
+    if (!selectedUser && selectedMethodInfoUser !== 3) {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: "Vui lòng nhập thông tin đầy đủ!",
+      });
+      return;
+    }
+
+    switch (selectedMethodInfoUser) {
+      case 1:
+        if (!selectedUser.email) {
+          notification.error({
+            message: "Đã có lỗi xảy ra!",
+            description: "Vui lòng nhập đầy đủ thông tin!",
+          });
+          return;
+        }
+        return selectedUser.email;
+      case 2:
+        if (!selectedUser.selectedUser || !selectedUser.selectedEmail) {
+          notification.error({
+            message: "Đã có lỗi xảy ra!",
+            description: "Vui lòng nhập đầy đủ thông tin!",
+          });
+          return;
+        }
+        const resUser = await callCreateUserInBooking(
+          selectedUser.selectedUser,
+          selectedUser.selectedEmail
+        );
+        if (resUser?.status === 200) {
+          return selectedUser.selectedEmail;
+        } else {
+          notification.error({
+            message: "Đã có lỗi xảy ra!",
+            description:
+              resUser?.response?.data?.message || "Không thể tạo tài khoản!",
+          });
+          return;
+        }
+      case 3:
+        const resGuest = await callCreateGuest();
+        if (resGuest?.status === 200) {
+          return resGuest.message;
+        } else {
+          notification.error({
+            message: "Đã có lỗi xảy ra!",
+            description:
+              resGuest?.response?.data?.message || "Không thể tạo tài khoản!",
+          });
+          return;
+        }
+      default:
         notification.error({
           message: "Đã có lỗi xảy ra!",
-          description: res.response.data.message,
+          description: "Vui lòng chọn phương thức tạo tài khoản!",
         });
-        setIsSubmit(false);
-      }
-    } else {
-      const resVnPay = await callCreateInvoiceByVnPay(
-        "45000",
-        selectedShowTime,
-        selectedSeat,
-        selectedFoods,
-        user,
-        "1"
-      );
-      console.log("resVnPay: ", resVnPay);
-      if (resVnPay?.status === 200) {
-        window.location.href = resVnPay.message;
-      }
+        return;
+    }
+  };
 
-      // check url
-      const url = window.location.href;
-      console.log("url: ", url);
+  const onFinish = async (values) => {
+    setIsSubmit(true);
+    const result = await checkSelectedUser();
+    console.log("result: ", result);
+    if (!result) {
+      setIsSubmit(false);
+      return;
+    } else {
+      if (selectedPaymentMethod.id === "CASH") {
+        const res = await callCreateInvoice(
+          selectedShowTime,
+          selectedSeat,
+          selectedFoods,
+          user,
+          "1",
+          selectedPaymentMethod.id
+        );
+        if (res?.status === 200) {
+          message.success("Đặt vé thành công!");
+          dispatch(doResetBooking());
+          navigate("/admin/order");
+          setIsSubmit(false);
+        } else {
+          console.log("res dat ve: ", res.response.data.message);
+          notification.error({
+            message: "Đã có lỗi xảy ra!",
+            description: res.response.data.message,
+          });
+          setIsSubmit(false);
+        }
+      } else {
+        const resVnPay = await callCreateInvoiceByVnPay(
+          "45000",
+          selectedShowTime,
+          selectedSeat,
+          selectedFoods,
+          user,
+          "1"
+        );
+        console.log("resVnPay: ", resVnPay);
+        if (resVnPay?.status === 200) {
+          window.location.href = resVnPay.message;
+        }
+      }
     }
   };
 
