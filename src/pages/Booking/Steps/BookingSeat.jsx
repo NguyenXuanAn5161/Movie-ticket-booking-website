@@ -73,7 +73,6 @@ const BookingSeat = () => {
 
   return (
     <Card>
-      <h5>Chọn ghế</h5>
       <div
         style={{
           display: "flex",
@@ -81,6 +80,7 @@ const BookingSeat = () => {
           flexDirection: "column",
         }}
       >
+        <h5 style={{ textAlign: "center" }}>Chọn ghế</h5>
         {loading ? <SpinLoading /> : <SeatGrid seatData={seatData} />}
       </div>
       <NotificationPromotion
