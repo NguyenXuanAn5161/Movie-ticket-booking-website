@@ -127,23 +127,18 @@ const LayoutAdmin = () => {
             <GrSchedules />
           ),
         ]),
-        getItem(
-          <label>Quản lý đồ ăn</label>,
-          "manageFood",
-          <IoFastFoodOutline />,
-          [
-            getItem(
-              <Link to="/admin/food">Đồ ăn</Link>,
-              "food",
-              <IoFastFoodOutline />
-            ),
-            getItem(
-              <Link to="/admin/foodCategories">Loại đồ ăn</Link>,
-              "foodCategories",
-              <BiCategoryAlt />
-            ),
-          ]
-        ),
+        getItem("Quản lý đồ ăn", "manageFood", <IoFastFoodOutline />, [
+          getItem(
+            <Link to="/admin/food">Đồ ăn</Link>,
+            "food",
+            <IoFastFoodOutline />
+          ),
+          getItem(
+            <Link to="/admin/foodCategories">Loại đồ ăn</Link>,
+            "foodCategories",
+            <BiCategoryAlt />
+          ),
+        ]),
         getItem(
           <Link to="/admin/price">Giá sản phẩm</Link>,
           "price",
