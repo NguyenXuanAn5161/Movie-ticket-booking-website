@@ -16,7 +16,6 @@ import {
   IoPricetagsOutline,
   IoTicketOutline,
 } from "react-icons/io5";
-import { MdOutlineAccountCircle } from "react-icons/md";
 import { RiMovie2Line } from "react-icons/ri";
 import { TbDiscount2 } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
@@ -59,8 +58,8 @@ const LayoutAdmin = () => {
   // tạo các mục menu
   const items = [
     getItem(
-      collapsed ? null : "Thông tin cơ bản",
-      "grpData",
+      collapsed ? null : "Tổng quan",
+      "grpDashboard",
       null,
       [
         getItem(
@@ -68,8 +67,16 @@ const LayoutAdmin = () => {
           "dashboard",
           <AppstoreOutlined />
         ),
+      ],
+      "group"
+    ),
+    getItem(
+      collapsed ? null : "Thông tin cơ bản",
+      "grpData",
+      null,
+      [
         getItem(
-          <Link to="/admin/order">Quản lý đơn hàng</Link>,
+          <Link to="/admin/order">Quản lý hoá đơn</Link>,
           "order",
           <DollarCircleOutlined />
         ),
@@ -166,11 +173,10 @@ const LayoutAdmin = () => {
     ),
     { type: "divider" },
     getItem(
-      collapsed ? null : "Tài khoản",
+      collapsed ? null : "Đăng xuất",
       "grpAccount",
       null,
       [
-        getItem("Tài khoản", "account", <MdOutlineAccountCircle />),
         getItem(
           <label style={{ cursor: "pointer" }} onClick={() => handleLogout()}>
             Đăng xuất

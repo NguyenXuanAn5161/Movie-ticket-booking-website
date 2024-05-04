@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import SimpleBarChart from "../../components/Charts/BarChart";
 import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
-import { callGetRevenueByUser } from "../../services/Statistical";
+import { callGetRevenueByStaff } from "../../services/Statistical";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import { getFirstAndLastDayOfMonth } from "../../utils/date";
 import { StatisticByUser } from "./RevenueDb";
 
-const RevenueDbByUser = () => {
+const RevenueDbByStaff = () => {
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -62,7 +62,7 @@ const RevenueDbByUser = () => {
     }
 
     // thay đổi #1 api call
-    const res = await callGetRevenueByUser(query);
+    const res = await callGetRevenueByStaff(query);
     console.log("res", res);
     if (res?.content) {
       setListData(res.content);
@@ -73,8 +73,8 @@ const RevenueDbByUser = () => {
   };
 
   const columns = [
-    createColumn("Mã khách hàng", "code"),
-    createColumn("Tên khách hàng", "name"),
+    createColumn("Mã nhân viên", "code"),
+    createColumn("Tên nhân viên", "name"),
     createColumn("Email", "email"),
     createColumn("Phone", "phone"),
     createColumn("Tổng hóa đơn", "totalInvoice"),
@@ -89,12 +89,12 @@ const RevenueDbByUser = () => {
   };
 
   const itemSearch = [
-    { field: "userCode", label: "Mã khách hàng" },
+    { field: "userCode", label: "Mã nhân viên" },
     { field: "dateRange", label: "Khoảng thời gian", type: "rangePicker" },
   ];
 
   const handleExportData = () => {
-    StatisticByUser(listData, dateRanger, user);
+    StatisticByUser(listData, dateRanger, user, "staff");
   };
 
   const renderHeader = () => (
@@ -103,7 +103,7 @@ const RevenueDbByUser = () => {
       filter={filter}
       setFilter={setFilter}
       handleSearch={handleSearch}
-      headerTitle={"Doanh thu theo khách hàng"}
+      headerTitle={"Doanh thu theo nhân viên"}
       itemSearch={itemSearch}
       handleExportData={handleExportData}
     />
@@ -179,4 +179,4 @@ const RevenueDbByUser = () => {
   );
 };
 
-export default RevenueDbByUser;
+export default RevenueDbByStaff;

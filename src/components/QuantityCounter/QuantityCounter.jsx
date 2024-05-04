@@ -1,8 +1,14 @@
 import { Button } from "antd";
 import React, { useState } from "react";
 
-const QuantityCounter = ({ selectedFoodId, handleSelectFood, price, name }) => {
-  const [quantity, setQuantity] = useState(0); // Default quantity is 0
+const QuantityCounter = ({
+  selectedFoodId,
+  handleSelectFood,
+  price,
+  name,
+  selectedQuantity,
+}) => {
+  const [quantity, setQuantity] = useState(selectedQuantity); // Default quantity is 0
 
   // Function to increase the quantity
   const increaseQuantity = () => {

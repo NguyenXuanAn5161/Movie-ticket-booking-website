@@ -3,15 +3,19 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   formData: {},
   user: {},
+  selectedMethodInfoUser: {},
   selectedCinema: {},
   selectedMovie: {},
   showDateByMovieId: [],
   selectedShowTime: {},
   selectedRoom: {},
   selectedSeats: [],
-  selectedFoodItems: [],
-  selectedPromotion: {},
+  selectedFoods: [],
+  selectedPromotionBill: {},
+  selectedPromotionSeat: {},
+  selectedPromotionFood: {},
   selectedPaymentMethod: {},
+  totalPrice: 0,
   currentStep: 0,
 };
 
@@ -19,11 +23,17 @@ export const bookingSlice = createSlice({
   name: "booking",
   initialState,
   reducers: {
+    doSetTotalPrice: (state, action) => {
+      state.totalPrice = action.payload;
+    },
     doSetFormData: (state, action) => {
       state.formData = action.payload;
     },
     doSetUser: (state, action) => {
       state.user = action.payload;
+    },
+    doSetSelectedMethodInfoUser: (state, action) => {
+      state.selectedMethodInfoUser = action.payload;
     },
     doSetSelectedCinema: (state, action) => {
       state.selectedCinema = action.payload;
@@ -43,11 +53,17 @@ export const bookingSlice = createSlice({
     doSetSelectedSeats: (state, action) => {
       state.selectedSeats = action.payload;
     },
-    doSetSelectedFoodItems: (state, action) => {
-      state.selectedFoodItems = action.payload;
+    doSetSelectedFoods: (state, action) => {
+      state.selectedFoods = action.payload;
     },
-    doSetSelectedPromotion: (state, action) => {
-      state.selectedPromotion = action.payload;
+    doSetSelectedPromotionBill: (state, action) => {
+      state.selectedPromotionBill = action.payload;
+    },
+    doSetSelectedPromotionSeat: (state, action) => {
+      state.selectedPromotionSeat = action.payload;
+    },
+    doSetSelectedPromotionFood: (state, action) => {
+      state.selectedPromotionFood = action.payload;
     },
     doSetSelectedPaymentMethod: (state, action) => {
       state.selectedPaymentMethod = action.payload;
@@ -56,6 +72,7 @@ export const bookingSlice = createSlice({
       state.currentStep = action.payload;
     },
     doResetBooking: (state) => {
+      state.totalPrice = 0;
       state.formData = {};
       state.user = {};
       state.selectedCinema = {};
@@ -64,9 +81,12 @@ export const bookingSlice = createSlice({
       state.selectedShowTime = {};
       state.selectedRoom = {};
       state.selectedSeats = [];
-      state.selectedFoodItems = [];
-      state.selectedPromotion = {};
+      state.selectedFoods = [];
+      state.selectedPromotionSeat = {};
+      state.selectedPromotionFood = {};
+      state.selectedPromotionBill = {};
       state.selectedPaymentMethod = {};
+      state.selectedMethodInfoUser = {};
       state.currentStep = 0;
       localStorage.removeItem("bookingState");
     },
@@ -76,15 +96,19 @@ export const bookingSlice = createSlice({
 });
 
 export const {
+  doSetSelectedMethodInfoUser,
+  doSetTotalPrice,
   doSetCurrentStep,
   doSetFormData,
   doSetUser,
   doSetSelectedSeats,
   doSetSelectedCinema,
-  doSetSelectedFoodItems,
+  doSetSelectedFoods,
   doSetSelectedMovie,
   doSetSelectedPaymentMethod,
-  doSetSelectedPromotion,
+  doSetSelectedPromotionFood,
+  doSetSelectedPromotionSeat,
+  doSetSelectedPromotionBill,
   doSetSelectedShowTime,
   doSetShowDateByMovieId,
   doSetSelectedRoom,

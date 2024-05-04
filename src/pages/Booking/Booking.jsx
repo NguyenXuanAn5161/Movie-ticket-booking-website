@@ -1,15 +1,17 @@
-import { Button, Col, Form, Row, Steps, message, notification } from "antd";
+import { Button, Col, Row, Steps, message, notification } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import OrderCard from "../../components/OrderCard/OrderCard";
+import { doResetBooking } from "../../redux/booking/bookingSlice";
 import {
-  doResetBooking,
-  doSetSelectedPromotion,
-} from "../../redux/booking/bookingSlice";
-import { callFetchListTypeSeat } from "../../services/apiMovie";
-import { callCreateInvoice } from "../../services/apiOder";
-import { callFitPromotion } from "../../services/apiPromotion";
+  callCreateInvoice,
+  callCreateInvoiceByVnPay,
+} from "../../services/apiOder";
+import {
+  callCreateGuest,
+  callCreateUserInBooking,
+} from "../../services/apiUser";
 import BookingFood from "./Steps/BookingFood";
 import BookingPayment from "./Steps/BookingPayment";
 import BookingSchedule from "./Steps/BookingSchedule";
@@ -18,129 +20,166 @@ import BookingSeat from "./Steps/BookingSeat";
 const BookingPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [form] = Form.useForm();
 
+  const selectedUser = useSelector((state) => state.booking.user);
+  const selectedMethodInfoUser = useSelector(
+    (state) => state.booking.selectedMethodInfoUser
+  );
   const selectedShowTime = useSelector(
     (state) => state.booking.selectedShowTime
   );
   const selectedSeat = useSelector((state) => state.booking.selectedSeats);
-  const selectedFoodItems = useSelector(
-    (state) => state.booking.selectedFoodItems
-  );
+  const selectedFoods = useSelector((state) => state.booking.selectedFoods);
   const user = useSelector((state) => state.booking.user);
-  const selectedPromotion = useSelector(
-    (state) => state.booking.selectedPromotion
+  const selectedPaymentMethod = useSelector(
+    (state) => state.booking.selectedPaymentMethod
   );
+
+  useEffect(() => {
+    dispatch(doResetBooking());
+  }, []);
 
   const [isSubmit, setIsSubmit] = useState(false);
   const [current, setCurrent] = useState(0);
-  const [price, setPrice] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [promotion, setPromotion] = useState(null);
 
-  useEffect(() => {
-    console.log("promotion: ", selectedPromotion);
-  }, [selectedPromotion]);
-
-  // call lấy khuyến mãi khi có giá thay đổi
-  useEffect(() => {
-    if (totalPrice > 0) {
-      fetchFitPromotion(totalPrice);
-    } else {
-      dispatch(doSetSelectedPromotion({}));
+  const checkSelectedUser = async () => {
+    if (!selectedUser && selectedMethodInfoUser !== 3) {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: "Vui lòng nhập thông tin đầy đủ!",
+      });
+      return;
     }
-  }, [totalPrice]);
 
-  const fetchFitPromotion = async (totalPrice) => {
-    const res = await callFitPromotion(totalPrice);
-    if (res) {
-      if (res.id !== selectedPromotion?.id) {
-        console.log("res khuyen mai: ", res);
-        message.success("Chúc mừng bạn nhận được khuyến mãi " + res.name);
-        dispatch(doSetSelectedPromotion(res));
-      }
+    switch (selectedMethodInfoUser) {
+      case 1:
+        if (!selectedUser.email) {
+          notification.error({
+            message: "Đã có lỗi xảy ra!",
+            description: "Vui lòng nhập đầy đủ thông tin!",
+          });
+          return;
+        }
+        return selectedUser.email;
+      case 2:
+        if (!selectedUser.selectedUser || !selectedUser.selectedEmail) {
+          notification.error({
+            message: "Đã có lỗi xảy ra!",
+            description: "Vui lòng nhập đầy đủ thông tin!",
+          });
+          return;
+        }
+        const resUser = await callCreateUserInBooking(
+          selectedUser.selectedUser,
+          selectedUser.selectedEmail
+        );
+        if (resUser?.status === 200) {
+          return selectedUser.selectedEmail;
+        } else {
+          notification.error({
+            message: "Đã có lỗi xảy ra!",
+            description:
+              resUser?.response?.data?.message || "Không thể tạo tài khoản!",
+          });
+          return;
+        }
+      case 3:
+        const resGuest = await callCreateGuest();
+        if (resGuest?.status === 200) {
+          return resGuest.message;
+        } else {
+          notification.error({
+            message: "Đã có lỗi xảy ra!",
+            description:
+              resGuest?.response?.data?.message || "Không thể tạo tài khoản!",
+          });
+          return;
+        }
+      default:
+        notification.error({
+          message: "Đã có lỗi xảy ra!",
+          description: "Vui lòng chọn phương thức tạo tài khoản!",
+        });
+        return;
     }
   };
 
-  // useEffect(() => {
-  //   // Tính lại giá khi có khuyến mãi
-  //   if (selectedPromotion) {
-  //     if (
-  //       selectedPromotion.typePromotion === "DISCOUNT" &&
-  //       selectedPromotion.promotionDiscountDetailDto.typeDiscount === "PERCENT"
-  //     ) {
-  //       const discountValue =
-  //         selectedPromotion.promotionDiscountDetailDto.discountValue;
-  //       const maxValue = selectedPromotion.promotionDiscountDetailDto.maxValue;
-  //       const discountedPrice = totalPrice * (1 - discountValue / 100);
-
-  //       // Kiểm tra nếu giá giảm đã bằng hoặc vượt quá maxValue thì giữ nguyên giá trị tổng giá
-  //       const finalPrice =
-  //         discountedPrice <= maxValue ? discountedPrice : totalPrice - maxValue;
-
-  //       setTotalPrice(finalPrice);
-  //     }
-  //   }
-  // }, []);
-
-  // fetch giá
-  useEffect(() => {
-    fetchPriceTypeSeat();
-  }, []);
-
-  const fetchPriceTypeSeat = async () => {
-    const res = await callFetchListTypeSeat();
-    if (res) {
-      setPrice(res);
+  const onFinish = async (values) => {
+    setIsSubmit(true);
+    const result = await checkSelectedUser();
+    console.log("result: ", result);
+    if (!result) {
+      setIsSubmit(false);
+      return;
+    } else {
+      if (selectedPaymentMethod.id === "CASH") {
+        const res = await callCreateInvoice(
+          selectedShowTime,
+          selectedSeat,
+          selectedFoods,
+          user,
+          "1",
+          selectedPaymentMethod.id
+        );
+        if (res?.status === 200) {
+          message.success("Đặt vé thành công!");
+          dispatch(doResetBooking());
+          navigate("/admin/order");
+          setIsSubmit(false);
+        } else {
+          console.log("res dat ve: ", res.response.data.message);
+          notification.error({
+            message: "Đã có lỗi xảy ra!",
+            description: res.response.data.message,
+          });
+          setIsSubmit(false);
+        }
+      } else {
+        const resVnPay = await callCreateInvoiceByVnPay(
+          "45000",
+          selectedShowTime,
+          selectedSeat,
+          selectedFoods,
+          user,
+          "1"
+        );
+        console.log("resVnPay: ", resVnPay);
+        if (resVnPay?.status === 200) {
+          window.location.href = resVnPay.message;
+        }
+      }
     }
   };
 
   const steps = [
     {
       title: "Chọn rạp / Phim / Suất",
-      formComponent: <BookingSchedule form={form} />,
+      formComponent: <BookingSchedule />,
     },
     {
       title: "Chọn ghế",
-      formComponent: <BookingSeat form={form} />,
+      formComponent: <BookingSeat />,
     },
     {
       title: "Chọn thức ăn",
-      formComponent: <BookingFood form={form} />,
+      formComponent: <BookingFood />,
     },
     {
       title: "Thanh toán",
-      formComponent: <BookingPayment form={form} />,
+      formComponent: <BookingPayment />,
     },
   ];
 
-  const onFinish = async (values) => {
-    setIsSubmit(true);
-    const res = await callCreateInvoice(
-      selectedShowTime,
-      selectedSeat,
-      selectedFoodItems,
-      user,
-      "1",
-      selectedPromotion.id
-    );
-    // console.log("res dat ve: ", res);
-    if (res?.status === 200) {
-      message.success("Đặt vé thành công!");
-      dispatch(doResetBooking());
-      navigate("/admin/order");
-      setIsSubmit(false);
-    } else {
-      console.log("res dat ve: ", res.response.data.message);
+  const next = () => {
+    if (current === 1 && selectedSeat.length === 0) {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.response.data.message,
+        description: "Vui lòng chọn ghế!",
       });
-      setIsSubmit(false);
+      return;
     }
+    setCurrent(current + 1);
   };
-
-  const next = () => setCurrent(current + 1);
 
   const prev = () => setCurrent(current - 1);
 
@@ -154,30 +193,25 @@ const BookingPage = () => {
       <Row gutter={16}>
         <Col span={15}>
           <Steps current={current} items={items} />
-          <div style={{ marginTop: 24, textAlign: "center" }}>
-            {steps[current].formComponent}
-          </div>
+          <div style={{ marginTop: 24 }}>{steps[current].formComponent}</div>
         </Col>
         <Col span={9}>
-          <OrderCard
-            price={price}
-            totalPrice={totalPrice}
-            setTotalPrice={setTotalPrice}
-          />
+          <OrderCard />
           <div style={{ marginTop: 24, textAlign: "right" }}>
             {current > 0 && (
               <Button type="primary" style={{ marginRight: 8 }} onClick={prev}>
                 Quay lại
               </Button>
             )}
-            {current < steps.length - 1 && (
-              <Button type="primary" onClick={next}>
-                Tiếp tục
-              </Button>
-            )}
+            {current < steps.length - 1 &&
+              Object.keys(selectedShowTime).length > 0 && (
+                <Button type="primary" onClick={next}>
+                  Tiếp tục
+                </Button>
+              )}
             {current === steps.length - 1 && (
-              <Button type="primary" onClick={onFinish}>
-                Hoàn thành
+              <Button type="primary" loading={isSubmit} onClick={onFinish}>
+                Thanh toán
               </Button>
             )}
           </div>

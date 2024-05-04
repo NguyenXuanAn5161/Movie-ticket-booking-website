@@ -46,6 +46,39 @@ export const callCreatePromotionHeader = async (data) => {
   }
 };
 
+export const callUpdatePromotionHeader = async (
+  id,
+  name,
+  startDate,
+  endDate,
+  description,
+  status
+) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("id", id);
+  bodyFormData.append("name", name);
+  if (startDate) {
+    bodyFormData.append("startDate", startDate);
+  }
+  bodyFormData.append("endDate", endDate);
+  bodyFormData.append("description", description);
+  bodyFormData.append("status", status);
+
+  try {
+    const response = await api({
+      method: "put",
+      url: "/api/promotion",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 // line
 export const callGetPromotionLineByPromotionId = async (query) => {
   try {
@@ -195,7 +228,7 @@ export const callDeletePromotionLine = async (id) => {
 };
 
 // --------------------------------------------
-// áp khuyến mãi phù hợp
+// bill
 export const callFitPromotion = async (totalPrice) => {
   try {
     const response = await api.get(
@@ -203,6 +236,43 @@ export const callFitPromotion = async (totalPrice) => {
     );
     return response.data;
   } catch (error) {
+    return error;
+  }
+};
+
+// seats
+export const fetchPromotionByTicket = async (seats, showTimeId) => {
+  const seatIds = seats.map((seat) => seat.id).join(",");
+
+  try {
+    const response = await api.get(
+      `/api/promotion/line_ticket/active?seatId=${seatIds}&showTimeId=${showTimeId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching promotion by ticket:", error);
+    return error;
+  }
+};
+
+// foods
+export const fetchPromotionByFood = async (foods, cinemaId) => {
+  const foodIds = [];
+  foods.forEach((food) => {
+    for (let i = 0; i < food.quantity; i++) {
+      foodIds.push(food.id);
+    }
+  });
+
+  const foodIdsString = foodIds.join(",");
+
+  try {
+    const response = await api.get(
+      `/api/promotion/line_food/active?foodId=${foodIdsString}&cinemaId=${cinemaId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching promotion by food:", error);
     return error;
   }
 };

@@ -1,24 +1,43 @@
 import { notification } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import useTheme from "../../core/useTheme";
 import { doSetSelectedSeats } from "../../redux/booking/bookingSlice";
+import { callFetchListTypeSeat } from "../../services/apiMovie";
 import SeatLegend from "./SeatLegend";
 
 const SeatGrid = ({ seatData }) => {
+  const { theme } = useTheme();
   const dispatch = useDispatch();
+
+  const [typeSeat, setTypeSeat] = useState(null);
+
+  // fetch type seat để so sánh loại ghế
+  useEffect(() => {
+    getTypeSeat();
+  }, []);
+
+  const getTypeSeat = async () => {
+    const resTypeSeat = await callFetchListTypeSeat();
+    setTypeSeat(resTypeSeat);
+  };
+
   const selectedSeats = useSelector((state) => state.booking.selectedSeats);
 
   // Hàm để lấy màu tùy theo loại ghế
-  // sửa loại ghế đôi
-  const getTypeSeatColor = (seatTypeId) => {
-    switch (seatTypeId) {
-      case 2:
-        return "#FF8247"; // Màu cam cho ghế vip
-      case 3:
-        return "#FF1493"; // Màu hồng cho ghế đôi
-      default:
-        return "#6959CD"; // Màu tím cho ghế thường (mặc định)
-    }
+  const getTypeSeatColor = (seatTypeId, defaultColor) => {
+    var seat = null;
+    typeSeat?.forEach((type) => {
+      if (type.id === seatTypeId) {
+        seat = type;
+      }
+    });
+
+    return seat?.name === "STANDARD"
+      ? defaultColor
+      : seat?.name === "VIP"
+      ? theme.colors.vip
+      : theme.colors.sweetBox;
   };
 
   // Tạo một mảng chứa thông tin về tất cả các ghế trong lưới
@@ -39,15 +58,6 @@ const SeatGrid = ({ seatData }) => {
   // Hàm xử lý sự kiện khi người dùng chọn một ghế
   const handleSeatClick = (seat) => {
     const seatInfo = isSeatExist(seat);
-    // Kiểm tra xem số lượng ghế đã chọn có đạt tối đa (8 ghế) hay chưa
-    if (selectedSeats.length >= 8) {
-      // Nếu đã đạt tối đa, không thực hiện thêm ghế mới
-      notification.warning({
-        message: "Thông báo",
-        description: "Bạn chỉ được chọn tối đa 8 ghế!",
-      });
-      return;
-    }
 
     // Kiểm tra xem ghế đã được chọn trước đó chưa
     const seatIndex = selectedSeats.findIndex(
@@ -65,20 +75,17 @@ const SeatGrid = ({ seatData }) => {
       );
       dispatch(doSetSelectedSeats(updatedSeats));
     } else {
+      // Kiểm tra xem số lượng ghế đã chọn có đạt tối đa (8 ghế) hay chưa
+      if (selectedSeats.length >= 8) {
+        // Nếu đã đạt tối đa, không thực hiện thêm ghế mới
+        notification.warning({
+          message: "Thông báo",
+          description: "Bạn chỉ được chọn tối đa 8 ghế!",
+        });
+        return;
+      }
       // Nếu ghế chưa được chọn trước đó, thêm nó vào danh sách các ghế đã chọn
       dispatch(doSetSelectedSeats([...selectedSeats, seatInfo.seat]));
-      // setSelectedSeats((prevSeats) => [
-      //   ...prevSeats,
-      //   {
-      //     id: seatInfo.seat.id,
-      //     name: seatInfo.seat.name,
-      //     code: seatInfo.seat.code,
-      //     status: seatInfo.seat.status,
-      //     seatTypeId: seatInfo.seat.seatTypeId,
-      //     seatRow: seat.seatRow,
-      //     seatColumn: seat.seatColumn,
-      //   },
-      // ]);
     }
   };
 
@@ -92,11 +99,11 @@ const SeatGrid = ({ seatData }) => {
           marginBottom: 10,
         }}
       >
-        <SeatLegend color="#ccc" text="Ghế đã bán" />
-        <SeatLegend color="green" text="Ghế đang chọn" />
-        <SeatLegend color="#6959CD" text="Ghế thường" />
-        <SeatLegend color="#FF8247" text="Ghế vip" />
-        <SeatLegend color="#FF1493" text="Ghế đôi" />
+        <SeatLegend color={theme.colors.darkGrey} text="Ghế đã bán" />
+        <SeatLegend color={theme.colors.selectedSeat} text="Ghế đang chọn" />
+        <SeatLegend color={theme.colors.standard} text="Ghế thường" />
+        <SeatLegend color={theme.colors.vip} text="Ghế vip" />
+        <SeatLegend color={theme.colors.sweetBox} text="Ghế đôi" />
       </div>
       <div
         style={{
@@ -120,10 +127,6 @@ const SeatGrid = ({ seatData }) => {
             <div
               key={index}
               style={{
-                // backgroundColor: isBooked ? "#ccc" : "transparent",
-                // backgroundColor: seatInfo
-                //   ? getTypeSeatColor(seatInfo.seat.seatTypeId)
-                //   : "transparent",
                 cursor: seatInfo ? "pointer" : null,
                 pointerEvents: isBooked ? "none" : "auto",
                 borderRadius: 3,
@@ -136,11 +139,14 @@ const SeatGrid = ({ seatData }) => {
                 // Thêm sự kiện onClick để xử lý việc chọn ghế
                 // và thay đổi màu nền của ghế khi được chọn
                 backgroundColor: isBooked
-                  ? "#ccc"
+                  ? theme.colors.darkGrey
                   : isSelected
-                  ? "green"
+                  ? theme.colors.selectedSeat
                   : seatInfo
-                  ? getTypeSeatColor(seatInfo.seat.seatTypeId)
+                  ? getTypeSeatColor(
+                      seatInfo.seat.seatTypeId,
+                      theme.colors.standard
+                    )
                   : "transparent",
               }}
               onClick={() => handleSeatClick(seat)}

@@ -9,15 +9,52 @@ import {
   message,
   notification,
 } from "antd";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import CustomDatePicker from "../../components/DatePicker/CustomDatePicker";
 import PageHeader from "../../components/PageHeader/PageHeader";
-import { callUpdateUser } from "../../services/api";
+import { doSetPromotion } from "../../redux/promotion/promotionSlice";
+import {
+  callGetPromotionHeaderById,
+  callUpdatePromotionHeader,
+} from "../../services/apiPromotion";
+import {
+  FORMAT_DATE_HH_MM_SS,
+  FORMAT_DATE_TIME_SEND_SERVER,
+} from "../../utils/constant";
+import {
+  defaultEndDate,
+  defaultStartDate,
+  formatDateYYYY_MM_DDT_HH_MM_SS,
+} from "../../utils/date";
 
 const PromotionEdit = () => {
   // thay đổi #1
+  const { promotionId } = useParams();
+  const dispatch = useDispatch();
   const promotionHeader = useSelector((state) => state.promotion.promotion);
+
+  // fetch data f5
+  useEffect(() => {
+    if (!promotionHeader) {
+      getPromotionHeaderById();
+    }
+  }, [promotionHeader]);
+
+  const getPromotionHeaderById = async () => {
+    const res = await callGetPromotionHeaderById(promotionId);
+    if (res) {
+      dispatch(doSetPromotion(res));
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: res.response.data.message,
+      });
+    }
+  };
+
   // mặc định #2
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
@@ -37,21 +74,40 @@ const PromotionEdit = () => {
   const onFinish = async (values) => {
     console.log("value check: ", values);
     // thay đổi #1
-    const { _id, fullName, phone } = values;
+    const { id, name, timeApply, description, status } = values;
+    const checked = checkStartDate(timeApply[0]);
+    var startDate = null;
+    if (!checked) {
+      startDate = dayjs(timeApply[0]).format(FORMAT_DATE_TIME_SEND_SERVER);
+    }
+    const endDate = dayjs(timeApply[1]).format(FORMAT_DATE_TIME_SEND_SERVER);
     setIsSubmit(true);
     // thay đổi #1 api call
-    const res = await callUpdateUser(_id, fullName, phone);
-    if (res && res.data) {
+    const res = await callUpdatePromotionHeader(
+      id,
+      name,
+      startDate,
+      endDate,
+      description,
+      status
+    );
+    if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật khuyến mãi thành công thành công!");
       navigate("/admin/promotion");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: res.response.data.message,
       });
     }
     setIsSubmit(false);
+  };
+
+  const checkStartDate = (promotionStartDate) => {
+    const currentDate = formatDateYYYY_MM_DDT_HH_MM_SS(defaultStartDate);
+    const result = promotionStartDate && promotionStartDate < currentDate;
+    return result;
   };
 
   return (
@@ -64,22 +120,10 @@ const PromotionEdit = () => {
       <Card bordered={false}>
         <Form form={form} onFinish={onFinish}>
           <Row gutter={[16]}>
-            <Col span={6}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Mã khuyến mãi"
-                name="code"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mã khuyến mãi!",
-                  },
-                ]}
-              >
-                <Input placeholder="Nhập mã khuyến mãi" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
+            <Form.Item hidden labelCol={{ span: 24 }} label="Id" name="id">
+              <Input />
+            </Form.Item>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Tên khuyến mãi"
@@ -94,7 +138,40 @@ const PromotionEdit = () => {
                 <Input placeholder="Nhập tên khuyến mãi" />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                name="timeApply"
+                label="Khoảng thời gian áp dụng"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn ngày bắt đầu!",
+                  },
+                ]}
+                initialValue={
+                  promotionHeader
+                    ? [
+                        dayjs(promotionHeader?.startDate),
+                        dayjs(promotionHeader?.endDate),
+                      ]
+                    : [defaultStartDate, defaultEndDate]
+                }
+              >
+                <CustomDatePicker
+                  disabled={[checkStartDate(promotionHeader?.startDate), false]}
+                  showTime
+                  format={FORMAT_DATE_HH_MM_SS}
+                  minDate={defaultStartDate}
+                  defaultValue={[
+                    promotionHeader?.startDate,
+                    promotionHeader?.endDate,
+                  ]}
+                  placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
                 label="Trạng thái"
@@ -107,41 +184,9 @@ const PromotionEdit = () => {
                 ]}
               >
                 <Radio.Group value={promotionHeader?.status}>
-                  <Radio.Button value="available">Hoạt động</Radio.Button>
-                  <Radio.Button value="unavailable">
-                    Ngưng hoạt động
-                  </Radio.Button>
+                  <Radio value={true}>Hoạt động</Radio>
+                  <Radio value={false}>Ngưng hoạt động</Radio>
                 </Radio.Group>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Ngày bắt đầu"
-                name="start_date"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày bắt đầu!",
-                  },
-                ]}
-              >
-                <Input type="date" style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Ngày kết thúc"
-                name="end_date"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày kết thúc!",
-                  },
-                ]}
-              >
-                <Input type="date" style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={24}>

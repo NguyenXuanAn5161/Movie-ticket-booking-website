@@ -1,0 +1,27 @@
+.promotion-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+}
+
+.content {
+    padding: 20px;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.button-close {
+    padding: 8px 16px;
+    background-color: #1890ff;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+}
+
+.button-close:hover {
+    background-color: #40a9ff;
+}

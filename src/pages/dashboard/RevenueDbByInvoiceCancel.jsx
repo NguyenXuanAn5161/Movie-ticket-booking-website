@@ -1,15 +1,15 @@
 import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
 import SimpleBarChart from "../../components/Charts/BarChart";
-import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
+import { renderDate } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
-import { callGetRevenueByUser } from "../../services/Statistical";
+import { callGetRevenueByInvoiceCancel } from "../../services/Statistical";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import { getFirstAndLastDayOfMonth } from "../../utils/date";
-import { StatisticByUser } from "./RevenueDb";
+import { StatisticByReturnInvoice } from "./RevenueDb";
 
-const RevenueDbByUser = () => {
+const RevenueDbByInvoiceCancel = () => {
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -21,7 +21,7 @@ const RevenueDbByUser = () => {
     startDate: "",
     endDate: "",
   });
-  const [user, setUser] = useState(null);
+  const [invoiceDetail, setInvoiceDetail] = useState(null);
 
   useEffect(() => {
     const [startDate, endDate] = getFirstAndLastDayOfMonth();
@@ -49,12 +49,8 @@ const RevenueDbByUser = () => {
       query += `&userCode=`;
     }
 
-    if (!filter.includes("email")) {
-      query += `&email=`;
-    }
-
-    if (!filter.includes("phone")) {
-      query += `&phone=`;
+    if (!filter.includes("code")) {
+      query += `&code=`;
     }
 
     if (sortQuery) {
@@ -62,7 +58,7 @@ const RevenueDbByUser = () => {
     }
 
     // thay đổi #1 api call
-    const res = await callGetRevenueByUser(query);
+    const res = await callGetRevenueByInvoiceCancel(query);
     console.log("res", res);
     if (res?.content) {
       setListData(res.content);
@@ -73,13 +69,12 @@ const RevenueDbByUser = () => {
   };
 
   const columns = [
-    createColumn("Mã khách hàng", "code"),
-    createColumn("Tên khách hàng", "name"),
-    createColumn("Email", "email"),
-    createColumn("Phone", "phone"),
-    createColumn("Tổng hóa đơn", "totalInvoice"),
-    createColumn("Tổng vé", "totalTicket"),
-    createColumn("Tổng doanh thu", "totalRevenue", 150, false, renderCurrency),
+    createColumn("Mã hóa đơn hủy", "code"),
+    createColumn("Mã hóa đơn", "invoiceCode"),
+    createColumn("Mã khách hàng", "userCode"),
+    createColumn("Tên khách hàng", "userName"),
+    createColumn("Lý do hủy", "reason"),
+    createColumn("Ngày hủy", "cancelDate", 150, true, renderDate),
   ];
 
   const handleReload = () => {
@@ -89,12 +84,13 @@ const RevenueDbByUser = () => {
   };
 
   const itemSearch = [
+    { field: "code", label: "Mã hóa đơn hủy" },
     { field: "userCode", label: "Mã khách hàng" },
     { field: "dateRange", label: "Khoảng thời gian", type: "rangePicker" },
   ];
 
   const handleExportData = () => {
-    StatisticByUser(listData, dateRanger, user);
+    StatisticByReturnInvoice(listData, dateRanger, invoiceDetail);
   };
 
   const renderHeader = () => (
@@ -103,7 +99,7 @@ const RevenueDbByUser = () => {
       filter={filter}
       setFilter={setFilter}
       handleSearch={handleSearch}
-      headerTitle={"Doanh thu theo khách hàng"}
+      headerTitle={"Thống kê hóa đơn hủy"}
       itemSearch={itemSearch}
       handleExportData={handleExportData}
     />
@@ -124,7 +120,6 @@ const RevenueDbByUser = () => {
             FORMAT_DATE_SEND_SERVER
           )}&endDate=${value[1].format(FORMAT_DATE_SEND_SERVER)}`;
         } else if (value) {
-          setUser(value);
           q += `&${label}=${value}`;
         }
       }
@@ -174,9 +169,9 @@ const RevenueDbByUser = () => {
           }}
         />
       </Col>
-      <SimpleBarChart data={listData} />
+      <SimpleBarChart data={listData} type={"returnInvoce"} />
     </Row>
   );
 };
 
-export default RevenueDbByUser;
+export default RevenueDbByInvoiceCancel;

@@ -43,6 +43,7 @@ import PromotionShow from "./pages/ManagePromotion/Show";
 import UserCreate from "./pages/ManageUser/Create";
 import UserList from "./pages/ManageUser/List";
 import UserShow from "./pages/ManageUser/Show";
+import VNPayPaymentReturn from "./pages/VNPayPaymentReturn";
 import DashBoardShow from "./pages/dashboard/Show";
 import LoginPage from "./pages/login";
 import OrderList from "./pages/order/List";
@@ -313,6 +314,10 @@ export default function App() {
           element: <BookingPage />,
         },
       ],
+    },
+    {
+      path: "/api/invoice/vnpay-payment-return",
+      element: <VNPayPaymentReturn />,
     },
     {
       path: "*",

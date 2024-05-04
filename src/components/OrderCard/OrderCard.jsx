@@ -3,18 +3,23 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  doSetSelectedPromotion,
+  doSetSelectedPromotionBill,
   doSetSelectedRoom,
+  doSetTotalPrice,
 } from "../../redux/booking/bookingSlice";
-import { callGetMovieById } from "../../services/apiMovie";
+import {
+  callFetchListTypeSeat,
+  callGetMovieById,
+} from "../../services/apiMovie";
+import { callFitPromotion } from "../../services/apiPromotion";
 import { callFetchRoomById } from "../../services/apiRoom";
+import BookingUtils from "../../utils/BookingUtils";
 import { imageError } from "../../utils/imageError";
+import TextPromotion from "../Notification/TextPromotion";
 import "./styles.scss";
 
 const OrderCard = (props) => {
-  const { price, totalPrice, setTotalPrice } = props;
-  const [roomPrice, setRoomPrice] = useState(0);
-  const [movie, setMovie] = useState(null);
+  const { CalculateTotalPrice } = BookingUtils();
 
   const dispatch = useDispatch();
   const selectedMovie = useSelector((state) => state.booking.selectedMovie);
@@ -22,12 +27,40 @@ const OrderCard = (props) => {
     (state) => state.booking.selectedShowTime
   );
   const selectedSeats = useSelector((state) => state.booking.selectedSeats);
-  const selectedFoodItems = useSelector(
-    (state) => state.booking.selectedFoodItems
+  const selectedFoods = useSelector((state) => state.booking.selectedFoods);
+  const selectedPromotionBill = useSelector(
+    (state) => state.booking.selectedPromotionBill
   );
-  const selectedPromotion = useSelector(
-    (state) => state.booking.selectedPromotion
+  const selectedPromotionSeat = useSelector(
+    (state) => state.booking.selectedPromotionSeat
   );
+  const selectedPromotionFood = useSelector(
+    (state) => state.booking.selectedPromotionFood
+  );
+  const selectedRoom = useSelector((state) => state.booking.selectedRoom);
+  const totalPrice = useSelector((state) => state.booking.totalPrice);
+
+  const [movie, setMovie] = useState(null);
+  const [typeSeat, setTypeSeat] = useState(null);
+
+  useEffect(() => {
+    console.log("selectedSeats: ", selectedSeats);
+  }, [selectedSeats]);
+
+  const findSeatTypeIdByName = (typeName) => {
+    const type = typeSeat?.find((type) => type.name === typeName);
+    return type ? type.id : null;
+  };
+
+  // fetch type seat để so sánh loại ghế
+  useEffect(() => {
+    getTypeSeat();
+  }, []);
+
+  const getTypeSeat = async () => {
+    const resTypeSeat = await callFetchListTypeSeat();
+    setTypeSeat(resTypeSeat);
+  };
 
   // lấy giá phòng
   useEffect(() => {
@@ -40,7 +73,6 @@ const OrderCard = (props) => {
     try {
       const res = await callFetchRoomById(id);
       if (res?.data) {
-        setRoomPrice(res.data.price);
         dispatch(doSetSelectedRoom(res.data));
       }
     } catch (error) {
@@ -48,6 +80,26 @@ const OrderCard = (props) => {
     }
   };
 
+  // fetch promotion bill
+  useEffect(() => {
+    if (totalPrice > 0) {
+      fetchFitPromotion(totalPrice);
+    } else {
+      dispatch(doSetSelectedPromotionBill({}));
+    }
+  }, [totalPrice]);
+
+  const fetchFitPromotion = async (totalPrice) => {
+    const res = await callFitPromotion(totalPrice);
+    if (res) {
+      if (res.id !== selectedPromotionBill?.id) {
+        console.log("res khuyen mai: ", res);
+        dispatch(doSetSelectedPromotionBill(res));
+      }
+    }
+  };
+
+  // fetch movie để hiện thông tin trong card
   useEffect(() => {
     if (selectedMovie) {
       fetchMovie(selectedMovie.value);
@@ -65,85 +117,30 @@ const OrderCard = (props) => {
     }
   };
 
+  // -------------phần tính toán--------------
   useEffect(() => {
-    if (selectedSeats || selectedFoodItems || selectedPromotion) {
-      calculateTotalPrice();
-    }
-  }, [selectedSeats, selectedFoodItems, selectedPromotion]);
-
-  const calculateTotalPrice = () => {
-    let newTotalPrice = 0;
-
-    // Tính tổng tiền cho các ghế ngồi
-    selectedSeats.forEach((seat) => {
-      const seatPrice = price.find((p) => p.id === seat.seatTypeId)?.price || 0;
-      newTotalPrice += seatPrice + roomPrice;
-    });
-
-    // Tính tổng tiền cho các món đồ ăn
-    selectedFoodItems.forEach((food) => {
-      newTotalPrice += food.price * food.quantity;
-    });
-
-    // Áp dụng khuyến mãi nếu có
-    if (selectedPromotion !== null) {
-      if (
-        selectedPromotion.typePromotion === "DISCOUNT" &&
-        selectedPromotion.promotionDiscountDetailDto.typeDiscount === "PERCENT"
-      ) {
-        const minBillValue =
-          selectedPromotion.promotionDiscountDetailDto.minBillValue;
-        // Kiểm tra nếu tổng giá trị hóa đơn đạt tối thiểu thì mới áp dụng khuyến mãi
-        if (newTotalPrice >= minBillValue) {
-          const discountValue =
-            selectedPromotion.promotionDiscountDetailDto.discountValue;
-          const maxValue =
-            selectedPromotion.promotionDiscountDetailDto.maxValue;
-          const discountedPrice = newTotalPrice * (1 - discountValue / 100);
-
-          // Kiểm tra nếu giá giảm đã bằng hoặc vượt quá maxValue thì giữ nguyên giá trị tổng giá
-          const finalPrice =
-            discountedPrice <= maxValue
-              ? discountedPrice
-              : newTotalPrice - maxValue;
-
-          newTotalPrice = finalPrice;
-        } else {
-          dispatch(doSetSelectedPromotion({}));
-        }
-      }
+    if (selectedSeats.length > 0 || selectedFoods.length > 0) {
+      const price = CalculateTotalPrice(
+        selectedSeats,
+        selectedFoods,
+        selectedRoom.price,
+        selectedPromotionBill,
+        selectedPromotionSeat,
+        selectedPromotionFood
+      );
+      dispatch(doSetTotalPrice(price));
     }
 
-    // Cập nhật tổng giá mới
-    setTotalPrice(newTotalPrice);
-  };
-
-  // const calculateTotalPrice = () => {
-  //   let newTotalPrice = 0;
-
-  //   // Tính tổng giá cho ghế ngồi
-  //   selectedSeats.forEach((seat) => {
-  //     const seatPrice = price.find((p) => p.id === seat.seatTypeId)?.price || 0;
-  //     newTotalPrice += seatPrice + roomPrice;
-  //   });
-
-  //   // Tính tổng giá cho thức ăn
-  //   selectedFoodItems.forEach((food) => {
-  //     newTotalPrice += food.price * food.quantity;
-  //   });
-
-  //   // Áp dụng khuyến mãi nếu có
-  //   applyPromotion(newTotalPrice);
-  // };
-
-  // const applyPromotion = (subtotal) => {
-  //   if (selectedPromotion !== null) {
-  //     // Xử lý logic áp dụng khuyến mãi tại đây
-  //   } else {
-  //     // Nếu không có khuyến mãi, chỉ cập nhật tổng giá mới
-  //     setTotalPrice(subtotal);
-  //   }
-  // };
+    if (selectedSeats.length === 0 && selectedFoods.length === 0) {
+      dispatch(doSetTotalPrice(0));
+    }
+  }, [
+    selectedSeats,
+    selectedFoods,
+    selectedPromotionBill,
+    selectedPromotionSeat,
+    selectedPromotionFood,
+  ]);
 
   return (
     <Card bordered={false} className="order-card">
@@ -183,116 +180,128 @@ const OrderCard = (props) => {
               )}
             </Typography.Text>
           </Col>
-          {selectedPromotion && selectedPromotion?.name && (
-            <Col span={24}>
-              <Typography.Text>
-                <p style={{ fontWeight: "700" }}>Bạn được nhận khuyến mãi:</p>
-                {selectedPromotion?.name} giảm{" "}
-                {selectedPromotion?.promotionDiscountDetailDto?.discountValue}%
-                giá trị hóa đơn khi hóa đơn tối thiểu:{" "}
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(
-                  selectedPromotion?.promotionDiscountDetailDto?.minBillValue
-                )}{" "}
-                <p style={{ fontWeight: "700", marginRight: 10 }}>
-                  Giảm tối đa:{" "}
-                  {new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }).format(
-                    selectedPromotion?.promotionDiscountDetailDto?.maxValue
-                  )}
-                </p>
-              </Typography.Text>
-            </Col>
-          )}
+          <Col span={24}>
+            {selectedPromotionSeat && selectedPromotionSeat?.name && (
+              <TextPromotion promotion={selectedPromotionSeat} />
+            )}
+            {selectedPromotionFood && selectedPromotionFood?.name && (
+              <TextPromotion promotion={selectedPromotionFood} />
+            )}
+            {selectedPromotionBill && selectedPromotionBill?.name && (
+              <TextPromotion promotion={selectedPromotionBill} />
+            )}
+          </Col>
         </Col>
       </Row>
-      {/* sửa loại ghế nếu thay đổi */}
       <Row gutter={[16, 16]} style={{ marginTop: 10, marginBottom: 10 }}></Row>
       {selectedSeats && selectedSeats.length > 0 && <div className="line" />}
       <Row>
-        {/* tính tổng tiền cho loại ghế vip nếu có */}
-        {selectedSeats?.some((seat) => seat.seatTypeId === 2) && (
+        {/* // tính tổng tiền cho loại ghế thường nếu có */}
+        {selectedSeats?.some(
+          (seat) => seat.seatTypeId === findSeatTypeIdByName("STANDARD")
+        ) && (
           <Col span={24}>
             <Typography.Title level={5}>
-              {selectedSeats.filter((seat) => seat.seatTypeId === 2).length}x
-              Ghế vip:{" "}
+              {
+                selectedSeats.filter(
+                  (seat) => seat.seatTypeId === findSeatTypeIdByName("STANDARD")
+                ).length
+              }
+              x Ghế thường:{" "}
               <span style={{ color: "#F58020" }}>
                 {new Intl.NumberFormat("vi-VN", {
                   style: "currency",
                   currency: "VND",
                 }).format(
-                  price.find((p) => p.id === 2)?.price + roomPrice || 0
+                  selectedSeats.find(
+                    (seat) =>
+                      seat.seatTypeId === findSeatTypeIdByName("STANDARD")
+                  )?.price + selectedRoom.price || 0
                 )}
               </span>
             </Typography.Title>
             {selectedSeats?.map((seat, index) => (
               <Typography.Text key={index}>
-                {seat.seatTypeId === 2 && `${seat.name}, `}
+                {seat.seatTypeId === findSeatTypeIdByName("STANDARD") &&
+                  `${seat.name}, `}
               </Typography.Text>
             ))}
           </Col>
         )}
-        {/* tính tổng tiền cho loại ghế thường nếu có */}
-        {selectedSeats?.some((seat) => seat.seatTypeId === 1) && (
+        {/* // tính tổng tiền cho loại ghế vip nếu có */}
+        {selectedSeats?.some(
+          (seat) => seat.seatTypeId === findSeatTypeIdByName("VIP")
+        ) && (
           <Col span={24}>
             <Typography.Title level={5}>
-              {selectedSeats.filter((seat) => seat.seatTypeId === 1).length}x
-              Ghế thường:{" "}
+              {
+                selectedSeats.filter(
+                  (seat) => seat.seatTypeId === findSeatTypeIdByName("VIP")
+                ).length
+              }
+              x Ghế vip:{" "}
               <span style={{ color: "#F58020" }}>
                 {new Intl.NumberFormat("vi-VN", {
                   style: "currency",
                   currency: "VND",
                 }).format(
-                  price.find((p) => p.id === 1)?.price + roomPrice || 0
+                  selectedSeats?.find(
+                    (seat) => seat.seatTypeId === findSeatTypeIdByName("VIP")
+                  )?.price + selectedRoom.price || 0
                 )}
               </span>
             </Typography.Title>
             {selectedSeats?.map((seat, index) => (
               <Typography.Text key={index}>
-                {seat.seatTypeId === 1 && `${seat.name}, `}
+                {seat.seatTypeId === findSeatTypeIdByName("VIP") &&
+                  `${seat.name}, `}
               </Typography.Text>
             ))}
           </Col>
         )}
-        {/* tính tổng tiền cho loại ghế đôi nếu có */}
-        {selectedSeats?.some((seat) => seat.seatTypeId === 3) && (
+        {/* // tính tổng tiền cho loại ghế đôi nếu có */}
+        {selectedSeats?.some(
+          (seat) => seat.seatTypeId === findSeatTypeIdByName("SWEETBOX")
+        ) && (
           <Col span={24}>
             <Typography.Title level={5}>
-              {selectedSeats.filter((seat) => seat.seatTypeId === 3).length}x
-              Ghế đôi:{" "}
+              {
+                selectedSeats.filter(
+                  (seat) => seat.seatTypeId === findSeatTypeIdByName("SWEETBOX")
+                ).length
+              }
+              x Ghế đôi:{" "}
               <span style={{ color: "#F58020" }}>
                 {new Intl.NumberFormat("vi-VN", {
                   style: "currency",
                   currency: "VND",
                 }).format(
-                  price.find((p) => p.id === 3)?.price + roomPrice || 0
+                  selectedSeats?.find(
+                    (seat) =>
+                      seat.seatTypeId === findSeatTypeIdByName("SWEETBOX")
+                  )?.price + selectedRoom.price || 0
                 )}
               </span>
             </Typography.Title>
             {selectedSeats?.map((seat, index) => (
               <Typography.Text key={index}>
-                {seat.seatTypeId === 3 && `${seat.name}, `}
+                {seat.seatTypeId === findSeatTypeIdByName("SWEETBOX") &&
+                  `${seat.name}, `}
               </Typography.Text>
             ))}
           </Col>
         )}
       </Row>
-      {selectedFoodItems && selectedFoodItems.length > 0 && (
-        <div className="line" />
-      )}
+      {selectedFoods && selectedFoods.length > 0 && <div className="line" />}
       <Row>
-        {selectedFoodItems &&
-          selectedFoodItems.length > 0 &&
-          selectedFoodItems.some((food) => food.quantity > 0) && (
+        {selectedFoods &&
+          selectedFoods.length > 0 &&
+          selectedFoods.some((food) => food.quantity > 0) && (
             <Col span={24}>
               <Typography.Title level={5}>Thức ăn: </Typography.Title>
             </Col>
           )}
-        {selectedFoodItems?.map((food, index) => (
+        {selectedFoods?.map((food, index) => (
           <Col span={24} key={index}>
             <Typography.Text style={{ fontWeight: 400 }}>
               <Row>

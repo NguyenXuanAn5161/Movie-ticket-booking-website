@@ -20,11 +20,13 @@ import {
   callGetPriceHeaderById,
   callUpdateSalePrice,
 } from "../../services/apiPrice";
+import { FORMAT_DATE_HH_MM_SS } from "../../utils/constant";
+import {
+  defaultEndDate,
+  defaultStartDate,
+  formatDateYYYY_MM_DDT_HH_MM_SS,
+} from "../../utils/date";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
-
-const dateFormat = "DD-MM-YYYY HH:mm:ss";
-const defaultStartDate = dayjs().startOf("day").add(1, "day");
-const defaultEndDate = dayjs().endOf("day").add(1, "day");
 
 const PriceEdit = () => {
   const { priceId } = useParams();
@@ -68,12 +70,17 @@ const PriceEdit = () => {
   const onFinish = async (values) => {
     console.log("check value: ", values);
     const { id, name, timeApply, description, status } = values;
-    const startDate = dayjs(timeApply[0]).format("YYYY-MM-DDTHH:mm:ss.SSS");
+    const checked = checkStartDate(timeApply[0]);
+    var startDate = null;
+    if (!checked) {
+      startDate = dayjs(timeApply[0]).format("YYYY-MM-DDTHH:mm:ss.SSS");
+    }
     const endDate = dayjs(timeApply[1]).format("YYYY-MM-DDTHH:mm:ss.SSS");
     setIsSubmit(true);
     const res = await callUpdateSalePrice(
       id,
       name,
+      startDate,
       endDate,
       description,
       status
@@ -94,6 +101,13 @@ const PriceEdit = () => {
       });
       setIsSubmit(false);
     }
+  };
+
+  // check price?.startDate nhỏ hơn ngày hiện tại - return true
+  const checkStartDate = (priceStartDate) => {
+    const currentDate = formatDateYYYY_MM_DDT_HH_MM_SS(defaultStartDate);
+    const result = priceStartDate && priceStartDate < currentDate;
+    return result;
   };
 
   return (
@@ -138,8 +152,9 @@ const PriceEdit = () => {
                 }
               >
                 <CustomDatePicker
+                  disabled={[checkStartDate(price?.startDate), false]}
                   showTime
-                  format={dateFormat}
+                  format={FORMAT_DATE_HH_MM_SS}
                   minDate={defaultStartDate}
                   defaultValue={[price?.startDate, price?.endDate]}
                   placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
@@ -158,11 +173,8 @@ const PriceEdit = () => {
                   },
                 ]}
               >
-                {/* nếu ngày bắt đầu > ngày hiện tại thì không cho chọn trạng thái */}
-                <Radio.Group
-                  disabled={dayjs(price?.startDate).isAfter(dayjs())}
-                  value={price?.status}
-                >
+                {/* vẫn cho phép cập nhật giá bình thường vì đã có valid kiểm tra ngày của nó rồi chứ không phải chỉ dựa vào trạng thái */}
+                <Radio.Group value={price?.status}>
                   <Radio value={true}>Hoạt động</Radio>
                   <Radio value={false}>Ngưng hoạt động</Radio>
                 </Radio.Group>

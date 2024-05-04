@@ -77,12 +77,13 @@ const OrderList = () => {
   };
 
   const columns = [
-    createColumn("Họ và tên", "userName", 180, false, undefined, "left"),
-    createColumn("Tên phim", "movieName"),
-    createColumn("Rạp", "cinemaName"),
+    createColumn("Mã hóa đơn", "code", 130, false, undefined, "left"),
+    createColumn("Họ và tên", "userName", 130),
+    createColumn("Tên phim", "movieName", 130),
+    createColumn("Rạp", "cinemaName", 130),
     createColumn("Trạng thái", "status", 150, false, renderStatus("payment")),
-    createColumn("Ngày đặt", "createdDate", 150, false, renderDate),
-    createColumn("Ngày hủy", "cancelledDate", 150, false, renderDate),
+    createColumn("Ngày hóa đơn", "createdDate", 150, false, renderDate),
+    // createColumn("Ngày hủy", "cancelledDate", 150, false, renderDate),
     createColumn("Tổng tiền", "totalPrice", 150, false, renderCurrency),
     createColumn("Nhân viên", "staffName", "right"),
     {

@@ -1,9 +1,10 @@
-import { Card, Col, Form, Row } from "antd";
+import { Card, Col, Form, Row, notification } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CalendarBooking from "../../../components/Booking/CalenderBooking";
 import DebounceSelect from "../../../components/DebounceSelect/DebounceSelect";
 import {
+  doResetBooking,
   doSetSelectedCinema,
   doSetSelectedMovie,
   doSetShowDateByMovieId,
@@ -13,21 +14,26 @@ import {
   callFetchListMovie,
   callGetShowDateByMovieId,
 } from "../../../services/apiMovie";
+import { filterAndSortDates } from "../../../utils/formatData.js";
 
 const BookingSchedule = (props) => {
-  const { form } = props;
-
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const selectedMovie = useSelector((state) => state.booking.selectedMovie);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const showDateByMovieId = useSelector(
+    (state) => state.booking.showDateByMovieId
+  );
+
   const [cinema, setCinema] = useState(null);
   const [movie, setMovie] = useState(null);
 
   useEffect(() => {
-    console.log("cinema: ", cinema);
-  }, [cinema]);
+    if (cinema && movie) {
+      dispatch(doSetSelectedMovie(movie));
+    }
+  }, [movie]);
 
+  // tìm rạp theo tên
   const fetchCinemaList = async (cinemaName) => {
     try {
       let query = `size=5&name=${cinemaName}`;
@@ -36,11 +42,9 @@ const BookingSchedule = (props) => {
         label: data.name,
         value: data.id,
       }));
-      dispatch(doSetSelectedCinema(cinema));
 
       return cinema;
     } catch (error) {
-      // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
       console.error("Error fetching cinema list:", error);
       // Trả về một mảng trống nếu xảy ra lỗi
       return [];
@@ -50,13 +54,19 @@ const BookingSchedule = (props) => {
   useEffect(() => {
     if (cinema) {
       fetchMovieList();
+      handleReset();
+      dispatch(doSetSelectedCinema(cinema));
     }
   }, [cinema]);
+
+  const handleReset = () => {
+    setMovie(null);
+    dispatch(doResetBooking());
+  };
 
   // tìm phim theo rạp
   const fetchMovieList = async (movieName) => {
     let query = `size=5&cinemaId=${cinema.value}`;
-    // let query = `size=5&`;
 
     if (movieName) {
       query += `&name=${movieName}`;
@@ -79,29 +89,33 @@ const BookingSchedule = (props) => {
   // sau khi có id phim thì tìm ngày chiếu
   useEffect(() => {
     if (cinema && movie) {
-      fetchShowDateByMovieId(movie.value);
+      fetchShowDateByMovieId(movie.value, cinema.value);
     }
   }, [movie]);
 
-  const fetchShowDateByMovieId = async (id) => {
+  const fetchShowDateByMovieId = async (movieId, cinemaId) => {
     try {
-      const resShowDate = await callGetShowDateByMovieId(id);
-      if (resShowDate && resShowDate.length > 0) {
-        const sortedDates = resShowDate
-          .slice()
-          .sort((a, b) => new Date(a) - new Date(b));
-        dispatch(doSetShowDateByMovieId(sortedDates));
+      const resShowDate = await callGetShowDateByMovieId(movieId, cinemaId);
+      if (resShowDate) {
+        const dataFormat = filterAndSortDates(resShowDate);
+        console.log("dataFormat: ", dataFormat);
+        dispatch(doSetShowDateByMovieId(dataFormat));
       }
     } catch (error) {
       console.error("error fetch show date by movieId: ", error);
     }
   };
 
+  // thông báo nếu lịch chiếu không có
   useEffect(() => {
-    if (cinema && movie) {
-      dispatch(doSetSelectedMovie(movie));
+    if (movie && showDateByMovieId.length === 0) {
+      console.log("showDateByMovieId: ", showDateByMovieId);
+      notification.error({
+        message: "Không có suất chiếu!",
+        description: "Vui lòng chọn phim khác hoặc rạp khác",
+      });
     }
-  }, [movie]);
+  }, [showDateByMovieId]);
 
   return (
     <>
@@ -125,6 +139,7 @@ const BookingSchedule = (props) => {
                     style={{ textAlign: "start" }}
                     value={cinema}
                     onChange={(newValue) => {
+                      dispatch(doSetSelectedCinema(newValue));
                       setCinema(newValue);
                     }}
                     placeholder="Chọn rạp"
