@@ -1,3 +1,4 @@
+import { Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { callGetFoodById } from "../../services/apiFood";
@@ -92,7 +93,7 @@ const TextPromotion = ({ promotion }) => {
       isChecked = checkFoodPromotion(promotion, selectedFoods);
     }
 
-    return isChecked ? <p>{messageText}</p> : null;
+    return isChecked ? <Typography.Text>{messageText}</Typography.Text> : null;
   };
 
   return <div className="text-promotion">{renderMessage()}</div>;
