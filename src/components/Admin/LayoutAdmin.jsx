@@ -173,9 +173,9 @@ const LayoutAdmin = () => {
       null,
       [
         getItem(
-          <label style={{ cursor: "pointer" }} onClick={() => handleLogout()}>
+          <Link to="/login" onClick={handleLogout}>
             Đăng xuất
-          </label>,
+          </Link>,
           "logout",
           <CiLogout />
         ),
