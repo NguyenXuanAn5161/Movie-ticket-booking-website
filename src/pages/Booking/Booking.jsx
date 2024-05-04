@@ -124,9 +124,7 @@ const BookingPage = () => {
       <Row gutter={16}>
         <Col span={15}>
           <Steps current={current} items={items} />
-          <div style={{ marginTop: 24, textAlign: "center" }}>
-            {steps[current].formComponent}
-          </div>
+          <div style={{ marginTop: 24 }}>{steps[current].formComponent}</div>
         </Col>
         <Col span={9}>
           <OrderCard />
