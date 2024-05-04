@@ -19,7 +19,7 @@ import {
 import { RiMovie2Line } from "react-icons/ri";
 import { TbDiscount2 } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { doLogoutAction } from "../../redux/account/accountSlice";
 import { callLogout } from "../../services/api";
 import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
@@ -52,8 +52,15 @@ const LayoutAdmin = () => {
 
   const user = useSelector((state) => state.account.user);
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    const res = await callLogout();
+    if (res?.data) {
+      dispatch(doLogoutAction());
+      message.success(res.data);
+    }
+  };
 
   // tạo các mục menu
   const items = [
@@ -199,15 +206,6 @@ const LayoutAdmin = () => {
       setOpenKeys(keys); // Mở submenu nếu chưa được mở
     } else {
       setOpenKeys(latestOpenKey ? [latestOpenKey] : []); // Đóng các submenu khác nếu đã mở
-    }
-  };
-
-  const handleLogout = async () => {
-    const res = await callLogout();
-    if (res && res.data) {
-      dispatch(doLogoutAction());
-      message.success(res.data);
-      navigate("/login");
     }
   };
 
