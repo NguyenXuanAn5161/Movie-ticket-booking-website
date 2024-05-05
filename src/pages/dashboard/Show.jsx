@@ -60,12 +60,15 @@ const DashBoardShow = () => {
     useState(false);
   const [isLoadingTopRevenueCinema, setIsLoadingTopRevenueCinema] =
     useState(false);
+  const [isLoadingTopRevenueMovie, setIsLoadingTopRevenueMovie] =
+    useState(false);
   const [user, setUser] = useState([]);
   const [cinema, setCinema] = useState([]);
   const [revenueByYear, setRevenueByYear] = useState(0);
   const [currentRevenueGrowth, setCurrentRevenueGrowth] = useState(0);
   const [currentTicketGrowth, setCurrentTicketGrowth] = useState(0);
   const [topRevenueCinema, setTopRevenueCinema] = useState([]);
+  const [topRevenueMovie, setTopRevenueMovie] = useState([]);
 
   const onChange = (key) => {
     console.log("key: ", key);
@@ -82,7 +85,17 @@ const DashBoardShow = () => {
     fetchCurrentRevenueGrowth();
     fetchCurrentTicketGrowth();
     fetchTopRevenueCinemaByMonth();
+    fetchTopRevenueMovieByMonth();
   }, []);
+
+  const fetchTopRevenueMovieByMonth = async () => {
+    setIsLoadingTopRevenueMovie(true);
+    const response = await callGetTopRevenueCinemaByMonth();
+    if (response.length > 0) {
+      setTopRevenueMovie(response);
+    }
+    setIsLoadingTopRevenueMovie(false);
+  };
 
   const fetchTopRevenueCinemaByMonth = async () => {
     setIsLoadingTopRevenueCinema(true);
@@ -204,16 +217,15 @@ const DashBoardShow = () => {
             />
           </Card>
         </Col>
-        <Col span={8}>
-          <Card bordered={false}>
+        <Col span={12}>
+          <Card bordered={false} title="Top 5 rạp có doanh thu cao nhất">
             <GroupedBarChart data={topRevenueCinema} />
           </Card>
         </Col>
-        <Col span={8}>
-          <Card bordered={false}></Card>
-        </Col>
-        <Col span={8}>
-          <Card bordered={false}></Card>
+        <Col span={12}>
+          <Card bordered={false} title="Top 5 phim có doanh thu cao nhất">
+            <GroupedBarChart data={topRevenueMovie} />
+          </Card>
         </Col>
 
         {/* --------------- */}

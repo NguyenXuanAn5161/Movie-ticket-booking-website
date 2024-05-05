@@ -198,7 +198,22 @@ export const callGetTopRevenueCinemaByMonth = async () => {
     const response = await api.get(
       `/api/statistical/revenue-by-cinema?cinemaCode=&size=5&startDate=${startDate}&endDate=${endDate}&sortDirection=ASC&sortType=total`
     );
-    console.log("response top revenue cinema: ", response.data.content);
+
+    return response.data.content;
+  } catch (error) {
+    return error;
+  }
+};
+
+// Top 5 phim có doanh thu cao nhất theo tháng
+export const callGetTopRevenueMovieByMonth = async () => {
+  const [startDate, endDate] = getFirstAndLastDayOfMonth();
+
+  try {
+    const response = await api.get(
+      `/api/statistical/revenue-by-movie?movieCode=&size=5&startDate=${startDate}&endDate=${endDate}&sortDirection=ASC&sortType=total`
+    );
+
     return response.data.content;
   } catch (error) {
     return error;
