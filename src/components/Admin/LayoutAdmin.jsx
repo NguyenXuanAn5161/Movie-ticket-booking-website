@@ -147,12 +147,12 @@ const LayoutAdmin = () => {
           ),
         ]),
         getItem(
-          <Link to="/admin/price">Giá sản phẩm</Link>,
+          <Link to="/admin/price">Quản lý giá bán</Link>,
           "price",
           <IoPricetagsOutline />
         ),
         getItem(
-          <Link to="/admin/promotion">Khuyến mãi</Link>,
+          <Link to="/admin/promotion">Quản lý khuyến mãi</Link>,
           "promotion",
           <TbDiscount2 />
         ),
