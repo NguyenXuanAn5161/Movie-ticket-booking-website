@@ -58,9 +58,13 @@ const NotificationPromotion = ({ promotion, modalVisible, handleClose }) => {
   };
 
   const message =
-    promotion?.typePromotion === "TICKET"
+    promotion?.typePromotion === "TICKET" &&
+    seatNamePromotion &&
+    seatNameRequired
       ? `Bạn sẽ được miễn phí ${promotion?.promotionTicketDetailDto.quantityPromotion} ${seatNamePromotion} khi mua ${promotion?.promotionTicketDetailDto.quantityRequired} ${seatNameRequired}. Vui lòng chọn thêm để được nhận khuyến mãi!`
-      : promotion?.typePromotion === "FOOD"
+      : promotion?.typePromotion === "FOOD" &&
+        foodNamePromotion &&
+        foodNameRequired
       ? `Bạn sẽ được miễn phí ${promotion?.promotionFoodDetailDto.quantityPromotion} ${foodNamePromotion} khi mua ${promotion?.promotionFoodDetailDto.quantityRequired} ${foodNameRequired}. Vui lòng chọn thêm để được nhận khuyến mãi!`
       : promotion?.typePromotion === "DISCOUNT"
       ? promotion?.promotionDiscountDetailDto?.typeDiscount === "PERCENT"
@@ -81,7 +85,7 @@ const NotificationPromotion = ({ promotion, modalVisible, handleClose }) => {
       : "";
 
   useEffect(() => {
-    if (modalVisible) {
+    if (modalVisible && message) {
       Modal.info({
         title: "Thông báo",
         content: (
@@ -104,7 +108,7 @@ const NotificationPromotion = ({ promotion, modalVisible, handleClose }) => {
         },
       });
     }
-  }, [modalVisible]);
+  }, [modalVisible, message]);
 
   return null;
 };
