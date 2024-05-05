@@ -30,7 +30,7 @@ const BookingPage = () => {
   );
   const selectedSeat = useSelector((state) => state.booking.selectedSeats);
   const selectedFoods = useSelector((state) => state.booking.selectedFoods);
-  const user = useSelector((state) => state.booking.user);
+  const totalPrice = useSelector((state) => state.booking.totalPrice);
   const selectedPaymentMethod = useSelector(
     (state) => state.booking.selectedPaymentMethod
   );
@@ -85,8 +85,8 @@ const BookingPage = () => {
         }
       case 3:
         const resGuest = await callCreateGuest();
-        if (resGuest?.status === 200) {
-          return resGuest.message;
+        if (resGuest?.email) {
+          return resGuest.email;
         } else {
           notification.error({
             message: "Đã có lỗi xảy ra!",
@@ -106,9 +106,9 @@ const BookingPage = () => {
 
   const onFinish = async (values) => {
     setIsSubmit(true);
-    const result = await checkSelectedUser();
-    console.log("result: ", result);
-    if (!result) {
+    const resultEmail = await checkSelectedUser();
+    console.log("resultEmail: ", resultEmail);
+    if (!resultEmail) {
       setIsSubmit(false);
       return;
     } else {
@@ -117,7 +117,7 @@ const BookingPage = () => {
           selectedShowTime,
           selectedSeat,
           selectedFoods,
-          user,
+          resultEmail,
           "1",
           selectedPaymentMethod.id
         );
@@ -136,11 +136,11 @@ const BookingPage = () => {
         }
       } else {
         const resVnPay = await callCreateInvoiceByVnPay(
-          "45000",
+          totalPrice,
           selectedShowTime,
           selectedSeat,
           selectedFoods,
-          user,
+          resultEmail,
           "1"
         );
         console.log("resVnPay: ", resVnPay);

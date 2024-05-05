@@ -9,6 +9,8 @@ import {
 } from "../../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../../components/TableHeader/TableHeader";
 import { doSetSchedule } from "../../../redux/schedule/scheduleSlice";
+import { callFetchListCinema } from "../../../services/apiCinema";
+import { callFetchListMovie } from "../../../services/apiMovie";
 import { callFetchListShowtime } from "../../../services/apiShowTime";
 import { createColumn } from "../../../utils/createColumn";
 
@@ -23,7 +25,40 @@ const ScheduleList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
-  const [openModalExport, setOpenModalExport] = useState(false);
+  const [listCinema, setListCinema] = useState([]);
+  const [listMovie, setListMovie] = useState([]);
+
+  useEffect(() => {
+    fetchListCinema();
+  }, []);
+
+  const fetchListCinema = async () => {
+    let query = `page=0&size=1000`;
+    const res = await callFetchListCinema(query);
+    if (res?.content) {
+      const cinemas = res.content.map((item) => ({
+        label: item.name,
+        value: item.id,
+      }));
+      setListCinema(cinemas);
+    }
+  };
+
+  useEffect(() => {
+    fetchListMovie();
+  }, []);
+
+  const fetchListMovie = async () => {
+    let query = `page=0&size=1000`;
+    const res = await callFetchListMovie(query);
+    if (res?.content) {
+      const movies = res.content.map((item) => ({
+        label: item.name,
+        value: item.id,
+      }));
+      setListMovie(movies);
+    }
+  };
 
   // mặc định #2
   useEffect(() => {
@@ -68,7 +103,7 @@ const ScheduleList = () => {
     const res = await callDeleteUser(dataId);
     if (res && res.data) {
       // thay đổi #1 message
-      message.success("Xoá phim thành công!");
+      message.success("Xoá lịch chiếu thành công!");
       await fetchData();
     } else {
       notification.error({
@@ -124,12 +159,17 @@ const ScheduleList = () => {
 
   // fix tìm động rạp
   const itemSearch = [
-    { field: "cinemaId", label: "Tên rạp" },
+    {
+      field: "cinemaId",
+      label: "Tên rạp",
+      type: "select",
+      options: listCinema,
+    },
     {
       field: "movieId",
       label: "Tên phim",
       type: "select",
-      options: null,
+      options: listMovie,
     },
     { field: "date", label: "Ngày chiếu" },
   ];
@@ -193,13 +233,12 @@ const ScheduleList = () => {
             }}
             title={renderHeader}
             bordered
-            // thay đổi #1
-            // loading={isLoading}
+            loading={isLoading}
             columns={columns}
             dataSource={listData}
             onChange={onChange}
             // thay đổi #1
-            rowKey="id"
+            rowKey="code"
             pagination={{
               current: current,
               pageSize: pageSize,

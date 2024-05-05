@@ -44,7 +44,7 @@ export const callCreateInvoice = async (
         }
       })
     : bodyFormData.append("foodIds", "");
-  bodyFormData.append("emailUser", emailUser.email);
+  bodyFormData.append("emailUser", emailUser);
   bodyFormData.append("staffId", staffId);
   bodyFormData.append("typePay", typePay);
 
@@ -88,7 +88,7 @@ export const callCreateInvoiceByVnPay = async (
         }
       })
     : bodyFormData.append("foodIds", "");
-  bodyFormData.append("emailUser", emailUser.email);
+  bodyFormData.append("emailUser", emailUser);
   bodyFormData.append("staffId", staffId);
   bodyFormData.append("amount", amount);
 
