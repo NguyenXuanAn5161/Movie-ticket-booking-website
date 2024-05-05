@@ -331,7 +331,7 @@ const DashBoardShow = () => {
           <GroupedBarChart
             // data={topRevenueStaff}
             data={topStaff}
-            title={"Top 5 nhân viên doanh thu cao nhất"}
+            title={"Top 5 nhân viên có doanh số bán cao nhất"}
           />
         </Card>
       </Col>
