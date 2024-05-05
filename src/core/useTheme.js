@@ -13,6 +13,8 @@ const useTheme = () => {
       dark: "#343a40",
       orange: "#FE3323",
       pink: "#FF1493",
+      grey: "#8C8C8C",
+      greyRgba: "rgba(0, 0, 0, 0.45)",
       darkGrey: "#ccc",
       standard: "#6959CD",
       vip: "#FF8247",

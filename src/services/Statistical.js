@@ -65,7 +65,7 @@ export const callGetRevenueByYear = async () => {
   const [startDate, endDate] = getFirstAndLastDayOfYear();
   try {
     const response = await api.get(
-      `/api/statistical/revenue-by-cinema?cinemaCode=&size=1000&startDate=${startDate}&endDate=${endDate}&sortDirection=ASC&sortType=name`
+      `/api/statistical/revenue-by-cinema?cinemaCode=&size=1000&startDate=${startDate}&endDate=${endDate}&sortDirection=DESC&sortType=name`
     );
     const totalPrice = response.data.content.reduce(
       (total, item) => total + item.totalRevenue,
@@ -124,18 +124,6 @@ export const callGetTopRevenueMovie = async (query) => {
   }
 };
 
-// thống kê top 5 khách hàng có mức chi tiêu cao nhất theo tháng
-export const callGetTopRevenueUser = async (query) => {
-  try {
-    const response = await api.get(
-      `/api/statistical/top-revenue-user?${query}`
-    );
-    return response.data;
-  } catch (error) {
-    return error;
-  }
-};
-
 // thống kê tăng trưởng doanh thu theo tháng
 export const callGetRevenueGrowthByMonth = async () => {
   const [startDateLastMonth, endDateLastMonth] =
@@ -145,11 +133,11 @@ export const callGetRevenueGrowthByMonth = async () => {
 
   try {
     const responseLastMonth = await api.get(
-      `/api/statistical/revenue-by-cinema?cinemaCode=&size=1000&startDate=${startDateLastMonth}&endDate=${endDateLastMonth}&sortDirection=ASC&sortType=name`
+      `/api/statistical/revenue-by-cinema?cinemaCode=&size=1000&startDate=${startDateLastMonth}&endDate=${endDateLastMonth}&sortDirection=DESC&sortType=name`
     );
 
     const responseCurrentMonth = await api.get(
-      `/api/statistical/revenue-by-cinema?cinemaCode=&size=1000&startDate=${startDate}&endDate=${endDate}&sortDirection=ASC&sortType=name`
+      `/api/statistical/revenue-by-cinema?cinemaCode=&size=1000&startDate=${startDate}&endDate=${endDate}&sortDirection=DESC&sortType=name`
     );
 
     const growth = calculateGrowthRate(
@@ -172,11 +160,11 @@ export const callGetTicketGrowthByMonth = async () => {
 
   try {
     const responseLastMonth = await api.get(
-      `/api/statistical/revenue-by-cinema?cinemaCode=&size=1000&startDate=${startDateLastMonth}&endDate=${endDateLastMonth}&sortDirection=ASC&sortType=name`
+      `/api/statistical/revenue-by-cinema?cinemaCode=&size=1000&startDate=${startDateLastMonth}&endDate=${endDateLastMonth}&sortDirection=DESC&sortType=name`
     );
 
     const responseCurrentMonth = await api.get(
-      `/api/statistical/revenue-by-cinema?cinemaCode=&size=1000&startDate=${startDate}&endDate=${endDate}&sortDirection=ASC&sortType=name`
+      `/api/statistical/revenue-by-cinema?cinemaCode=&size=1000&startDate=${startDate}&endDate=${endDate}&sortDirection=DESC&sortType=name`
     );
 
     const growth = calculateTicketGrowthRate(
@@ -196,7 +184,7 @@ export const callGetTopRevenueCinemaByMonth = async () => {
 
   try {
     const response = await api.get(
-      `/api/statistical/revenue-by-cinema?cinemaCode=&size=5&startDate=${startDate}&endDate=${endDate}&sortDirection=ASC&sortType=total`
+      `/api/statistical/revenue-by-cinema?cinemaCode=&size=5&startDate=${startDate}&endDate=${endDate}&sortDirection=DESC&sortType=total`
     );
 
     return response.data.content;
@@ -211,8 +199,60 @@ export const callGetTopRevenueMovieByMonth = async () => {
 
   try {
     const response = await api.get(
-      `/api/statistical/revenue-by-movie?movieCode=&size=5&startDate=${startDate}&endDate=${endDate}&sortDirection=ASC&sortType=total`
+      `/api/statistical/revenue-by-movie?movieCode=&size=5&startDate=${startDate}&endDate=${endDate}&sortDirection=DESC&sortType=total`
     );
+
+    return response.data.content;
+  } catch (error) {
+    return error;
+  }
+};
+
+// Top 5 khách hàng có mức chi tiêu cao nhất theo tháng
+export const callGetTopRevenueUserByMonth = async () => {
+  const [startDate, endDate] = getFirstAndLastDayOfMonth();
+
+  const queryParams = {
+    startDate,
+    endDate,
+    sortDirection: "DESC",
+    sortType: "total",
+    size: 5,
+    userCode: "",
+    email: "",
+    phone: "",
+  };
+
+  try {
+    const response = await api.get(`/api/statistical/revenue-by-user`, {
+      params: queryParams,
+    });
+
+    return response.data.content;
+  } catch (error) {
+    return error;
+  }
+};
+
+// Top 5 nhân viên có doanh thu cao nhất theo tháng
+export const callGetTopRevenueStaffByMonth = async () => {
+  try {
+    const [startDate, endDate] = getFirstAndLastDayOfMonth();
+
+    const queryParams = {
+      startDate,
+      endDate,
+      sortDirection: "DESC",
+      sortType: "total",
+      size: 5,
+      userCode: "",
+      email: "",
+      phone: "",
+    };
+
+    const response = await api.get(`/api/statistical/revenue-by-staff`, {
+      params: queryParams,
+    });
 
     return response.data.content;
   } catch (error) {
