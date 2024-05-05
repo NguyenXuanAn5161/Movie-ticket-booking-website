@@ -1,15 +1,24 @@
-import { Card, Col, Row, Tabs } from "antd";
+import { Card, Col, Row, Statistic, Tabs } from "antd";
 import { useEffect, useState } from "react";
-import CountUp from "react-countup";
+import { FaArrowUp } from "react-icons/fa";
+import GroupedBarChart from "../../components/Charts/BarChart";
+import StatisticCountUp from "../../components/Counter/StatisticCountUp";
+import useTheme from "../../core/useTheme";
+import {
+  callGetRevenueByYear,
+  callGetRevenueGrowthByMonth,
+  callGetTicketGrowthByMonth,
+  callGetTopRevenueCinemaByMonth,
+} from "../../services/Statistical";
 import { callFetchListCinema } from "../../services/apiCinema";
 import { callFetchListUser } from "../../services/apiUser";
+import { getCurrentMonth, getCurrentYear } from "../../utils/date";
+import { formatCurrency } from "../../utils/formatData";
 import RevenueDbByCinema from "./RevenueDbByCinema";
 import RevenueDbByInvoiceCancel from "./RevenueDbByInvoiceCancel";
 import RevenueDbByMovie from "./RevenueDbByMovie";
 import RevenueDbByStaff from "./RevenueDbByStaff";
 import RevenueDbByUser from "./RevenueDbByUser";
-
-const formatter = (value) => <CountUp end={value} separator="," />;
 
 const items = [
   {
@@ -40,12 +49,26 @@ const items = [
 ];
 
 const DashBoardShow = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const { theme } = useTheme();
+
+  const [isLoadingRevenue, setIsLoadingRevenue] = useState(false);
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
+  const [isLoadingCinema, setIsLoadingCinema] = useState(false);
+  const [isLoadingCurrentRevenueGrowth, setIsLoadingCurrentRevenueGrowth] =
+    useState(false);
+  const [isLoadingCurrentTicketGrowth, setIsLoadingCurrentTicketGrowth] =
+    useState(false);
+  const [isLoadingTopRevenueCinema, setIsLoadingTopRevenueCinema] =
+    useState(false);
   const [user, setUser] = useState([]);
   const [cinema, setCinema] = useState([]);
+  const [revenueByYear, setRevenueByYear] = useState(0);
+  const [currentRevenueGrowth, setCurrentRevenueGrowth] = useState(0);
+  const [currentTicketGrowth, setCurrentTicketGrowth] = useState(0);
+  const [topRevenueCinema, setTopRevenueCinema] = useState([]);
 
   const onChange = (key) => {
-    console.log(key);
+    console.log("key: ", key);
   };
 
   useEffect(() => {
@@ -55,49 +78,159 @@ const DashBoardShow = () => {
   useEffect(() => {
     fetchUser();
     fetchCinema();
+    fetchRevenueByYear();
+    fetchCurrentRevenueGrowth();
+    fetchCurrentTicketGrowth();
+    fetchTopRevenueCinemaByMonth();
   }, []);
 
+  const fetchTopRevenueCinemaByMonth = async () => {
+    setIsLoadingTopRevenueCinema(true);
+    const response = await callGetTopRevenueCinemaByMonth();
+    if (response.length > 0) {
+      setTopRevenueCinema(response);
+    }
+    setIsLoadingTopRevenueCinema(false);
+  };
+
+  const fetchCurrentTicketGrowth = async () => {
+    setIsLoadingCurrentTicketGrowth(true);
+    const response = await callGetTicketGrowthByMonth();
+    if (response) {
+      setCurrentTicketGrowth(response);
+    }
+    setIsLoadingCurrentTicketGrowth(false);
+  };
+
+  const fetchCurrentRevenueGrowth = async () => {
+    setIsLoadingCurrentRevenueGrowth(true);
+    const response = await callGetRevenueGrowthByMonth();
+    if (response) {
+      setCurrentRevenueGrowth(response);
+    }
+    setIsLoadingCurrentRevenueGrowth(false);
+  };
+
   const fetchCinema = async () => {
-    setIsLoading(true);
+    setIsLoadingCinema(true);
     const response = await callFetchListCinema(0, 1000);
     if (response?.content) {
       setCinema(response.content);
     }
-    setIsLoading(false);
+    setIsLoadingCinema(false);
   };
 
   const fetchUser = async () => {
-    setIsLoading(true);
+    setIsLoadingUser(true);
     const response = await callFetchListUser(0, 1000, "", "", "");
     if (response?.content) {
       setUser(response.content);
     }
-    setIsLoading(false);
+    setIsLoadingUser(false);
+  };
+
+  // tổng doanh thu năm @year
+  const fetchRevenueByYear = async (year) => {
+    setIsLoadingRevenue(true);
+    const response = await callGetRevenueByYear();
+    if (response) {
+      console.log("response: ", response);
+      setRevenueByYear(response);
+    }
+    setIsLoadingRevenue(false);
   };
 
   return (
     <>
       <Row gutter={[16, 16]}>
-        {/* <Col span={12}>
+        <Col span={4}>
           <Card bordered={false} style={{}}>
-            <Statistic
-              loading={isLoading}
+            <StatisticCountUp
+              loading={isLoadingUser}
               title="Tổng số người dùng"
               value={user.length}
-              formatter={formatter}
+              suffix="người"
             />
           </Card>
         </Col>
-        <Col span={12}>
+        <Col span={3}>
           <Card bordered={false} style={{}}>
-            <Statistic
-              loading={isLoading}
-              title="Tổng doanh thu"
+            <StatisticCountUp
+              loading={isLoadingCinema}
+              title="Tổng số rạp"
               value={cinema.length}
-              formatter={formatter}
+              suffix="rạp"
             />
           </Card>
-        </Col> */}
+        </Col>
+        <Col span={5}>
+          <Card bordered={false} style={{}}>
+            <StatisticCountUp
+              loading={isLoadingRevenue}
+              title={`Tổng doanh thu ${getCurrentYear()}`}
+              value={revenueByYear}
+              // value={99999999999}
+              formatFn={formatCurrency}
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card bordered={false} style={{}}>
+            <StatisticCountUp
+              loading={isLoadingCurrentRevenueGrowth}
+              title={`Tăng trưởng doanh thu tháng ${getCurrentMonth()}`}
+              value={currentRevenueGrowth}
+              valueStyle={{
+                color: theme.colors.success,
+              }}
+              decimals={2}
+              prefix={<FaArrowUp />}
+              suffix={"%"}
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card bordered={false} style={{}}>
+            <StatisticCountUp
+              loading={isLoadingCurrentTicketGrowth}
+              title={`Tăng trưởng số vé tháng ${getCurrentMonth()}`}
+              value={currentTicketGrowth}
+              valueStyle={{
+                color: theme.colors.success,
+              }}
+              prefix={<FaArrowUp />}
+              decimals={2}
+              suffix={"%"}
+            />
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card bordered={false}>
+            <GroupedBarChart data={topRevenueCinema} />
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card bordered={false}></Card>
+        </Col>
+        <Col span={8}>
+          <Card bordered={false}></Card>
+        </Col>
+
+        {/* --------------- */}
+        <Col span={12}>
+          <Card bordered={false}>
+            <Statistic
+              title="Idle"
+              value={9.3}
+              precision={2}
+              valueStyle={{
+                color: "#cf1322",
+              }}
+              prefix={<FaArrowUp />}
+              suffix="%"
+            />
+          </Card>
+        </Col>
         <Col span={24}>
           <Card bordered={false}>
             <Tabs
@@ -112,20 +245,6 @@ const DashBoardShow = () => {
             />
           </Card>
         </Col>
-        {/* <Col span={12}>
-          <Card bordered={false}>
-            <Statistic
-              title="Idle"
-              value={9.3}
-              precision={2}
-              valueStyle={{
-                color: "#cf1322",
-              }}
-              prefix={<ArrowDownOutlined />}
-              suffix="%"
-            />
-          </Card>
-        </Col> */}
         {/* <Col span={12}>
           <Card bordered={false}>
             <Statistic
