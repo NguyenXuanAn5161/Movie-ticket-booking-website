@@ -1,6 +1,5 @@
 import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
-import SimpleBarChart from "../../components/Charts/BarChart";
 import { renderDate } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { callGetRevenueByInvoiceCancel } from "../../services/Statistical";
@@ -17,6 +16,7 @@ const StatisticalReturnInvoice = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("ASC");
+  const [sortType, setSortType] = useState("total");
   const [dateRanger, setDateRanger] = useState({
     startDate: "",
     endDate: "",
@@ -55,6 +55,10 @@ const StatisticalReturnInvoice = () => {
 
     if (sortQuery) {
       query += `&sortDirection=${sortQuery}`;
+    }
+
+    if (sortType) {
+      query += `&sortType=${sortType}`;
     }
 
     // thay đổi #1 api call
@@ -144,7 +148,7 @@ const StatisticalReturnInvoice = () => {
         <Table
           scroll={{
             x: "100%",
-            y: "100%",
+            y: "64vh",
           }}
           style={{ width: "100%", height: "100%" }}
           title={renderHeader}
@@ -169,7 +173,6 @@ const StatisticalReturnInvoice = () => {
           }}
         />
       </Col>
-      <SimpleBarChart data={listData} type={"returnInvoce"} />
     </Row>
   );
 };

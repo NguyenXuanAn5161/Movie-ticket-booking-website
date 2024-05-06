@@ -1,6 +1,5 @@
 import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
-import SimpleBarChart from "../../components/Charts/BarChart";
 import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { callGetRevenueByUser } from "../../services/Statistical";
@@ -16,7 +15,8 @@ const StatisticalUser = () => {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
-  const [sortQuery, setSortQuery] = useState("ASC");
+  const [sortQuery, setSortQuery] = useState("DESC");
+  const [sortType, setSortType] = useState("total");
   const [dateRanger, setDateRanger] = useState({
     startDate: "",
     endDate: "",
@@ -30,7 +30,7 @@ const StatisticalUser = () => {
 
   useEffect(() => {
     revenueByUser();
-  }, [current, pageSize, filter, sortQuery, dateRanger]);
+  }, [current, pageSize, filter, sortQuery, dateRanger, sortType]);
 
   // khi thay doi current va pageSize thi search died!
   const revenueByUser = async () => {
@@ -61,6 +61,10 @@ const StatisticalUser = () => {
       query += `&sortDirection=${sortQuery}`;
     }
 
+    if (sortType) {
+      query += `&sortType=${sortType}`;
+    }
+
     // thay đổi #1 api call
     const res = await callGetRevenueByUser(query);
     console.log("res", res);
@@ -76,9 +80,9 @@ const StatisticalUser = () => {
     createColumn("Mã khách hàng", "code"),
     createColumn("Tên khách hàng", "name"),
     createColumn("Email", "email"),
-    createColumn("Phone", "phone"),
-    createColumn("Tổng hóa đơn", "totalInvoice"),
-    createColumn("Tổng vé", "totalTicket"),
+    createColumn("Số điện thoại", "phone", 120),
+    createColumn("Tổng hóa đơn", "totalInvoice", 130),
+    createColumn("Tổng vé", "totalTicket", 90),
     createColumn("Tổng doanh thu", "totalRevenue", 150, false, renderCurrency),
   ];
 
@@ -144,12 +148,12 @@ const StatisticalUser = () => {
   };
 
   return (
-    <Row gutter={[20, 20]}>
+    <Row>
       <Col span={24}>
         <Table
           scroll={{
             x: "100%",
-            y: "100%",
+            y: "64vh",
           }}
           style={{ width: "100%", height: "100%" }}
           title={renderHeader}
@@ -174,7 +178,6 @@ const StatisticalUser = () => {
           }}
         />
       </Col>
-      <SimpleBarChart data={listData} />
     </Row>
   );
 };

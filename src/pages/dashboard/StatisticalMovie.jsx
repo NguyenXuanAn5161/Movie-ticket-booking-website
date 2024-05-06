@@ -1,6 +1,5 @@
 import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
-import SimpleBarChart from "../../components/Charts/BarChart";
 import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { callGetRevenueByMovie } from "../../services/Statistical";
@@ -18,6 +17,7 @@ const StatisticalMovie = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("ASC");
+  const [sortType, setSortType] = useState("total");
   const [movies, setMovies] = useState([]);
   const [dateRanger, setDateRanger] = useState({
     startDate: "",
@@ -48,7 +48,7 @@ const StatisticalMovie = () => {
 
   useEffect(() => {
     revenueByCinema();
-  }, [current, pageSize, filter, sortQuery, dateRanger]);
+  }, [current, pageSize, filter, sortQuery, dateRanger, sortType]);
 
   // khi thay doi current va pageSize thi search died!
   const revenueByCinema = async () => {
@@ -70,6 +70,12 @@ const StatisticalMovie = () => {
     if (sortQuery) {
       query += `&sortDirection=${sortQuery}`;
     }
+
+    if (sortType) {
+      query += `&sortType=${sortType}`;
+    }
+
+    console.log("query", query);
 
     // thay đổi #1 api call
     const res = await callGetRevenueByMovie(query);
@@ -156,7 +162,7 @@ const StatisticalMovie = () => {
         <Table
           scroll={{
             x: "100%",
-            y: "100%",
+            y: "64vh",
           }}
           style={{ width: "100%", height: "100%" }}
           title={renderHeader}
@@ -181,7 +187,6 @@ const StatisticalMovie = () => {
           }}
         />
       </Col>
-      <SimpleBarChart data={listData} />
     </Row>
   );
 };

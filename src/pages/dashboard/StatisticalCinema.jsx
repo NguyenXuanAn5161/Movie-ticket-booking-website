@@ -1,8 +1,7 @@
-import { Card, Col, Row, Table } from "antd";
+import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
-import SimpleBarChart from "../../components/Charts/BarChart";
 import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
-import SearchHeader from "../../components/TableHeader/SearchHeader";
+import TableHeader from "../../components/TableHeader/TableHeader";
 import { callGetRevenueByCinema } from "../../services/Statistical";
 import { callFetchListCinema } from "../../services/apiCinema";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
@@ -110,7 +109,7 @@ const StatisticalCinema = () => {
   };
 
   const renderHeader = () => (
-    <SearchHeader
+    <TableHeader
       onReload={handleReload}
       filter={filter}
       setFilter={setFilter}
@@ -158,21 +157,13 @@ const StatisticalCinema = () => {
   return (
     <Row gutter={[20, 20]}>
       <Col span={24}>
-        <Card>{renderHeader()}</Card>
-      </Col>
-      <Col span={24}>
-        <Card>
-          <SimpleBarChart data={listData} />
-        </Card>
-      </Col>
-      <Col span={24}>
         <Table
           scroll={{
             x: "100%",
-            y: "100%",
+            y: "64vh",
           }}
           style={{ width: "100%", height: "100%" }}
-          title={() => "Doanh thu theo rạp"}
+          title={renderHeader}
           bordered
           loading={isLoading}
           columns={columns}
