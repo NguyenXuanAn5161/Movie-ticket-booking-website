@@ -14,6 +14,7 @@ import { GrSchedules } from "react-icons/gr";
 import {
   IoFastFoodOutline,
   IoPricetagsOutline,
+  IoStatsChartOutline,
   IoTicketOutline,
 } from "react-icons/io5";
 import { RiMovie2Line } from "react-icons/ri";
@@ -74,6 +75,32 @@ const LayoutAdmin = () => {
           "dashboard",
           <AppstoreOutlined />
         ),
+        getItem("Thống kê", "statistical", <IoStatsChartOutline />, [
+          getItem(
+            <Link to="/admin/statisticalCinema">Doanh thu theo rạp</Link>,
+            "statisticalCinema"
+          ),
+          getItem(
+            <Link to="/admin/statisticalMovie">Doanh thu theo phim</Link>,
+            "statisticalMovie"
+          ),
+          getItem(
+            <Link to="/admin/statisticalUser">Doanh thu theo khách hàng</Link>,
+            "statisticalUser"
+          ),
+          getItem(
+            <Link to="/admin/statisticalStaff">
+              Doanh số bán theo nhân viên
+            </Link>,
+            "statisticalStaff"
+          ),
+          getItem(
+            <Link to="/admin/statisticalReturnInvoice">
+              Thống kê trả hóa đơn
+            </Link>,
+            "statisticalReturnInvoice"
+          ),
+        ]),
       ],
       "group"
     ),

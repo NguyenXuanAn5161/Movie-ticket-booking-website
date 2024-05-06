@@ -45,6 +45,11 @@ import UserList from "./pages/ManageUser/List";
 import UserShow from "./pages/ManageUser/Show";
 import VNPayPaymentReturn from "./pages/VNPayPaymentReturn";
 import DashBoardShow from "./pages/dashboard/Show";
+import StatisticalCinema from "./pages/dashboard/StatisticalCinema";
+import StatisticalReturnInvoice from "./pages/dashboard/StatisticalReturnInvoice";
+import StatisticalStaff from "./pages/dashboard/StatisticalStaff";
+import StatisticalUser from "./pages/dashboard/StatisticalUser";
+import StatisticalMovie from "./pages/dashboard/statisticalMovie";
 import LoginPage from "./pages/login";
 import OrderList from "./pages/order/List";
 import OrderShow from "./pages/order/Show";
@@ -87,6 +92,47 @@ export default function App() {
           element: (
             <ProtectedRoute>
               <DashBoardShow />
+            </ProtectedRoute>
+          ),
+        },
+        // Thống kê
+        {
+          path: "statisticalCinema",
+          element: (
+            <ProtectedRoute>
+              <StatisticalCinema />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "statisticalMovie",
+          element: (
+            <ProtectedRoute>
+              <StatisticalMovie />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "statisticalUser",
+          element: (
+            <ProtectedRoute>
+              <StatisticalUser />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "statisticalStaff",
+          element: (
+            <ProtectedRoute>
+              <StatisticalStaff />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "statisticalReturnInvoice",
+          element: (
+            <ProtectedRoute>
+              <StatisticalReturnInvoice />
             </ProtectedRoute>
           ),
         },
