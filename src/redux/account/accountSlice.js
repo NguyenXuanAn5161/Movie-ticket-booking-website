@@ -25,7 +25,7 @@ export const accountSlice = createSlice({
     doGetAccountAction: (state, action) => {
       state.isAuthenticated = true;
       state.isLoading = false;
-      state.user = action.payload.user;
+      state.user = action.payload;
     },
 
     doLogoutAction: (state, action) => {

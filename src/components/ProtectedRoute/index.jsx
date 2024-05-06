@@ -4,10 +4,10 @@ import NotPermistted from "./NotPermistted";
 
 const RouteBaseRoute = (props) => {
   const isAdminRoute = window.location.pathname.startsWith("/admin");
-  const user = useSelector((state) => state.account.user);
-  const userRole = user.role;
+  const user = JSON.parse(useSelector((state) => state.account.user));
+  const userRole = user.roles;
 
-  if (isAdminRoute && userRole === "ADMIN") {
+  if (isAdminRoute && userRole?.some((role) => role === "ROLE_ADMIN")) {
     return <>{props.children}</>;
   } else {
     return <NotPermistted />;

@@ -4,7 +4,7 @@ import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { doLoginAction } from "../../redux/account/accountSlice";
 import { callLogin } from "../../services/apiAuthor";
@@ -15,8 +15,6 @@ const SignInForm = (props) => {
 
   const [isSubmit, setIsSubmit] = useState(false);
   const [width, setWidth] = useState(window.innerWidth);
-
-  const userRedux = useSelector((state) => state.account.user);
 
   useEffect(() => {
     const handleResize = () => {

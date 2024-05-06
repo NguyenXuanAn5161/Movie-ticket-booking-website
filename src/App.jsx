@@ -60,9 +60,6 @@ export default function App() {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.account.isAuthenticated);
   const isLoading = useSelector((state) => state.account.isLoading);
-  useEffect(() => {
-    console.log("isLoading: ", isLoading);
-  }, [isLoading]);
 
   const getAccount = async () => {
     if (
@@ -72,11 +69,8 @@ export default function App() {
       return;
 
     const userLocalStorage = localStorage.getItem("user");
-    console.log("userLocalStorage: ", userLocalStorage);
     if (userLocalStorage) {
       dispatch(doGetAccountAction(userLocalStorage));
-    } else {
-      window.location.href = "/login";
     }
 
     // const res = await callFetchAccount();
