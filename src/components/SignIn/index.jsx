@@ -7,10 +7,12 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { doLoginAction } from "../../redux/account/accountSlice";
-import { callLogin } from "../../services/api";
+import { callLogin } from "../../services/apiAuthor";
 
 const SignInForm = (props) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [isSubmit, setIsSubmit] = useState(false);
   const [width, setWidth] = useState(window.innerWidth);
 
@@ -30,18 +32,18 @@ const SignInForm = (props) => {
     };
   }, []);
 
-  const dispatch = useDispatch();
-
   const onFinish = async (values) => {
-    const { username, password } = values;
+    const { email, password } = values;
     setIsSubmit(true);
-    const res = await callLogin(username, password);
+    const res = await callLogin(email, password);
     setIsSubmit(false);
     if (res?.data) {
-      if (res.data?.user?.role === "ADMIN") {
+      console.log(res.data);
+      if (res?.data?.roles?.some((role) => role === "ROLE_ADMIN")) {
         // lưu access token
-        localStorage.setItem("access_token", res.data.access_token);
-        dispatch(doLoginAction(res.data.user));
+        localStorage.setItem("accessToken", res.data.accessToken);
+        localStorage.setItem("user", JSON.stringify(res.data));
+        dispatch(doLoginAction(res.data));
         message.success("Đăng nhập thành công!");
         navigate("/admin");
       } else {
@@ -50,10 +52,7 @@ const SignInForm = (props) => {
     } else {
       notification.error({
         message: "Có lỗi xảy ra!",
-        description:
-          res.message && Array.isArray(res.message.length) > 0
-            ? res.message[0]
-            : res.message,
+        description: "Vui lòng kiểm tra lại thông tin đăng nhập!",
         duration: 5,
       });
     }
@@ -89,7 +88,7 @@ const SignInForm = (props) => {
         <Form.Item
           labelCol={{ span: 24 }}
           label="Email"
-          name="username"
+          name="email"
           rules={[
             {
               required: true,

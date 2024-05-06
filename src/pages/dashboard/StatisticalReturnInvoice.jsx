@@ -1,16 +1,15 @@
 import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
 import SimpleBarChart from "../../components/Charts/BarChart";
-import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
+import { renderDate } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
-import { callGetRevenueByMovie } from "../../services/Statistical";
-import { callFetchListMovie } from "../../services/apiMovie";
+import { callGetRevenueByInvoiceCancel } from "../../services/Statistical";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import { getFirstAndLastDayOfMonth } from "../../utils/date";
-import { StatisticByMovie } from "./RevenueDb";
+import { StatisticByReturnInvoice } from "./RevenueDb";
 
-const RevenueDbByMovie = () => {
+const StatisticalReturnInvoice = () => {
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -18,12 +17,11 @@ const RevenueDbByMovie = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("ASC");
-  const [movies, setMovies] = useState([]);
   const [dateRanger, setDateRanger] = useState({
     startDate: "",
     endDate: "",
   });
-  const [movie, setMovie] = useState(null);
+  const [invoiceDetail, setInvoiceDetail] = useState(null);
 
   useEffect(() => {
     const [startDate, endDate] = getFirstAndLastDayOfMonth();
@@ -31,27 +29,11 @@ const RevenueDbByMovie = () => {
   }, []);
 
   useEffect(() => {
-    getAllMovie();
-  }, []);
-
-  const getAllMovie = async () => {
-    const response = await callFetchListMovie(0, 1000);
-    if (response?.content) {
-      const data = response.content.map((data) => ({
-        label: data.name,
-        value: data.code,
-      }));
-
-      setMovies(data);
-    }
-  };
-
-  useEffect(() => {
-    revenueByCinema();
+    revenueByUser();
   }, [current, pageSize, filter, sortQuery, dateRanger]);
 
   // khi thay doi current va pageSize thi search died!
-  const revenueByCinema = async () => {
+  const revenueByUser = async () => {
     setIsLoading(true);
     let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
@@ -63,8 +45,12 @@ const RevenueDbByMovie = () => {
       query += `&startDate=${startDate}&endDate=${endDate}`;
     }
 
-    if (!filter.includes("movieCode")) {
-      query += `&movieCode=`;
+    if (!filter.includes("userCode")) {
+      query += `&userCode=`;
+    }
+
+    if (!filter.includes("code")) {
+      query += `&code=`;
     }
 
     if (sortQuery) {
@@ -72,7 +58,7 @@ const RevenueDbByMovie = () => {
     }
 
     // thay đổi #1 api call
-    const res = await callGetRevenueByMovie(query);
+    const res = await callGetRevenueByInvoiceCancel(query);
     console.log("res", res);
     if (res?.content) {
       setListData(res.content);
@@ -83,10 +69,12 @@ const RevenueDbByMovie = () => {
   };
 
   const columns = [
-    createColumn("Tên phim", "name"),
-    createColumn("Tổng hóa đơn", "totalInvoice"),
-    createColumn("Tổng vé", "totalTicket"),
-    createColumn("Tổng doanh thu", "totalRevenue", 150, false, renderCurrency),
+    createColumn("Mã hóa đơn hủy", "code"),
+    createColumn("Mã hóa đơn", "invoiceCode"),
+    createColumn("Mã khách hàng", "userCode"),
+    createColumn("Tên khách hàng", "userName"),
+    createColumn("Lý do hủy", "reason"),
+    createColumn("Ngày hủy", "cancelDate", 150, true, renderDate),
   ];
 
   const handleReload = () => {
@@ -96,12 +84,13 @@ const RevenueDbByMovie = () => {
   };
 
   const itemSearch = [
-    { field: "movieCode", label: "Tên phim", type: "select", options: movies },
+    { field: "code", label: "Mã hóa đơn hủy" },
+    { field: "userCode", label: "Mã khách hàng" },
     { field: "dateRange", label: "Khoảng thời gian", type: "rangePicker" },
   ];
 
   const handleExportData = () => {
-    StatisticByMovie(listData, dateRanger, movie);
+    StatisticByReturnInvoice(listData, dateRanger, invoiceDetail);
   };
 
   const renderHeader = () => (
@@ -110,7 +99,7 @@ const RevenueDbByMovie = () => {
       filter={filter}
       setFilter={setFilter}
       handleSearch={handleSearch}
-      headerTitle={"Doanh thu theo phim"}
+      headerTitle={"Thống kê hóa đơn hủy"}
       itemSearch={itemSearch}
       handleExportData={handleExportData}
     />
@@ -131,7 +120,6 @@ const RevenueDbByMovie = () => {
             FORMAT_DATE_SEND_SERVER
           )}&endDate=${value[1].format(FORMAT_DATE_SEND_SERVER)}`;
         } else if (value) {
-          setMovie(value);
           q += `&${label}=${value}`;
         }
       }
@@ -181,9 +169,9 @@ const RevenueDbByMovie = () => {
           }}
         />
       </Col>
-      <SimpleBarChart data={listData} />
+      <SimpleBarChart data={listData} type={"returnInvoce"} />
     </Row>
   );
 };
 
-export default RevenueDbByMovie;
+export default StatisticalReturnInvoice;

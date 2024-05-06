@@ -1,15 +1,15 @@
 import api from "../utils/axios-custom";
 
 // signin /api/auth/signin
-export const callLogin = (email, password) => {
+export const callLogin = async (email, password) => {
   const bodyFormData = new FormData();
   bodyFormData.append("email", email);
   bodyFormData.append("password", password);
 
   try {
-    const response = api({
+    const response = await api({
       method: "post",
-      url: "/api/auth/signin",
+      url: "/api/users/signin",
       data: bodyFormData,
       headers: {
         "Content-Type": "multipart/form-data",
@@ -22,9 +22,9 @@ export const callLogin = (email, password) => {
 };
 
 // /api/auth/signout
-export const callLogout = () => {
+export const callLogout = async () => {
   try {
-    const response = api({
+    const response = await api({
       method: "post",
       url: "/api/auth/signout",
     });

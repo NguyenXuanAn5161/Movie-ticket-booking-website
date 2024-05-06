@@ -1,8 +1,8 @@
-import { Col, Row, Table } from "antd";
+import { Card, Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
 import SimpleBarChart from "../../components/Charts/BarChart";
 import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
-import TableHeader from "../../components/TableHeader/TableHeader";
+import SearchHeader from "../../components/TableHeader/SearchHeader";
 import { callGetRevenueByCinema } from "../../services/Statistical";
 import { callFetchListCinema } from "../../services/apiCinema";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
@@ -10,7 +10,7 @@ import { createColumn } from "../../utils/createColumn";
 import { getFirstAndLastDayOfMonth } from "../../utils/date";
 import { StatisticByCinema } from "./RevenueDb";
 
-const RevenueDbByCinema = () => {
+const StatisticalCinema = () => {
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -18,6 +18,7 @@ const RevenueDbByCinema = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("ASC");
+  const [sortType, setSortType] = useState("total");
   const [cinemas, setCinemas] = useState([]);
   const [dateRanger, setDateRanger] = useState({
     startDate: "",
@@ -48,7 +49,7 @@ const RevenueDbByCinema = () => {
 
   useEffect(() => {
     revenueByCinema();
-  }, [current, pageSize, filter, sortQuery, dateRanger]);
+  }, [current, pageSize, filter, sortQuery, dateRanger, sortType]);
 
   // khi thay doi current va pageSize thi search died!
   const revenueByCinema = async () => {
@@ -69,6 +70,10 @@ const RevenueDbByCinema = () => {
 
     if (sortQuery) {
       query += `&sortDirection=${sortQuery}`;
+    }
+
+    if (sortType) {
+      query += `&sortType=${sortType}`;
     }
 
     // thay đổi #1 api call
@@ -105,7 +110,7 @@ const RevenueDbByCinema = () => {
   };
 
   const renderHeader = () => (
-    <TableHeader
+    <SearchHeader
       onReload={handleReload}
       filter={filter}
       setFilter={setFilter}
@@ -153,13 +158,21 @@ const RevenueDbByCinema = () => {
   return (
     <Row gutter={[20, 20]}>
       <Col span={24}>
+        <Card>{renderHeader()}</Card>
+      </Col>
+      <Col span={24}>
+        <Card>
+          <SimpleBarChart data={listData} />
+        </Card>
+      </Col>
+      <Col span={24}>
         <Table
           scroll={{
             x: "100%",
             y: "100%",
           }}
           style={{ width: "100%", height: "100%" }}
-          title={renderHeader}
+          title={() => "Doanh thu theo rạp"}
           bordered
           loading={isLoading}
           columns={columns}
@@ -181,9 +194,8 @@ const RevenueDbByCinema = () => {
           }}
         />
       </Col>
-      <SimpleBarChart data={listData} />
     </Row>
   );
 };
 
-export default RevenueDbByCinema;
+export default StatisticalCinema;

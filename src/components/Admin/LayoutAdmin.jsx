@@ -14,6 +14,7 @@ import { GrSchedules } from "react-icons/gr";
 import {
   IoFastFoodOutline,
   IoPricetagsOutline,
+  IoStatsChartOutline,
   IoTicketOutline,
 } from "react-icons/io5";
 import { RiMovie2Line } from "react-icons/ri";
@@ -21,7 +22,6 @@ import { TbDiscount2 } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { doLogoutAction } from "../../redux/account/accountSlice";
-import { callLogout } from "../../services/api";
 import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
 import Home from "../Home";
 import LogoApp from "../LogoApp/LogoApp";
@@ -55,11 +55,11 @@ const LayoutAdmin = () => {
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
-    const res = await callLogout();
-    if (res?.data) {
-      dispatch(doLogoutAction());
-      message.success(res.data);
-    }
+    // const res = await callLogout();
+    // if (res?.data) {
+    dispatch(doLogoutAction());
+    message.success("Đăng xuất thành công!");
+    // }
   };
 
   // tạo các mục menu
@@ -74,6 +74,32 @@ const LayoutAdmin = () => {
           "dashboard",
           <AppstoreOutlined />
         ),
+        getItem("Thống kê", "statistical", <IoStatsChartOutline />, [
+          getItem(
+            <Link to="/admin/statisticalCinema">Doanh thu theo rạp</Link>,
+            "statisticalCinema"
+          ),
+          getItem(
+            <Link to="/admin/statisticalMovie">Doanh thu theo phim</Link>,
+            "statisticalMovie"
+          ),
+          getItem(
+            <Link to="/admin/statisticalUser">Doanh thu theo khách hàng</Link>,
+            "statisticalUser"
+          ),
+          getItem(
+            <Link to="/admin/statisticalStaff">
+              Doanh số bán theo nhân viên
+            </Link>,
+            "statisticalStaff"
+          ),
+          getItem(
+            <Link to="/admin/statisticalReturnInvoice">
+              Thống kê trả hóa đơn
+            </Link>,
+            "statisticalReturnInvoice"
+          ),
+        ]),
       ],
       "group"
     ),
@@ -147,12 +173,12 @@ const LayoutAdmin = () => {
           ),
         ]),
         getItem(
-          <Link to="/admin/price">Giá sản phẩm</Link>,
+          <Link to="/admin/price">Quản lý giá bán</Link>,
           "price",
           <IoPricetagsOutline />
         ),
         getItem(
-          <Link to="/admin/promotion">Khuyến mãi</Link>,
+          <Link to="/admin/promotion">Quản lý khuyến mãi</Link>,
           "promotion",
           <TbDiscount2 />
         ),

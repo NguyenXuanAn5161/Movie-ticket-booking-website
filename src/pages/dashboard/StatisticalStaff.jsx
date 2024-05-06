@@ -9,7 +9,7 @@ import { createColumn } from "../../utils/createColumn";
 import { getFirstAndLastDayOfMonth } from "../../utils/date";
 import { StatisticByUser } from "./RevenueDb";
 
-const RevenueDbByStaff = () => {
+const StatisticalStaff = () => {
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -179,4 +179,4 @@ const RevenueDbByStaff = () => {
   );
 };
 
-export default RevenueDbByStaff;
+export default StatisticalStaff;

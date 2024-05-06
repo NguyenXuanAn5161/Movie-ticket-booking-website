@@ -45,16 +45,20 @@ import UserList from "./pages/ManageUser/List";
 import UserShow from "./pages/ManageUser/Show";
 import VNPayPaymentReturn from "./pages/VNPayPaymentReturn";
 import DashBoardShow from "./pages/dashboard/Show";
+import StatisticalCinema from "./pages/dashboard/StatisticalCinema";
+import StatisticalReturnInvoice from "./pages/dashboard/StatisticalReturnInvoice";
+import StatisticalStaff from "./pages/dashboard/StatisticalStaff";
+import StatisticalUser from "./pages/dashboard/StatisticalUser";
+import StatisticalMovie from "./pages/dashboard/statisticalMovie";
 import LoginPage from "./pages/login";
 import OrderList from "./pages/order/List";
 import OrderShow from "./pages/order/Show";
 import { doGetAccountAction } from "./redux/account/accountSlice";
-import { callFetchAccount } from "./services/api";
 import "./styles/reset.scss";
 
 export default function App() {
   const dispatch = useDispatch();
-  // const isAuthenticated = useSelector((state) => state.account.isAuthenticated);
+  const isAuthenticated = useSelector((state) => state.account.isAuthenticated);
   const isLoading = useSelector((state) => state.account.isLoading);
 
   const getAccount = async () => {
@@ -64,10 +68,15 @@ export default function App() {
     )
       return;
 
-    const res = await callFetchAccount();
-    if (res && res.data) {
-      dispatch(doGetAccountAction(res.data));
+    const userLocalStorage = localStorage.getItem("user");
+    if (userLocalStorage) {
+      dispatch(doGetAccountAction(JSON.parse(userLocalStorage)));
     }
+
+    // const res = await callFetchAccount();
+    // if (res && res.data) {
+    //   dispatch(doGetAccountAction(res.data));
+    // }
   };
 
   useEffect(() => {
@@ -90,6 +99,47 @@ export default function App() {
             </ProtectedRoute>
           ),
         },
+        // Thống kê
+        {
+          path: "statisticalCinema",
+          element: (
+            <ProtectedRoute>
+              <StatisticalCinema />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "statisticalMovie",
+          element: (
+            <ProtectedRoute>
+              <StatisticalMovie />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "statisticalUser",
+          element: (
+            <ProtectedRoute>
+              <StatisticalUser />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "statisticalStaff",
+          element: (
+            <ProtectedRoute>
+              <StatisticalStaff />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "statisticalReturnInvoice",
+          element: (
+            <ProtectedRoute>
+              <StatisticalReturnInvoice />
+            </ProtectedRoute>
+          ),
+        },
         // Hóa đơn
         {
           path: "order",
@@ -102,7 +152,11 @@ export default function App() {
         // Người dùng
         {
           path: "user",
-          element: <UserList />,
+          element: (
+            <ProtectedRoute>
+              <UserList />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "user/show/:userId",

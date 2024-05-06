@@ -17,6 +17,31 @@ function CustomBreadcrumb(props) {
           key: "dashboard",
         },
         {
+          path: "/statisticalCinema",
+          title: "Doanh thu theo rạp",
+          key: "statisticalCinema",
+        },
+        {
+          path: "/statisticalMovie",
+          title: "Doanh thu theo phim",
+          key: "statisticalMovie",
+        },
+        {
+          path: "/statisticalUser",
+          title: "Doanh thu theo khách hàng",
+          key: "statisticalUser",
+        },
+        {
+          path: "/statisticalStaff",
+          title: "Doanh số bán theo nhân viên",
+          key: "statisticalStaff",
+        },
+        {
+          path: "/statisticalReturnInvoice",
+          title: "Thống kê trả hóa đơn",
+          key: "statisticalReturnInvoice",
+        },
+        {
           path: "/order",
           title: "Hóa đơn",
           key: "order",
