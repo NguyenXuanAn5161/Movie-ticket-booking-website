@@ -22,7 +22,6 @@ import { TbDiscount2 } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { doLogoutAction } from "../../redux/account/accountSlice";
-import { callLogout } from "../../services/api";
 import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
 import Home from "../Home";
 import LogoApp from "../LogoApp/LogoApp";
@@ -56,11 +55,11 @@ const LayoutAdmin = () => {
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
-    const res = await callLogout();
-    if (res?.data) {
-      dispatch(doLogoutAction());
-      message.success(res.data);
-    }
+    // const res = await callLogout();
+    // if (res?.data) {
+    dispatch(doLogoutAction());
+    message.success("Đăng xuất thành công!");
+    // }
   };
 
   // tạo các mục menu
