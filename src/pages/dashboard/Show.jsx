@@ -1,6 +1,7 @@
 import { Card, Col, Row } from "antd";
 import { useEffect, useState } from "react";
 import { FaArrowUp } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import GroupedBarChart from "../../components/Charts/BarChart";
 import StatisticCountUp from "../../components/Counter/StatisticCountUp";
 import useTheme from "../../core/useTheme";
@@ -16,39 +17,6 @@ import { callFetchListCinema } from "../../services/apiCinema";
 import { callFetchListUser } from "../../services/apiUser";
 import { getCurrentMonth, getCurrentYear } from "../../utils/date";
 import { formatCurrency } from "../../utils/formatData";
-import RevenueDbByCinema from "./RevenueDbByCinema";
-import RevenueDbByInvoiceCancel from "./RevenueDbByInvoiceCancel";
-import RevenueDbByMovie from "./RevenueDbByMovie";
-import RevenueDbByStaff from "./RevenueDbByStaff";
-import RevenueDbByUser from "./RevenueDbByUser";
-
-const items = [
-  {
-    key: "1",
-    label: "Doanh thu theo rạp",
-    children: <RevenueDbByCinema />,
-  },
-  {
-    key: "2",
-    label: "Doanh thu theo phim",
-    children: <RevenueDbByMovie />,
-  },
-  {
-    key: "3",
-    label: "Doanh thu theo khách hàng",
-    children: <RevenueDbByUser />,
-  },
-  {
-    key: "4",
-    label: "Doanh thu theo nhân viên",
-    children: <RevenueDbByStaff />,
-  },
-  {
-    key: "5",
-    label: "Thống kê trả vé",
-    children: <RevenueDbByInvoiceCancel />,
-  },
-];
 
 const testData = [
   { name: "Thủ Đức", totalRevenue: 2000000, quantity: 70 },
@@ -96,6 +64,7 @@ const topStaff = [
 
 const DashBoardShow = () => {
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
   const [isLoadingRevenue, setIsLoadingRevenue] = useState(false);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
@@ -119,10 +88,6 @@ const DashBoardShow = () => {
   const [topRevenueMovie, setTopRevenueMovie] = useState([]);
   const [topRevenueUser, setTopRevenueUser] = useState([]);
   const [topRevenueStaff, setTopRevenueStaff] = useState([]);
-
-  const onChange = (key) => {
-    console.log("key: ", key);
-  };
 
   useEffect(() => {
     console.log("cinema: ", cinema);
@@ -223,6 +188,25 @@ const DashBoardShow = () => {
     setIsLoadingRevenue(false);
   };
 
+  const handleDetailStatistical = (type) => {
+    switch (type) {
+      case "cinema":
+        navigate("/admin/statisticalCinema");
+        break;
+      case "movie":
+        navigate("/admin/statisticalMovie");
+        break;
+      case "user":
+        navigate("/admin/statisticalUser");
+        break;
+      case "staff":
+        navigate("/admin/statisticalStaff");
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <Row gutter={[16, 16]}>
       <Col span={4}>
@@ -288,6 +272,8 @@ const DashBoardShow = () => {
       </Col>
       <Col span={12}>
         <Card
+          style={{ cursor: "pointer" }}
+          onClick={() => handleDetailStatistical("cinema")}
           bordered={false}
           // title={renderHeader("Top 5 rạp có doanh thu cao nhất")}
         >
@@ -300,6 +286,7 @@ const DashBoardShow = () => {
       </Col>
       <Col span={12}>
         <Card
+          onClick={() => handleDetailStatistical("movie")}
           bordered={false}
           // title={renderHeader("Top 5 phim có doanh thu cao nhất")}
         >
@@ -312,6 +299,7 @@ const DashBoardShow = () => {
       </Col>
       <Col span={12}>
         <Card
+          onClick={() => handleDetailStatistical("user")}
           bordered={false}
           // title={renderHeader("Top 5 phim có doanh thu cao nhất")}
         >
@@ -324,6 +312,7 @@ const DashBoardShow = () => {
       </Col>
       <Col span={12}>
         <Card
+          onClick={() => handleDetailStatistical("staff")}
           bordered={false}
           // title={renderHeader("Top 5 phim có doanh thu cao nhất")}
         >
@@ -335,61 +324,6 @@ const DashBoardShow = () => {
           />
         </Card>
       </Col>
-
-      {/* --------------- */}
-      {/* <Col span={12}>
-        <Card bordered={false}>
-          <Statistic
-            title="Idle"
-            value={9.3}
-            precision={2}
-            valueStyle={{
-              color: "#cf1322",
-            }}
-            prefix={<FaArrowUp />}
-            suffix="%"
-          />
-        </Card>
-      </Col>
-      <Col span={24}>
-        <Card bordered={false}>
-          <Tabs
-            style={{ minHeight: 400 }}
-            defaultActiveKey="1"
-            items={items}
-            onChange={onChange}
-            indicator={{
-              size: (origin) => origin - 20,
-              align: "center",
-            }}
-          />
-        </Card>
-      </Col> */}
-      {/* <Col span={12}>
-          <Card bordered={false}>
-            <Statistic
-              title="Account Balance (CNY)"
-              value={112893}
-              precision={2}
-              formatter={formatter}
-            />
-          </Card>
-        </Col>
-        <Col span={24}>
-          <Card bordered={false}>
-            <SimpleBarChart />
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card style={{ flex: 1 }} bordered={false}>
-            <SimpleLineChart />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card bordered={false}>
-            <SimplePieChart />
-          </Card>
-        </Col> */}
     </Row>
   );
 };

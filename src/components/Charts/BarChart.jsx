@@ -24,7 +24,7 @@ const GroupedBarChart = ({ data, type, title }) => {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" color="red" />
         <YAxis width={100} tickFormatter={formatCurrency} />
-        <Tooltip />
+        <Tooltip formatter={formatCurrency} />
         <Legend />
         {type === "returnInvoce" ? (
           <Bar dataKey="quantity" fill="#8884d8" name="Số lượng" />
