@@ -70,7 +70,7 @@ export default function App() {
 
     const userLocalStorage = localStorage.getItem("user");
     if (userLocalStorage) {
-      dispatch(doGetAccountAction(userLocalStorage));
+      dispatch(doGetAccountAction(JSON.parse(userLocalStorage)));
     }
 
     // const res = await callFetchAccount();
@@ -152,7 +152,11 @@ export default function App() {
         // Người dùng
         {
           path: "user",
-          element: <UserList />,
+          element: (
+            <ProtectedRoute>
+              <UserList />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "user/show/:userId",

@@ -41,6 +41,7 @@ const SignInForm = (props) => {
       console.log(res.data);
       if (res?.data?.roles?.some((role) => role === "ROLE_ADMIN")) {
         // lưu access token
+        localStorage.setItem("accessToken", res.data.accessToken);
         localStorage.setItem("user", JSON.stringify(res.data));
         dispatch(doLoginAction(res.data));
         message.success("Đăng nhập thành công!");
