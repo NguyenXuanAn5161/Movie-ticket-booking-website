@@ -117,3 +117,23 @@ export const callVerifyPayment = async (queryParams) => {
     return error;
   }
 };
+
+export const callReturnInvoice = async (id, reason) => {
+  try {
+    const response = await api.post(
+      `/api/invoice/cancel?invoiceId=${id}&reason=${reason}`
+    );
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callGetAllReturnInvoice = async (query) => {
+  try {
+    const response = await api.get(`/api/invoice/return?${query}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
