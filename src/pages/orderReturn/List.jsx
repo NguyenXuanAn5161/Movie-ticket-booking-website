@@ -1,47 +1,46 @@
 import { Col, Row, Table } from "antd";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ActionButtons from "../../components/Button/ActionButtons";
+import {
+  renderCurrency,
+  renderDate,
+} from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
-import { callGetRevenueByUser } from "../../services/Statistical";
+import { callGetAllReturnInvoice } from "../../services/apiOder";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import { getFirstAndLastDayOfMonth } from "../../utils/date";
-import { StatisticByUser } from "./RevenueDb";
 
-const StatisticalUser = () => {
-  const userCurrent = useSelector((state) => state.account.user);
+const ReturnInvoiceList = () => {
+  const navigate = useNavigate();
 
   const [listData, setListData] = useState([]);
-  const [listDataFull, setListDataFull] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
-  const [sortQuery, setSortQuery] = useState("DESC");
-  const [sortType, setSortType] = useState("total");
-  const [dateRanger, setDateRanger] = useState({
-    startDate: "",
-    endDate: "",
-  });
-  const [user, setUser] = useState(null);
+  const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
 
   useEffect(() => {
-    const [startDate, endDate] = getFirstAndLastDayOfMonth();
-    setDateRanger({ startDate: startDate, endDate: endDate });
-  }, []);
-
-  useEffect(() => {
-    revenueByUser();
-  }, [current, pageSize, filter, sortQuery, dateRanger, sortType]);
+    fetchData();
+  }, [current, pageSize, filter, sortQuery]);
 
   // khi thay doi current va pageSize thi search died!
-  const revenueByUser = async () => {
+  const fetchData = async () => {
     setIsLoading(true);
     let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
       query += `&${filter}`;
+    }
+
+    if (!filter.includes("code")) {
+      query += `&code=`;
+    }
+
+    if (!filter.includes("userCode")) {
+      query += `&userCode=`;
     }
 
     if (!filter.includes("startDate") && !filter.includes("endDate")) {
@@ -49,52 +48,52 @@ const StatisticalUser = () => {
       query += `&startDate=${startDate}&endDate=${endDate}`;
     }
 
-    if (!filter.includes("userCode")) {
-      query += `&userCode=`;
-    }
-
-    if (!filter.includes("email")) {
-      query += `&email=`;
-    }
-
-    if (!filter.includes("phone")) {
-      query += `&phone=`;
-    }
-
-    if (sortQuery) {
-      query += `&sortDirection=${sortQuery}`;
-    }
-
-    if (sortType) {
-      query += `&sortType=${sortType}`;
-    }
+    // if (sortQuery) {
+    //   query += `&${sortQuery}`;
+    // }
 
     // thay đổi #1 api call
-    const res = await callGetRevenueByUser(query);
+    const res = await callGetAllReturnInvoice(query);
     console.log("res", res);
     if (res?.content) {
       setListData(res.content);
       setTotal(res.totalElements);
     }
 
-    // dùng query ở trên nhưng thay đổi size thành 5000 để lấy hết dữ liệu
-    const queryFull = query.replace("size=10", "size=10000");
-    const resFull = await callGetRevenueByUser(queryFull);
-    if (res?.content) {
-      setListDataFull(resFull.content);
-    }
-
     setIsLoading(false);
   };
 
+  const handleView = (data, url) => {
+    console.log("data", data);
+    console.log("url", url);
+    navigate(`${url}/${data.invoiceId}`);
+  };
+
   const columns = [
-    createColumn("Mã khách hàng", "code"),
-    createColumn("Tên khách hàng", "name", null, true),
-    createColumn("Email", "email"),
-    createColumn("Số điện thoại", "phone", 120),
-    createColumn("Tổng hóa đơn", "totalInvoice", 130),
-    createColumn("Tổng vé", "totalTicket", 90),
-    createColumn("Tổng doanh thu", "totalRevenue", 150, true, renderCurrency),
+    createColumn("Mã hóa đơn hủy", "code", 130, false, undefined, "left"),
+    createColumn("Mã hóa đơn", "invoiceCode", 130, false, undefined, "left"),
+    createColumn("Mã khách hàng", "userCode", 130),
+    createColumn("Họ và tên", "userName", 130),
+    createColumn("Số lượng", "quantity", 100),
+    createColumn("Ngày hóa đơn", "invoiceDate", 150, false, renderDate),
+    createColumn("Ngày hủy", "cancelDate", 150, false, renderDate),
+    createColumn("Lý do hủy", "reason", 150, false, undefined, "left"),
+    createColumn("Tổng tiền", "total", 150, false, renderCurrency),
+    {
+      title: "Thao tác",
+      width: 100,
+      fixed: "right",
+      render: (text, record, index) => {
+        return (
+          <ActionButtons
+            record={record}
+            handleView={handleView}
+            showView={true}
+            itemName={"hóa đơn"}
+          />
+        );
+      },
+    },
   ];
 
   const handleReload = () => {
@@ -104,19 +103,10 @@ const StatisticalUser = () => {
   };
 
   const itemSearch = [
+    { field: "code", label: "Mã hóa đơn hủy" },
     { field: "userCode", label: "Mã khách hàng" },
     { field: "dateRange", label: "Khoảng thời gian", type: "rangePicker" },
   ];
-
-  const handleExportData = () => {
-    StatisticByUser(
-      listDataFull,
-      dateRanger,
-      user,
-      null,
-      userCurrent?.username
-    );
-  };
 
   const renderHeader = () => (
     <TableHeader
@@ -124,9 +114,8 @@ const StatisticalUser = () => {
       filter={filter}
       setFilter={setFilter}
       handleSearch={handleSearch}
-      headerTitle={"Doanh thu theo khách hàng"}
+      headerTitle={"Danh sách hóa đơn hủy"}
       itemSearch={itemSearch}
-      handleExportData={handleExportData}
     />
   );
 
@@ -137,15 +126,10 @@ const StatisticalUser = () => {
         const label = key;
         const value = query[key];
         if (label === "dateRange") {
-          setDateRanger({
-            startDate: value[0].format(FORMAT_DATE_SEND_SERVER),
-            endDate: value[1].format(FORMAT_DATE_SEND_SERVER),
-          });
           q += `&startDate=${value[0].format(
             FORMAT_DATE_SEND_SERVER
           )}&endDate=${value[1].format(FORMAT_DATE_SEND_SERVER)}`;
         } else if (value) {
-          setUser(value);
           q += `&${label}=${value}`;
         }
       }
@@ -162,29 +146,16 @@ const StatisticalUser = () => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
-
-    console.log("sorter.order: ", sorter.order);
-    console.log("sorter.field: ", sorter.field);
-
-    if (sorter) {
-      if (sorter.order === "ascend") {
-        setSortQuery("ASC");
-      } else if (sorter.order === "descend") {
-        setSortQuery("DESC");
-      }
-      setSortType(sorter.field === "name" ? "name" : "total");
-    }
   };
 
   return (
-    <Row>
+    <Row gutter={[20, 20]}>
       <Col span={24}>
         <Table
           scroll={{
             x: "100%",
             y: "64vh",
           }}
-          style={{ width: "100%", height: "100%" }}
           title={renderHeader}
           bordered
           loading={isLoading}
@@ -211,4 +182,4 @@ const StatisticalUser = () => {
   );
 };
 
-export default StatisticalUser;
+export default ReturnInvoiceList;

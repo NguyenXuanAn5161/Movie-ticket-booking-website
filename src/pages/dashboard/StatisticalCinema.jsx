@@ -1,8 +1,8 @@
-import { Card, Col, Row, Table } from "antd";
+import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
-import SimpleBarChart from "../../components/Charts/BarChart";
+import { useSelector } from "react-redux";
 import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
-import SearchHeader from "../../components/TableHeader/SearchHeader";
+import TableHeader from "../../components/TableHeader/TableHeader";
 import { callGetRevenueByCinema } from "../../services/Statistical";
 import { callFetchListCinema } from "../../services/apiCinema";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
@@ -11,13 +11,16 @@ import { getFirstAndLastDayOfMonth } from "../../utils/date";
 import { StatisticByCinema } from "./RevenueDb";
 
 const StatisticalCinema = () => {
+  const user = useSelector((state) => state.account.user);
+
   const [listData, setListData] = useState([]);
+  const [listFullData, setListDataFull] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
-  const [sortQuery, setSortQuery] = useState("ASC");
+  const [sortQuery, setSortQuery] = useState("DESC");
   const [sortType, setSortType] = useState("total");
   const [cinemas, setCinemas] = useState([]);
   const [dateRanger, setDateRanger] = useState({
@@ -84,14 +87,22 @@ const StatisticalCinema = () => {
       setTotal(res.totalElements);
     }
 
+    // dùng query ở trên nhưng thay đổi size thành 5000 để lấy hết dữ liệu
+    const queryFull = query.replace("size=10", "size=10000");
+    const resFull = await callGetRevenueByCinema(queryFull);
+    if (res?.content) {
+      setListDataFull(resFull.content);
+    }
+
     setIsLoading(false);
   };
 
   const columns = [
-    createColumn("Rạp", "name"),
-    createColumn("Tổng hóa đơn", "totalInvoice"),
-    createColumn("Tổng vé", "totalTicket"),
-    createColumn("Tổng doanh thu", "totalRevenue", 150, false, renderCurrency),
+    createColumn("Mã rap", "code", 150),
+    createColumn("Rạp", "name", 320, true),
+    createColumn("Tổng hóa đơn", "totalInvoice", 100),
+    createColumn("Tổng vé", "totalTicket", 85),
+    createColumn("Tổng doanh thu", "totalRevenue", 150, true, renderCurrency),
   ];
 
   const handleReload = () => {
@@ -106,11 +117,11 @@ const StatisticalCinema = () => {
   ];
 
   const handleExportData = () => {
-    StatisticByCinema(listData, dateRanger, cinema);
+    StatisticByCinema(listFullData, dateRanger, cinema, user?.username);
   };
 
   const renderHeader = () => (
-    <SearchHeader
+    <TableHeader
       onReload={handleReload}
       filter={filter}
       setFilter={setFilter}
@@ -153,26 +164,27 @@ const StatisticalCinema = () => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
+
+    if (sorter) {
+      if (sorter.order === "ascend") {
+        setSortQuery("ASC");
+      } else if (sorter.order === "descend") {
+        setSortQuery("DESC");
+      }
+      setSortType(sorter.field === "name" ? "name" : "total");
+    }
   };
 
   return (
     <Row gutter={[20, 20]}>
       <Col span={24}>
-        <Card>{renderHeader()}</Card>
-      </Col>
-      <Col span={24}>
-        <Card>
-          <SimpleBarChart data={listData} />
-        </Card>
-      </Col>
-      <Col span={24}>
         <Table
           scroll={{
             x: "100%",
-            y: "100%",
+            y: "64vh",
           }}
           style={{ width: "100%", height: "100%" }}
-          title={() => "Doanh thu theo rạp"}
+          title={renderHeader}
           bordered
           loading={isLoading}
           columns={columns}

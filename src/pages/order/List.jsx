@@ -1,6 +1,6 @@
-import { Col, Row, Table, message, notification } from "antd";
+import { Col, Row, Table } from "antd";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { AiOutlineDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import ActionButtons from "../../components/Button/ActionButtons";
 import {
@@ -9,11 +9,9 @@ import {
   renderStatus,
 } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
-import { doSetUser } from "../../redux/account/userSlice";
 import { callGetAllOrder } from "../../services/apiOder";
-import { callDeleteUser } from "../../services/apiUser";
 import { createColumn } from "../../utils/createColumn";
-import { getErrorMessageUser } from "../../utils/errorHandling";
+import ModalCancel from "./ModalCancel";
 
 const OrderList = () => {
   const navigate = useNavigate();
@@ -25,13 +23,15 @@ const OrderList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
+  const [showModal, setShowModal] = useState(false);
+  const [invoiceId, setInvoiceId] = useState("");
 
   useEffect(() => {
-    fetchUser();
+    fetchData();
   }, [current, pageSize, filter, sortQuery]);
 
   // khi thay doi current va pageSize thi search died!
-  const fetchUser = async () => {
+  const fetchData = async () => {
     setIsLoading(true);
     let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
@@ -53,27 +53,13 @@ const OrderList = () => {
     setIsLoading(false);
   };
 
-  const handleDeleteUser = async (userId) => {
-    const res = await callDeleteUser(userId);
-    if (res.status === 200) {
-      message.success("Tắt hoạt động người dùng thành công!");
-      await fetchUser();
-    } else {
-      const error = getErrorMessageUser(res.response.data.message, {
-        id: userId,
-      });
-      notification.error({
-        message: "Đã có lỗi xảy ra!",
-        description: error,
-      });
-    }
+  const handleModal = (invoiceId) => {
+    setShowModal(true);
+    setInvoiceId(invoiceId);
   };
 
-  const dispatch = useDispatch();
-
-  const handleView = (user, url) => {
-    dispatch(doSetUser(user));
-    navigate(`${url}/${user.id}`);
+  const handleView = (data, url) => {
+    navigate(`${url}/${data.id}`);
   };
 
   const columns = [
@@ -92,12 +78,20 @@ const OrderList = () => {
       fixed: "right",
       render: (text, record, index) => {
         return (
-          <ActionButtons
-            record={record}
-            handleView={handleView}
-            showView={true}
-            itemName={"hóa đơn"}
-          />
+          <>
+            <span>
+              <AiOutlineDelete
+                onClick={() => handleModal(record.id)}
+                style={{ color: "red", cursor: "pointer", marginRight: 10 }}
+              />
+            </span>
+            <ActionButtons
+              record={record}
+              handleView={handleView}
+              showView={true}
+              itemName={"hóa đơn"}
+            />
+          </>
         );
       },
     },
@@ -165,7 +159,7 @@ const OrderList = () => {
           <Table
             scroll={{
               x: "100%",
-              y: 280,
+              y: "64vh",
             }}
             title={renderHeader}
             bordered
@@ -190,6 +184,12 @@ const OrderList = () => {
           />
         </Col>
       </Row>
+      <ModalCancel
+        fetchData={fetchData}
+        openModal={showModal}
+        setOpenModal={setShowModal}
+        invoiceId={invoiceId}
+      />
     </>
   );
 };

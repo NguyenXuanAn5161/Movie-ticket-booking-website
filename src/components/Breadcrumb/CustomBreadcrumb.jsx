@@ -54,6 +54,18 @@ function CustomBreadcrumb(props) {
           ],
         },
         {
+          path: "/returnInvoice",
+          title: "Hóa đơn trả",
+          key: "returnInvoice",
+          children: [
+            {
+              path: "/show",
+              title: "Xem chi tiết hóa đơn trả",
+              key: "returnInvoiceShow",
+            },
+          ],
+        },
+        {
           path: "/user",
           title: "Người dùng",
           key: "user",

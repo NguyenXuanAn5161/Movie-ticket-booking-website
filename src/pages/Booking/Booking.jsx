@@ -21,6 +21,7 @@ const BookingPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const userCurrent = useSelector((state) => state.account.user);
   const selectedUser = useSelector((state) => state.booking.user);
   const selectedMethodInfoUser = useSelector(
     (state) => state.booking.selectedMethodInfoUser
@@ -34,6 +35,12 @@ const BookingPage = () => {
   const selectedPaymentMethod = useSelector(
     (state) => state.booking.selectedPaymentMethod
   );
+
+  useEffect(() => {
+    if (!userCurrent) {
+      message.success("Vui lòng đăng nhập để tiếp tục!");
+    }
+  }, [userCurrent]);
 
   useEffect(() => {
     dispatch(doResetBooking());
@@ -118,7 +125,7 @@ const BookingPage = () => {
           selectedSeat,
           selectedFoods,
           resultEmail,
-          "1",
+          userCurrent.id,
           selectedPaymentMethod.id
         );
         if (res?.status === 200) {
@@ -141,7 +148,7 @@ const BookingPage = () => {
           selectedSeat,
           selectedFoods,
           resultEmail,
-          "1"
+          userCurrent.id
         );
         console.log("resVnPay: ", resVnPay);
         if (resVnPay?.status === 200) {

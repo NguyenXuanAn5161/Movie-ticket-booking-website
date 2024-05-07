@@ -310,7 +310,7 @@ const PromotionShow = () => {
           <Table
             scroll={{
               x: "100%",
-              y: 200,
+              y: 400,
             }}
             title={renderHeader}
             bordered

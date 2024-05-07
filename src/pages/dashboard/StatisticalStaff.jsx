@@ -1,6 +1,6 @@
 import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
-import SimpleBarChart from "../../components/Charts/BarChart";
+import { useSelector } from "react-redux";
 import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { callGetRevenueByStaff } from "../../services/Statistical";
@@ -10,13 +10,18 @@ import { getFirstAndLastDayOfMonth } from "../../utils/date";
 import { StatisticByUser } from "./RevenueDb";
 
 const StatisticalStaff = () => {
+  const userCurrent = useSelector((state) => state.account.user);
+
   const [listData, setListData] = useState([]);
+  const [listDataFull, setListDataFull] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
-  const [sortQuery, setSortQuery] = useState("ASC");
+  const [sortQuery, setSortQuery] = useState("DESC");
+  const [sortType, setSortType] = useState("total");
+
   const [dateRanger, setDateRanger] = useState({
     startDate: "",
     endDate: "",
@@ -30,7 +35,7 @@ const StatisticalStaff = () => {
 
   useEffect(() => {
     revenueByUser();
-  }, [current, pageSize, filter, sortQuery, dateRanger]);
+  }, [current, pageSize, filter, sortQuery, dateRanger, sortType]);
 
   // khi thay doi current va pageSize thi search died!
   const revenueByUser = async () => {
@@ -61,6 +66,10 @@ const StatisticalStaff = () => {
       query += `&sortDirection=${sortQuery}`;
     }
 
+    if (sortType) {
+      query += `&sortType=${sortType}`;
+    }
+
     // thay đổi #1 api call
     const res = await callGetRevenueByStaff(query);
     console.log("res", res);
@@ -69,17 +78,24 @@ const StatisticalStaff = () => {
       setTotal(res.totalElements);
     }
 
+    // dùng query ở trên nhưng thay đổi size thành 5000 để lấy hết dữ liệu
+    const queryFull = query.replace("size=10", "size=10000");
+    const resFull = await callGetRevenueByStaff(queryFull);
+    if (res?.content) {
+      setListDataFull(resFull.content);
+    }
+
     setIsLoading(false);
   };
 
   const columns = [
     createColumn("Mã nhân viên", "code"),
-    createColumn("Tên nhân viên", "name"),
+    createColumn("Tên nhân viên", "name", null, true),
     createColumn("Email", "email"),
     createColumn("Phone", "phone"),
     createColumn("Tổng hóa đơn", "totalInvoice"),
     createColumn("Tổng vé", "totalTicket"),
-    createColumn("Tổng doanh thu", "totalRevenue", 150, false, renderCurrency),
+    createColumn("Tổng doanh thu", "totalRevenue", 160, true, renderCurrency),
   ];
 
   const handleReload = () => {
@@ -94,7 +110,13 @@ const StatisticalStaff = () => {
   ];
 
   const handleExportData = () => {
-    StatisticByUser(listData, dateRanger, user, "staff");
+    StatisticByUser(
+      listDataFull,
+      dateRanger,
+      user,
+      "staff",
+      userCurrent?.username
+    );
   };
 
   const renderHeader = () => (
@@ -103,7 +125,7 @@ const StatisticalStaff = () => {
       filter={filter}
       setFilter={setFilter}
       handleSearch={handleSearch}
-      headerTitle={"Doanh thu theo nhân viên"}
+      headerTitle={"Doanh số bán hàng theo nhân viên"}
       itemSearch={itemSearch}
       handleExportData={handleExportData}
     />
@@ -141,6 +163,15 @@ const StatisticalStaff = () => {
       setPageSize(pagination.pageSize);
       setCurrent(1);
     }
+
+    if (sorter) {
+      if (sorter.order === "ascend") {
+        setSortQuery("ASC");
+      } else if (sorter.order === "descend") {
+        setSortQuery("DESC");
+      }
+      setSortType(sorter.field === "name" ? "name" : "total");
+    }
   };
 
   return (
@@ -149,7 +180,7 @@ const StatisticalStaff = () => {
         <Table
           scroll={{
             x: "100%",
-            y: "100%",
+            y: "64vh",
           }}
           style={{ width: "100%", height: "100%" }}
           title={renderHeader}
@@ -174,7 +205,6 @@ const StatisticalStaff = () => {
           }}
         />
       </Col>
-      <SimpleBarChart data={listData} />
     </Row>
   );
 };

@@ -186,7 +186,7 @@ const PromotionList = () => {
           <Table
             scroll={{
               x: "100%",
-              y: 280,
+              y: "64vh",
             }}
             title={renderHeader}
             bordered
