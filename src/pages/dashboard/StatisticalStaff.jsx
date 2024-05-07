@@ -108,7 +108,7 @@ const StatisticalStaff = () => {
       filter={filter}
       setFilter={setFilter}
       handleSearch={handleSearch}
-      headerTitle={"Doanh thu theo nhân viên"}
+      headerTitle={"Doanh số bán hàng theo nhân viên"}
       itemSearch={itemSearch}
       handleExportData={handleExportData}
     />
