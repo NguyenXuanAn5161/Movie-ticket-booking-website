@@ -10,6 +10,7 @@ import { StatisticByUser } from "./RevenueDb";
 
 const StatisticalStaff = () => {
   const [listData, setListData] = useState([]);
+  const [listDataFull, setListDataFull] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
@@ -74,6 +75,13 @@ const StatisticalStaff = () => {
       setTotal(res.totalElements);
     }
 
+    // dùng query ở trên nhưng thay đổi size thành 5000 để lấy hết dữ liệu
+    const queryFull = query.replace("size=10", "size=10000");
+    const resFull = await callGetRevenueByStaff(queryFull);
+    if (res?.content) {
+      setListDataFull(resFull.content);
+    }
+
     setIsLoading(false);
   };
 
@@ -99,7 +107,7 @@ const StatisticalStaff = () => {
   ];
 
   const handleExportData = () => {
-    StatisticByUser(listData, dateRanger, user, "staff");
+    StatisticByUser(listDataFull, dateRanger, user, "staff");
   };
 
   const renderHeader = () => (

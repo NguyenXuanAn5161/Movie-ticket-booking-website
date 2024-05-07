@@ -11,6 +11,7 @@ import { StatisticByCinema } from "./RevenueDb";
 
 const StatisticalCinema = () => {
   const [listData, setListData] = useState([]);
+  const [listFullData, setListDataFull] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
@@ -83,6 +84,13 @@ const StatisticalCinema = () => {
       setTotal(res.totalElements);
     }
 
+    // dùng query ở trên nhưng thay đổi size thành 5000 để lấy hết dữ liệu
+    const queryFull = query.replace("size=10", "size=10000");
+    const resFull = await callGetRevenueByCinema(queryFull);
+    if (res?.content) {
+      setListDataFull(resFull.content);
+    }
+
     setIsLoading(false);
   };
 
@@ -106,7 +114,7 @@ const StatisticalCinema = () => {
   ];
 
   const handleExportData = () => {
-    StatisticByCinema(listData, dateRanger, cinema);
+    StatisticByCinema(listFullData, dateRanger, cinema);
   };
 
   const renderHeader = () => (

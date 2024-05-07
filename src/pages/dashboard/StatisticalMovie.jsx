@@ -11,6 +11,7 @@ import { StatisticByMovie } from "./RevenueDb";
 
 const StatisticalMovie = () => {
   const [listData, setListData] = useState([]);
+  const [listDataFull, setListDataFull] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
@@ -85,6 +86,13 @@ const StatisticalMovie = () => {
       setTotal(res.totalElements);
     }
 
+    // dùng query ở trên nhưng thay đổi size thành 5000 để lấy hết dữ liệu
+    const queryFull = query.replace("size=10", "size=10000");
+    const resFull = await callGetRevenueByMovie(queryFull);
+    if (res?.content) {
+      setListDataFull(resFull.content);
+    }
+
     setIsLoading(false);
   };
 
@@ -108,7 +116,7 @@ const StatisticalMovie = () => {
   ];
 
   const handleExportData = () => {
-    StatisticByMovie(listData, dateRanger, movie);
+    StatisticByMovie(listDataFull, dateRanger, movie);
   };
 
   const renderHeader = () => (

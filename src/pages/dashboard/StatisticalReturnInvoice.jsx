@@ -13,6 +13,7 @@ import { StatisticByReturnInvoice } from "./RevenueDb";
 
 const StatisticalReturnInvoice = () => {
   const [listData, setListData] = useState([]);
+  const [listDataFull, setListDataFull] = useState([]);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
@@ -72,6 +73,13 @@ const StatisticalReturnInvoice = () => {
       setTotal(res.totalElements);
     }
 
+    // dùng query ở trên nhưng thay đổi size thành 5000 để lấy hết dữ liệu
+    const queryFull = query.replace("size=10", "size=10000");
+    const resFull = await callGetRevenueByInvoiceCancel(queryFull);
+    if (res?.content) {
+      setListDataFull(resFull.content);
+    }
+
     setIsLoading(false);
   };
 
@@ -98,7 +106,7 @@ const StatisticalReturnInvoice = () => {
   ];
 
   const handleExportData = () => {
-    StatisticByReturnInvoice(listData, dateRanger, invoiceDetail);
+    StatisticByReturnInvoice(listDataFull, dateRanger, invoiceDetail);
   };
 
   const renderHeader = () => (
