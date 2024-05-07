@@ -488,152 +488,136 @@ export const StatisticByReturnInvoice = (
   userCurrent
 ) => {
   console.log("Export data", listData, dateRanger);
+  if (listData.length === 0) return;
 
-  if (listData.length > 0) {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Thống kê trả vé");
+  const { workbook, worksheet } = createWorkbook("Thống kê trả vé");
 
-    // Tùy chỉnh bảng
-    worksheet.properties.defaultRowHeight = 20;
-    worksheet.properties.defaultColWidth = 25;
+  // Tạo một hàng mới cho tiêu đề
+  const titleCount = 5;
+  crateTitleRow(titleCount, worksheet, "BẢNG KÊ CHI TIẾT TRẢ VÉ");
 
-    // Tạo một hàng mới cho tiêu đề
-    const titleRow = worksheet.addRow([]);
+  const filterRow = worksheet.addRow([]);
+  const timeRow = worksheet.addRow([]);
+  const authorRow = worksheet.addRow([]);
 
-    // Thêm tiêu đề vào hàng tiêu đề
-    const titleCell = titleRow.getCell(1);
-    titleCell.value = "BẢNG KÊ CHI TIẾT TRẢ VÉ"; // Tiêu đề
+  // filter xuất báo cáo
+  const filterCell = filterRow.getCell(1);
+  filterCell.value = `Từ ngày ${moment(dateRanger.startDate).format(
+    FORMAT_DATE
+  )} - Đến ngày ${moment(dateRanger.endDate).format(FORMAT_DATE)}`;
+  filterCell.font = {
+    size: 10,
+    name: "Times New Roman",
+    italic: true,
+  };
 
-    // Merge các ô từ tiêu đề đến ô cuối cùng của tiêu đề
-    const titleCount = 5;
-    const mergeEndCell = worksheet.getCell(getColumnLetter(titleCount) + "1");
-    worksheet.mergeCells("A1:" + mergeEndCell.address);
-    titleCell.alignment = { horizontal: "center", vertical: "middle" };
-    titleCell.font = { bold: true, size: 11, name: "Times New Roman" };
-    // Thiết lập chiều cao của hàng tiêu đề
-    titleRow.height = 30;
+  // Thời gian xuất báo cáo
+  const currentTime = new Date();
+  const formattedTime = moment(currentTime).format(FORMAT_DATE_HH_MM_SS);
 
-    const filterRow = worksheet.addRow([]);
-    const timeRow = worksheet.addRow([]);
-    const authorRow = worksheet.addRow([]);
+  // Ghi thời gian xuất vào hàng thời gian
+  const timeCell = timeRow.getCell(1);
+  timeCell.value = `Thời gian xuất báo cáo: ${formattedTime}`;
+  timeCell.font = { italic: true, size: 10, name: "Times New Roman" };
 
-    // filter xuất báo cáo
-    const filterCell = filterRow.getCell(1);
-    filterCell.value = `Từ ngày ${moment(dateRanger.startDate).format(
-      FORMAT_DATE
-    )} - Đến ngày ${moment(dateRanger.endDate).format(FORMAT_DATE)}`;
-    filterCell.font = {
-      size: 10,
-      name: "Times New Roman",
-      italic: true,
-    }; // Thiết lập font chữ cho thời gian
+  // Người xuất báo cáo (tạm thời để trống)
+  const authorCell = authorRow.getCell(1);
+  authorCell.value = `Người xuất: ${userCurrent}`;
+  authorCell.font = { italic: true, size: 10, name: "Times New Roman" };
 
-    // Thời gian xuất báo cáo
-    const currentTime = new Date();
-    const formattedTime = moment(currentTime).format(FORMAT_DATE_HH_MM_SS);
+  // Thêm một hàng mới cho header row
+  const headerRow = worksheet.addRow([]);
 
-    // Ghi thời gian xuất vào hàng thời gian
-    const timeCell = timeRow.getCell(1);
-    timeCell.value = `Thời gian xuất báo cáo: ${formattedTime}`;
-    timeCell.font = { italic: true, size: 10, name: "Times New Roman" }; // Thiết lập font chữ cho thời gian
+  // Thêm header vào hàng header
+  const headerValues = [
+    "STT",
+    "Hóa đơn mua",
+    "Ngày mua",
+    "Hóa đơn trả",
+    "Ngày trả",
+    "Số vé trả",
+    "Doanh thu",
+  ];
 
-    // Người xuất báo cáo (tạm thời để trống)
-    const authorCell = authorRow.getCell(1);
-    authorCell.value = `Người xuất: ${userCurrent}`;
-    authorCell.font = { italic: true, size: 10, name: "Times New Roman" }; // Thiết lập font chữ cho người xuất
+  headerValues.forEach((header) => {
+    const cell = headerRow.getCell(headerRow.cellCount + 1);
+    cell.value = header;
 
-    // Thêm một hàng mới cho header row
-    const headerRow = worksheet.addRow([]);
+    // Đặt màu nền và in đậm cho các ô trong header row
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "DDEBF7" }, // Màu nền #DDEBF7
+    };
+    cell.font = { bold: true, size: 10, name: "Times New Roman" }; // Thiết lập font chữ cho tiêu đề
+    cell.border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+  });
 
-    // Thêm header vào hàng header
-    const headerValues = [
-      "STT",
-      "Hóa đơn mua",
-      "Ngày mua",
-      "Hóa đơn trả",
-      "Ngày trả",
-      "Số vé trả",
-      "Doanh thu",
+  // Thêm dữ liệu từ listData vào worksheet
+  const tableData = listData.map((data, index) => {
+    return [
+      index + 1,
+      data.invoiceCode,
+      moment(data.invoiceDate).format(FORMAT_DATE),
+      data.code,
+      moment(data.cancelDate).format(FORMAT_DATE),
+      data.quantity,
+      data.total,
     ];
+  });
 
-    headerValues.forEach((header) => {
-      const cell = headerRow.getCell(headerRow.cellCount + 1);
-      cell.value = header;
+  tableData.forEach((rowData) => {
+    // Thêm dòng mới vào bảng
+    const row = worksheet.addRow(rowData);
 
-      // Đặt màu nền và in đậm cho các ô trong header row
-      cell.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "DDEBF7" }, // Màu nền #DDEBF7
-      };
-      cell.font = { bold: true, size: 10, name: "Times New Roman" }; // Thiết lập font chữ cho tiêu đề
-      cell.border = {
-        top: { style: "thin" },
-        left: { style: "thin" },
-        bottom: { style: "thin" },
-        right: { style: "thin" },
-      };
+    // Thiết lập wrap text cho dòng dữ liệu
+    row.alignment = {
+      wrapText: true,
+      vertical: "distributed",
+    };
+
+    // Duyệt qua từng ô trong hàng dữ liệu và đặt border cho các ô có nội dung
+    row.eachCell((cell) => {
+      if (cell.value) {
+        cell.font = { size: 11, name: "Times New Roman" };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+      }
     });
 
-    // Thêm dữ liệu từ listData vào worksheet
-    listData.forEach((data, index) => {
-      const rowData = [
-        index + 1,
-        data.invoiceCode,
-        moment(data.invoiceDate).format(FORMAT_DATE),
-        data.code,
-        moment(data.cancelDate).format(FORMAT_DATE),
-        data.quantity,
-        data.total, // Giữ hai số sau dấu phẩy cho tổng doanh thu
-      ];
+    worksheet.getColumn(8).numFmt = "#,##0.00"; // Định dạng số cho cột "Tổng doanh thu"
+  });
 
-      // Thêm dòng mới vào bảng
-      const row = worksheet.addRow(rowData);
+  // chỉnh sửa column width cho từng cột trong tableData
+  fixWidthColumn(worksheet, tableData, headerValues);
 
-      // Thiết lập wrap text cho dòng dữ liệu
-      row.alignment = {
-        wrapText: true,
-        vertical: "distributed",
-        horizontal: "left",
-      };
+  // Thêm dòng tổng cộng
+  const totalRow = worksheet.addRow([]);
+  totalRow.getCell(1).value = "Tổng cộng";
 
-      // Duyệt qua từng ô trong hàng dữ liệu và đặt border cho các ô có nội dung
-      row.eachCell((cell) => {
-        if (cell.value) {
-          cell.font = { size: 11, name: "Times New Roman" };
-          cell.border = {
-            top: { style: "thin" },
-            left: { style: "thin" },
-            bottom: { style: "thin" },
-            right: { style: "thin" },
-          };
-        }
-      });
+  // Tính tổng của các cột tương ứng
+  const total = listData.reduce((acc, curr) => acc + curr.total, 0);
 
-      worksheet.getColumn(7).width = 30;
-      worksheet.getColumn(7).numFmt = "#,##0.00"; // Định dạng số cho cột "Tổng doanh thu"
-    });
+  // Ghi các giá trị tổng vào hàng tổng cộng
+  totalRow.getCell(7).value = total;
 
-    // Thêm dòng tổng cộng
-    const totalRow = worksheet.addRow([]);
-    totalRow.getCell(1).value = "Tổng cộng";
+  // Định dạng font và size cho hàng tổng cộng
+  totalRow.eachCell((cell) => {
+    cell.font = { bold: true, size: 11, name: "Times New Roman" };
+  });
 
-    // Tính tổng của các cột tương ứng
-    const total = listData.reduce((acc, curr) => acc + curr.total, 0);
+  worksheet.getColumn(7).numFmt = "#,##0.00"; // Định dạng số cho cột "Tổng doanh thu"
 
-    // Ghi các giá trị tổng vào hàng tổng cộng
-    totalRow.getCell(7).value = total;
-
-    // Định dạng font và size cho hàng tổng cộng
-    totalRow.eachCell((cell) => {
-      cell.font = { bold: true, size: 11, name: "Times New Roman" };
-    });
-
-    worksheet.getColumn(7).width = 30;
-    worksheet.getColumn(7).numFmt = "#,##0.00"; // Định dạng số cho cột "Tổng doanh thu"
-
-    exportExcel(workbook, "ExportRevenueByReturnInvoice.xlsx");
-  }
+  exportExcel(workbook, "ExportRevenueByReturnInvoice.xlsx");
 };
 
 // Hàm để chuyển đổi số cột thành chữ cái tương ứng
