@@ -16,7 +16,7 @@ const StatisticalMovie = () => {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
-  const [sortQuery, setSortQuery] = useState("ASC");
+  const [sortQuery, setSortQuery] = useState("DESC");
   const [sortType, setSortType] = useState("total");
   const [movies, setMovies] = useState([]);
   const [dateRanger, setDateRanger] = useState({
@@ -89,10 +89,11 @@ const StatisticalMovie = () => {
   };
 
   const columns = [
-    createColumn("Tên phim", "name"),
-    createColumn("Tổng hóa đơn", "totalInvoice"),
-    createColumn("Tổng vé", "totalTicket"),
-    createColumn("Tổng doanh thu", "totalRevenue", 150, false, renderCurrency),
+    createColumn("Mã phim", "code", 150),
+    createColumn("Tên phim", "name", 320, true),
+    createColumn("Tổng hóa đơn", "totalInvoice", 100),
+    createColumn("Tổng vé", "totalTicket", 85),
+    createColumn("Tổng doanh thu", "totalRevenue", 150, true, renderCurrency),
   ];
 
   const handleReload = () => {
@@ -153,6 +154,15 @@ const StatisticalMovie = () => {
     if (pagination && pagination.pageSize !== pageSize) {
       setPageSize(pagination.pageSize);
       setCurrent(1);
+    }
+
+    if (sorter) {
+      if (sorter.order === "ascend") {
+        setSortQuery("ASC");
+      } else if (sorter.order === "descend") {
+        setSortQuery("DESC");
+      }
+      setSortType(sorter.field === "name" ? "name" : "total");
     }
   };
 

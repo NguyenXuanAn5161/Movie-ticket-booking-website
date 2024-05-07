@@ -1,6 +1,9 @@
 import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
-import { renderDate } from "../../components/FunctionRender/FunctionRender";
+import {
+  renderCurrency,
+  renderDate,
+} from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { callGetRevenueByInvoiceCancel } from "../../services/Statistical";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
@@ -15,7 +18,7 @@ const StatisticalReturnInvoice = () => {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
-  const [sortQuery, setSortQuery] = useState("ASC");
+  const [sortQuery, setSortQuery] = useState("DESC");
   const [sortType, setSortType] = useState("total");
   const [dateRanger, setDateRanger] = useState({
     startDate: "",
@@ -73,11 +76,12 @@ const StatisticalReturnInvoice = () => {
   };
 
   const columns = [
-    createColumn("Mã hóa đơn hủy", "code"),
-    createColumn("Mã hóa đơn", "invoiceCode"),
-    createColumn("Mã khách hàng", "userCode"),
-    createColumn("Tên khách hàng", "userName"),
+    createColumn("Mã hóa đơn hủy", "code", 150),
+    createColumn("Mã hóa đơn", "invoiceCode", 150),
+    createColumn("Mã khách hàng", "userCode", 150),
+    createColumn("Tên khách hàng", "userName", 150, true),
     createColumn("Lý do hủy", "reason"),
+    createColumn("Tổng tiền", "total", 150, true, renderCurrency),
     createColumn("Ngày hủy", "cancelDate", 150, true, renderDate),
   ];
 
@@ -139,6 +143,15 @@ const StatisticalReturnInvoice = () => {
     if (pagination && pagination.pageSize !== pageSize) {
       setPageSize(pagination.pageSize);
       setCurrent(1);
+    }
+    console.log("sorter", sorter);
+    if (sorter) {
+      if (sorter.order === "ascend") {
+        setSortQuery("ASC");
+      } else if (sorter.order === "descend") {
+        setSortQuery("DESC");
+      }
+      setSortType(sorter.field === "cancelDate" ? "date" : "total");
     }
   };
 
