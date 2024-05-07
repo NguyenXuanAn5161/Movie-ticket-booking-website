@@ -53,12 +53,14 @@ import StatisticalMovie from "./pages/dashboard/statisticalMovie";
 import LoginPage from "./pages/login";
 import OrderList from "./pages/order/List";
 import OrderShow from "./pages/order/Show";
+import ReturnInvoiceList from "./pages/orderReturn/List";
+import ReturnInvoiceShow from "./pages/orderReturn/Show";
 import { doGetAccountAction } from "./redux/account/accountSlice";
 import "./styles/reset.scss";
 
 export default function App() {
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state) => state.account.isAuthenticated);
+  // const isAuthenticated = useSelector((state) => state.account.isAuthenticated);
   const isLoading = useSelector((state) => state.account.isLoading);
 
   const getAccount = async () => {
@@ -148,6 +150,14 @@ export default function App() {
         {
           path: "order/show/:orderId",
           element: <OrderShow />,
+        },
+        {
+          path: "returnInvoice",
+          element: <ReturnInvoiceList />,
+        },
+        {
+          path: "returnInvoice/show/:returnInvoiceId",
+          element: <ReturnInvoiceShow />,
         },
         // Người dùng
         {

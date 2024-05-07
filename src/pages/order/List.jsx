@@ -1,7 +1,6 @@
 import { Col, Row, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ActionButtons from "../../components/Button/ActionButtons";
 import {
@@ -10,7 +9,6 @@ import {
   renderStatus,
 } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
-import { doSetUser } from "../../redux/account/userSlice";
 import { callGetAllOrder } from "../../services/apiOder";
 import { createColumn } from "../../utils/createColumn";
 import ModalCancel from "./ModalCancel";
@@ -60,11 +58,8 @@ const OrderList = () => {
     setInvoiceId(invoiceId);
   };
 
-  const dispatch = useDispatch();
-
-  const handleView = (user, url) => {
-    dispatch(doSetUser(user));
-    navigate(`${url}/${user.id}`);
+  const handleView = (data, url) => {
+    navigate(`${url}/${data.id}`);
   };
 
   const columns = [
@@ -164,7 +159,7 @@ const OrderList = () => {
           <Table
             scroll={{
               x: "100%",
-              y: 280,
+              y: "64vh",
             }}
             title={renderHeader}
             bordered

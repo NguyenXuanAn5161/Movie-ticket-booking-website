@@ -113,6 +113,11 @@ const LayoutAdmin = () => {
           "order",
           <DollarCircleOutlined />
         ),
+        getItem(
+          <Link to="/admin/returnInvoice">Quản lý hoá đơn trả</Link>,
+          "returnInvoice",
+          <DollarCircleOutlined />
+        ),
         // getItem("Quản lý người dùng", "manageUser", <UserOutlined />, [
         getItem(
           <Link to="/admin/user">Quản lý người dùng</Link>,
