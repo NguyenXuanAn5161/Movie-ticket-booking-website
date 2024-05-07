@@ -8,7 +8,7 @@ const getStatusMap = (type) => {
     case "payment":
       return {
         true: { color: "success", label: "Đã thanh toán" },
-        false: { color: "error", label: "Chưa thanh toán" },
+        false: { color: "default", label: "Đã hủy" },
       };
     case "movie":
       return {
@@ -64,7 +64,7 @@ export const renderCurrency = (text, record) => {
           currency: "VND",
         }).format(text ?? 0)
       ) : (
-        <span style={{ color: "red", fontWeight: "700" }}>Chưa tạo giá</span>
+        <span style={{ color: "red", fontWeight: "700" }}>Chưa có giá</span>
       )}
     </span>
   );
