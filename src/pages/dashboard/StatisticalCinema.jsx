@@ -1,5 +1,6 @@
 import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { callGetRevenueByCinema } from "../../services/Statistical";
@@ -10,6 +11,8 @@ import { getFirstAndLastDayOfMonth } from "../../utils/date";
 import { StatisticByCinema } from "./RevenueDb";
 
 const StatisticalCinema = () => {
+  const user = useSelector((state) => state.account.user);
+
   const [listData, setListData] = useState([]);
   const [listFullData, setListDataFull] = useState([]);
   const [current, setCurrent] = useState(1);
@@ -114,7 +117,7 @@ const StatisticalCinema = () => {
   ];
 
   const handleExportData = () => {
-    StatisticByCinema(listFullData, dateRanger, cinema);
+    StatisticByCinema(listFullData, dateRanger, cinema, user?.username);
   };
 
   const renderHeader = () => (

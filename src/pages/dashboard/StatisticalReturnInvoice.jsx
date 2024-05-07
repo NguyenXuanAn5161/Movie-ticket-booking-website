@@ -1,5 +1,6 @@
 import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   renderCurrency,
   renderDate,
@@ -12,6 +13,8 @@ import { getFirstAndLastDayOfMonth } from "../../utils/date";
 import { StatisticByReturnInvoice } from "./RevenueDb";
 
 const StatisticalReturnInvoice = () => {
+  const user = useSelector((state) => state.account.user);
+
   const [listData, setListData] = useState([]);
   const [listDataFull, setListDataFull] = useState([]);
   const [current, setCurrent] = useState(1);
@@ -106,7 +109,12 @@ const StatisticalReturnInvoice = () => {
   ];
 
   const handleExportData = () => {
-    StatisticByReturnInvoice(listDataFull, dateRanger, invoiceDetail);
+    StatisticByReturnInvoice(
+      listDataFull,
+      dateRanger,
+      invoiceDetail,
+      user?.username
+    );
   };
 
   const renderHeader = () => (

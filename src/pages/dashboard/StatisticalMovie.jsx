@@ -1,5 +1,6 @@
 import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { renderCurrency } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { callGetRevenueByMovie } from "../../services/Statistical";
@@ -10,6 +11,8 @@ import { getFirstAndLastDayOfMonth } from "../../utils/date";
 import { StatisticByMovie } from "./RevenueDb";
 
 const StatisticalMovie = () => {
+  const user = useSelector((state) => state.account.user);
+
   const [listData, setListData] = useState([]);
   const [listDataFull, setListDataFull] = useState([]);
   const [current, setCurrent] = useState(1);
@@ -116,7 +119,7 @@ const StatisticalMovie = () => {
   ];
 
   const handleExportData = () => {
-    StatisticByMovie(listDataFull, dateRanger, movie);
+    StatisticByMovie(listDataFull, dateRanger, movie, user?.username);
   };
 
   const renderHeader = () => (

@@ -2,7 +2,12 @@ import ExcelJS from "exceljs";
 import moment from "moment";
 import { FORMAT_DATE, FORMAT_DATE_HH_MM_SS } from "../../utils/constant";
 
-export const StatisticByCinema = (listData, dateRanger, cinema) => {
+export const StatisticByCinema = (
+  listData,
+  dateRanger,
+  cinema,
+  userCurrent
+) => {
   console.log("Export data", listData, dateRanger);
   if (listData.length === 0) return;
 
@@ -45,7 +50,7 @@ export const StatisticByCinema = (listData, dateRanger, cinema) => {
 
   // Người xuất báo cáo (tạm thời để trống)
   const authorCell = authorRow.getCell(1);
-  authorCell.value = "Người xuất: "; // Tạm thời để trống
+  authorCell.value = `Người xuất: ${userCurrent}`; // Tạm thời để trống
   authorCell.font = { italic: true, size: 10, name: "Times New Roman" }; // Thiết lập font chữ cho người xuất
 
   // Thêm một hàng mới cho header row
@@ -152,7 +157,13 @@ export const StatisticByCinema = (listData, dateRanger, cinema) => {
   exportExcel(workbook, "ExportRevenueByCinema.xlsx");
 };
 
-export const StatisticByUser = (listData, dateRanger, user, type = null) => {
+export const StatisticByUser = (
+  listData,
+  dateRanger,
+  user,
+  type = null,
+  userCurrent
+) => {
   console.log("Export data", listData, dateRanger);
 
   if (listData.length > 0) {
@@ -207,7 +218,7 @@ export const StatisticByUser = (listData, dateRanger, user, type = null) => {
 
     // Người xuất báo cáo (tạm thời để trống)
     const authorCell = authorRow.getCell(1);
-    authorCell.value = "Người xuất: "; // Tạm thời để trống
+    authorCell.value = `Người xuất: ${userCurrent}`;
     authorCell.font = { italic: true, size: 10, name: "Times New Roman" }; // Thiết lập font chữ cho người xuất
 
     // Thêm một hàng mới cho header row
@@ -323,7 +334,7 @@ export const StatisticByUser = (listData, dateRanger, user, type = null) => {
   }
 };
 
-export const StatisticByMovie = (listData, dateRanger, movie) => {
+export const StatisticByMovie = (listData, dateRanger, movie, userCurrent) => {
   console.log("Export data", listData, dateRanger);
 
   if (listData.length === 0) return;
@@ -368,7 +379,7 @@ export const StatisticByMovie = (listData, dateRanger, movie) => {
 
   // Người xuất báo cáo (tạm thời để trống)
   const authorCell = authorRow.getCell(1);
-  authorCell.value = "Người xuất: "; // Tạm thời để trống
+  authorCell.value = `Người xuất: ${userCurrent}`;
   authorCell.font = { italic: true, size: 10, name: "Times New Roman" };
 
   // Thêm một hàng mới cho header row
@@ -473,7 +484,8 @@ export const StatisticByMovie = (listData, dateRanger, movie) => {
 export const StatisticByReturnInvoice = (
   listData,
   dateRanger,
-  invoiceDetail
+  invoiceDetail,
+  userCurrent
 ) => {
   console.log("Export data", listData, dateRanger);
 
@@ -527,7 +539,7 @@ export const StatisticByReturnInvoice = (
 
     // Người xuất báo cáo (tạm thời để trống)
     const authorCell = authorRow.getCell(1);
-    authorCell.value = "Người xuất: "; // Tạm thời để trống
+    authorCell.value = `Người xuất: ${userCurrent}`;
     authorCell.font = { italic: true, size: 10, name: "Times New Roman" }; // Thiết lập font chữ cho người xuất
 
     // Thêm một hàng mới cho header row
