@@ -1,6 +1,7 @@
 import {
   AppstoreOutlined,
   DollarCircleOutlined,
+  HeartTwoTone,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   TeamOutlined,
@@ -21,13 +22,14 @@ import { RiMovie2Line } from "react-icons/ri";
 import { TbDiscount2 } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import avatarDefault from "../../assets/logo/avatarDefault.png";
 import { doLogoutAction } from "../../redux/account/accountSlice";
 import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
 import Home from "../Home";
 import LogoApp from "../LogoApp/LogoApp";
 import "./layout.scss";
 
-const { Content, Footer, Sider } = Layout;
+const { Content, Footer, Sider, Header } = Layout;
 
 // hàm tạo 1 mục menu
 const getItem = (label, key, icon, children, type) => {
@@ -240,12 +242,8 @@ const LayoutAdmin = () => {
     }
   };
 
-  const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${
-    user?.avatar
-  }`;
-
   return (
-    <Layout style={{ minHeight: "100vh" }} className="layout-admin">
+    <Layout hasSider>
       <Sider
         breakpoint="lg"
         collapsedWidth="50"
@@ -292,34 +290,31 @@ const LayoutAdmin = () => {
           }}
         />
       </Sider>
-      <Layout style={{ backgroundColor: "white" }}>
-        <div className="admin-header">
-          <span>
-            {React.createElement(
-              collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-              {
-                className: "trigger",
-                onClick: () => setCollapsed(!collapsed),
-              }
-            )}
-          </span>
-          <Space>
-            <Avatar src={urlAvatar} />
-            {user?.fullName}
-          </Space>
-        </div>
-        <Content
-          style={{
-            backgroundColor: "#F5F5F5",
-            padding: 10,
-          }}
-        >
+      <Layout>
+        <Header style={{ backgroundColor: "white" }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>
+              {React.createElement(
+                collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
+                {
+                  className: "trigger",
+                  onClick: () => setCollapsed(!collapsed),
+                }
+              )}
+            </span>
+            <Space>
+              <Avatar src={user?.avatar || avatarDefault} />
+              {user?.username}
+            </Space>
+          </div>
+        </Header>
+        <Content style={{ backgroundColor: "#F5F5F5", padding: 10 }}>
           {currentPath === "/admin" ? <Home /> : <CustomBreadcrumb />}
           <Outlet />
         </Content>
-        {/* <Footer style={{ padding: 0 }}>
-          &copy; {new Date().getFullYear()} Made with <HeartTwoTone />
-        </Footer> */}
+        <Footer style={{ padding: 0, textAlign: "center" }}>
+          &copy; {new Date().getFullYear()} Infinity Cinema <HeartTwoTone />
+        </Footer>
       </Layout>
     </Layout>
   );
