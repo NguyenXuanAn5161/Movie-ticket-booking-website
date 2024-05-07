@@ -90,10 +90,10 @@ const StatisticalReturnInvoice = () => {
     createColumn("Mã hóa đơn hủy", "code", 150),
     createColumn("Mã hóa đơn", "invoiceCode", 150),
     createColumn("Mã khách hàng", "userCode", 150),
-    createColumn("Tên khách hàng", "userName", 150, true),
+    createColumn("Tên khách hàng", "userName", 150),
     createColumn("Lý do hủy", "reason"),
-    createColumn("Tổng tiền", "total", 150, true, renderCurrency),
     createColumn("Ngày hủy", "cancelDate", 150, true, renderDate),
+    createColumn("Tổng tiền", "total", 150, true, renderCurrency),
   ];
 
   const handleReload = () => {
