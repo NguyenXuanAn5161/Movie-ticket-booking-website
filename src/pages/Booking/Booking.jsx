@@ -118,7 +118,7 @@ const BookingPage = () => {
           selectedSeat,
           selectedFoods,
           resultEmail,
-          "1",
+          "2",
           selectedPaymentMethod.id
         );
         if (res?.status === 200) {

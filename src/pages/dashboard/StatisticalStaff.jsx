@@ -15,7 +15,7 @@ const StatisticalStaff = () => {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
-  const [sortQuery, setSortQuery] = useState("ASC");
+  const [sortQuery, setSortQuery] = useState("DESC");
   const [sortType, setSortType] = useState("total");
 
   const [dateRanger, setDateRanger] = useState({
@@ -31,7 +31,7 @@ const StatisticalStaff = () => {
 
   useEffect(() => {
     revenueByUser();
-  }, [current, pageSize, filter, sortQuery, dateRanger]);
+  }, [current, pageSize, filter, sortQuery, dateRanger, sortType]);
 
   // khi thay doi current va pageSize thi search died!
   const revenueByUser = async () => {
@@ -79,12 +79,12 @@ const StatisticalStaff = () => {
 
   const columns = [
     createColumn("Mã nhân viên", "code"),
-    createColumn("Tên nhân viên", "name"),
+    createColumn("Tên nhân viên", "name", null, true),
     createColumn("Email", "email"),
     createColumn("Phone", "phone"),
     createColumn("Tổng hóa đơn", "totalInvoice"),
     createColumn("Tổng vé", "totalTicket"),
-    createColumn("Tổng doanh thu", "totalRevenue", 150, false, renderCurrency),
+    createColumn("Tổng doanh thu", "totalRevenue", 160, true, renderCurrency),
   ];
 
   const handleReload = () => {
@@ -145,6 +145,15 @@ const StatisticalStaff = () => {
     if (pagination && pagination.pageSize !== pageSize) {
       setPageSize(pagination.pageSize);
       setCurrent(1);
+    }
+
+    if (sorter) {
+      if (sorter.order === "ascend") {
+        setSortQuery("ASC");
+      } else if (sorter.order === "descend") {
+        setSortQuery("DESC");
+      }
+      setSortType(sorter.field === "name" ? "name" : "total");
     }
   };
 
