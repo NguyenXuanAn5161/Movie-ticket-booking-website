@@ -10,6 +10,7 @@ import {
   callGetRevenueGrowthByMonth,
   callGetTicketGrowthByMonth,
   callGetTopRevenueCinemaByMonth,
+  callGetTopRevenueMovieByMonth,
   callGetTopRevenueStaffByMonth,
   callGetTopRevenueUserByMonth,
 } from "../../services/Statistical";
@@ -125,7 +126,7 @@ const DashBoardShow = () => {
 
   const fetchTopRevenueMovieByMonth = async () => {
     setIsLoadingTopRevenueMovie(true);
-    const response = await callGetTopRevenueCinemaByMonth();
+    const response = await callGetTopRevenueMovieByMonth();
     if (response.length > 0) {
       setTopRevenueMovie(response);
     }
@@ -275,35 +276,25 @@ const DashBoardShow = () => {
           style={{ cursor: "pointer" }}
           onClick={() => handleDetailStatistical("cinema")}
           bordered={false}
-          // title={renderHeader("Top 5 rạp có doanh thu cao nhất")}
         >
-          {/* <GroupedBarChart data={topRevenueCinema} /> */}
           <GroupedBarChart
-            data={testData}
+            // data={testData}
+            data={topRevenueCinema}
             title={"Top 5 rạp có doanh thu cao nhất"}
           />
         </Card>
       </Col>
       <Col span={12}>
-        <Card
-          onClick={() => handleDetailStatistical("movie")}
-          bordered={false}
-          // title={renderHeader("Top 5 phim có doanh thu cao nhất")}
-        >
-          {/* <GroupedBarChart data={topRevenueMovie} /> */}
+        <Card onClick={() => handleDetailStatistical("movie")} bordered={false}>
           <GroupedBarChart
-            data={topMovie}
+            // data={topMovie}
+            data={topRevenueMovie}
             title={"Top 5 phim có doanh thu cao nhất"}
           />
         </Card>
       </Col>
       <Col span={12}>
-        <Card
-          onClick={() => handleDetailStatistical("user")}
-          bordered={false}
-          // title={renderHeader("Top 5 phim có doanh thu cao nhất")}
-        >
-          {/* <GroupedBarChart data={topRevenueMovie} /> */}
+        <Card onClick={() => handleDetailStatistical("user")} bordered={false}>
           <GroupedBarChart
             data={topRevenueUser}
             title={"Top 5 khách hàng có mức chi tiêu cao nhất"}
@@ -311,15 +302,10 @@ const DashBoardShow = () => {
         </Card>
       </Col>
       <Col span={12}>
-        <Card
-          onClick={() => handleDetailStatistical("staff")}
-          bordered={false}
-          // title={renderHeader("Top 5 phim có doanh thu cao nhất")}
-        >
-          {/* <GroupedBarChart data={topRevenueMovie} /> */}
+        <Card onClick={() => handleDetailStatistical("staff")} bordered={false}>
           <GroupedBarChart
-            // data={topRevenueStaff}
-            data={topStaff}
+            // data={topStaff}
+            data={topRevenueStaff}
             title={"Top 5 nhân viên có doanh số bán cao nhất"}
           />
         </Card>
