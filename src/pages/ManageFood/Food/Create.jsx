@@ -242,6 +242,8 @@ const FoodCreate = () => {
                     message: "Vui lòng nhập chọn hình ảnh!",
                   },
                 ]}
+                getValueFromEvent={normFile}
+                valuePropName="fileList"
               >
                 <Upload
                   name="image"
