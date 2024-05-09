@@ -250,7 +250,6 @@ const FoodCreate = () => {
                   onRemove={(file) => handleRemoveFile(file)}
                   onChange={(info) => normFile(info)}
                   listType="picture-card"
-                  defaultFileList={imageFile}
                 >
                   <div>
                     {loading ? <LoadingOutlined /> : <PlusOutlined />}
