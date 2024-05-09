@@ -6,11 +6,12 @@ import ActionButtons from "../../../components/Button/ActionButtons";
 import {
   renderCurrency,
   renderDate,
-  renderStatus,
+  renderQuantity,
 } from "../../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../../components/TableHeader/TableHeader";
 import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
 import { doSetFood } from "../../../redux/food/foodSlice";
+import { callFetchListCinema } from "../../../services/apiCinema";
 import {
   callDeleteFood,
   callFetchListCategoryFood,
@@ -32,7 +33,24 @@ const FoodList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
-  const [openModalExport, setOpenModalExport] = useState(false);
+
+  // fetch tìm theo rạp
+  const fetchCinemaList = async (cinemaName) => {
+    try {
+      let query = `size=5&name=${cinemaName}`;
+      const res = await callFetchListCinema(query);
+      const cinema = res.content.map((data) => ({
+        label: data.name,
+        value: data.id,
+      }));
+
+      return cinema;
+    } catch (error) {
+      console.error("Error fetching cinema list:", error);
+      // Trả về một mảng trống nếu xảy ra lỗi
+      return [];
+    }
+  };
 
   useEffect(() => {
     fetchFoodCategory();
@@ -66,6 +84,10 @@ const FoodList = () => {
     let query = `page=${current - 1}&size=${pageSize}`;
     if (filter) {
       query += `&${filter}`;
+    }
+
+    if (!filter.includes("cinemaId")) {
+      query += `&cinemaId=1`;
     }
 
     // if (sortQuery) {
@@ -109,11 +131,18 @@ const FoodList = () => {
   };
 
   const columns = [
-    createColumn("Code", "code", 100, true, undefined, "left"),
-    createColumn("Tên đồ ăn", "name", 100, true, undefined, "left"),
-    createColumn("Giá", "price", 150, true, renderCurrency),
-    createColumn("Trạng thái", "status", 150, true, renderStatus("food")),
-    createColumn("Cập nhật ngày", "createdDate", 150, true, renderDate),
+    createColumn("Code", "code", 100, false, undefined, "left"),
+    createColumn("Tên đồ ăn", "name", 200, false, undefined, "left"),
+    createColumn("Giá", "price", 150, false, renderCurrency),
+    createColumn("Số lượng", "quantity", 150, false, renderQuantity),
+    createColumn(
+      "Cập nhật ngày",
+      "createdDate",
+      150,
+      false,
+      renderDate,
+      "right"
+    ),
     {
       title: "Thao tác",
       width: 200,
@@ -153,6 +182,12 @@ const FoodList = () => {
       type: "select",
       options: foodCategory,
     },
+    {
+      field: "cinemaId",
+      label: "Tên rạp",
+      type: "debounceSelect",
+      fetchOptions: fetchCinemaList,
+    },
   ];
 
   const renderHeader = () => (
@@ -174,7 +209,9 @@ const FoodList = () => {
       if (query.hasOwnProperty(key)) {
         const label = key;
         const value = query[key];
-        if (value) {
+        if (label === "cinemaId") {
+          q += `&${label}=${value.value}`;
+        } else if (value) {
           q += `&${label}=${value}`;
         }
       }
@@ -215,7 +252,7 @@ const FoodList = () => {
             title={renderHeader}
             bordered
             // thay đổi #1
-            // loading={isLoading}
+            loading={isLoading}
             columns={columns}
             dataSource={listData}
             onChange={onChange}

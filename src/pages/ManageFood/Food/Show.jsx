@@ -1,7 +1,12 @@
-import { Card, Col, Descriptions, Divider, Image, Row, Tag } from "antd";
+import { Card, Col, Descriptions, Divider, Image, Row } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import {
+  renderCurrency,
+  renderQuantity,
+  renderStatus,
+} from "../../../components/FunctionRender/FunctionRender";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 import { doSetFood } from "../../../redux/food/foodSlice";
 import {
@@ -69,22 +74,11 @@ const FoodShow = () => {
     },
     {
       label: "Giá",
-      children: (
-        <span>
-          {new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          }).format(food?.price ?? 0)}
-        </span>
-      ),
+      children: renderCurrency(food?.price),
     },
     {
       label: "Trạng thái",
-      children: (
-        <Tag color={food?.status ? "success" : "error"}>
-          {food?.status ? "Còn hàng" : "Hết hàng"}
-        </Tag>
-      ),
+      children: renderStatus("food")(food?.status, food),
     },
     {
       label: "Loại đồ ăn",
@@ -95,6 +89,10 @@ const FoodShow = () => {
         md: 2,
         lg: 2,
       },
+    },
+    {
+      label: "Số lượng",
+      children: renderQuantity(food?.quantity, food),
     },
     {
       label: "Size",
