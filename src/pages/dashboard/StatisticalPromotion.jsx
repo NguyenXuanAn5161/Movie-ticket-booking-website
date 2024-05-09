@@ -10,7 +10,7 @@ import { callGetRevenueByPromotion } from "../../services/Statistical";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import { getFirstAndLastDayOfMonth } from "../../utils/date";
-import { StatisticByReturnInvoice } from "./RevenueDb";
+import { StatisticByPromotion } from "./RevenueDb";
 
 const StatisticalPromotion = () => {
   const user = useSelector((state) => state.account.user);
@@ -108,7 +108,7 @@ const StatisticalPromotion = () => {
   ];
 
   const handleExportData = () => {
-    StatisticByReturnInvoice(listDataFull, dateRanger, user?.username);
+    StatisticByPromotion(listDataFull, dateRanger, user?.username);
   };
 
   const renderHeader = () => (
