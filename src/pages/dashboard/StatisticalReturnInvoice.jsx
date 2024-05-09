@@ -28,7 +28,6 @@ const StatisticalReturnInvoice = () => {
     startDate: "",
     endDate: "",
   });
-  const [invoiceDetail, setInvoiceDetail] = useState(null);
 
   useEffect(() => {
     const [startDate, endDate] = getFirstAndLastDayOfMonth();
@@ -109,12 +108,7 @@ const StatisticalReturnInvoice = () => {
   ];
 
   const handleExportData = () => {
-    StatisticByReturnInvoice(
-      listDataFull,
-      dateRanger,
-      invoiceDetail,
-      user?.username
-    );
+    StatisticByReturnInvoice(listDataFull, dateRanger, user?.username);
   };
 
   const renderHeader = () => (
