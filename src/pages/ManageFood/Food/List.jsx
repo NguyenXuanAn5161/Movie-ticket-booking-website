@@ -7,6 +7,7 @@ import {
   renderCurrency,
   renderDate,
   renderQuantity,
+  renderStatus,
 } from "../../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../../components/TableHeader/TableHeader";
 import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
@@ -135,6 +136,7 @@ const FoodList = () => {
     createColumn("Tên đồ ăn", "name", 200, false, undefined, "left"),
     createColumn("Giá", "price", 150, false, renderCurrency),
     createColumn("Số lượng", "quantity", 150, false, renderQuantity),
+    createColumn("Trạng thái", "status", 150, false, renderStatus("food")),
     createColumn("Cập nhật ngày", "createdDate", 150, false, renderDate),
     {
       title: "Thao tác",
