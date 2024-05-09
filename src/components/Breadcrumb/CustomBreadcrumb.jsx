@@ -42,6 +42,11 @@ function CustomBreadcrumb(props) {
           key: "statisticalReturnInvoice",
         },
         {
+          path: "/statisticalPromotion",
+          title: "Thống kê khuyến mãi",
+          key: "statisticalPromotion",
+        },
+        {
           path: "/order",
           title: "Hóa đơn",
           key: "order",

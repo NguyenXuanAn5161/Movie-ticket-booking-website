@@ -47,6 +47,7 @@ import VNPayPaymentReturn from "./pages/VNPayPaymentReturn";
 import DashBoardShow from "./pages/dashboard/Show";
 import StatisticalCinema from "./pages/dashboard/StatisticalCinema";
 import StatisticalMovie from "./pages/dashboard/StatisticalMovie";
+import StatisticalPromotion from "./pages/dashboard/StatisticalPromotion";
 import StatisticalReturnInvoice from "./pages/dashboard/StatisticalReturnInvoice";
 import StatisticalStaff from "./pages/dashboard/StatisticalStaff";
 import StatisticalUser from "./pages/dashboard/StatisticalUser";
@@ -139,6 +140,14 @@ export default function App() {
           element: (
             <ProtectedRoute>
               <StatisticalReturnInvoice />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "statisticalPromotion",
+          element: (
+            <ProtectedRoute>
+              <StatisticalPromotion />
             </ProtectedRoute>
           ),
         },
