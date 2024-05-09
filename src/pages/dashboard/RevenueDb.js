@@ -181,7 +181,9 @@ export const StatisticByUser = (
       ? "BÁO CÁO DOANH SỐ BÁN HÀNG THEO NHÂN VIÊN"
       : "BÁO CÁO TỔNG KẾT DANH THU THEO KHÁCH HÀNG";
     const titleCount =
-      listData.length > 0 ? Object.keys(listData[0]).length + 1 : 0;
+      listData.length > 0
+        ? Object.keys(listData[0]).length + (type ? 0 : 2)
+        : 0;
     crateTitleRow(titleCount, worksheet, title);
 
     const userName = worksheet.addRow([]);
@@ -233,8 +235,17 @@ export const StatisticByUser = (
       "Số điện thoại",
       "Tổng hóa đơn",
       "Tổng vé",
-      "Tổng doanh thu",
     ];
+
+    if (!type) {
+      headerValues.push(
+        `Tổng doanh thu sau CK`,
+        `Chiết khấu`,
+        `Tổng doanh thu sau CK`
+      );
+    } else {
+      headerValues.push(`Tổng doanh số bán`);
+    }
 
     headerValues.forEach((header) => {
       const cell = headerRow.getCell(headerRow.cellCount + 1);
@@ -257,16 +268,21 @@ export const StatisticByUser = (
 
     // Thêm dữ liệu từ listData vào worksheet
     const tableData = listData.map((data, index) => {
-      return [
-        index + 1,
-        data.code,
-        data.name,
-        data.email,
-        data.phone || " ",
-        data.totalInvoice,
-        data.totalTicket,
-        data.totalRevenue,
-      ];
+      const arrData = [];
+      arrData.push(index + 1);
+      arrData.push(data.code);
+      arrData.push(data.name);
+      arrData.push(data.email);
+      arrData.push(data.phone || " ");
+      arrData.push(data.totalInvoice);
+      arrData.push(data.totalTicket);
+
+      if (!type) {
+        arrData.push(data.totalRevenue + data.totalDiscount);
+        arrData.push(data.totalDiscount);
+      }
+      arrData.push(data.totalRevenue);
+      return arrData;
     });
 
     tableData.forEach((rowData) => {
@@ -281,7 +297,10 @@ export const StatisticByUser = (
 
       // Duyệt qua từng ô trong hàng dữ liệu và đặt border cho các ô có nội dung
       row.eachCell((cell) => {
-        if (cell.value) {
+        if (!cell.value) {
+          console.log("cell", cell);
+        }
+        if (cell.value || cell.value === 0) {
           cell.font = { size: 11, name: "Times New Roman" };
           cell.border = {
             top: { style: "thin" },
@@ -291,8 +310,6 @@ export const StatisticByUser = (
           };
         }
       });
-
-      worksheet.getColumn(8).numFmt = "#,##0.00"; // Định dạng số cho cột "Tổng doanh thu"
     });
 
     // chỉnh sửa column width cho từng cột trong tableData
@@ -311,6 +328,20 @@ export const StatisticByUser = (
       (acc, curr) => acc + curr.totalTicket,
       0
     );
+
+    let totalRevenueBeforeDiscount = 0;
+    let totalDiscount = 0;
+    if (!type) {
+      totalRevenueBeforeDiscount = listData.reduce(
+        (acc, curr) => acc + curr.totalRevenue + curr.totalDiscount,
+        0
+      );
+      totalDiscount = listData.reduce(
+        (acc, curr) => acc + curr.totalDiscount,
+        0
+      );
+    }
+
     const totalRevenue = listData.reduce(
       (acc, curr) => acc + curr.totalRevenue,
       0
@@ -319,7 +350,11 @@ export const StatisticByUser = (
     // Ghi các giá trị tổng vào hàng tổng cộng
     totalRow.getCell(6).value = totalInvoice;
     totalRow.getCell(7).value = totalTicket;
-    totalRow.getCell(8).value = totalRevenue;
+    if (!type) {
+      totalRow.getCell(8).value = totalRevenueBeforeDiscount;
+      totalRow.getCell(9).value = totalDiscount;
+    }
+    totalRow.getCell(type ? 8 : 10).value = totalRevenue;
 
     // Định dạng font và size cho hàng tổng cộng
     totalRow.eachCell((cell) => {
@@ -327,7 +362,11 @@ export const StatisticByUser = (
     });
 
     // worksheet.getColumn(8).width = totalRevenue.toString().length + 2;
+    worksheet.getColumn(6).numFmt = "#,##0";
+    worksheet.getColumn(7).numFmt = "#,##0";
     worksheet.getColumn(8).numFmt = "#,##0.00";
+    worksheet.getColumn(9).numFmt = "#,##0.00";
+    worksheet.getColumn(10).numFmt = "#,##0.00";
 
     const fileName = `ExportRevenueBy${type ? "Staff" : "User"}.xlsx`;
     exportExcel(workbook, fileName);
@@ -637,7 +676,7 @@ function getColumnLetter(columnNumber) {
 
 const fixWidthColumn = (worksheet, tableData, headerValues) => {
   // Tính độ dài của mỗi giá trị trong headerValues
-  const headerLengths = headerValues.map((value) => value.length);
+  const headerLengths = headerValues.map((value) => value?.length);
 
   // Khởi tạo mảng maxLengths có độ dài bằng số cột của mảng tableData, mỗi phần tử có giá trị ban đầu là 0
   const maxLengths = new Array(tableData[0].length).fill(0);
