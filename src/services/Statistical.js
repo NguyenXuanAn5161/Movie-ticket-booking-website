@@ -9,6 +9,17 @@ import {
   getFirstAndLastDayOfYear,
 } from "../utils/date";
 
+export const callGetRevenueByPromotion = async (query) => {
+  try {
+    const response = await api.get(
+      `/api/statistical/revenue-by-promotion-line?${query}`
+    );
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const callGetRevenueByCinema = async (query) => {
   try {
     const response = await api.get(
