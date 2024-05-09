@@ -120,6 +120,18 @@ export const renderTypePromotion = (text, record) => {
   );
 };
 
+export const renderPromotionType = (text, record) => {
+  return (
+    <span>
+      {record?.promotionType === "DISCOUNT"
+        ? "Giảm Giá"
+        : record?.promotionType === "FOOD"
+        ? "Tặng đồ ăn"
+        : "Tặng vé"}
+    </span>
+  );
+};
+
 export const renderQuantity = (text, record) => {
   return (
     <span>
