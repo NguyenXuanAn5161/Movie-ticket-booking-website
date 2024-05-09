@@ -663,7 +663,7 @@ export const StatisticByPromotion = (listData, dateRanger, userCurrent) => {
   );
 
   // Tạo một hàng mới cho tiêu đề
-  const titleCount = 12;
+  const titleCount = 13;
   crateTitleRow(
     titleCount,
     worksheet,
@@ -711,8 +711,9 @@ export const StatisticByPromotion = (listData, dateRanger, userCurrent) => {
     "Ngày kết thúc",
     "Mã SP tặng",
     "Tên SP tặng",
-    "Số lượng tặng",
+    "SL tặng",
     "Số tiền chiết khấu",
+    "Đơn vị",
     "Ngân sách tổng",
     "Ngân sách đã sử dụng",
     "Ngân sách còn lại",
@@ -745,11 +746,16 @@ export const StatisticByPromotion = (listData, dateRanger, userCurrent) => {
       data.name,
       moment(data.startDate).format(FORMAT_DATE),
       moment(data.endDate).format(FORMAT_DATE),
-      data.promotionCode,
-      data.promotionName,
-      data.promotionQuantity,
-      data.promotionValue,
-      data.totalQuantity,
+      data.promotionCode || " ",
+      data.promotionName || " ",
+      data.promotionQuantity || " ",
+      data.promotionValue || " ",
+      data?.valueType === null
+        ? " "
+        : data?.valueType === "PERCENT"
+        ? "%"
+        : "VNĐ",
+      data.totalQuantity === 0 ? " " : data.totalQuantity,
       data.quantityUsed,
       data.quantityNotUsed,
     ];
@@ -777,8 +783,6 @@ export const StatisticByPromotion = (listData, dateRanger, userCurrent) => {
         };
       }
     });
-
-    // worksheet.getColumn(12).numFmt = "#,##0.00"; // Định dạng số cho cột "Tổng doanh thu"
   });
 
   // chỉnh sửa column width cho từng cột trong tableData
@@ -805,16 +809,35 @@ export const StatisticByPromotion = (listData, dateRanger, userCurrent) => {
   );
 
   // Ghi các giá trị tổng vào hàng tổng cộng
-  totalRow.getCell(8).value = totalQuantity;
-  totalRow.getCell(9).value = totalQuantityUsed;
-  totalRow.getCell(10).value = totalQuantityNotUsed;
+  totalRow.getCell(11).value = totalQuantity;
+  totalRow.getCell(12).value = totalQuantityUsed;
+  totalRow.getCell(13).value = totalQuantityNotUsed;
 
   // Định dạng font và size cho hàng tổng cộng
   totalRow.eachCell((cell) => {
     cell.font = { bold: true, size: 11, name: "Times New Roman" };
   });
 
-  // worksheet.getColumn(7).numFmt = "#,##0.00"; // Định dạng số cho cột "Tổng doanh thu"
+  worksheet.getColumn(9).numFmt = "#,##0.00";
+  worksheet.getColumn(11).numFmt = "#,##0";
+  worksheet.getColumn(12).numFmt = "#,##0";
+  worksheet.getColumn(13).numFmt = "#,##0";
+
+  // fix cứng độ rộng cột 9, 10, 11, 12, 13 (chỉ dành cho báo cáo promotion)
+  worksheet.getColumn(9).width = 10;
+  worksheet.getColumn(10).width = 8;
+  worksheet.getColumn(11).width = 10;
+  worksheet.getColumn(12).width = 10;
+  worksheet.getColumn(13).width = 10;
+
+  headerRow.alignment = {
+    vertical: "middle",
+    horizontal: "center",
+    wrapText: true,
+  };
+
+  // middle cho row 1
+  worksheet.getRow(1).alignment = { vertical: "middle", horizontal: "center" };
 
   exportExcel(workbook, "ExportRevenueByPromotion.xlsx");
 };
