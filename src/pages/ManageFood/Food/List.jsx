@@ -135,14 +135,7 @@ const FoodList = () => {
     createColumn("Tên đồ ăn", "name", 200, false, undefined, "left"),
     createColumn("Giá", "price", 150, false, renderCurrency),
     createColumn("Số lượng", "quantity", 150, false, renderQuantity),
-    createColumn(
-      "Cập nhật ngày",
-      "createdDate",
-      150,
-      false,
-      renderDate,
-      "right"
-    ),
+    createColumn("Cập nhật ngày", "createdDate", 150, false, renderDate),
     {
       title: "Thao tác",
       width: 200,
