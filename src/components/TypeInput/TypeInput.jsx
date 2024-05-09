@@ -1,7 +1,7 @@
 import { DatePicker, Form, Input, Select } from "antd";
 import { FORMAT_DATE } from "../../utils/constant";
+import DebounceSelect from "../DebounceSelect/DebounceSelect";
 
-const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 const TypeInput = ({ item }) => {
@@ -36,6 +36,14 @@ const TypeInput = ({ item }) => {
             style={{ width: "100%" }}
             placeholder={["Từ ngày", "Đến ngày"]}
             format={FORMAT_DATE}
+          />
+        );
+      case "debounceSelect": // Xử lý kiểu tìm kiếm mới debounceSelect
+        return (
+          <DebounceSelect
+            style={{ width: "100%" }}
+            placeholder={item.label}
+            fetchOptions={item.fetchOptions}
           />
         );
       default:
