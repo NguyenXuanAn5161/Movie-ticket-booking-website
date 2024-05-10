@@ -9,7 +9,7 @@ const NotPermistted = () => {
       title="403"
       subTitle="Xin lỗi, bạn không được phép truy cập trang này."
       extra={
-        <Button type="primary" onClick={() => navigate("/admin")}>
+        <Button type="primary" onClick={() => navigate("/admin/dashbord")}>
           Trở về trang tổng quan
         </Button>
       }

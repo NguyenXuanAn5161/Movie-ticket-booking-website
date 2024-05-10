@@ -242,14 +242,18 @@ const FoodCreate = () => {
                     message: "Vui lòng nhập chọn hình ảnh!",
                   },
                 ]}
+                getValueFromEvent={normFile}
+                valuePropName="fileList"
               >
                 <Upload
+                  name="image"
                   accept="image/*"
                   maxCount={1}
                   beforeUpload={() => false}
                   onRemove={(file) => handleRemoveFile(file)}
                   onChange={(info) => normFile(info)}
                   listType="picture-card"
+                  showUploadList={{ showPreviewIcon: false }}
                 >
                   <div>
                     {loading ? <LoadingOutlined /> : <PlusOutlined />}

@@ -101,6 +101,10 @@ const LayoutAdmin = () => {
             </Link>,
             "statisticalReturnInvoice"
           ),
+          getItem(
+            <Link to="/admin/statisticalPromotion">Thống kê khuyến mãi</Link>,
+            "statisticalPromotion"
+          ),
         ]),
       ],
       "group"

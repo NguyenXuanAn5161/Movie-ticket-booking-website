@@ -119,7 +119,7 @@ export const callUpdateFood = async (data, imageUrl) => {
   } else {
     bodyFormData.append("image", data.image);
   }
-  bodyFormData.append("cinemaId", data.cinemaId);
+  bodyFormData.append("cinemaIds", data.cinemaId);
   bodyFormData.append("id", data.id);
   bodyFormData.append("name", data.name);
   bodyFormData.append("categoryId", data.categoryId);

@@ -2,17 +2,17 @@ import { Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
-  renderCurrency,
   renderDate,
+  renderPromotionType,
 } from "../../components/FunctionRender/FunctionRender";
 import TableHeader from "../../components/TableHeader/TableHeader";
-import { callGetRevenueByInvoiceCancel } from "../../services/Statistical";
+import { callGetRevenueByPromotion } from "../../services/Statistical";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import { getFirstAndLastDayOfMonth } from "../../utils/date";
-import { StatisticByReturnInvoice } from "./RevenueDb";
+import { StatisticByPromotion } from "./RevenueDb";
 
-const StatisticalReturnInvoice = () => {
+const StatisticalPromotion = () => {
   const user = useSelector((state) => state.account.user);
 
   const [listData, setListData] = useState([]);
@@ -48,11 +48,12 @@ const StatisticalReturnInvoice = () => {
 
     if (!filter.includes("startDate") && !filter.includes("endDate")) {
       const [startDate, endDate] = getFirstAndLastDayOfMonth();
-      query += `&startDate=${startDate}&endDate=${endDate}`;
+      // query += `&startDate=${startDate}&endDate=${endDate}`;
+      query += `&startDate=2024-04-01&endDate=${endDate}`;
     }
 
-    if (!filter.includes("userCode")) {
-      query += `&userCode=`;
+    if (!filter.includes("promotionLineCode")) {
+      query += `&promotionLineCode=`;
     }
 
     if (!filter.includes("code")) {
@@ -68,16 +69,15 @@ const StatisticalReturnInvoice = () => {
     }
 
     // thay đổi #1 api call
-    const res = await callGetRevenueByInvoiceCancel(query);
+    const res = await callGetRevenueByPromotion(query);
     console.log("res", res);
     if (res?.content) {
       setListData(res.content);
       setTotal(res.totalElements);
     }
 
-    // dùng query ở trên nhưng thay đổi size thành 5000 để lấy hết dữ liệu
     const queryFull = query.replace("size=10", "size=10000");
-    const resFull = await callGetRevenueByInvoiceCancel(queryFull);
+    const resFull = await callGetRevenueByPromotion(queryFull);
     if (res?.content) {
       setListDataFull(resFull.content);
     }
@@ -86,13 +86,14 @@ const StatisticalReturnInvoice = () => {
   };
 
   const columns = [
-    createColumn("Mã hóa đơn hủy", "code", 150),
-    createColumn("Mã hóa đơn", "invoiceCode", 150),
-    createColumn("Mã khách hàng", "userCode", 150),
-    createColumn("Tên khách hàng", "userName", 150),
-    createColumn("Lý do hủy", "reason"),
-    createColumn("Ngày hủy", "cancelDate", 150, true, renderDate),
-    createColumn("Tổng tiền", "total", 150, true, renderCurrency),
+    createColumn("Mã CTKM", "code", 150, false, undefined, "left"),
+    createColumn("Tên CTKM", "name", 150, false, undefined, "left"),
+    createColumn("Ngày bắt đầu", "startDate", 150, true, renderDate),
+    createColumn("Ngày kết thúc", "endDate", 150, false, renderDate),
+    createColumn("Loại", "promotionType", 130, false, renderPromotionType),
+    createColumn("Tổng số lượng", "totalQuantity", 150, false),
+    createColumn("Đã dùng", "quantityUsed", 150, true),
+    createColumn("Còn lại", "quantityNotUsed", 150, false, undefined, "right"),
   ];
 
   const handleReload = () => {
@@ -102,13 +103,12 @@ const StatisticalReturnInvoice = () => {
   };
 
   const itemSearch = [
-    { field: "code", label: "Mã hóa đơn hủy" },
-    { field: "userCode", label: "Mã khách hàng" },
+    { field: "promotionLineCode", label: "Mã chương trình khuyến mãi" },
     { field: "dateRange", label: "Khoảng thời gian", type: "rangePicker" },
   ];
 
   const handleExportData = () => {
-    StatisticByReturnInvoice(listDataFull, dateRanger, user?.username);
+    StatisticByPromotion(listDataFull, dateRanger, user?.username);
   };
 
   const renderHeader = () => (
@@ -117,7 +117,7 @@ const StatisticalReturnInvoice = () => {
       filter={filter}
       setFilter={setFilter}
       handleSearch={handleSearch}
-      headerTitle={"Thống kê hóa đơn hủy"}
+      headerTitle={"Thống kê chương trình khuyến mãi"}
       itemSearch={itemSearch}
       handleExportData={handleExportData}
     />
@@ -161,7 +161,13 @@ const StatisticalReturnInvoice = () => {
       } else if (sorter.order === "descend") {
         setSortQuery("DESC");
       }
-      setSortType(sorter.field === "cancelDate" ? "date" : "total");
+      setSortType(
+        sorter.field === "totalQuantity"
+          ? "total"
+          : sorter.field === "quantityUsed"
+          ? "quantityUsed"
+          : "date"
+      );
     }
   };
 
@@ -200,4 +206,4 @@ const StatisticalReturnInvoice = () => {
   );
 };
 
-export default StatisticalReturnInvoice;
+export default StatisticalPromotion;

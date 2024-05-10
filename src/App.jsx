@@ -47,6 +47,7 @@ import VNPayPaymentReturn from "./pages/VNPayPaymentReturn";
 import DashBoardShow from "./pages/dashboard/Show";
 import StatisticalCinema from "./pages/dashboard/StatisticalCinema";
 import StatisticalMovie from "./pages/dashboard/StatisticalMovie";
+import StatisticalPromotion from "./pages/dashboard/StatisticalPromotion";
 import StatisticalReturnInvoice from "./pages/dashboard/StatisticalReturnInvoice";
 import StatisticalStaff from "./pages/dashboard/StatisticalStaff";
 import StatisticalUser from "./pages/dashboard/StatisticalUser";
@@ -142,22 +143,46 @@ export default function App() {
             </ProtectedRoute>
           ),
         },
+        {
+          path: "statisticalPromotion",
+          element: (
+            <ProtectedRoute>
+              <StatisticalPromotion />
+            </ProtectedRoute>
+          ),
+        },
         // Hóa đơn
         {
           path: "order",
-          element: <OrderList />,
+          element: (
+            <ProtectedRoute>
+              <OrderList />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "order/show/:orderId",
-          element: <OrderShow />,
+          element: (
+            <ProtectedRoute>
+              <OrderShow />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "returnInvoice",
-          element: <ReturnInvoiceList />,
+          element: (
+            <ProtectedRoute>
+              <ReturnInvoiceList />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "returnInvoice/show/:returnInvoiceId",
-          element: <ReturnInvoiceShow />,
+          element: (
+            <ProtectedRoute>
+              <ReturnInvoiceShow />,
+            </ProtectedRoute>
+          ),
         },
         // Người dùng
         {
@@ -170,89 +195,169 @@ export default function App() {
         },
         {
           path: "user/show/:userId",
-          element: <UserShow />,
+          element: (
+            <ProtectedRoute>
+              <UserShow />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "user/create",
-          element: <UserCreate />,
+          element: (
+            <ProtectedRoute>
+              <UserCreate />,
+            </ProtectedRoute>
+          ),
         },
         // Phim
         {
           path: "movie",
-          element: <MovieList />,
+          element: (
+            <ProtectedRoute>
+              <MovieList />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "movie/show/:movieId",
-          element: <MovieShow />,
+          element: (
+            <ProtectedRoute>
+              <MovieShow />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "movie/create",
-          element: <MovieCreate />,
+          element: (
+            <ProtectedRoute>
+              <MovieCreate />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "movie/edit/:movieId",
-          element: <MovieEdit />,
+          element: (
+            <ProtectedRoute>
+              <MovieEdit />,
+            </ProtectedRoute>
+          ),
         },
         // Loại phim
         {
           path: "movieGenre",
-          element: <MovieGenreList />,
+          element: (
+            <ProtectedRoute>
+              <MovieGenreList />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "movieGenre/show/:categoryMovieId",
-          element: <MovieGenreShow />,
+          element: (
+            <ProtectedRoute>
+              <MovieGenreShow />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "movieGenre/create",
-          element: <MovieGenreCreate />,
+          element: (
+            <ProtectedRoute>
+              <MovieGenreCreate />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "movieGenre/edit/:categoryMovieId",
-          element: <MovieGenreEdit />,
+          element: (
+            <ProtectedRoute>
+              <MovieGenreEdit />,
+            </ProtectedRoute>
+          ),
         },
         // Lịch chiếu phim
         {
           path: "schedule",
-          element: <ScheduleList />,
+          element: (
+            <ProtectedRoute>
+              <ScheduleList />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "schedule/show/:movieScheduleId",
-          element: <ScheduleShow />,
+          element: (
+            <ProtectedRoute>
+              <ScheduleShow />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "schedule/create",
-          element: <ScheduleCreate />,
+          element: (
+            <ProtectedRoute>
+              <ScheduleCreate />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "schedule/edit/:movieScheduleId",
-          element: <ScheduleEdit />,
+          element: (
+            <ProtectedRoute>
+              <ScheduleEdit />,
+            </ProtectedRoute>
+          ),
         },
         // Rạp phim
         {
           path: "cinema",
-          element: <CinemaList />,
+          element: (
+            <ProtectedRoute>
+              <CinemaList />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "cinema/show/:cinemaId",
-          element: <CinemaShow />,
+          element: (
+            <ProtectedRoute>
+              <CinemaShow />,
+            </ProtectedRoute>
+          ),
         },
         // room trong cinema
         {
           path: "cinema/show/:cinemaId/room/create",
-          element: <RoomCreate />,
+          element: (
+            <ProtectedRoute>
+              <RoomCreate />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "cinema/show/:cinemaId/room/edit/:roomId",
-          element: <RoomEdit />,
+          element: (
+            <ProtectedRoute>
+              <RoomEdit />,
+            </ProtectedRoute>
+          ),
         },
         //------------------------------
         {
           path: "cinema/create",
-          element: <CinemaCreate />,
+          element: (
+            <ProtectedRoute>
+              <CinemaCreate />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "cinema/edit/:cinemaId",
-          element: <CinemaEdit />,
+          element: (
+            <ProtectedRoute>
+              <CinemaEdit />,
+            </ProtectedRoute>
+          ),
         },
         // Phòng chiếu phim
         // {
@@ -308,74 +413,142 @@ export default function App() {
         // Đồ ăn
         {
           path: "food",
-          element: <FoodList />,
+          element: (
+            <ProtectedRoute>
+              <FoodList />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "food/show/:foodId",
-          element: <FoodShow />,
+          element: (
+            <ProtectedRoute>
+              <FoodShow />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "food/create",
-          element: <FoodCreate />,
+          element: (
+            <ProtectedRoute>
+              <FoodCreate />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "food/edit/:foodId",
-          element: <FoodEdit />,
+          element: (
+            <ProtectedRoute>
+              <FoodEdit />,
+            </ProtectedRoute>
+          ),
         },
         // Loại đồ ăn
         {
           path: "foodCategories",
-          element: <FoodCategoryList />,
+          element: (
+            <ProtectedRoute>
+              <FoodCategoryList />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "foodCategories/show/:foodCategoryId",
-          element: <FoodCategoryShow />,
+          element: (
+            <ProtectedRoute>
+              <FoodCategoryShow />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "foodCategories/create",
-          element: <FoodCategoryCreate />,
+          element: (
+            <ProtectedRoute>
+              <FoodCategoryCreate />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "foodCategories/edit/:foodCategoryId",
-          element: <FoodCategoryEdit />,
+          element: (
+            <ProtectedRoute>
+              <FoodCategoryEdit />,
+            </ProtectedRoute>
+          ),
         },
         // Giá sản phẩm
         {
           path: "price",
-          element: <PriceList />,
+          element: (
+            <ProtectedRoute>
+              <PriceList />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "price/show/:priceId",
-          element: <PriceShow />,
+          element: (
+            <ProtectedRoute>
+              <PriceShow />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "price/create",
-          element: <PriceCreate />,
+          element: (
+            <ProtectedRoute>
+              <PriceCreate />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "price/edit/:priceId",
-          element: <PriceEdit />,
+          element: (
+            <ProtectedRoute>
+              <PriceEdit />,
+            </ProtectedRoute>
+          ),
         },
         // Khuyến mãi
         {
           path: "promotion",
-          element: <PromotionList />,
+          element: (
+            <ProtectedRoute>
+              <PromotionList />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "promotion/show/:promotionId",
-          element: <PromotionShow />,
+          element: (
+            <ProtectedRoute>
+              <PromotionShow />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "promotion/create",
-          element: <PromotionCreate />,
+          element: (
+            <ProtectedRoute>
+              <PromotionCreate />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "promotion/edit/:promotionId",
-          element: <PromotionEdit />,
+          element: (
+            <ProtectedRoute>
+              <PromotionEdit />,
+            </ProtectedRoute>
+          ),
         },
         {
           path: "booking",
-          element: <BookingPage />,
+          element: (
+            <ProtectedRoute>
+              <BookingPage />,
+            </ProtectedRoute>
+          ),
         },
       ],
     },

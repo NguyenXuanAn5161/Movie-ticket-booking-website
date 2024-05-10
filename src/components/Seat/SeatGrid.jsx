@@ -48,11 +48,14 @@ const SeatGrid = ({ seatData }) => {
 
   // Hàm để kiểm tra xem một ghế có tồn tại trong seatData hay không
   const isSeatExist = (seat) => {
-    return seatData.find(
-      (data) =>
-        data.seat.seatRow === seat.seatRow &&
-        data.seat.seatColumn === seat.seatColumn
-    );
+    if (Array.isArray(seatData)) {
+      return seatData.find(
+        (data) =>
+          data.seat.seatRow === seat.seatRow &&
+          data.seat.seatColumn === seat.seatColumn
+      );
+    }
+    return null;
   };
 
   // Hàm xử lý sự kiện khi người dùng chọn một ghế

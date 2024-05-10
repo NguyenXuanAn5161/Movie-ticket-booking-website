@@ -4,6 +4,7 @@ import userReducer from "../redux/account/userSlice";
 import bookingReducer from "./booking/bookingSlice";
 import cinemaReducer from "./cinema/cinemaSlice";
 import roomReducer from "./cinema/room/roomSlice";
+import counterReducer from "./counter/counterSlice";
 import foodCategoryReducer from "./food/foodCategorySlice";
 import foodReducer from "./food/foodSlice";
 import movieGenreReducer from "./movie/movieGenreSlice";
@@ -16,12 +17,13 @@ import scheduleReducer from "./schedule/scheduleSlice";
 import seatReducer from "./seat/seatSlice";
 import seatTypeReducer from "./seat/seatTypeSlice";
 
-const preloadedState = JSON.parse(localStorage.getItem("bookingState")) || {};
+// const preloadedState = JSON.parse(localStorage.getItem("bookingState")) || {};
 
 export const store = configureStore({
   reducer: {
     account: accountReducer,
     user: userReducer,
+    counter: counterReducer,
     movie: movieReducer,
     movieGenre: movieGenreReducer,
     promotion: promotionReducer,

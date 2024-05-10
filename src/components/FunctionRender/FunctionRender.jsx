@@ -119,3 +119,29 @@ export const renderTypePromotion = (text, record) => {
     </span>
   );
 };
+
+export const renderPromotionType = (text, record) => {
+  return (
+    <span>
+      {record?.promotionType === "DISCOUNT"
+        ? "Giảm Giá"
+        : record?.promotionType === "FOOD"
+        ? "Tặng đồ ăn"
+        : "Tặng vé"}
+    </span>
+  );
+};
+
+export const renderQuantity = (text, record) => {
+  return (
+    <span>
+      {record?.quantity === 0 ? (
+        <span style={{ color: "red", fontWeight: "700" }}>Hết hàng</span>
+      ) : record?.quantity === null ? (
+        <Tag color="default">Chưa có thông tin</Tag>
+      ) : (
+        record?.quantity
+      )}
+    </span>
+  );
+};
