@@ -1,11 +1,9 @@
-import { Col, Form, theme } from "antd";
+import { Button, Card, Col, Form, Row, theme } from "antd";
 import React, { useEffect } from "react";
-import { IoSearchOutline } from "react-icons/io5";
 import { FORMAT_DATE_TIME_SEND_SERVER } from "../../utils/constant";
-import TooltipButton from "../Button/TooltipButton";
 import TypeInput from "../TypeInput/TypeInput";
 
-const Search = (props) => {
+const SearchList = (props) => {
   const { token } = theme.useToken();
   const [form] = Form.useForm();
 
@@ -18,12 +16,11 @@ const Search = (props) => {
   const formStyle = {
     maxWidth: "none",
     borderRadius: token.borderRadiusLG,
-    marginRight: 10,
   };
 
   const calculateSpan = () => {
     const itemSearchCount = props.itemSearch.length;
-    return itemSearchCount > 0 ? Math.floor(22 / itemSearchCount) : 2; // Default span is 2 if no search items
+    return itemSearchCount > 0 && Math.floor(24 / itemSearchCount);
   };
 
   const onFinish = (values) => {
@@ -47,35 +44,40 @@ const Search = (props) => {
   };
 
   return (
-    <Form
-      form={form}
-      name="advanced_search"
-      style={formStyle}
-      onFinish={onFinish}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around",
-          gap: "0 10px",
-        }}
+    <Card>
+      <Form
+        form={form}
+        name="advanced_search"
+        style={formStyle}
+        onFinish={onFinish}
       >
-        {props.itemSearch.map((item) => (
-          <Col span={calculateSpan()} key={item.field}>
-            <TypeInput item={item} />
+        <Row gutter={[0, 10]}>
+          <Row style={{ width: "100%" }} gutter={[10]}>
+            {props.itemSearch.map((item) => (
+              <Col span={calculateSpan()} key={item.field}>
+                <TypeInput item={item} />
+              </Col>
+            ))}
+          </Row>
+          <Col span={24} style={{ textAlign: "right" }}>
+            <Button type="primary" htmlType="submit">
+              Tìm
+            </Button>
+            <Button
+              type="primary"
+              style={{ margin: "0 8px" }}
+              onClick={() => {
+                form.resetFields();
+                props.setFilter("");
+              }}
+            >
+              Xóa trắng
+            </Button>
           </Col>
-        ))}
-        <Col span={2}>
-          <TooltipButton
-            htmlType="submit"
-            icon={<IoSearchOutline />}
-            tooltipTitle="Tìm kiếm"
-          />
-        </Col>
-      </div>
-    </Form>
+        </Row>
+      </Form>
+    </Card>
   );
 };
 
-export default Search;
+export default SearchList;

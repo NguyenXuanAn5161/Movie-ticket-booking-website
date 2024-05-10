@@ -16,6 +16,7 @@ const useTheme = () => {
       grey: "#8C8C8C",
       greyRgba: "rgba(0, 0, 0, 0.45)",
       darkGrey: "#ccc",
+      lightGrey: "#D3D3D3",
       standard: "#6959CD",
       vip: "#FF8247",
       sweetBox: "#FF1493",
