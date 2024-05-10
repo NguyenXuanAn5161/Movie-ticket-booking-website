@@ -1,12 +1,23 @@
-import { Button, Col, Row, Steps, message, notification } from "antd";
+import {
+  Button,
+  Col,
+  Row,
+  Statistic,
+  Steps,
+  message,
+  notification,
+} from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import OrderCard from "../../components/OrderCard/OrderCard";
 import { doResetBooking } from "../../redux/booking/bookingSlice";
+import { doSetIsRunning } from "../../redux/counter/counterSlice";
 import {
+  callCheckHoldSeat,
   callCreateInvoice,
   callCreateInvoiceByVnPay,
+  callHoldSeats,
 } from "../../services/apiOder";
 import {
   callCreateGuest,
@@ -17,10 +28,13 @@ import BookingPayment from "./Steps/BookingPayment";
 import BookingSchedule from "./Steps/BookingSchedule";
 import BookingSeat from "./Steps/BookingSeat";
 
+const { Countdown } = Statistic;
+
 const BookingPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const isRunning = useSelector((state) => state.counter.isRunning);
   const userCurrent = useSelector((state) => state.account.user);
   const selectedUser = useSelector((state) => state.booking.user);
   const selectedMethodInfoUser = useSelector(
@@ -43,11 +57,19 @@ const BookingPage = () => {
   }, [userCurrent]);
 
   useEffect(() => {
+    dispatch(doSetIsRunning(false));
     dispatch(doResetBooking());
   }, []);
 
+  const [deadline, setDeadline] = useState(null);
   const [isSubmit, setIsSubmit] = useState(false);
   const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (isRunning) {
+      setDeadline(Date.now() + 1000 * 60 * 0.5);
+    }
+  }, [isRunning]);
 
   const checkSelectedUser = async () => {
     if (!selectedUser && selectedMethodInfoUser !== 3) {
@@ -116,6 +138,7 @@ const BookingPage = () => {
 
   const onFinish = async (values) => {
     setIsSubmit(true);
+    dispatch(doSetIsRunning(false));
     const resultEmail = await checkSelectedUser();
     console.log("resultEmail: ", resultEmail);
     if (!resultEmail) {
@@ -181,6 +204,64 @@ const BookingPage = () => {
     },
   ];
 
+  const fetchCheckSeat = async (selectedSeat, showTimeId) => {
+    const resCheckHoldSeat = await callCheckHoldSeat(selectedSeat, showTimeId);
+    if (resCheckHoldSeat?.status === 200) {
+      if (resCheckHoldSeat.message === null) {
+        try {
+          const resHoldSeats = await callHoldSeats(
+            selectedSeat,
+            showTimeId,
+            false
+          );
+          if (resHoldSeats?.status === 200) {
+            dispatch(doSetIsRunning(true));
+          }
+          console.log("resHoldSeats: ", resHoldSeats);
+          return;
+        } catch (error) {
+          console.log("error: ", error);
+          return;
+        }
+      } else {
+        notification.error({
+          message: "Đã có lỗi xảy ra!",
+          description: "Ghế đã được người khác đặt! jjkasdh",
+        });
+        return;
+      }
+    }
+  };
+
+  const handleFinish = async () => {
+    const resHoldSeats = await callHoldSeats(
+      selectedSeat,
+      selectedShowTime.id,
+      true
+    );
+    if (resHoldSeats?.status === 200) {
+      console.log("resHoldSeats trong: ", resHoldSeats);
+      dispatch(doSetIsRunning(false));
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: "Hết thời gian giữ ghế!",
+      });
+      setCurrent(0);
+      dispatch(doResetBooking());
+    }
+  };
+
+  const fetchHoldSeatTrue = async () => {
+    const resHoldSeats = await callHoldSeats(
+      selectedSeat,
+      selectedShowTime.id,
+      true
+    );
+    if (resHoldSeats?.status === 200) {
+      dispatch(doSetIsRunning(false));
+    }
+  };
+
   const next = () => {
     if (current === 1 && selectedSeat.length === 0) {
       notification.error({
@@ -188,11 +269,19 @@ const BookingPage = () => {
         description: "Vui lòng chọn ghế!",
       });
       return;
+    } else if (current === 1 && selectedSeat.length > 0) {
+      fetchCheckSeat(selectedSeat, selectedShowTime.id);
     }
+    console.log("đây là ở: ", current, steps.length);
     setCurrent(current + 1);
   };
 
-  const prev = () => setCurrent(current - 1);
+  const prev = async () => {
+    if (current === 2 && selectedSeat.length > 0) {
+      await fetchHoldSeatTrue();
+    }
+    setCurrent(current - 1);
+  };
 
   const items = steps.map((item) => ({
     key: item.title,
@@ -200,35 +289,48 @@ const BookingPage = () => {
   }));
 
   return (
-    <>
-      <Row gutter={16}>
-        <Col span={15}>
-          <Steps current={current} items={items} />
-          <div style={{ marginTop: 24 }}>{steps[current].formComponent}</div>
-        </Col>
-        <Col span={9}>
-          <OrderCard />
-          <div style={{ marginTop: 24, textAlign: "right" }}>
-            {current > 0 && (
-              <Button type="primary" style={{ marginRight: 8 }} onClick={prev}>
-                Quay lại
+    <Row gutter={16}>
+      <Col span={15}>
+        <Steps current={current} items={items} />
+        <div style={{ marginTop: 24 }}>{steps[current].formComponent}</div>
+      </Col>
+      <Col span={9}>
+        {isRunning ? (
+          <Countdown
+            title="Thời gian giữ ghế:"
+            value={deadline}
+            onFinish={handleFinish}
+            format={"mm:ss"}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          />
+        ) : null}
+        <OrderCard />
+        <div style={{ marginTop: 24, textAlign: "right" }}>
+          {current > 0 && (
+            <Button type="primary" style={{ marginRight: 8 }} onClick={prev}>
+              Quay lại
+            </Button>
+          )}
+          {current < steps.length - 1 &&
+            Object.keys(selectedShowTime).length > 0 && (
+              <Button type="primary" onClick={next}>
+                Tiếp tục
               </Button>
             )}
-            {current < steps.length - 1 &&
-              Object.keys(selectedShowTime).length > 0 && (
-                <Button type="primary" onClick={next}>
-                  Tiếp tục
-                </Button>
-              )}
-            {current === steps.length - 1 && (
-              <Button type="primary" loading={isSubmit} onClick={onFinish}>
-                Thanh toán
-              </Button>
-            )}
-          </div>
-        </Col>
-      </Row>
-    </>
+          {current === steps.length - 1 && (
+            <Button type="primary" loading={isSubmit} onClick={onFinish}>
+              Thanh toán
+            </Button>
+          )}
+        </div>
+      </Col>
+    </Row>
   );
 };
 
