@@ -149,7 +149,7 @@ const BookingFood = () => {
                     )}
                   </div>
                 </div>
-                {item.active_price === true ? (
+                {item.active_price === true && item.quantity > 0 ? (
                   <QuantityCounter
                     selectedFoodId={item.id}
                     handleSelectFood={handleSelectFood}
