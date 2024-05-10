@@ -1,14 +1,11 @@
 import { Button } from "antd";
 import React from "react";
-import { AiOutlineReload } from "react-icons/ai";
 import { IoArrowBack } from "react-icons/io5";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const PageHeader = ({ title, numberBack, type, hiddenEdit, handleDelete }) => {
+const PageHeader = ({ title, numberBack, type, hiddenEdit }) => {
   // numberBack (-1): back 1 page, ...
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user.user);
 
   const isCreatePage = type === "create";
   const isEditPage = type === "edit";
@@ -56,16 +53,6 @@ const PageHeader = ({ title, numberBack, type, hiddenEdit, handleDelete }) => {
             Cập nhật
           </Button>
         )}
-        <Button
-          type="primary"
-          style={{ marginRight: 10 }}
-          onClick={() => handleDelete()}
-        >
-          Xoá
-        </Button>
-        <Button type="primary">
-          <AiOutlineReload />
-        </Button>
       </div>
     </div>
   );
