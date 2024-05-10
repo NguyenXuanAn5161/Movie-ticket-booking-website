@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ActionButtons from "../../../components/Button/ActionButtons";
 import { renderDate } from "../../../components/FunctionRender/FunctionRender";
+import SearchList from "../../../components/InputSearch/SearchList";
 import TableHeader from "../../../components/TableHeader/TableHeader";
 import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
 import {
@@ -81,9 +82,9 @@ const FoodCategoryList = () => {
   };
 
   const columns = [
-    createColumn("Mã loại đồ ăn", "code", 100, "left"),
-    createColumn("Loại đồ ăn", "name", 100, "left"),
-    createColumn("Cập nhật ngày", "createdDate", 150, undefined, renderDate),
+    createColumn("Mã loại đồ ăn", "code", 100, false, undefined, "left"),
+    createColumn("Loại đồ ăn", "name", 100, false, undefined, "left"),
+    createColumn("Cập nhật ngày", "createdDate", 150, false, renderDate),
     {
       title: "Thao tác",
       width: 100,
@@ -122,11 +123,7 @@ const FoodCategoryList = () => {
   const renderHeader = () => (
     <TableHeader
       onReload={handleReload}
-      filter={filter}
-      setFilter={setFilter}
-      handleSearch={handleSearch}
       headerTitle={"Danh sách loại đồ ăn"}
-      itemSearch={itemSearch}
       create={handleToPageCreate}
     />
   );
@@ -158,7 +155,7 @@ const FoodCategoryList = () => {
       setCurrent(1);
     }
 
-    if (sorter && sorter.field) {
+    if (sorter?.field) {
       const q =
         sorter.order === "ascend"
           ? `sort=${sorter.field}`
@@ -168,40 +165,46 @@ const FoodCategoryList = () => {
   };
 
   return (
-    <>
-      <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <Table
-            scroll={{
-              x: "100%",
-              y: "64vh",
-            }}
-            title={renderHeader}
-            bordered
-            // thay đổi #1
-            // loading={isLoading}
-            columns={columns}
-            dataSource={listData}
-            onChange={onChange}
-            // thay đổi #1
-            rowKey="code"
-            pagination={{
-              current: current,
-              pageSize: pageSize,
-              showSizeChanger: true,
-              total: total,
-              showTotal: (total, range) => {
-                return (
-                  <div>
-                    {range[0]} - {range[1]} trên {total} dòng
-                  </div>
-                );
-              },
-            }}
-          />
-        </Col>
-      </Row>
-    </>
+    <Row gutter={[20, 10]}>
+      <Col span={24}>
+        <SearchList
+          itemSearch={itemSearch}
+          handleSearch={handleSearch}
+          setFilter={setFilter}
+          filter={filter}
+        />
+      </Col>
+      <Col span={24}>
+        <Table
+          scroll={{
+            x: "100%",
+            y: "64vh",
+          }}
+          title={renderHeader}
+          bordered
+          // thay đổi #1
+          // loading={isLoading}
+          columns={columns}
+          dataSource={listData}
+          onChange={onChange}
+          // thay đổi #1
+          rowKey="code"
+          pagination={{
+            current: current,
+            pageSize: pageSize,
+            showSizeChanger: true,
+            total: total,
+            showTotal: (total, range) => {
+              return (
+                <div>
+                  {range[0]} - {range[1]} trên {total} dòng
+                </div>
+              );
+            },
+          }}
+        />
+      </Col>
+    </Row>
   );
 };
 
