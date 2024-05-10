@@ -433,7 +433,7 @@ const RoomEdit = () => {
           type="primary"
           style={{
             right: 50,
-            marginBottom: 50,
+            marginBottom: 100,
           }}
           icon={<MdEventSeat />}
         >
