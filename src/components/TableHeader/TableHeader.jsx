@@ -63,12 +63,14 @@ const TableHeader = ({
           justifyContent: "flex-end",
         }}
       >
-        <Search
-          itemSearch={itemSearch}
-          handleSearch={handleSearch}
-          setFilter={setFilter}
-          filter={filter}
-        />
+        {itemSearch?.length > 0 && (
+          <Search
+            itemSearch={itemSearch}
+            handleSearch={handleSearch}
+            setFilter={setFilter}
+            filter={filter}
+          />
+        )}
         <div
           style={{
             display: "flex",

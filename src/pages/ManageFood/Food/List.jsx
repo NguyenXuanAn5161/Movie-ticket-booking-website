@@ -9,7 +9,9 @@ import {
   renderQuantity,
   renderStatus,
 } from "../../../components/FunctionRender/FunctionRender";
+import SearchList from "../../../components/InputSearch/SearchList";
 import TableHeader from "../../../components/TableHeader/TableHeader";
+import useTheme from "../../../core/useTheme";
 import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
 import { doSetFood } from "../../../redux/food/foodSlice";
 import { callFetchListCinema } from "../../../services/apiCinema";
@@ -26,6 +28,8 @@ const FoodList = () => {
   const foodCategory = useSelector((state) => state.foodCategory.foodCategory);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { theme } = useTheme();
+
   // mặc định #2
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
@@ -132,7 +136,7 @@ const FoodList = () => {
   };
 
   const columns = [
-    createColumn("Code", "code", 100, false, undefined, "left"),
+    createColumn("Code", "code", 120, false, undefined, "left"),
     createColumn("Tên đồ ăn", "name", 200, false, undefined, "left"),
     createColumn("Giá", "price", 150, false, renderCurrency),
     createColumn("Số lượng", "quantity", 150, false, renderQuantity),
@@ -188,11 +192,7 @@ const FoodList = () => {
   const renderHeader = () => (
     <TableHeader
       onReload={handleReload}
-      filter={filter}
-      setFilter={setFilter}
-      handleSearch={handleSearch}
       headerTitle={"Danh sách đồ ăn"}
-      itemSearch={itemSearch}
       create={handleToPageCreate}
     />
   );
@@ -226,7 +226,7 @@ const FoodList = () => {
       setCurrent(1);
     }
 
-    if (sorter && sorter.field) {
+    if (sorter?.field) {
       const q =
         sorter.order === "ascend"
           ? `sort=${sorter.field}`
@@ -236,40 +236,46 @@ const FoodList = () => {
   };
 
   return (
-    <>
-      <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <Table
-            scroll={{
-              x: "100%",
-              y: "64vh",
-            }}
-            title={renderHeader}
-            bordered
-            // thay đổi #1
-            loading={isLoading}
-            columns={columns}
-            dataSource={listData}
-            onChange={onChange}
-            // thay đổi #1
-            rowKey="id"
-            pagination={{
-              current: current,
-              pageSize: pageSize,
-              showSizeChanger: true,
-              total: total,
-              showTotal: (total, range) => {
-                return (
-                  <div>
-                    {range[0]} - {range[1]} trên {total} dòng
-                  </div>
-                );
-              },
-            }}
-          />
-        </Col>
-      </Row>
-    </>
+    <Row gutter={[16, 10]}>
+      <Col span={24}>
+        <SearchList
+          itemSearch={itemSearch}
+          handleSearch={handleSearch}
+          setFilter={setFilter}
+          filter={filter}
+        />
+      </Col>
+      <Col span={24}>
+        <Table
+          scroll={{
+            x: "100%",
+            y: "64vh",
+          }}
+          title={renderHeader}
+          bordered
+          // thay đổi #1
+          loading={isLoading}
+          columns={columns}
+          dataSource={listData}
+          onChange={onChange}
+          // thay đổi #1
+          rowKey="id"
+          pagination={{
+            current: current,
+            pageSize: pageSize,
+            showSizeChanger: true,
+            total: total,
+            showTotal: (total, range) => {
+              return (
+                <div>
+                  {range[0]} - {range[1]} trên {total} dòng
+                </div>
+              );
+            },
+          }}
+        />
+      </Col>
+    </Row>
   );
 };
 
