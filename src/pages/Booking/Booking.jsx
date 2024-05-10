@@ -208,27 +208,13 @@ const BookingPage = () => {
     const resCheckHoldSeat = await callCheckHoldSeat(selectedSeat, showTimeId);
     if (resCheckHoldSeat?.status === 200) {
       if (resCheckHoldSeat.message === null) {
-        try {
-          const resHoldSeats = await callHoldSeats(
-            selectedSeat,
-            showTimeId,
-            false
-          );
-          if (resHoldSeats?.status === 200) {
-            dispatch(doSetIsRunning(true));
-          }
-          console.log("resHoldSeats: ", resHoldSeats);
-          return;
-        } catch (error) {
-          console.log("error: ", error);
-          return;
-        }
+        return false;
       } else {
         notification.error({
           message: "Đã có lỗi xảy ra!",
-          description: "Ghế đã được người khác đặt! jjkasdh",
+          description: resCheckHoldSeat.message || "Ghế đã có người đặt!",
         });
-        return;
+        return true;
       }
     }
   };
@@ -251,18 +237,24 @@ const BookingPage = () => {
     }
   };
 
-  const fetchHoldSeatTrue = async () => {
+  const fetchHoldSeatTrue = async (status) => {
     const resHoldSeats = await callHoldSeats(
       selectedSeat,
       selectedShowTime.id,
-      true
+      status
     );
     if (resHoldSeats?.status === 200) {
-      dispatch(doSetIsRunning(false));
+      return true;
+    } else {
+      notification.error({
+        message: "Đã có lỗi xảy ra!",
+        description: resHoldSeats.response.data.message,
+      });
+      return false;
     }
   };
 
-  const next = () => {
+  const next = async () => {
     if (current === 1 && selectedSeat.length === 0) {
       notification.error({
         message: "Đã có lỗi xảy ra!",
@@ -270,15 +262,25 @@ const BookingPage = () => {
       });
       return;
     } else if (current === 1 && selectedSeat.length > 0) {
-      fetchCheckSeat(selectedSeat, selectedShowTime.id);
+      const checkSeat = await fetchCheckSeat(selectedSeat, selectedShowTime.id);
+      if (checkSeat) {
+        return;
+      } else {
+        const checkedHold = await fetchHoldSeatTrue(false);
+        if (checkedHold) {
+          dispatch(doSetIsRunning(true));
+        }
+      }
     }
-    console.log("đây là ở: ", current, steps.length);
     setCurrent(current + 1);
   };
 
   const prev = async () => {
     if (current === 2 && selectedSeat.length > 0) {
-      await fetchHoldSeatTrue();
+      const checkedHold = await fetchHoldSeatTrue(true);
+      if (checkedHold) {
+        dispatch(doSetIsRunning(false));
+      }
     }
     setCurrent(current - 1);
   };
