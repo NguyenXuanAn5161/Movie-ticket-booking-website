@@ -67,7 +67,7 @@ const BookingPage = () => {
 
   useEffect(() => {
     if (isRunning) {
-      setDeadline(Date.now() + 1000 * 60 * 5);
+      setDeadline(Date.now() + 1000 * 60 * 7);
     }
   }, [isRunning]);
 
