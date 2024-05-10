@@ -26,18 +26,23 @@ const SeatGrid = ({ seatData }) => {
 
   // Hàm để lấy màu tùy theo loại ghế
   const getTypeSeatColor = (seatTypeId, defaultColor) => {
-    var seat = null;
+    let seat = null;
     typeSeat?.forEach((type) => {
       if (type.id === seatTypeId) {
         seat = type;
       }
     });
 
-    return seat?.name === "STANDARD"
-      ? defaultColor
-      : seat?.name === "VIP"
-      ? theme.colors.vip
-      : theme.colors.sweetBox;
+    let color;
+    if (seat?.name === "STANDARD") {
+      color = defaultColor;
+    } else if (seat?.name === "VIP") {
+      color = theme.colors.vip;
+    } else {
+      color = theme.colors.sweetBox;
+    }
+
+    return color;
   };
 
   // Tạo một mảng chứa thông tin về tất cả các ghế trong lưới
