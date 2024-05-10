@@ -48,6 +48,10 @@ const RoomEdit = () => {
   // lần đầu tiên load giao diện setSelectedSeats với giá trị ban đầu của room
 
   useEffect(() => {
+    // f5 lại trang
+    window.onbeforeunload = function () {
+      return true;
+    };
     getRoomById();
   }, []);
 
@@ -429,7 +433,7 @@ const RoomEdit = () => {
           type="primary"
           style={{
             right: 50,
-            marginBottom: 50,
+            marginBottom: 100,
           }}
           icon={<MdEventSeat />}
         >

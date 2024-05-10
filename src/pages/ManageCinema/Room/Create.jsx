@@ -41,6 +41,13 @@ const RoomCreate = () => {
   const [openModalTypeSeat, setOpenModalTypeSeat] = useState(false);
 
   useEffect(() => {
+    // f5 lại trang
+    window.onbeforeunload = function () {
+      return true;
+    };
+  }, []);
+
+  useEffect(() => {
     console.log("selectedSeats: ", selectedSeats);
   }, [selectedSeats]);
 
@@ -373,7 +380,7 @@ const RoomCreate = () => {
           type="primary"
           style={{
             right: 50,
-            marginBottom: 50,
+            marginBottom: 100,
           }}
           icon={<MdEventSeat />}
         >

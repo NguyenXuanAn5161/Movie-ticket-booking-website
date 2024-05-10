@@ -41,10 +41,8 @@ const CinemaShow = () => {
   const cinema = useSelector((state) => state.cinema.cinema);
   // fetch lai data cinema khi f5
   useEffect(() => {
-    if (!cinema) {
-      getCinemaById();
-    }
-  }, [cinema]);
+    getCinemaById();
+  }, []);
 
   const getCinemaById = async () => {
     const res = await callFetchCinemaById(cinemaId);
@@ -105,7 +103,7 @@ const CinemaShow = () => {
     if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Xoá phòng thành công!");
-      await fetchData();
+      await getCinemaById();
     } else {
       const error = getErrorMessageRoom(res.response.data.message, {
         id: dataId,
@@ -284,7 +282,7 @@ const CinemaShow = () => {
       setCurrent(1);
     }
 
-    if (sorter && sorter.field) {
+    if (sorter?.field) {
       const q =
         sorter.order === "ascend"
           ? `sort=${sorter.field}`
@@ -328,7 +326,7 @@ const CinemaShow = () => {
             title={renderHeader}
             bordered
             // thay đổi #1
-            // loading={isLoading}
+            loading={isLoading}
             columns={columns}
             dataSource={listDataRoom}
             onChange={onChange}

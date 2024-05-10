@@ -6,7 +6,6 @@ import {
   Divider,
   Row,
   Tag,
-  message,
   notification,
 } from "antd";
 import moment from "moment";
@@ -15,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { doSetUser } from "../../redux/account/userSlice";
-import { callDeleteUser, callFetchUserById } from "../../services/apiUser";
+import { callFetchUserById } from "../../services/apiUser";
 import { getErrorMessageUser } from "../../utils/errorHandling";
 
 const UserShow = () => {
@@ -37,22 +36,6 @@ const UserShow = () => {
     } else {
       const error = getErrorMessageUser(res.response.data.message, {
         id: userId,
-      });
-      notification.error({
-        message: "Đã có lỗi xảy ra!",
-        description: error,
-      });
-    }
-  };
-
-  const handleDeleteUser = async () => {
-    const res = await callDeleteUser(user?.id);
-    if (res.status === 200) {
-      message.success("Tắt hoạt động người dùng thành công!");
-      navigate(-1);
-    } else {
-      const error = getErrorMessageUser(res.response.data.message, {
-        id: user?.id,
       });
       notification.error({
         message: "Đã có lỗi xảy ra!",
@@ -124,7 +107,6 @@ const UserShow = () => {
         numberBack={-1}
         type="show"
         hiddenEdit
-        handleDelete={handleDeleteUser}
       />
       <Divider />
       <div style={{ padding: "0 20px" }}>

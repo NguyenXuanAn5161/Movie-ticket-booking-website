@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { callFetchListTypeSeat } from "../../services/apiMovie";
 
 const SeatComponent = ({
   isSelected,
@@ -16,17 +17,35 @@ const SeatComponent = ({
   seatColumn,
 }) => {
   const [rendered, setRendered] = useState(false);
+  const [typeSeat, setTypeSeat] = useState(null);
+
+  // fetch type seat để so sánh loại ghế
+  useEffect(() => {
+    getTypeSeat();
+  }, []);
+
+  const getTypeSeat = async () => {
+    const resTypeSeat = await callFetchListTypeSeat();
+    setTypeSeat(resTypeSeat);
+  };
 
   // Ánh xạ giữa typeSeat và backgroundColor
   // sửa loại ghế đôi
   const getTypeSeatColor = (seatTypeId) => {
-    switch (seatTypeId) {
-      case 2:
+    let seat = null;
+    typeSeat?.forEach((type) => {
+      if (type.id === seatTypeId) {
+        seat = type;
+      }
+    });
+
+    switch (seat?.name) {
+      case "VIP":
         return "#FF8247"; // Màu cam cho ghế vip
-      case 3:
-        return "#FF1493"; // Màu hồng cho ghế đôi
-      default:
+      case "STANDARD":
         return "#6959CD"; // Màu tím cho ghế thường (mặc định)
+      default:
+        return "#FF1493"; // Màu hồng cho ghế đôi
     }
   };
 
@@ -56,11 +75,9 @@ const SeatComponent = ({
   };
 
   // Tìm kiếm thông tin ghế dựa trên seatRow và seatColumn
-  const seatData =
-    selectedSeats &&
-    selectedSeats.find(
-      (seat) => seat.seatRow === seatRow && seat.seatColumn === seatColumn
-    );
+  const seatData = selectedSeats?.find(
+    (seat) => seat.seatRow === seatRow && seat.seatColumn === seatColumn
+  );
 
   // Xác định màu cho ghế dựa trên seatData
   const selectedSeatColor = seatData

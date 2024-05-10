@@ -160,7 +160,7 @@ function CustomBreadcrumb(props) {
           children: [
             {
               path: "/show",
-              title: "Xem chi tiết rạp phim",
+              title: "Xem chi tiết rạp",
               key: "cinemaShow",
             },
             {
@@ -181,62 +181,18 @@ function CustomBreadcrumb(props) {
                 {
                   path: "/show",
                   title: "Xem chi tiết phòng",
-                  key: "cinemaShow",
+                  key: "roomShow",
                 },
                 {
                   path: "/create",
                   title: "Tạo mới phòng",
-                  key: "cinemaCreate",
+                  key: "roomCreate",
                 },
                 {
                   path: "/edit",
                   title: "Cập nhật phòng",
-                  key: "cinemaEdit",
+                  key: "roomEdit",
                 },
-                // {
-                //   path: "/seat",
-                //   title: "Ghế",
-                //   key: "seat",
-                //   children: [
-                //     {
-                //       path: "/show",
-                //       title: "Xem chi tiết ghế",
-                //       key: "seatShow",
-                //     },
-                //     {
-                //       path: "/create",
-                //       title: "Tạo mới ghế",
-                //       key: "seatCreate",
-                //     },
-                //     {
-                //       path: "/edit",
-                //       title: "Cập nhật ghế",
-                //       key: "seatEdit",
-                //     },
-                //   ],
-                // },
-                // {
-                //   path: "/seatType",
-                //   title: "Loại ghế",
-                //   key: "seatType",
-                //   children: [
-                //     {
-                //       path: "/show",
-                //       title: "Xem chi tiết loại ghế",
-                //       key: "seatTypeShow",
-                //     },
-                //     {
-                //       path: "/create",
-                //       title: "Tạo mới loại ghế",
-                //       key: "seatTypeCreate",
-                //     },
-                //     {
-                //       path: "/edit",
-                //       title: "Cập nhật loại ghế",
-                //       key: "seatTypeEdit",
-                //     },
-                //   ],
-                // },
               ],
             },
           ],
@@ -341,8 +297,7 @@ function CustomBreadcrumb(props) {
   let pathChildren = [];
 
   const getItemByPath = (path, itemList) => {
-    for (let i = 0; i < itemList.length; i++) {
-      const item = itemList[i];
+    for (const item of itemList) {
       if (item.path === path) {
         return item;
       }
@@ -356,44 +311,65 @@ function CustomBreadcrumb(props) {
         }
       }
     }
+
     return null;
   };
 
   const currentPath = location.pathname;
 
-  const itemRender = (route, params, routes, paths) => {
-    const last = routes.indexOf(route) === routes.length - 1;
-    const item = getItemByPath(route.path, items);
+  const shouldRenderTitle = (route) => {
+    return route.path !== "/admin";
+  };
 
-    // Không render title cho mục đầu tiên
-    if (route.path === "/admin") {
-      return null;
-    }
-
-    // Kiểm tra nếu route là 'show', 'edit', hoặc 'create' thì chỉ hiển thị span
-    if (["/show", "/edit", "/create"].includes(route.path)) {
-      if (pathChildren.length > 0) {
-        // Kiểm tra xem route.path trùng với bất kỳ đường dẫn nào trong pathChildren
-        const matchingPathChild = pathChildren.find(
-          (pathChild) => pathChild.path === route.path
-        );
-
-        // Nếu tìm thấy đường dẫn trùng khớp, trả về tiêu đề của mục đó
-        if (matchingPathChild) {
-          return (
-            <span>{matchingPathChild ? matchingPathChild.title : null}</span>
-          );
-        }
+  const renderTitle = (route, pathChildren, matchingPathChild, item) => {
+    if (pathChildren.length > 0) {
+      if (matchingPathChild) {
+        return <span>{matchingPathChild.title}</span>;
       }
-      // Nếu không có đường dẫn trùng khớp hoặc không có pathChildren, hiển thị tiêu đề của item (nếu tồn tại)
-      return <span>{item ? item.title : null}</span>;
     }
+    return <span>{item ? item.title : null}</span>;
+  };
 
+  const renderLinkOrSpan = (last, paths, item) => {
     return last ? (
       <span>{item ? item.title : null}</span>
     ) : (
       <Link to={paths.join("/")}>{item ? item.title : null}</Link>
     );
+  };
+
+  const itemRender = (route, params, routes, paths) => {
+    const last = routes.indexOf(route) === routes.length - 1;
+    const item = getItemByPath(route.path, items);
+    const hasRoomPath = routes.some((route) => route.path === "/room");
+
+    if (!shouldRenderTitle(route)) {
+      return null;
+    }
+
+    if (!hasRoomPath) {
+      if (["/show", "/edit", "/create"].includes(route.path)) {
+        const matchingPathChild = pathChildren.find(
+          (pathChild) => pathChild.path === route.path
+        );
+        return matchingPathChild
+          ? renderTitle(route, pathChildren, matchingPathChild, null)
+          : renderLinkOrSpan(last, paths, item);
+      }
+
+      return renderLinkOrSpan(last, paths, item);
+    } else if (hasRoomPath) {
+      // chỉ xử lý breadcrumb đến show, edit, create trước /room, không xử lý các show, edit, create sau /room
+      if (["/show", "/edit", "/create"].includes(route.path)) {
+        const matchingPathChild = pathChildren.find(
+          (pathChild) => pathChild.path === route.path
+        );
+        console.log("matchingPathChild trong co room: ", matchingPathChild);
+        return matchingPathChild
+          ? renderTitle(route, pathChildren, matchingPathChild, null)
+          : renderLinkOrSpan(last, paths, item);
+      }
+    }
   };
 
   // Tạo mảng itemsPath dựa trên điều kiện
