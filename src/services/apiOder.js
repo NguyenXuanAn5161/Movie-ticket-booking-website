@@ -137,3 +137,31 @@ export const callGetAllReturnInvoice = async (query) => {
     return error;
   }
 };
+
+// check giữ ghế
+export const callCheckHoldSeat = async (seats, showTimeId) => {
+  const seatIds = seats.map((seat) => seat.id).join(",");
+
+  try {
+    const response = await api.get(
+      `/api/showtime/seat?seatIds=${seatIds}&showTimeId=${showTimeId}`
+    );
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// giữ ghế
+export const callHoldSeats = async (seats, showTimeId, status) => {
+  const seatIds = seats.map((seat) => seat.id).join(",");
+
+  try {
+    const response = await api.post(
+      `/api/showtime/seat?seatIds=${seatIds}&showTimeId=${showTimeId}&status=${status}`
+    );
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
