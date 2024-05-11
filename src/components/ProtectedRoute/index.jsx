@@ -14,7 +14,12 @@ const RouteBaseRoute = (props) => {
     console.log("userRoles: ", userRoles);
   }, [user, userRoles]);
 
-  if (isAdminRoute && userRoles?.some((role) => role === "ROLE_ADMIN")) {
+  if (
+    isAdminRoute &&
+    userRoles?.some(
+      (role) => role === "ROLE_ADMIN" || role === "ROLE_MODERATOR"
+    )
+  ) {
     return <>{props.children}</>;
   } else {
     return <NotPermistted />;
