@@ -89,7 +89,7 @@ export default function App() {
   const router = createBrowserRouter([
     // layout for admin
     {
-      path: "/admin",
+      path: "/",
       element: <LayoutAdmin />,
       errorElement: <NotFound />,
       children: [
