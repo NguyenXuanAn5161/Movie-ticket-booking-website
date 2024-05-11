@@ -16,7 +16,7 @@ $small-font-size: 14px; // Kích thước chữ nhỏ
 $large-font-size: 18px; // Kích thước chữ lớn - menu
 
 // Font family
-$font-family: "Arial", sans-serif;
+$font-family: "Roboto", sans-serif;
 
 $font-weight-one: 700;
 $font-weight-two: 500;
@@ -76,11 +76,11 @@ button,
     // background-color: $primary-color;
 }
 
-button,
+// button,
 .custom-button:focus {
     outline: none;
     color: $text-color-second !important;
-    background-color: $primary-color !important;
+    // background-color: $primary-color !important;
 }
 
 // .container {
