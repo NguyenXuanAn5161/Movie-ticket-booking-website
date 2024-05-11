@@ -28,6 +28,8 @@ const TableHeader = ({
   filter,
   create,
   handleExportData,
+  showFuncOther = true,
+  showCreate = true,
 }) => {
   const handleMenuClick = (e) => {
     switch (e.key) {
@@ -77,22 +79,26 @@ const TableHeader = ({
             gap: "0 10px",
           }}
         >
-          <TooltipButton
-            icon={<AiOutlinePlus />}
-            tooltipTitle="Thêm mới"
-            onClick={create}
-          />
+          {showCreate && (
+            <TooltipButton
+              icon={<AiOutlinePlus />}
+              tooltipTitle="Thêm mới"
+              onClick={create}
+            />
+          )}
           <TooltipButton
             icon={<AiOutlineReload />}
             tooltipTitle="Tải lại"
             onClick={onReload}
           />
-          <TooltipButton
-            icon={<CiMenuBurger />}
-            tooltipTitle="Chức năng khác"
-            trigger={"hover"}
-            dropdown={menuProps}
-          />
+          {showFuncOther && (
+            <TooltipButton
+              icon={<CiMenuBurger />}
+              tooltipTitle="Chức năng khác"
+              trigger={"hover"}
+              dropdown={menuProps}
+            />
+          )}
         </div>
       </Col>
     </Row>

@@ -52,7 +52,11 @@ const TypeInput = ({ item }) => {
   };
 
   return (
-    <Form.Item name={item.field} style={{ height: "auto", marginBottom: 0 }}>
+    <Form.Item
+      name={item.field}
+      style={{ height: "auto", marginBottom: 0 }}
+      rules={item?.validator ? [{ validator: item.validator }] : []}
+    >
       {renderInput()}
     </Form.Item>
   );

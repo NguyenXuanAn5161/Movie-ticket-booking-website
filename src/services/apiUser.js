@@ -10,21 +10,36 @@ export const callFetchUserById = async (id) => {
   }
 };
 
-export const callFetchListUser = async (page, size, username, phone, email) => {
+export const callFetchListUser = async (query) => {
   try {
-    const response = await api.get("/api/users", {
-      params: {
-        page: page,
-        size: size,
-        username: username,
-        phone: phone,
-        email: email,
-      },
-    });
+    const response = await api.get(`/api/users?${query}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
     throw error;
+  }
+};
+
+export const callCreateMor = async (data) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("username", data.username);
+  bodyFormData.append("email", data.email);
+  bodyFormData.append("gender", data.gender);
+  bodyFormData.append("phone", data.phone);
+  bodyFormData.append("password", data.password);
+
+  try {
+    const response = await api({
+      method: "post",
+      url: "/api/users/mor",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
   }
 };
 

@@ -90,7 +90,7 @@ const CinemaList = () => {
     createColumn("Tổng số phòng", "totalRoom", 120),
     createColumn("Địa chỉ", "address", 150, undefined, renderAddress),
     createColumn("Trạng thái", "status", 100, undefined, renderStatus()),
-    createColumn("Cập nhật ngày", "updatedAt", 150, undefined, renderDate),
+    createColumn("Cập nhật ngày", "createdDate", 150, undefined, renderDate),
     {
       title: "Thao tác",
       width: 100,

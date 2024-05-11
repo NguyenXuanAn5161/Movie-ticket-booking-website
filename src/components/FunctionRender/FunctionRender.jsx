@@ -30,7 +30,7 @@ const getStatusMap = (type) => {
 
 export const renderStatus = (type) => (text, record) => {
   const statusMap = getStatusMap(type);
-  const statusKey = String(record.status);
+  const statusKey = String(text);
   const { color, label } = statusMap[statusKey] || {
     color: "default",
     label: "Không xác định",
@@ -144,4 +144,12 @@ export const renderQuantity = (text, record) => {
       )}
     </span>
   );
+};
+
+export const renderGender = (text, record) => {
+  return <span>{record?.gender === true ? "Nam" : "Nữ"}</span>;
+};
+
+export const renderPhone = (text, record) => {
+  return <span>{record?.phone || "Chưa có thông tin"}</span>;
 };
