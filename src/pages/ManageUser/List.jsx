@@ -95,7 +95,7 @@ const UserList = () => {
             handleDelete={handleDeleteData}
             handleView={handleView}
             showDelete={checked}
-            showEdit={checked}
+            showEdit={false}
             showView={true}
             itemName={"người dùng"}
           />
