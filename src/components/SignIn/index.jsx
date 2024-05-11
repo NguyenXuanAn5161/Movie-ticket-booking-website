@@ -39,20 +39,16 @@ const SignInForm = (props) => {
     setIsSubmit(false);
     if (res?.data) {
       console.log(res.data);
-      if (res?.data?.roles?.some((role) => role === "ROLE_ADMIN")) {
-        // lưu access token
-        localStorage.setItem("accessToken", res.data.accessToken);
-        localStorage.setItem("user", JSON.stringify(res.data));
-        dispatch(doLoginAction(res.data));
-        message.success("Đăng nhập thành công!");
-        navigate("/");
-      } else {
-        message.error("Tài khoản của bạn không đủ quyền để vào trang này!");
-      }
+      // lưu access token
+      localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("user", JSON.stringify(res.data));
+      dispatch(doLoginAction(res.data));
+      message.success("Đăng nhập thành công!");
+      navigate("/");
     } else {
       notification.error({
         message: "Có lỗi xảy ra!",
-        description: "Vui lòng kiểm tra lại thông tin đăng nhập!",
+        description: res.response.data.message,
         duration: 5,
       });
     }
