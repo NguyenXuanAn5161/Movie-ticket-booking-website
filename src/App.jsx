@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import LayoutAdmin from "./components/Admin/LayoutAdmin";
+import AdminHome from "./components/Home";
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -86,14 +87,18 @@ export default function App() {
     getAccount();
   }, []);
 
-  useEffect(()=> {
-    if(window.location.pathname==="/"){
-      window.location.href = "/admin";
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (window.location.pathname === "/") {
+  //     window.location.href = "/admin";
+  //   }
+  // }, []);
 
   const router = createBrowserRouter([
     // layout for admin
+    {
+      path: "/",
+      element: <AdminHome />,
+    },
     {
       path: "/admin",
       element: <LayoutAdmin />,
