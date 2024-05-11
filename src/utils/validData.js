@@ -1,8 +1,13 @@
-const validateField = (fieldName, regex, invalidMessage) => {
+const validateField = (
+  fieldName,
+  regex,
+  invalidMessage,
+  fieldUserName = true
+) => {
   return (rule, value, callback) => {
     if (!value) {
       callback();
-    } else if (regex && /\s/.test(value)) {
+    } else if (fieldUserName && regex && /\s/.test(value)) {
       callback(`${fieldName} không được chứa khoảng trắng!`);
     } else if (regex && !regex.test(value)) {
       callback(invalidMessage || `${fieldName} không hợp lệ!`);
@@ -15,7 +20,8 @@ const validateField = (fieldName, regex, invalidMessage) => {
 export const validateUsername = validateField(
   "Họ và tên",
   /^[a-zA-Z ]+$/,
-  "Họ và tên chỉ chứa bảng chữ cái tiếng anh và dấu cách!"
+  "Họ và tên chỉ chứa bảng chữ cái tiếng anh và dấu cách!",
+  false
 );
 
 export const validatePhoneNumber = validateField(
