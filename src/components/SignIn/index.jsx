@@ -45,7 +45,7 @@ const SignInForm = (props) => {
         localStorage.setItem("user", JSON.stringify(res.data));
         dispatch(doLoginAction(res.data));
         message.success("Đăng nhập thành công!");
-        navigate("/admin");
+        navigate("/");
       } else {
         message.error("Tài khoản của bạn không đủ quyền để vào trang này!");
       }

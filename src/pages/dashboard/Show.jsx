@@ -192,16 +192,16 @@ const DashBoardShow = () => {
   const handleDetailStatistical = (type) => {
     switch (type) {
       case "cinema":
-        navigate("/admin/statisticalCinema");
+        navigate("/statisticalCinema");
         break;
       case "movie":
-        navigate("/admin/statisticalMovie");
+        navigate("/statisticalMovie");
         break;
       case "user":
-        navigate("/admin/statisticalUser");
+        navigate("/statisticalUser");
         break;
       case "staff":
-        navigate("/admin/statisticalStaff");
+        navigate("/statisticalStaff");
         break;
       default:
         break;

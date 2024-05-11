@@ -45,7 +45,7 @@ const SeatTypeEdit = () => {
     if (true) {
       // thay đổi #1 message và url
       message.success("Cập nhật loại ghế thành công!");
-      navigate("/admin/cinema/room/seatType");
+      navigate("/cinema/room/seatType");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",

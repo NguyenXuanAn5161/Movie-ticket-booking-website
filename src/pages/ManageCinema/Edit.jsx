@@ -52,7 +52,7 @@ const CinemaEdit = () => {
     if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật rạp phim thành công!");
-      navigate("/admin/cinema");
+      navigate("/cinema");
     } else {
       const error = getErrorMessageCinema(res.message, {
         id: id,

@@ -114,7 +114,7 @@ const RoomEdit = () => {
       message.success("Cập nhật phòng chiếu thành công!");
       form.resetFields();
       setIsSubmit(false);
-      navigate("/admin/cinema/show/" + cinemaId);
+      navigate("/cinema/show/" + cinemaId);
     } else {
       const error = getErrorMessageRoom(res.response.data.message, {
         name: name,

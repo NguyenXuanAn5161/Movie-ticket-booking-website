@@ -83,7 +83,7 @@ const RoomCreate = () => {
       message.success("Tạo mới phòng chiếu thành công!");
       form.resetFields();
       setIsSubmit(false);
-      navigate(`/admin/cinema/show/${cinemaId}`);
+      navigate(`/cinema/show/${cinemaId}`);
     } else {
       console.log("res error: ", res);
       const error = getErrorMessageRoom(res.response.data.message, {

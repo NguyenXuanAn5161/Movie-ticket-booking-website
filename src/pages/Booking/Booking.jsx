@@ -159,7 +159,7 @@ const BookingPage = () => {
       if (res?.status === 200) {
         message.success("Đặt vé thành công!");
         dispatch(doResetBooking());
-        navigate("/admin/order");
+        navigate("/order");
         setIsSubmit(false);
       } else {
         console.log("res dat ve: ", res.response.data.message);

@@ -38,7 +38,7 @@ const UserCreate = () => {
       message.success("Tạo mới người dùng thành công!");
       form.resetFields();
       setIsSubmit(false);
-      navigate("/admin/user");
+      navigate("/user");
     } else {
       const errorDescription = getErrorMessageUser(res.response.data.message);
       notification.error({

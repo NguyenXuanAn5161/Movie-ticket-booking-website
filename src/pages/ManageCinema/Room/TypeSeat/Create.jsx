@@ -35,7 +35,7 @@ const SeatTypeCreate = () => {
       form.resetFields();
       setIsSubmit(false);
       // thay đổi #1 thay đổi url
-      navigate("/admin/cinema/room/seatType");
+      navigate("/cinema/room/seatType");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",

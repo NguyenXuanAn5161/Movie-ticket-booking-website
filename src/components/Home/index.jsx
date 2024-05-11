@@ -11,16 +11,16 @@ const AdminHome = () => {
       </p>
       <ul>
         <li>
-          <Link to="/admin/dashboard">Dashboard</Link>
+          <Link to="/dashboard">Dashboard</Link>
         </li>
         <li>
-          <Link to="/admin/order">Quản lý đơn đặt hàng</Link>
+          <Link to="/order">Quản lý đơn đặt hàng</Link>
         </li>
         <li>
-          <Link to="/admin/user">Quản lý người dùng</Link>
+          <Link to="/user">Quản lý người dùng</Link>
         </li>
         <li>
-          <Link to="/admin/movie">Quản lý phim</Link>
+          <Link to="/movie">Quản lý phim</Link>
         </li>
         {/* Thêm các liên kết khác ở đây tương ứng với các trang bạn muốn */}
       </ul>

@@ -77,7 +77,7 @@ const ScheduleEdit = () => {
     if (res && res.data) {
       // thay đổi #1 message và url
       message.success("Cập nhật phim thành công!");
-      navigate("/admin/schedule");
+      navigate("/schedule");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",

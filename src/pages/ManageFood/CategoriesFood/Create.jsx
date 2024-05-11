@@ -35,7 +35,7 @@ const FoodCategoryCreate = () => {
       form.resetFields();
       setIsSubmit(false);
       // thay đổi #1 thay đổi url
-      navigate("/admin/foodCategories");
+      navigate("/foodCategories");
     } else {
       const error = getErrorMessageCategoryFood(res.response.data.message, {
         name: name,

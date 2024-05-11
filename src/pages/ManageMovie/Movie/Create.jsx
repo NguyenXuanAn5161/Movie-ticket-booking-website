@@ -78,7 +78,7 @@ const MovieCreate = () => {
         form.resetFields();
         setIsSubmit(false);
         // thay đổi #1 thay đổi url
-        navigate("/admin/movie");
+        navigate("/movie");
       } else {
         notification.error({
           message: "Đã có lỗi xảy ra!",

@@ -33,7 +33,7 @@ const MovieGenreCreate = () => {
       form.resetFields();
       setIsSubmit(false);
       // thay đổi #1 thay đổi url
-      navigate("/admin/movieGenre");
+      navigate("/movieGenre");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",

@@ -32,7 +32,7 @@ const VNPayPaymentReturn = () => {
 
   let content;
   if (paymentStatus === "success") {
-    content = <div>{navigate("/admin/order")}</div>;
+    content = <div>{navigate("/order")}</div>;
   } else if (paymentStatus === "error") {
     content = (
       <div>
@@ -41,7 +41,7 @@ const VNPayPaymentReturn = () => {
         <p>
           Lý do: <strong>{reason}</strong>
         </p>
-        <Button type="primary" onClick={() => navigate("/admin/booking")}>
+        <Button type="primary" onClick={() => navigate("/booking")}>
           Trở về trang đặt vé
         </Button>
       </div>

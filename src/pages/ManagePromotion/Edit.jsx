@@ -94,7 +94,7 @@ const PromotionEdit = () => {
     if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật khuyến mãi thành công thành công!");
-      navigate("/admin/promotion");
+      navigate("/promotion");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",

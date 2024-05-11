@@ -106,7 +106,7 @@ const FoodEdit = () => {
     console.log("res update: ", res);
     if (res?.status === 200) {
       message.success("Cập nhật đồ ăn thành công!");
-      navigate("/admin/food");
+      navigate("/food");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",

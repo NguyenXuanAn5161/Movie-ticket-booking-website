@@ -86,16 +86,10 @@ export default function App() {
     getAccount();
   }, []);
 
-  // useEffect(() => {
-  //   if (window.location.pathname === "/") {
-  //     window.location.href = "/admin";
-  //   }
-  // }, []);
-
   const router = createBrowserRouter([
     // layout for admin
     {
-      path: "/admin",
+      path: "/",
       element: <LayoutAdmin />,
       errorElement: <NotFound />,
       children: [

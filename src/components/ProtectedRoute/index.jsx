@@ -6,7 +6,7 @@ import { callHoldSeats } from "../../services/apiOder";
 import NotPermistted from "./NotPermistted";
 
 const RouteBaseRoute = (props) => {
-  const isAdminRoute = window.location.pathname.startsWith("/admin");
+  const isAdminRoute = window.location.pathname.startsWith("/");
   const user = useSelector((state) => state.account.user);
   const userRoles = user?.roles;
 
@@ -34,7 +34,7 @@ const ProtectedRoute = (props) => {
 
   useEffect(() => {
     console.log("location: ", location.pathname);
-    if (isRunning === true && location.pathname !== "/admin/booking") {
+    if (isRunning === true && location.pathname !== "/booking") {
       fetchHoldSeatTrue(selectedSeats, selectedShowTime.id);
     }
   }, [location]);
