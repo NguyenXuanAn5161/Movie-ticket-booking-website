@@ -1,7 +1,5 @@
-import { Button, Divider, Form, Input, message, notification } from "antd";
+import { Button, Form, Input, message, notification } from "antd";
 import React, { useEffect, useState } from "react";
-import { FaFacebook } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { useDispatch } from "react-redux";
@@ -39,20 +37,16 @@ const SignInForm = (props) => {
     setIsSubmit(false);
     if (res?.data) {
       console.log(res.data);
-      if (res?.data?.roles?.some((role) => role === "ROLE_ADMIN")) {
-        // lưu access token
-        localStorage.setItem("accessToken", res.data.accessToken);
-        localStorage.setItem("user", JSON.stringify(res.data));
-        dispatch(doLoginAction(res.data));
-        message.success("Đăng nhập thành công!");
-        navigate("/");
-      } else {
-        message.error("Tài khoản của bạn không đủ quyền để vào trang này!");
-      }
+      // lưu access token
+      localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("user", JSON.stringify(res.data));
+      dispatch(doLoginAction(res.data));
+      message.success("Đăng nhập thành công!");
+      navigate("/");
     } else {
       notification.error({
         message: "Có lỗi xảy ra!",
-        description: "Vui lòng kiểm tra lại thông tin đăng nhập!",
+        description: res.response.data.message,
         duration: 5,
       });
     }
@@ -60,7 +54,7 @@ const SignInForm = (props) => {
 
   return (
     <div
-      className="form-container sign-in-container"
+      className="form-container"
       style={width > 768 ? null : { width: "100%" }}
     >
       <Form
@@ -75,16 +69,7 @@ const SignInForm = (props) => {
         onFinish={onFinish}
         autoComplete="true"
       >
-        <h2>Đăng nhập tài khoản</h2>
-        <div className="social-container">
-          <a href="#" className="social">
-            <FaFacebook className="social-icon" />
-          </a>
-          <a href="#" className="social">
-            <FcGoogle className="social-icon" />
-          </a>
-        </div>
-        <span>hoặc sử dụng tài khoản của bạn</span>
+        <h2 style={{ color: "black" }}>Đăng nhập tài khoản</h2>
         <Form.Item
           labelCol={{ span: 24 }}
           label="Email"
@@ -119,9 +104,6 @@ const SignInForm = (props) => {
             placeholder="Mật khẩu"
           />
         </Form.Item>
-        <Form.Item style={{ justifyContent: "start", display: "flex" }}>
-          <a href="#">Quên mật khẩu?</a>
-        </Form.Item>
         <Form.Item>
           <Button
             loading={isSubmit}
@@ -133,19 +115,6 @@ const SignInForm = (props) => {
           </Button>
         </Form.Item>
       </Form>
-      {width > 768 ? null : (
-        <div className="footer">
-          <Divider orientation="left">
-            Nếu chưa có tài khoản{" "}
-            <span
-              style={{ color: "#3498db", cursor: "pointer" }}
-              onClick={() => props.setType("signUp")}
-            >
-              Đăng ký
-            </span>
-          </Divider>
-        </div>
-      )}
     </div>
   );
 };
