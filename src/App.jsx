@@ -74,6 +74,9 @@ export default function App() {
     const userLocalStorage = localStorage.getItem("user");
     if (userLocalStorage) {
       dispatch(doGetAccountAction(JSON.parse(userLocalStorage)));
+    } else {
+      // do khong dung refeshToken nên đành làm vầy
+      window.location.href = "/login";
     }
 
     // const res = await callFetchAccount();

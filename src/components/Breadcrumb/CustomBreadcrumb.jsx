@@ -1,9 +1,11 @@
 import { Breadcrumb } from "antd";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import useTheme from "../../core/useTheme";
 
 function CustomBreadcrumb(props) {
   const location = useLocation();
+  const { theme } = useTheme();
 
   const items = [
     {
@@ -387,7 +389,15 @@ function CustomBreadcrumb(props) {
   }
 
   // Trả về phần tử Breadcrumb với itemsPath và itemRender
-  return <Breadcrumb itemRender={itemRender} items={itemsPath} />;
+  return (
+    <Breadcrumb
+      itemRender={itemRender}
+      items={itemsPath}
+      style={{
+        fontSize: theme.fontSize.fz_18,
+      }}
+    />
+  );
 }
 
 export default CustomBreadcrumb;
