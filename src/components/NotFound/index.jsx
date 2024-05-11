@@ -9,7 +9,7 @@ const NotFound = () => {
       title="404"
       subTitle="Xin lỗi, trang bạn truy cập không tồn tại."
       extra={
-        <Button type="primary" onClick={() => navigate("/admin")}>
+        <Button type="primary" onClick={() => navigate("/admin/dashboard")}>
           Trở về trang tổng quan
         </Button>
       }
