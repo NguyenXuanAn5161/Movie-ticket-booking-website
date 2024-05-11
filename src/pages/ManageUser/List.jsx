@@ -15,6 +15,7 @@ import { doSetUser } from "../../redux/account/userSlice";
 import { callDeleteUser, callFetchListUser } from "../../services/apiUser";
 import { createColumn } from "../../utils/createColumn";
 import { getErrorMessageUser } from "../../utils/errorHandling";
+import { validateEmail, validatePhoneNumber } from "../../utils/validData";
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -117,8 +118,8 @@ const UserList = () => {
   const itemSearch = [
     { field: "code", label: "Mã khách hàng" },
     { field: "username", label: "Họ và tên" },
-    { field: "email", label: "Email" },
-    { field: "phone", label: "Số điện thoại" },
+    { field: "email", label: "Email", validator: validateEmail },
+    { field: "phone", label: "Số điện thoại", validator: validatePhoneNumber },
   ];
 
   const renderHeader = () => (
@@ -158,46 +159,44 @@ const UserList = () => {
   };
 
   return (
-    <>
-      <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <SearchList
-            itemSearch={itemSearch}
-            handleSearch={handleSearch}
-            setFilter={setFilter}
-            filter={filter}
-          />
-        </Col>
-        <Col span={24}>
-          <Table
-            scroll={{
-              x: "100%",
-              y: "64vh",
-            }}
-            title={renderHeader}
-            bordered
-            loading={isLoading}
-            columns={columns}
-            dataSource={listUser}
-            onChange={onChange}
-            rowKey="id"
-            pagination={{
-              current: current,
-              pageSize: pageSize,
-              showSizeChanger: true,
-              total: total,
-              showTotal: (total, range) => {
-                return (
-                  <div>
-                    {range[0]} - {range[1]} trên {total} dòng
-                  </div>
-                );
-              },
-            }}
-          />
-        </Col>
-      </Row>
-    </>
+    <Row gutter={[20, 20]}>
+      <Col span={24}>
+        <SearchList
+          itemSearch={itemSearch}
+          handleSearch={handleSearch}
+          setFilter={setFilter}
+          filter={filter}
+        />
+      </Col>
+      <Col span={24}>
+        <Table
+          scroll={{
+            x: "100%",
+            y: "64vh",
+          }}
+          title={renderHeader}
+          bordered
+          loading={isLoading}
+          columns={columns}
+          dataSource={listUser}
+          onChange={onChange}
+          rowKey="id"
+          pagination={{
+            current: current,
+            pageSize: pageSize,
+            showSizeChanger: true,
+            total: total,
+            showTotal: (total, range) => {
+              return (
+                <div>
+                  {range[0]} - {range[1]} trên {total} dòng
+                </div>
+              );
+            },
+          }}
+        />
+      </Col>
+    </Row>
   );
 };
 
