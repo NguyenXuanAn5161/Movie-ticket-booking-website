@@ -313,7 +313,7 @@ const LayoutAdmin = () => {
           </div>
         </Header>
         <Content style={{ backgroundColor: "#F5F5F5", padding: 10 }}>
-          {currentPath === "/admin" ? <Home /> : <CustomBreadcrumb />}
+          {currentPath === "/" ? <Home /> : <CustomBreadcrumb />}
           <Outlet />
         </Content>
         <Footer style={{ padding: 0, textAlign: "center" }}>
