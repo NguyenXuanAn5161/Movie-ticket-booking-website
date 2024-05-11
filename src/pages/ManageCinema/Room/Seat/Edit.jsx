@@ -47,7 +47,7 @@ const SeatEdit = () => {
     if (true) {
       // thay đổi #1 message và url
       message.success("Cập nhật ghế thành công!");
-      navigate("/admin/cinema/room/seat");
+      navigate("/cinema/room/seat");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",

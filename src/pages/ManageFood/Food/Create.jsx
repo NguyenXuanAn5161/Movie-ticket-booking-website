@@ -72,7 +72,7 @@ const FoodCreate = () => {
         form.resetFields();
         setImageFile(null);
         setIsSubmit(false);
-        navigate("/admin/food");
+        navigate("/food");
       } else {
         notification.error({
           message: "Đã có lỗi xảy ra!",

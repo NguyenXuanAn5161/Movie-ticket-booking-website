@@ -33,7 +33,7 @@ const PromotionCreate = () => {
       message.success("Tạo mới khuyến mãi thành công!");
       form.resetFields();
       setIsSubmit(false);
-      navigate("/admin/promotion");
+      navigate("/promotion");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",

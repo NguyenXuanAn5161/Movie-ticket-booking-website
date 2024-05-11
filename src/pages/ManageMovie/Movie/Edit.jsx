@@ -113,7 +113,7 @@ const MovieEdit = () => {
     if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật phim thành công!");
-      navigate("/admin/movie");
+      navigate("/movie");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",

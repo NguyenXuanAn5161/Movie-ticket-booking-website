@@ -66,7 +66,7 @@ const FoodCategoryEdit = () => {
     if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật loại đồ ăn thành công!");
-      navigate("/admin/foodCategories");
+      navigate("/foodCategories");
     } else {
       const error = getErrorMessageCategoryFood(res.response.data.message, {
         name: name,

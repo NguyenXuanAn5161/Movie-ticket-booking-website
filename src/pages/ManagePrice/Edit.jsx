@@ -90,7 +90,7 @@ const PriceEdit = () => {
       message.success("cập nhật giá sản phẩm thành công!");
       form.resetFields();
       setIsSubmit(false);
-      navigate("/admin/price");
+      navigate("/price");
     } else {
       const error = getErrorMessageSalePriceHeader(res.response.data.message, {
         name: name,

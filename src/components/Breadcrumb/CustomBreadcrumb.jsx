@@ -7,7 +7,7 @@ function CustomBreadcrumb(props) {
 
   const items = [
     {
-      path: "/admin",
+      path: "/",
       title: "",
       key: "admin",
       children: [
@@ -318,7 +318,7 @@ function CustomBreadcrumb(props) {
   const currentPath = location.pathname;
 
   const shouldRenderTitle = (route) => {
-    return route.path !== "/admin";
+    return route.path !== "/";
   };
 
   const renderTitle = (route, pathChildren, matchingPathChild, item) => {

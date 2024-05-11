@@ -72,37 +72,33 @@ const LayoutAdmin = () => {
       null,
       [
         getItem(
-          <Link to="/admin/dashboard">Tổng quan</Link>,
+          <Link to="/dashboard">Tổng quan</Link>,
           "dashboard",
           <AppstoreOutlined />
         ),
         getItem("Thống kê", "statistical", <IoStatsChartOutline />, [
           getItem(
-            <Link to="/admin/statisticalCinema">Doanh thu theo rạp</Link>,
+            <Link to="/statisticalCinema">Doanh thu theo rạp</Link>,
             "statisticalCinema"
           ),
           getItem(
-            <Link to="/admin/statisticalMovie">Doanh thu theo phim</Link>,
+            <Link to="/statisticalMovie">Doanh thu theo phim</Link>,
             "statisticalMovie"
           ),
           getItem(
-            <Link to="/admin/statisticalUser">Doanh thu theo khách hàng</Link>,
+            <Link to="/statisticalUser">Doanh thu theo khách hàng</Link>,
             "statisticalUser"
           ),
           getItem(
-            <Link to="/admin/statisticalStaff">
-              Doanh số bán theo nhân viên
-            </Link>,
+            <Link to="/statisticalStaff">Doanh số bán theo nhân viên</Link>,
             "statisticalStaff"
           ),
           getItem(
-            <Link to="/admin/statisticalReturnInvoice">
-              Thống kê trả hóa đơn
-            </Link>,
+            <Link to="/statisticalReturnInvoice">Thống kê trả hóa đơn</Link>,
             "statisticalReturnInvoice"
           ),
           getItem(
-            <Link to="/admin/statisticalPromotion">Thống kê khuyến mãi</Link>,
+            <Link to="/statisticalPromotion">Thống kê khuyến mãi</Link>,
             "statisticalPromotion"
           ),
         ]),
@@ -115,18 +111,18 @@ const LayoutAdmin = () => {
       null,
       [
         getItem(
-          <Link to="/admin/order">Quản lý hoá đơn</Link>,
+          <Link to="/order">Quản lý hoá đơn</Link>,
           "order",
           <DollarCircleOutlined />
         ),
         getItem(
-          <Link to="/admin/returnInvoice">Quản lý hoá đơn trả</Link>,
+          <Link to="/returnInvoice">Quản lý hoá đơn trả</Link>,
           "returnInvoice",
           <DollarCircleOutlined />
         ),
         // getItem("Quản lý người dùng", "manageUser", <UserOutlined />, [
         getItem(
-          <Link to="/admin/user">Quản lý người dùng</Link>,
+          <Link to="/user">Quản lý người dùng</Link>,
           "user",
           <TeamOutlined />
         ),
@@ -134,62 +130,54 @@ const LayoutAdmin = () => {
         // ]),
         // getItem("Quản lý rạp phim", "manageTheater", <GiTheater />, [
         getItem(
-          <Link to="/admin/cinema">Quản lý rạp phim</Link>,
+          <Link to="/cinema">Quản lý rạp phim</Link>,
           "cinema",
           <GiTheater />
         ),
         // getItem(
-        //   <Link to="/admin/cinema/room">Phòng chiếu</Link>,
+        //   <Link to="/cinema/room">Phòng chiếu</Link>,
         //   "room",
         //   <TbTheater />
         // ),
         // getItem(
-        //   <Link to="/admin/cinema/room/seat">Ghế</Link>,
+        //   <Link to="/cinema/room/seat">Ghế</Link>,
         //   "seat",
         //   <MdEventSeat />
         // ),
         // getItem(
-        //   <Link to="/admin/cinema/room/seatType">Loại ghế</Link>,
+        //   <Link to="/cinema/room/seatType">Loại ghế</Link>,
         //   "seatType",
         //   <BiCategoryAlt />
         // ),
         // ]),
         getItem("Quản lý phim", "manageMovie", <RiMovie2Line />, [
+          getItem(<Link to="/movie">Phim</Link>, "movie", <RiMovie2Line />),
           getItem(
-            <Link to="/admin/movie">Phim</Link>,
-            "movie",
-            <RiMovie2Line />
-          ),
-          getItem(
-            <Link to="/admin/movieGenre">Thể loại phim</Link>,
+            <Link to="/movieGenre">Thể loại phim</Link>,
             "movieGenre",
             <BiCategoryAlt />
           ),
           getItem(
-            <Link to="/admin/schedule">Lịch chiếu phim</Link>,
+            <Link to="/schedule">Lịch chiếu phim</Link>,
             "schedule",
             <GrSchedules />
           ),
         ]),
         getItem("Quản lý đồ ăn", "manageFood", <IoFastFoodOutline />, [
+          getItem(<Link to="/food">Đồ ăn</Link>, "food", <IoFastFoodOutline />),
           getItem(
-            <Link to="/admin/food">Đồ ăn</Link>,
-            "food",
-            <IoFastFoodOutline />
-          ),
-          getItem(
-            <Link to="/admin/foodCategories">Loại đồ ăn</Link>,
+            <Link to="/foodCategories">Loại đồ ăn</Link>,
             "foodCategories",
             <BiCategoryAlt />
           ),
         ]),
         getItem(
-          <Link to="/admin/price">Quản lý giá bán</Link>,
+          <Link to="/price">Quản lý giá bán</Link>,
           "price",
           <IoPricetagsOutline />
         ),
         getItem(
-          <Link to="/admin/promotion">Quản lý khuyến mãi</Link>,
+          <Link to="/promotion">Quản lý khuyến mãi</Link>,
           "promotion",
           <TbDiscount2 />
         ),
@@ -203,7 +191,7 @@ const LayoutAdmin = () => {
       null,
       [
         getItem(
-          <Link to="/admin/booking">Đặt vé</Link>,
+          <Link to="/booking">Đặt vé</Link>,
           "booking",
           <IoTicketOutline />
         ),
@@ -259,7 +247,7 @@ const LayoutAdmin = () => {
       >
         <div>
           <Link
-            to="/admin"
+            to="/"
             style={{
               height: 32,
               margin: 16,
@@ -313,7 +301,7 @@ const LayoutAdmin = () => {
           </div>
         </Header>
         <Content style={{ backgroundColor: "#F5F5F5", padding: 10 }}>
-          {currentPath === "/admin" ? <Home /> : <CustomBreadcrumb />}
+          {currentPath === "/" ? <Home /> : <CustomBreadcrumb />}
           <Outlet />
         </Content>
         <Footer style={{ padding: 0, textAlign: "center" }}>

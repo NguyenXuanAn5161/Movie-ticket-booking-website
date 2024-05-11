@@ -43,7 +43,7 @@ const CinemaCreate = () => {
       message.success("Tạo mới rạp phim thành công!");
       form.resetFields();
       setIsSubmit(false);
-      navigate("/admin/cinema");
+      navigate("/cinema");
     } else {
       const error = getErrorMessageCinema(res?.message, {
         name: name,

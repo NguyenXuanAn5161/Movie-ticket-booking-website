@@ -62,7 +62,7 @@ const MovieGenreEdit = () => {
     if (res?.status === 200) {
       // thay đổi #1 message và url
       message.success("Cập nhật loại phim thành công!");
-      navigate("/admin/movieGenre");
+      navigate("/movieGenre");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
