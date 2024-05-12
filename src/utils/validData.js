@@ -19,8 +19,8 @@ const validateField = (
 
 export const validateUsername = validateField(
   "Họ và tên",
-  /^[a-zA-Z ]+$/,
-  "Họ và tên chỉ chứa bảng chữ cái tiếng anh và dấu cách!",
+  /^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\ ]+$/,
+  "Họ và tên chỉ chứa chữ cái và dấu cách!",
   false
 );
 
