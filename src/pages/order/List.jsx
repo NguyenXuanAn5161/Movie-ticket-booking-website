@@ -8,8 +8,14 @@ import {
   renderDate,
   renderStatus,
 } from "../../components/FunctionRender/FunctionRender";
+import SearchList from "../../components/InputSearch/SearchList";
 import TableHeader from "../../components/TableHeader/TableHeader";
+import { callFetchListCinema } from "../../services/apiCinema";
+import { callFetchListMovie } from "../../services/apiMovie";
 import { callGetAllOrder } from "../../services/apiOder";
+import { callFetchListRoom } from "../../services/apiRoom";
+import { callFetchListUser } from "../../services/apiUser";
+import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import ModalCancel from "./ModalCancel";
 
@@ -25,6 +31,89 @@ const OrderList = () => {
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
   const [showModal, setShowModal] = useState(false);
   const [invoiceId, setInvoiceId] = useState("");
+
+  const [cinema, setCinema] = useState(null);
+  const [disabled, setDisabled] = useState(false);
+
+  useEffect(() => {
+    setDisabled(!cinema);
+  }, [cinema]);
+
+  const fetchUserList = async (username) => {
+    let query = `size=5&=username${username}`;
+    try {
+      const res = await callFetchListUser(query);
+      const user = res.content.map((data) => ({
+        label: data.username,
+        value: data.id,
+      }));
+      return user;
+    } catch (error) {
+      // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+      console.error("Error fetching user:", error);
+      // Trả về một mảng trống nếu xảy ra lỗi
+      return [];
+    }
+  };
+
+  const fetchCinemaList = async (cinemaName) => {
+    try {
+      let query = `size=5&name=${cinemaName}`;
+      const res = await callFetchListCinema(query);
+      const cinema = res.content.map((data) => ({
+        label: data.name,
+        value: data.id,
+      }));
+
+      setCinema(cinema[0]);
+
+      return cinema;
+    } catch (error) {
+      console.error("Error fetching cinema list:", error);
+      // Trả về một mảng trống nếu xảy ra lỗi
+      return [];
+    }
+  };
+
+  const fetchRoomList = async (roomName) => {
+    try {
+      let query = `size=5&name=${roomName}&cinemaId=${cinema.value}`;
+      const res = await callFetchListRoom(query);
+      const room = res.content.map((data) => ({
+        label: data.name,
+        value: data.id,
+      }));
+
+      return room;
+    } catch (error) {
+      // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình tìm kiếm
+      console.error("Error fetching room:", error);
+      // Trả về một mảng trống nếu xảy ra lỗi
+      return [];
+    }
+  };
+
+  // tìm phim theo rạp
+  const fetchMovieList = async (movieName) => {
+    let query = `size=5&cinemaId=${cinema.value}`;
+
+    if (movieName) {
+      query += `&name=${movieName}`;
+    }
+
+    try {
+      const res = await callFetchListMovie(query);
+      const movie = res.content.map((data) => ({
+        label: data.name,
+        value: data.id,
+      }));
+
+      return movie;
+    } catch (error) {
+      console.error("Error fetching movie list:", error);
+      return [];
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -69,7 +158,6 @@ const OrderList = () => {
     createColumn("Rạp", "cinemaName", 130),
     createColumn("Trạng thái", "status", 150, false, renderStatus("payment")),
     createColumn("Ngày hóa đơn", "createdDate", 150, false, renderDate),
-    // createColumn("Ngày hủy", "cancelledDate", 150, false, renderDate),
     createColumn("Tổng tiền", "totalPrice", 150, false, renderCurrency),
     createColumn("Nhân viên", "staffName", "right"),
     {
@@ -100,30 +188,51 @@ const OrderList = () => {
   const handleReload = () => {
     setFilter("");
     setSortQuery("");
+    setCinema(null);
     setCurrent(1);
   };
 
   const itemSearch = [
-    { field: "userId", label: "Họ tên" },
     {
-      field: "status",
-      label: "Trạng thái",
-      type: "select",
-      options: [
-        { value: "true", label: "Đã thanh toán" },
-        { value: "false", label: "Chưa thanh toán" },
-      ],
+      field: "userId",
+      label: "Họ và tên",
+      type: "debounceSelect",
+      fetchOptions: fetchUserList,
+    },
+    { field: "invoiceCode", label: "Mã hóa đơn" },
+    { field: "dateRange", label: "Khoảng thời gian", type: "rangePicker" },
+    {
+      field: "cinemaId",
+      label: "Tên rạp",
+      type: "debounceSelect",
+      fetchOptions: fetchCinemaList,
+    },
+    {
+      field: "roomId",
+      label: "Tên phòng",
+      type: "debounceSelect",
+      fetchOptions: fetchRoomList,
+      disabled: disabled,
+    },
+    {
+      field: "movieId",
+      label: "Tên phim",
+      type: "debounceSelect",
+      fetchOptions: fetchMovieList,
+      disabled: disabled,
+    },
+    {
+      field: "showTimeCode",
+      label: "Mã lịch chiếu",
     },
   ];
 
   const renderHeader = () => (
     <TableHeader
       onReload={handleReload}
-      filter={filter}
-      setFilter={setFilter}
-      handleSearch={handleSearch}
       headerTitle={"Danh sách hóa đơn"}
-      itemSearch={itemSearch}
+      showCreate={false}
+      showFuncOther={false}
     />
   );
 
@@ -133,7 +242,19 @@ const OrderList = () => {
       if (query.hasOwnProperty(key)) {
         const label = key;
         const value = query[key];
-        if (value) {
+        if (label === "roomId") {
+          q += `&${label}=${value.value}`;
+        } else if (label === "cinemaId") {
+          q += `&${label}=${value.value}`;
+        } else if (label === "userId") {
+          q += `&${label}=${value.value}`;
+        } else if (label === "dateRange") {
+          q += `&startDate=${value[0].format(
+            FORMAT_DATE_SEND_SERVER
+          )}&endDate=${value[1].format(FORMAT_DATE_SEND_SERVER)}`;
+        } else if (label === "movieId") {
+          q += `&${label}=${value.value}`;
+        } else if (value) {
           q += `&${label}=${value}`;
         }
       }
@@ -155,6 +276,16 @@ const OrderList = () => {
   return (
     <>
       <Row gutter={[20, 20]}>
+        <Col span={24}>
+          <SearchList
+            itemSearch={itemSearch}
+            handleSearch={handleSearch}
+            setFilter={setFilter}
+            filter={filter}
+            setNull={setCinema}
+            maxColumnsPerRow={3}
+          />
+        </Col>
         <Col span={24}>
           <Table
             scroll={{

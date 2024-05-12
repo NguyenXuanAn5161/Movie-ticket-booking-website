@@ -170,8 +170,9 @@ const DashBoardShow = () => {
   };
 
   const fetchUser = async () => {
+    let query = `page=${0}&size=${1000}`;
     setIsLoadingUser(true);
-    const response = await callFetchListUser(0, 1000, "", "", "");
+    const response = await callFetchListUser(query);
     if (response?.content) {
       setUser(response.content);
     }

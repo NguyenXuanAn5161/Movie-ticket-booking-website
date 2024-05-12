@@ -85,8 +85,9 @@ const InfoUser = (props) => {
   };
 
   const fetchUserList = async (email) => {
+    let query = `size=1&email=${email}`;
     try {
-      const res = await callFetchListUser(null, 1, null, null, email);
+      const res = await callFetchListUser(query);
       const user = res.content.map((data) => ({
         label: data.email,
         value: data.id,
