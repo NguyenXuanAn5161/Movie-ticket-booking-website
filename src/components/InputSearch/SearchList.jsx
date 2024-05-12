@@ -20,7 +20,11 @@ const SearchList = (props) => {
 
   const calculateSpan = () => {
     const itemSearchCount = props.itemSearch.length;
-    return itemSearchCount > 0 && Math.floor(24 / itemSearchCount);
+    const columnsPerRow = Math.min(
+      itemSearchCount,
+      props?.maxColumnsPerRow || 4
+    );
+    return Math.floor(24 / columnsPerRow);
   };
 
   const onFinish = (values) => {
@@ -51,24 +55,23 @@ const SearchList = (props) => {
         style={formStyle}
         onFinish={onFinish}
       >
-        <Row gutter={[0, 10]}>
-          <Row style={{ width: "100%" }} gutter={[10]}>
-            {props.itemSearch.map((item) => (
-              <Col span={calculateSpan()} key={item.field}>
-                <TypeInput item={item} />
-              </Col>
-            ))}
-          </Row>
+        <Row gutter={[10, 10]}>
+          {props.itemSearch.map((item, index) => (
+            <Col span={calculateSpan()} key={index}>
+              <TypeInput item={item} />
+            </Col>
+          ))}
           <Col span={24} style={{ textAlign: "right" }}>
             <Button type="primary" htmlType="submit">
               Tìm
             </Button>
             <Button
               type="primary"
-              style={{ margin: "0 8px" }}
+              // style={{ margin: "0 8px" }}
               onClick={() => {
                 form.resetFields();
                 props.setFilter("");
+                props?.setNull(null);
               }}
             >
               Xóa trắng
