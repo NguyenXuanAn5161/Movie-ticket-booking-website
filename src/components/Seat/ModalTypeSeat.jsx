@@ -111,35 +111,34 @@ const ModalTypeSeat = (props) => {
 
     // Kiểm tra nếu loại ghế là "sweet" và số lượng ghế đã chọn lớn hơn 2
     // sửa loại ghế đôi
-    if (checkedSweetBox && selectedItems.length > 3) {
+    if (checkedSweetBox && selectedItems.length > 2) {
       handleNotificationError(
         "Chỉ được chọn tối đa 2 ghế để chuyển đổi sang loại ghế đôi!",
         false
       );
-      setIsSubmit(false);
+      return;
+    }
+
+    // kiểm tra nếu loại ghế là sweet và số lượng ghế đã chọn nhỏ hơn 2
+    if (checkedSweetBox && selectedItems.length < 2) {
+      handleNotificationError(
+        "Vui lòng chọn đúng 2 ghế để chuyển đổi sang loại ghế đôi!",
+        false
+      );
       return;
     }
 
     // sửa loại ghế đôi
     if (checkedSweetBox) {
+      // Kiểm tra xem hai ghế có liền kề không
+      const seatError = "Chỉ được chọn hai ghế liền kề cùng 1 hàng!";
       if (
-        selectedItems[0] > selectedItems[1] &&
-        selectedItems[0] - 1 !== selectedItems[1]
+        (selectedItems[0] > selectedItems[1] &&
+          selectedItems[0] - 1 !== selectedItems[1]) ||
+        (selectedItems[0] < selectedItems[1] &&
+          selectedItems[1] - 1 !== selectedItems[0])
       ) {
-        handleNotificationError(
-          "Chỉ được chọn hai ghế liền kề cùng 1 hàng!",
-          false
-        );
-        return;
-      } else if (
-        selectedItems[0] < selectedItems[1] &&
-        selectedItems[1] - 1 !== selectedItems[0]
-      ) {
-        setIsSubmit(false);
-        handleNotificationError(
-          "Chỉ được chọn hai ghế liền kề cùng 1 hàng!",
-          false
-        );
+        handleNotificationError(seatError, false);
         return;
       }
     }
