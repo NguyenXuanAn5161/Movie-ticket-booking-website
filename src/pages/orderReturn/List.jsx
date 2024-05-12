@@ -6,11 +6,11 @@ import {
   renderCurrency,
   renderDate,
 } from "../../components/FunctionRender/FunctionRender";
+import SearchList from "../../components/InputSearch/SearchList";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { callGetAllReturnInvoice } from "../../services/apiOder";
 import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
-import { getFirstAndLastDayOfMonth } from "../../utils/date";
 
 const ReturnInvoiceList = () => {
   const navigate = useNavigate();
@@ -43,11 +43,6 @@ const ReturnInvoiceList = () => {
       query += `&userCode=`;
     }
 
-    if (!filter.includes("startDate") && !filter.includes("endDate")) {
-      const [startDate, endDate] = getFirstAndLastDayOfMonth();
-      query += `&startDate=${startDate}&endDate=${endDate}`;
-    }
-
     // if (sortQuery) {
     //   query += `&${sortQuery}`;
     // }
@@ -72,9 +67,9 @@ const ReturnInvoiceList = () => {
   const columns = [
     createColumn("Mã hóa đơn hủy", "code", 130, false, undefined, "left"),
     createColumn("Mã hóa đơn", "invoiceCode", 130, false, undefined, "left"),
-    createColumn("Mã khách hàng", "userCode", 130),
-    createColumn("Họ và tên", "userName", 130),
-    createColumn("Số lượng", "quantity", 100),
+    createColumn("Mã khách hàng", "userCode", 150),
+    createColumn("Họ và tên", "userName", 180),
+    createColumn("Số lượng vé", "quantity", 120),
     createColumn("Ngày hóa đơn", "invoiceDate", 150, false, renderDate),
     createColumn("Ngày hủy", "cancelDate", 150, false, renderDate),
     createColumn("Lý do hủy", "reason", 150, false, undefined, "left"),
@@ -111,11 +106,9 @@ const ReturnInvoiceList = () => {
   const renderHeader = () => (
     <TableHeader
       onReload={handleReload}
-      filter={filter}
-      setFilter={setFilter}
-      handleSearch={handleSearch}
       headerTitle={"Danh sách hóa đơn hủy"}
-      itemSearch={itemSearch}
+      showCreate={false}
+      showFuncOther={false}
     />
   );
 
@@ -150,6 +143,14 @@ const ReturnInvoiceList = () => {
 
   return (
     <Row gutter={[20, 20]}>
+      <Col span={24}>
+        <SearchList
+          itemSearch={itemSearch}
+          handleSearch={handleSearch}
+          setFilter={setFilter}
+          filter={filter}
+        />
+      </Col>
       <Col span={24}>
         <Table
           scroll={{
