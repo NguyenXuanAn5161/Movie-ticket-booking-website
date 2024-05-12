@@ -8,6 +8,7 @@ import {
   renderDate,
   renderStatus,
 } from "../../components/FunctionRender/FunctionRender";
+import SearchList from "../../components/InputSearch/SearchList";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetCinema } from "../../redux/cinema/cinemaSlice";
 import {
@@ -15,6 +16,7 @@ import {
   callFetchListCinema,
 } from "../../services/apiCinema";
 import { createColumn } from "../../utils/createColumn";
+import addressOptions from "../../utils/data";
 import { getErrorMessageCinema } from "../../utils/errorHandling";
 
 const CinemaList = () => {
@@ -28,8 +30,6 @@ const CinemaList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
-  const [openModalImport, setOpenModalImport] = useState(false);
-  const [openModalExport, setOpenModalExport] = useState(false);
 
   // mặc định #2
   useEffect(() => {
@@ -124,18 +124,21 @@ const CinemaList = () => {
   const itemSearch = [
     { field: "code", label: "Mã rạp" },
     { field: "name", label: "Tên rạp" },
-    { field: "address", label: "Địa chỉ" },
+    {
+      field: "address",
+      label: "Địa chỉ",
+      type: "cascader",
+      options: addressOptions,
+      changeOnSelect: true,
+    },
   ];
 
   const renderHeader = () => (
     <TableHeader
       headerTitle={"Danh sách rạp phim"}
       onReload={handleReload}
-      filter={filter}
-      setFilter={setFilter}
-      handleSearch={handleSearch}
-      itemSearch={itemSearch}
       create={handleToPageCreate}
+      showFuncOther={false}
     />
   );
 
@@ -147,7 +150,13 @@ const CinemaList = () => {
       if (query.hasOwnProperty(key)) {
         const label = key;
         const value = query[key];
-        if (value) {
+        if (label === "address") {
+          if (value) {
+            q += `&city=${value[0]}`;
+            q += value[1] ? `&district=${value[1]}` : "";
+            q += value[2] ? `&ward=${value[2]}` : "";
+          }
+        } else if (value) {
           q += `&${label}=${value}`;
         }
       }
@@ -167,7 +176,7 @@ const CinemaList = () => {
       setCurrent(1);
     }
 
-    if (sorter && sorter.field) {
+    if (sorter?.field) {
       const q =
         sorter.order === "ascend"
           ? `sort=${sorter.field}`
@@ -177,40 +186,46 @@ const CinemaList = () => {
   };
 
   return (
-    <>
-      <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <Table
-            scroll={{
-              x: "100%",
-              y: "64vh",
-            }}
-            title={renderHeader}
-            bordered
-            // thay đổi #1
-            // loading={isLoading}
-            columns={columns}
-            dataSource={listData}
-            onChange={onChange}
-            // thay đổi #1
-            rowKey="code"
-            pagination={{
-              current: current,
-              pageSize: pageSize,
-              showSizeChanger: true,
-              total: total,
-              showTotal: (total, range) => {
-                return (
-                  <div>
-                    {range[0]} - {range[1]} trên {total} dòng
-                  </div>
-                );
-              },
-            }}
-          />
-        </Col>
-      </Row>
-    </>
+    <Row gutter={[20, 20]}>
+      <Col span={24}>
+        <SearchList
+          itemSearch={itemSearch}
+          handleSearch={handleSearch}
+          setFilter={setFilter}
+          filter={filter}
+        />
+      </Col>
+      <Col span={24}>
+        <Table
+          scroll={{
+            x: "100%",
+            y: "64vh",
+          }}
+          title={renderHeader}
+          bordered
+          // thay đổi #1
+          loading={isLoading}
+          columns={columns}
+          dataSource={listData}
+          onChange={onChange}
+          // thay đổi #1
+          rowKey="code"
+          pagination={{
+            current: current,
+            pageSize: pageSize,
+            showSizeChanger: true,
+            total: total,
+            showTotal: (total, range) => {
+              return (
+                <div>
+                  {range[0]} - {range[1]} trên {total} dòng
+                </div>
+              );
+            },
+          }}
+        />
+      </Col>
+    </Row>
   );
 };
 
