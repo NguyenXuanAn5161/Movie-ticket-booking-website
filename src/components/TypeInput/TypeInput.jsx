@@ -24,11 +24,16 @@ const TypeInput = ({ item }) => {
               // Tìm kiếm không phân biệt hoa thường
               option.label.toLowerCase().includes(input.toLowerCase())
             }
+            disabled={item?.disabled || false}
           />
         );
       case "datePicker":
         return (
-          <DatePicker style={{ width: "100%" }} placeholder={item.label} />
+          <DatePicker
+            style={{ width: "100%" }}
+            placeholder={item.label}
+            disabled={item?.disabled || false}
+          />
         );
       case "rangePicker":
         return (
@@ -36,6 +41,7 @@ const TypeInput = ({ item }) => {
             style={{ width: "100%" }}
             placeholder={["Từ ngày", "Đến ngày"]}
             format={FORMAT_DATE}
+            disabled={item?.disabled || false}
           />
         );
       case "debounceSelect": // Xử lý kiểu tìm kiếm mới debounceSelect
@@ -44,10 +50,17 @@ const TypeInput = ({ item }) => {
             style={{ width: "100%" }}
             placeholder={item.label}
             fetchOptions={item.fetchOptions}
+            disabled={item?.disabled || false}
           />
         );
       default:
-        return <Input type="text" placeholder={item.label} />;
+        return (
+          <Input
+            type="text"
+            placeholder={item.label}
+            disabled={item?.disabled || false}
+          />
+        );
     }
   };
 
