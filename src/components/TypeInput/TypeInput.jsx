@@ -59,6 +59,7 @@ const TypeInput = ({ item }) => {
             options={item.options}
             placeholder={item.label}
             disabled={item?.disabled || false}
+            changeOnSelect={item?.changeOnSelect || false}
           />
         );
       default:
