@@ -21,10 +21,6 @@ import { FORMAT_DATE } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import { imageError } from "../../utils/imageError";
 
-const gridStyle = {
-  width: "33%",
-};
-
 const filterSeatType = [
   {
     text: "Ghế vip",

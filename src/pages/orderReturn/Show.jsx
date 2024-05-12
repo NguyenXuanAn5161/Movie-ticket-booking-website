@@ -1,18 +1,25 @@
-import { Card, Col, Divider, Row, Table, notification } from "antd";
+import {
+  Card,
+  Col,
+  Descriptions,
+  Divider,
+  Image,
+  Row,
+  Table,
+  notification,
+} from "antd";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   renderCurrency,
   renderSeatType,
 } from "../../components/FunctionRender/FunctionRender";
-import Content from "../../components/OrderCard/Content";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { callGetDetailOrder } from "../../services/apiOder";
+import { FORMAT_DATE } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
-
-const gridStyle = {
-  width: "33%",
-};
+import { imageError } from "../../utils/imageError";
 
 const filterSeatType = [
   {
@@ -35,13 +42,13 @@ const ReturnInvoiceShow = () => {
   const [order, setOrder] = useState({});
 
   useEffect(() => {
-    console.log("returnInvoiceId: ", returnInvoiceId);
-    getReturnOderDetailById(returnInvoiceId);
+    getOderDetailById(returnInvoiceId);
   }, [returnInvoiceId]);
 
-  const getReturnOderDetailById = async (id) => {
+  const getOderDetailById = async (id) => {
+    console.log("id: ", id);
     const res = await callGetDetailOrder(id);
-    console.log("res data returnInvoice order detail: ", res);
+    console.log("res data order detail: ", res);
     if (res) {
       setOrder(res);
     } else {
@@ -74,31 +81,115 @@ const ReturnInvoiceShow = () => {
     createColumn("Số lượng", "quantity", 100),
   ];
 
+  const itemCinema = [
+    { label: "Tên rạp", children: order?.cinemaDto?.name },
+    { label: "Tên phòng", children: order?.roomDto?.name },
+    { label: "Loại phòng", children: order?.roomDto?.type },
+    {
+      label: "Địa chỉ",
+      children: `${order?.cinemaDto?.address?.street}, ${order?.cinemaDto?.address?.ward}, ${order?.cinemaDto?.address?.district}, ${order?.cinemaDto?.address?.city}.`,
+    },
+  ];
+
+  const itemMovie = [
+    {
+      label: "Tên phim",
+      children: order?.movieDto?.name,
+    },
+    {
+      label: "Lịch chiếu",
+      children: `${moment(order?.showTimeDto?.showTime, "HH:mm:ss").format(
+        "HH:mm"
+      )} ${moment(order?.showTimeDto?.showDate).format(FORMAT_DATE)}`,
+    },
+  ];
+
+  const itemUser = [
+    { label: "Họ tên", children: order?.userDto?.username },
+    { label: "Email", children: order?.userDto?.email },
+    {
+      label: "Số điện thoại",
+      children: order?.userDto?.phone || "Chưa có thông tin",
+    },
+  ];
+
   return (
     <>
       <PageHeader
-        title="Xem chi tiết hóa đơn trả"
+        title="Xem chi tiết hóa đơn"
         numberBack={-1}
         type="show"
+        hiddenEdit={true}
       />
       <Divider />
-      <div style={{ padding: "0 20px" }}>
-        <Card title="Thông tin chi tiết hóa đơn trả" bordered={false}>
-          <Card.Grid style={gridStyle}>
-            <Content item={order} />
-          </Card.Grid>
-          <Card.Grid style={gridStyle}>
-            <Content type={"user"} item={order} />
-          </Card.Grid>
-          <Card.Grid style={gridStyle}>
-            <Content type={"cinemaRoom"} item={order} />
-          </Card.Grid>
-        </Card>
-      </div>
+      <Card title="Thông tin chi tiết hóa đơn" bordered={false}>
+        <Row gutter={[16]}>
+          <Col span={5}>
+            <Image
+              width={"100%"}
+              height={"auto"}
+              src={order?.movieDto?.imageLink}
+              fallback={imageError}
+              alt="Lỗi tải hình ảnh"
+            />
+          </Col>
+          <Col span={19}>
+            <Row gutter={[15, 15]}>
+              <Descriptions
+                labelStyle={{ color: "#333", fontWeight: "700" }}
+                layout="vertical"
+                bordered
+                size="small"
+                column={{
+                  xs: 1,
+                  sm: 2,
+                  md: 4,
+                  lg: 4,
+                  xl: 4,
+                  xxl: 4,
+                }}
+                items={itemUser}
+                style={{ width: "100%" }}
+              />
+              <Descriptions
+                labelStyle={{ color: "#333", fontWeight: "700" }}
+                layout="vertical"
+                bordered
+                size="small"
+                column={{
+                  xs: 1,
+                  sm: 2,
+                  md: 4,
+                  lg: 4,
+                  xl: 4,
+                  xxl: 4,
+                }}
+                items={itemCinema}
+                style={{ width: "100%" }}
+              />
+              <Descriptions
+                labelStyle={{ color: "#333", fontWeight: "700" }}
+                layout="vertical"
+                bordered
+                size="small"
+                column={{
+                  xs: 1,
+                  sm: 2,
+                  md: 4,
+                  lg: 4,
+                  xl: 4,
+                  xxl: 4,
+                }}
+                items={itemMovie}
+                style={{ width: "100%" }}
+              />
+            </Row>
+          </Col>
+        </Row>
+      </Card>
       <Row
         gutter={[16]}
         style={{
-          padding: "0 20px",
           marginTop: 16,
         }}
       >
