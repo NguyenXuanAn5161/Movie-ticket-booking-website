@@ -64,7 +64,7 @@ const SearchList = (props) => {
           <Col span={24} style={{ textAlign: "right" }}>
             <Button
               type="primary"
-              // style={{ margin: "0 8px" }}
+              style={{ marginRight: "10px" }}
               onClick={() => {
                 form.resetFields();
                 props.setFilter("");
