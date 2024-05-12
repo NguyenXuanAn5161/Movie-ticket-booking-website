@@ -1,4 +1,4 @@
-import { DatePicker, Form, Input, Select } from "antd";
+import { Cascader, DatePicker, Form, Input, Select } from "antd";
 import { FORMAT_DATE } from "../../utils/constant";
 import DebounceSelect from "../DebounceSelect/DebounceSelect";
 
@@ -50,6 +50,14 @@ const TypeInput = ({ item }) => {
             style={{ width: "100%" }}
             placeholder={item.label}
             fetchOptions={item.fetchOptions}
+            disabled={item?.disabled || false}
+          />
+        );
+      case "cascader":
+        return (
+          <Cascader
+            options={item.options}
+            placeholder={item.label}
             disabled={item?.disabled || false}
           />
         );
