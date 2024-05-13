@@ -1,7 +1,7 @@
 import { Tag } from "antd";
 import moment from "moment";
 import React from "react";
-import { FORMAT_DATE_HH_MM_SS } from "../../utils/constant";
+import { FORMAT_DATE, FORMAT_DATE_HH_MM_SS } from "../../utils/constant";
 
 const getStatusMap = (type) => {
   switch (type) {
@@ -52,6 +52,12 @@ export const renderDate = (text, record) => {
     <span>
       {text ? moment(text).format(FORMAT_DATE_HH_MM_SS) : "Chưa có thông tin"}
     </span>
+  );
+};
+
+export const renderDateOnly = (text, record) => {
+  return (
+    <span>{text ? moment(text).format(FORMAT_DATE) : "Chưa có thông tin"}</span>
   );
 };
 
