@@ -1,4 +1,8 @@
 import api from "../utils/axios-custom";
+import {
+  FORMAT_DATE_TIME_HHmm,
+  FORMAT_DATE_TIME_Y_M_DT_H_M_S,
+} from "../utils/constant";
 
 // promotion header
 export const callGetPromotionHeaderById = async (id) => {
@@ -104,10 +108,11 @@ export const callCreatePromotionLine = async (data, imageUrl) => {
     quantityPromotion,
     typeSeatRequired,
     typeSeatPromotion,
+    quantity,
   } = data;
 
-  const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
-  const endDate = timeValue[1].format("YYYY-MM-DDTHH:mm:ss");
+  const startDate = timeValue[0].format(FORMAT_DATE_TIME_HHmm);
+  const endDate = timeValue[1].format(FORMAT_DATE_TIME_HHmm);
   const image = imageUrl;
   let foodPromotion;
   let foodRequired;
@@ -148,6 +153,7 @@ export const callCreatePromotionLine = async (data, imageUrl) => {
         typePromotion,
         promotionId,
         promotionDiscountDetailDto,
+        quantity,
       })
     : typePromotion === "FOOD"
     ? (requestData = {
@@ -159,6 +165,7 @@ export const callCreatePromotionLine = async (data, imageUrl) => {
         typePromotion,
         promotionId,
         promotionFoodDetailDto,
+        quantity,
       })
     : (requestData = {
         name,
@@ -169,6 +176,7 @@ export const callCreatePromotionLine = async (data, imageUrl) => {
         typePromotion,
         promotionId,
         promotionTicketDetailDto,
+        quantity,
       });
 
   console.log("requestData", requestData);
@@ -186,9 +194,11 @@ export const callCreatePromotionLine = async (data, imageUrl) => {
 };
 
 export const callUpdatePromotionLine = async (data, imageUrl) => {
-  const { id, name, description, timeValue, status } = data;
-  const startDate = timeValue[0].format("YYYY-MM-DDTHH:mm:ss");
-  const endDate = timeValue[1].format("YYYY-MM-DDTHH:mm:ss");
+  const { quantity, id, name, description, timeValue, status } = data;
+  const startDate = timeValue[0].format(FORMAT_DATE_TIME_Y_M_DT_H_M_S);
+  const endDate = timeValue[1].format(FORMAT_DATE_TIME_Y_M_DT_H_M_S);
+  // const startDate = timeValue[0].format(FORMAT_DATE_TIME_HHmm);
+  // const endDate = timeValue[1].format(FORMAT_DATE_TIME_HHmm);
 
   const bodyFormData = new FormData();
   if (imageUrl) {
@@ -202,6 +212,7 @@ export const callUpdatePromotionLine = async (data, imageUrl) => {
   bodyFormData.append("startDate", startDate);
   bodyFormData.append("endDate", endDate);
   bodyFormData.append("status", status);
+  bodyFormData.append("quantity", quantity);
 
   try {
     const response = await api({
