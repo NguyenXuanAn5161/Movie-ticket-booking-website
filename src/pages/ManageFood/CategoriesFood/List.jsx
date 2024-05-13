@@ -1,6 +1,6 @@
 import { Col, Row, Table, message, notification } from "antd";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ActionButtons from "../../../components/Button/ActionButtons";
 import { renderDate } from "../../../components/FunctionRender/FunctionRender";
@@ -17,6 +17,11 @@ import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 const FoodCategoryList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   // mặc định #2
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
@@ -25,8 +30,6 @@ const FoodCategoryList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
-  const [openModalImport, setOpenModalImport] = useState(false);
-  const [openModalExport, setOpenModalExport] = useState(false);
 
   // mặc định #2
   useEffect(() => {
@@ -95,8 +98,8 @@ const FoodCategoryList = () => {
             record={record}
             handleDelete={handleDeleteData}
             handleView={handleView}
-            showDelete={true}
-            showEdit={true}
+            showDelete={checked}
+            showEdit={checked}
             showView={true}
             itemName={"loại đồ ăn"}
           />
@@ -125,6 +128,8 @@ const FoodCategoryList = () => {
       onReload={handleReload}
       headerTitle={"Danh sách loại đồ ăn"}
       create={handleToPageCreate}
+      showCreate={checked}
+      showFuncOther={false}
     />
   );
 

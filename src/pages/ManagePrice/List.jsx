@@ -1,23 +1,30 @@
 import { Col, Row, Table, message, notification } from "antd";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ActionButtons from "../../components/Button/ActionButtons";
 import {
   renderDate,
   renderStatus,
 } from "../../components/FunctionRender/FunctionRender";
+import SearchList from "../../components/InputSearch/SearchList";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetPrice } from "../../redux/price/priceSlice";
 import {
   callDeleteSalePrice,
   callFetchListSalePrice,
 } from "../../services/apiPrice";
+import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 
 const PriceList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   // mặc định #2
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
@@ -26,8 +33,6 @@ const PriceList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
-  const [openModalImport, setOpenModalImport] = useState(false);
-  const [openModalExport, setOpenModalExport] = useState(false);
 
   // mặc định #2
   useEffect(() => {
@@ -98,8 +103,8 @@ const PriceList = () => {
             record={record}
             handleDelete={handleDeleteData}
             handleView={handleView}
-            showDelete={true}
-            showEdit={true}
+            showDelete={checked}
+            showEdit={checked}
             showView={true}
             itemName={"giá"}
           />
@@ -127,11 +132,9 @@ const PriceList = () => {
     <TableHeader
       headerTitle={"Danh sách giá"}
       onReload={handleReload}
-      filter={filter}
-      setFilter={setFilter}
-      handleSearch={handleSearch}
-      itemSearch={itemSearch}
       create={handleToPageCreate}
+      showFuncOther={false}
+      showCreate={checked}
     />
   );
 
@@ -143,7 +146,11 @@ const PriceList = () => {
       if (query.hasOwnProperty(key)) {
         const label = key;
         const value = query[key];
-        if (value) {
+        if (label === "dateRange") {
+          q += `&startDate=${value[0].format(
+            FORMAT_DATE_SEND_SERVER
+          )}&endDate=${value[1].format(FORMAT_DATE_SEND_SERVER)}`;
+        } else if (value) {
           q += `&${label}=${value}`;
         }
       }
@@ -175,6 +182,14 @@ const PriceList = () => {
   return (
     <>
       <Row gutter={[20, 20]}>
+        <Col span={24}>
+          <SearchList
+            itemSearch={itemSearch}
+            handleSearch={handleSearch}
+            setFilter={setFilter}
+            filter={filter}
+          />
+        </Col>
         <Col span={24}>
           <Table
             scroll={{

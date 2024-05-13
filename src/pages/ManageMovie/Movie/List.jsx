@@ -7,9 +7,11 @@ import {
   renderDate,
   renderStatus,
 } from "../../../components/FunctionRender/FunctionRender";
+import SearchList from "../../../components/InputSearch/SearchList";
 import TableHeader from "../../../components/TableHeader/TableHeader";
 import { doSetMovieGenre } from "../../../redux/movie/movieGenreSlice";
 import { doSetMovie } from "../../../redux/movie/movieSlice";
+import { callFetchListCinema } from "../../../services/apiCinema";
 import {
   callDeleteMovie,
   callFetchListGenreMovie,
@@ -20,6 +22,11 @@ import { createColumn } from "../../../utils/createColumn";
 const MovieList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   const movieGenre = useSelector((state) => state.movieGenre.movieGenre);
   // mặc định #2
   const [listData, setListData] = useState([]);
@@ -29,6 +36,24 @@ const MovieList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
+
+  // tìm rạp
+  const fetchCinemaList = async (cinemaName) => {
+    try {
+      let query = `size=5&name=${cinemaName}`;
+      const res = await callFetchListCinema(query);
+      const cinema = res.content.map((data) => ({
+        label: data.name,
+        value: data.id,
+      }));
+
+      return cinema;
+    } catch (error) {
+      console.error("Error fetching cinema list:", error);
+      // Trả về một mảng trống nếu xảy ra lỗi
+      return [];
+    }
+  };
 
   useEffect(() => {
     fetchDataGenre();
@@ -104,7 +129,7 @@ const MovieList = () => {
   };
 
   const columns = [
-    createColumn("Tên phim", "name", 250, "left"),
+    createColumn("Tên phim", "name", 250, false, undefined, "left"),
     createColumn("Đạo diễn", "director", 150),
     createColumn("Diễn viên", "cast"),
     createColumn("Ngày sản xuất", "releaseDate", 150, undefined, renderDate),
@@ -120,8 +145,8 @@ const MovieList = () => {
             record={record}
             handleDelete={handleDeleteData}
             handleView={handleView}
-            showDelete={true}
-            showEdit={true}
+            showDelete={checked}
+            showEdit={checked}
             showView={true}
             itemName={"phim"}
           />
@@ -142,6 +167,12 @@ const MovieList = () => {
 
   // fix tìm động rạp
   const itemSearch = [
+    {
+      field: "cinemaId",
+      label: "Tên rạp",
+      type: "debounceSelect",
+      fetchOptions: fetchCinemaList,
+    },
     { field: "name", label: "Tên phim" },
     {
       field: "genreId",
@@ -149,18 +180,15 @@ const MovieList = () => {
       type: "select",
       options: movieGenre,
     },
-    { field: "cinemaId", label: "Rạp" },
   ];
 
   const renderHeader = () => (
     <TableHeader
       onReload={handleReload}
-      filter={filter}
-      setFilter={setFilter}
-      handleSearch={handleSearch}
       headerTitle={"Danh sách phim"}
-      itemSearch={itemSearch}
       create={handleToPageCreate}
+      showFuncOther={false}
+      showCreate={checked}
     />
   );
 
@@ -171,7 +199,9 @@ const MovieList = () => {
       if (query.hasOwnProperty(key)) {
         const label = key;
         const value = query[key];
-        if (value) {
+        if (label === "cinemaId") {
+          q += `&${label}=${value.value}`;
+        } else if (value) {
           q += `&${label}=${value}`;
         }
       }
@@ -190,7 +220,7 @@ const MovieList = () => {
       setCurrent(1);
     }
 
-    if (sorter && sorter.field) {
+    if (sorter?.field) {
       const q =
         sorter.order === "ascend"
           ? `sort=${sorter.field}`
@@ -203,6 +233,14 @@ const MovieList = () => {
     <>
       <Row gutter={[20, 20]}>
         <Col span={24}>
+          <SearchList
+            itemSearch={itemSearch}
+            handleSearch={handleSearch}
+            setFilter={setFilter}
+            filter={filter}
+          />
+        </Col>
+        <Col span={24}>
           <Table
             scroll={{
               x: "100%",
@@ -211,12 +249,12 @@ const MovieList = () => {
             title={renderHeader}
             bordered
             // thay đổi #1
-            // loading={isLoading}
+            loading={isLoading}
             columns={columns}
             dataSource={listData}
             onChange={onChange}
             // thay đổi #1
-            rowKey="_id"
+            rowKey="id"
             pagination={{
               current: current,
               pageSize: pageSize,

@@ -19,6 +19,11 @@ const FoodShow = () => {
   const [foodCategory, setFoodCategory] = useState(null);
   const { foodId } = useParams();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   // thay đổi #1
   const food = useSelector((state) => state.food.food);
   // fetch lai data cinema khi f5
@@ -126,7 +131,7 @@ const FoodShow = () => {
 
   return (
     <>
-      <PageHeader title="Xem chi tiết đồ ăn" numberBack={-1} type="show" />
+      <PageHeader title="Xem chi tiết đồ ăn" numberBack={-1} type="show" hiddenEdit={!checked} />
       <Divider />
       {/* <div style={{ maxHeight: "480px", overflowY: "auto" }}> */}
       <Card title="Thông tin đồ ăn" bordered={false}>

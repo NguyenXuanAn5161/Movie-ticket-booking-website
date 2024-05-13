@@ -41,3 +41,20 @@ export const validatePassword = validateField(
   /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/,
   "Mật khẩu phải chứa ít nhất 1 ký tự hoa, 1 chữ số, và có ít nhất 6 ký tự!"
 );
+
+// valid tên phim ít nhất 2 ký tự
+export const validateMovieName = validateField(
+  "Tên phim",
+  /^[a-zA-Z0-9_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\ ]{2,}$/,
+  "Tên phim ít nhất 2 ký tự!",
+  false
+);
+
+// valid ist nhất 2 ký tự và không chứa ký tự đặc biệt, không chứa ký tự số
+export const validateTwoChar = (field) =>
+  validateField(
+    field,
+    /^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\ ]{2,}$/,
+    `${field} ít nhất 2 ký tự và là chữ cái, không chứa ký tự đặc biệt`,
+    false
+  );

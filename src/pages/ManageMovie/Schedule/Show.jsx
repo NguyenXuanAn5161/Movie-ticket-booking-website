@@ -8,6 +8,10 @@ const ScheduleShow = () => {
   // thay đổi #1
   const schedule = useSelector((state) => state.schedule.schedule);
 
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   useEffect(() => {
     console.log("schedule", schedule);
   }, [schedule]);
@@ -51,6 +55,7 @@ const ScheduleShow = () => {
         title="Xem chi tiết lịch chiếu phim"
         numberBack={-1}
         type="show"
+        hiddenEdit={!checked}
       />
       <Divider />
       <Card title="Thông tin lịch chiếu phim" bordered={false}>

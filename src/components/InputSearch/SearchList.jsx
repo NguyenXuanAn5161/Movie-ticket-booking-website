@@ -62,12 +62,9 @@ const SearchList = (props) => {
             </Col>
           ))}
           <Col span={24} style={{ textAlign: "right" }}>
-            <Button type="primary" htmlType="submit">
-              Tìm
-            </Button>
             <Button
               type="primary"
-              // style={{ margin: "0 8px" }}
+              style={{ marginRight: "10px" }}
               onClick={() => {
                 form.resetFields();
                 props.setFilter("");
@@ -75,6 +72,9 @@ const SearchList = (props) => {
               }}
             >
               Xóa trắng
+            </Button>
+            <Button type="primary" htmlType="submit">
+              Tìm
             </Button>
           </Col>
         </Row>

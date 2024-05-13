@@ -1,32 +1,29 @@
 import {
-  Button,
   Card,
   Col,
   Descriptions,
   Divider,
-  Popconfirm,
   Row,
   Table,
   Tag,
   message,
   notification,
 } from "antd";
-import moment from "moment";
 import { useEffect, useState } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlinePlus,
-  AiOutlineReload,
-} from "react-icons/ai";
-import { BsEye } from "react-icons/bs";
-import { CiEdit } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import ActionButtons from "../../components/Button/ActionButtons";
+import {
+  renderDate,
+  renderStatus,
+} from "../../components/FunctionRender/FunctionRender";
 import PageHeader from "../../components/PageHeader/PageHeader";
+import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetCinema } from "../../redux/cinema/cinemaSlice";
 import { doSetRoom } from "../../redux/cinema/room/roomSlice";
 import { callFetchCinemaById } from "../../services/apiCinema";
 import { callDeleteRoom, callFetchListRoom } from "../../services/apiRoom";
+import { createColumn } from "../../utils/createColumn";
 import {
   getErrorMessageCinema,
   getErrorMessageRoom,
@@ -36,6 +33,10 @@ const CinemaShow = () => {
   const { cinemaId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
 
   // thay đổi #1
   const cinema = useSelector((state) => state.cinema.cinema);
@@ -149,127 +150,82 @@ const CinemaShow = () => {
   const handleView = (data, url) => {
     // thay đổi #1
     dispatch(doSetRoom(data));
-    navigate(`${url}/${data.id}`);
+    navigate(`room/${url}/${data.id}`);
   };
 
   const columns = [
-    {
-      title: "Mã phòng",
-      dataIndex: "code",
-      width: 100,
-      fixed: "left",
-    },
-    {
-      title: "Tên phòng",
-      dataIndex: "name",
-      sorter: true,
-      width: 100,
-      fixed: "left",
-    },
-    {
-      title: "Loại phòng",
-      dataIndex: "type",
-      width: 80,
-    },
-    {
-      title: "Tổng số ghế",
-      dataIndex: "totalSeats",
-      width: 100,
-      sorter: true,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      width: 140,
-      render: (text, record, index) => {
-        return (
-          <Tag color={record.status ? "success" : "error"}>
-            {record.status ? "Hoạt động" : "Ngừng hoạt động"}
-          </Tag>
-        );
-      },
-    },
-    {
-      title: "Cập nhật ngày",
-      dataIndex: "createdDate",
-      width: 150,
-      render: (text, record, index) => {
-        return (
-          <span>
-            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
-          </span>
-        );
-      },
-      sorter: true,
-    },
-    {
+    createColumn("Mã phòng", "code", 100, false, undefined, "left"),
+    createColumn("Tên phòng", "name", 100, false, undefined, "left"),
+    createColumn("Loại phòng", "type", 80),
+    createColumn("Tổng số ghế", "totalSeats", 100),
+    createColumn("Trạng thái", "status", 100, false, renderStatus()),
+    createColumn("Cập nhật ngày", "createdDate", 100, false, renderDate),
+  ];
+
+  if (checked) {
+    columns.push({
       title: "Thao tác",
       width: 100,
       fixed: "right",
       render: (text, record, index) => {
         return (
-          <>
-            <Popconfirm
-              placement="leftTop"
-              // thay đổi #1 sửa title và description
-              title={"Xác nhận xóa phòng chiếu"}
-              description={"Bạn có chắc chắn muốn xóa phòng chiếu này?"}
-              okText="Xác nhận"
-              cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record.id)}
-            >
-              <span>
-                <AiOutlineDelete
-                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
-                />
-              </span>
-            </Popconfirm>
-            <BsEye
-              style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={() => handleView(record, "show")}
-            />
-            <CiEdit
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                handleView(record, "room/edit");
-              }}
-            />
-          </>
+          <ActionButtons
+            record={record}
+            handleDelete={handleDeleteData}
+            handleView={handleView}
+            showDelete={true}
+            showEdit={true}
+            showView={false}
+            itemName={"phòng chiếu"}
+          />
         );
       },
-    },
-  ];
+    });
+  }
 
+  const handleReload = () => {
+    setFilter("");
+    setSortQuery("");
+    setCurrent(1);
+  };
+
+  const handleToPageCreate = () => {
+    navigate(`room/create`);
+  };
+
+  const itemSearch = [{ field: "code", label: "Mã phòng" }];
+
+  // Danh sách phòng chiếu phim của {cinema?.name}
   const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      {/* thay đổi #1 */}
-      <span style={{ fontWeight: "700", fontSize: "16" }}>
-        Danh sách phòng chiếu phim của {cinema?.name}
-      </span>
-      <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          icon={<AiOutlinePlus />}
-          type="primary"
-          onClick={(event) => {
-            // Điều hướng đến trang mới và truyền userId qua URL
-            navigate(`room/create`);
-          }}
-        >
-          Thêm mới
-        </Button>
-        <Button
-          type="ghost"
-          onClick={() => {
-            setFilter("");
-            setSortQuery("");
-            setCurrent(1);
-          }}
-        >
-          <AiOutlineReload />
-        </Button>
-      </span>
-    </div>
+    <TableHeader
+      headerTitle={`Danh sách phòng chiếu phim của {cinema?.name}`}
+      onReload={handleReload}
+      filter={filter}
+      setFilter={setFilter}
+      handleSearch={handleSearch}
+      itemSearch={itemSearch}
+      create={handleToPageCreate}
+      showFuncOther={false}
+      showCreate={checked}
+    />
   );
+
+  // mặc định #2
+  const handleSearch = (query) => {
+    console.log("query", query);
+    let q = "";
+    for (const key in query) {
+      if (query.hasOwnProperty(key)) {
+        const label = key;
+        const value = query[key];
+        if (value) {
+          q += `&${label}=${value}`;
+        }
+      }
+    }
+
+    setFilter(q);
+  };
 
   // mặc định #2
   const onChange = (pagination, filters, sorter, extra) => {
@@ -293,7 +249,12 @@ const CinemaShow = () => {
 
   return (
     <>
-      <PageHeader title="Xem chi tiết rạp phim" numberBack={-1} type="show" />
+      <PageHeader
+        title="Xem chi tiết rạp phim"
+        numberBack={-1}
+        type="show"
+        hiddenEdit={checked ? false : true}
+      />
       <Divider />
       {/* <div style={{ maxHeight: "480px", overflowY: "auto" }}> */}
       <Card title="Thông tin rạp phim" bordered={false}>

@@ -20,19 +20,60 @@ export const callFetchListShowtime = async (query) => {
 };
 
 export const callCreateShowtime = async (data) => {
-  const { showDate, showTime, movieId, roomId, status } = data;
-  const showDateStr = showDate.format("YYYY-MM-DD");
-  const showTimeStr = showTime.format("HH:mm:ss");
+  const convertedData = data.dateTime.flatMap(({ date, time }) => {
+    return time.map((showTime) => {
+      return {
+        showDate: date.format("YYYY-MM-DD"),
+        showTime: showTime.format("HH:mm"),
+        movieId: data.movieId.value,
+        roomId: data.roomId,
+        status: data.status,
+      };
+    });
+  });
+
+  console.log(convertedData);
   try {
-    const response = await api.post(`/api/showtime`, [
-      {
-        showDate: showDateStr,
-        showTime: showTimeStr,
-        movieId: movieId.value,
-        roomId,
-        status,
+    const response = await api.post(`/api/showtime`, convertedData);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callUpdateShowtime = async (data) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("id", data.id);
+  bodyFormData.append("showDate", data.showDate.format("YYYY-MM-DD"));
+  bodyFormData.append("showTime", data.showTime.format("HH:mm"));
+  if (data?.movieName?.value) {
+    bodyFormData.append("movieId", data.movieName.value);
+  }
+
+  if (data?.roomName?.value) {
+    bodyFormData.append("roomId", data.roomName.value);
+  }
+
+  bodyFormData.append("status", data.status);
+
+  try {
+    const response = await api({
+      method: "put",
+      url: "/api/showtime",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-    ]);
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callDeleteShowtime = async (id) => {
+  try {
+    const response = await api.delete(`/api/showtime/${id}`);
     return response.data;
   } catch (error) {
     return error;

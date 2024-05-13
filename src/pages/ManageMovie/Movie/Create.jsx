@@ -27,6 +27,7 @@ import {
   callFetchListGenreMovie,
   callUploadImage,
 } from "../../../services/apiMovie";
+import { validateMovieName } from "../../../utils/validData";
 
 // thay đổi #1
 const MovieCreate = () => {
@@ -63,7 +64,6 @@ const MovieCreate = () => {
     setIsSubmit(true);
     // thay đổi #1 api call
     const releaseDate = dayjs(values.releaseDate).format("YYYY-MM-DD");
-    // const dateFormat = dayjsvalues.releaseDate
     const resImage = await callUploadImage(values.image.file);
     console.log("resImage", resImage.data);
     if (resImage?.status === 200) {
@@ -72,7 +72,8 @@ const MovieCreate = () => {
         releaseDate,
         resImage.data.message
       );
-      if (resMovie?.status === 201) {
+      console.log("resMovie", resMovie);
+      if (resMovie?.status === 200) {
         // thay đổi #1 message
         message.success("Tạo mới phim thành công!");
         form.resetFields();
@@ -82,7 +83,7 @@ const MovieCreate = () => {
       } else {
         notification.error({
           message: "Đã có lỗi xảy ra!",
-          description: resMovie.response.data.message,
+          description: resMovie,
         });
         setIsSubmit(false);
       }
@@ -127,6 +128,9 @@ const MovieCreate = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập tên phim!",
+                  },
+                  {
+                    validator: validateMovieName,
                   },
                 ]}
               >
@@ -361,6 +365,10 @@ const MovieCreate = () => {
                   {
                     required: true,
                     message: "Vui lòng chọn trailer!",
+                  },
+                  {
+                    type: "url",
+                    message: "Vui lòng nhập đúng định dạng link trailer!",
                   },
                 ]}
               >

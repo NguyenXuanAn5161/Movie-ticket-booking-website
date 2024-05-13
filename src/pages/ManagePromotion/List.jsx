@@ -1,26 +1,28 @@
 import { Col, Row, Table, message, notification } from "antd";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ActionButtons from "../../components/Button/ActionButtons";
 import {
   renderDate,
   renderStatus,
 } from "../../components/FunctionRender/FunctionRender";
+import SearchList from "../../components/InputSearch/SearchList";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import { doSetPromotion } from "../../redux/promotion/promotionSlice";
 import { callDeleteUser } from "../../services/api";
 import { callFetchListPromotionHeader } from "../../services/apiPromotion";
+import { FORMAT_DATE_SEND_SERVER } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
-
-const statusPromotion = [
-  { value: "true", label: "Hoạt động" },
-  { value: "false", label: "Không hoạt động" },
-];
 
 const PromotionList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   // mặc định #2
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
@@ -102,8 +104,8 @@ const PromotionList = () => {
             record={record}
             handleDelete={handleDeleteData}
             handleView={handleView}
-            showDelete={true}
-            showEdit={true}
+            showDelete={checked}
+            showEdit={checked}
             showView={true}
             itemName={"chương trình khuyến mãi"}
           />
@@ -124,23 +126,15 @@ const PromotionList = () => {
 
   const itemSearch = [
     { field: "dateRange", label: "Khoảng thời gian", type: "rangePicker" },
-    {
-      field: "status",
-      label: "Trạng thái",
-      type: "select",
-      options: statusPromotion,
-    },
   ];
 
   const renderHeader = () => (
     <TableHeader
       onReload={handleReload}
-      filter={filter}
-      setFilter={setFilter}
-      handleSearch={handleSearch}
       headerTitle={"Danh sách chương trình khuyến mãi"}
-      itemSearch={itemSearch}
       create={handleToPageCreate}
+      showFuncOther={false}
+      showCreate={checked}
     />
   );
 
@@ -151,7 +145,11 @@ const PromotionList = () => {
       if (query.hasOwnProperty(key)) {
         const label = key;
         const value = query[key];
-        if (value) {
+        if (label === "dateRange") {
+          q += `&startDate=${value[0].format(
+            FORMAT_DATE_SEND_SERVER
+          )}&endDate=${value[1].format(FORMAT_DATE_SEND_SERVER)}`;
+        } else if (value) {
           q += `&${label}=${value}`;
         }
       }
@@ -182,6 +180,14 @@ const PromotionList = () => {
   return (
     <>
       <Row gutter={[20, 20]}>
+        <Col span={24}>
+          <SearchList
+            itemSearch={itemSearch}
+            handleSearch={handleSearch}
+            setFilter={setFilter}
+            filter={filter}
+          />
+        </Col>
         <Col span={24}>
           <Table
             scroll={{

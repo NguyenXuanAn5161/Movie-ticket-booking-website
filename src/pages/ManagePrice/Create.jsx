@@ -16,6 +16,7 @@ import CustomDatePicker from "../../components/DatePicker/CustomDatePicker";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { callCreateSalePrice } from "../../services/apiPrice";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
+import { validateTwoChar } from "../../utils/validData";
 
 const dateFormat = "DD-MM-YYYY HH:mm:ss";
 const defaultStartDate = dayjs().startOf("day").add(1, "day");
@@ -79,6 +80,9 @@ const PriceCreate = () => {
                     required: true,
                     message: "Vui lòng nhập tên giá sản phẩm!",
                   },
+                  {
+                    validator: validateTwoChar("Tên giá sản phẩm"),
+                  },
                 ]}
               >
                 <Input placeholder="Nhập tên giá sản phẩm" />
@@ -115,6 +119,9 @@ const PriceCreate = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập mô tả!",
+                  },
+                  {
+                    validator: validateTwoChar("Mô Tả"),
                   },
                 ]}
               >

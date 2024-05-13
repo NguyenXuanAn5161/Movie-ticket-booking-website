@@ -44,6 +44,11 @@ const PromotionShow = () => {
   const promotionHeader = useSelector((state) => state.promotion.promotion);
   const { promotionId } = useParams();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   // f5 fetch data
   useEffect(() => {
     if (!promotionHeader) {
@@ -186,20 +191,22 @@ const PromotionShow = () => {
       render: (text, record, index) => {
         return (
           <>
-            <Popconfirm
-              placement="leftTop"
-              title={"Xác nhận xóa CTKM"}
-              description={"Bạn có chắc chắn muốn xóa CTKM này?"}
-              okText="Xác nhận"
-              cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record.id)}
-            >
-              <span>
-                <AiOutlineDelete
-                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
-                />
-              </span>
-            </Popconfirm>
+            {checked && (
+              <Popconfirm
+                placement="leftTop"
+                title={"Xác nhận xóa CTKM"}
+                description={"Bạn có chắc chắn muốn xóa CTKM này?"}
+                okText="Xác nhận"
+                cancelText="Hủy"
+                onConfirm={() => handleDeleteData(record.id)}
+              >
+                <span>
+                  <AiOutlineDelete
+                    style={{ color: "red", cursor: "pointer", marginRight: 10 }}
+                  />
+                </span>
+              </Popconfirm>
+            )}
             <BsEye
               style={{ cursor: "pointer", marginRight: 10 }}
               onClick={() => {
@@ -207,13 +214,15 @@ const PromotionShow = () => {
                 setOpenViewDetail(true);
               }}
             />
-            <CiEdit
-              style={{ color: "#f57800", cursor: "pointer" }}
-              onClick={() => {
-                setDataUpdate(record);
-                setOpenModalUpdate(true);
-              }}
-            />
+            {checked && (
+              <CiEdit
+                style={{ color: "#f57800", cursor: "pointer" }}
+                onClick={() => {
+                  setDataUpdate(record);
+                  setOpenModalUpdate(true);
+                }}
+              />
+            )}
           </>
         );
       },
@@ -249,6 +258,8 @@ const PromotionShow = () => {
       headerTitle={"Danh sách chương trình khuyến mãi (CTKM)"}
       itemSearch={itemSearch}
       create={handleToPageCreate}
+      showFuncOther={false}
+      showCreate={checked}
     />
   );
 
@@ -287,7 +298,12 @@ const PromotionShow = () => {
 
   return (
     <>
-      <PageHeader title="Xem chi tiết khuyến mãi" numberBack={-1} type="show" />
+      <PageHeader
+        title="Xem chi tiết khuyến mãi"
+        numberBack={-1}
+        type="show"
+        hiddenEdit={!checked}
+      />
       <Divider />
       <div style={{ padding: "0 20px" }}>
         <Card title="Thông tin khyến mãi" bordered={false}>
