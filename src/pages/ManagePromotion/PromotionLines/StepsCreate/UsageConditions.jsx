@@ -1,4 +1,4 @@
-import { Col, DatePicker, Form, Radio, Row } from "antd";
+import { Col, DatePicker, Form, InputNumber, Radio, Row } from "antd";
 import dayjs from "dayjs";
 import React from "react";
 import { FORMAT_DATE_HH_MM_SS } from "../../../../utils/constant";
@@ -28,13 +28,32 @@ const PromotionUsageConditions = ({ form, dataUpdate, type }) => {
             }
           >
             <DatePicker.RangePicker
-              disabled={type === "update" ? true : false}
               style={{ width: "100%" }}
               showTime
               format={FORMAT_DATE_HH_MM_SS}
               minDate={defaultStartDate}
               // defaultValue={[defaultStartDate, defaultEndDate]}
               placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Form.Item
+            labelCol={{ span: 24 }}
+            name="quantity"
+            label="Số lượng khuyến mãi"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập số lượng khuyến mãi!",
+              },
+            ]}
+            initialValue={dataUpdate ? dataUpdate?.quantity : 1}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              placeholder="Nhập số lượng khuyến mãi"
+              min={1}
             />
           </Form.Item>
         </Col>
@@ -53,7 +72,7 @@ const PromotionUsageConditions = ({ form, dataUpdate, type }) => {
               style={{ width: "100%", textAlign: "left" }}
             >
               <Radio.Group
-                disabled={dayjs(dataUpdate?.startDate).isAfter(dayjs())}
+              // disabled={dayjs(dataUpdate?.startDate).isAfter(dayjs())}
               >
                 <Radio value={true}>Hoạt động</Radio>
                 <Radio value={false}>Không hoạt động</Radio>
