@@ -6,11 +6,17 @@ import { useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
 import { callGetCategoryFoodById } from "../../../services/apiFood";
+import { FORMAT_DATE_HH_MM_SS } from "../../../utils/constant";
 import { getErrorMessageCategoryFood } from "../../../utils/errorHandling";
 
 const FoodCategoryShow = () => {
   const { foodCategoryId } = useParams();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   // thay đổi #1
   const foodCategory = useSelector((state) => state.foodCategory.foodCategory);
   // fetch lai data cinema khi f5
@@ -43,13 +49,18 @@ const FoodCategoryShow = () => {
     },
     {
       label: "Ngày cập nhật",
-      children: moment(foodCategory?.createdDate).format("DD-MM-YYYY HH:mm:ss"),
+      children: moment(foodCategory?.createdDate).format(FORMAT_DATE_HH_MM_SS),
     },
   ];
 
   return (
     <>
-      <PageHeader title="Xem chi tiết loại đồ ăn" numberBack={-1} type="show" />
+      <PageHeader
+        title="Xem chi tiết loại đồ ăn"
+        numberBack={-1}
+        type="show"
+        hiddenEdit={!checked}
+      />
       <Divider />
       {/* <div style={{ maxHeight: "480px", overflowY: "auto" }}> */}
       <Card title="Thông tin loại đồ ăn" bordered={false}>

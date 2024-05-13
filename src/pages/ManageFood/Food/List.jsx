@@ -11,7 +11,6 @@ import {
 } from "../../../components/FunctionRender/FunctionRender";
 import SearchList from "../../../components/InputSearch/SearchList";
 import TableHeader from "../../../components/TableHeader/TableHeader";
-import useTheme from "../../../core/useTheme";
 import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
 import { doSetFood } from "../../../redux/food/foodSlice";
 import { callFetchListCinema } from "../../../services/apiCinema";
@@ -28,7 +27,10 @@ const FoodList = () => {
   const foodCategory = useSelector((state) => state.foodCategory.foodCategory);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { theme } = useTheme();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
 
   // mặc định #2
   const [listData, setListData] = useState([]);
@@ -152,8 +154,8 @@ const FoodList = () => {
             record={record}
             handleDelete={handleDeleteData}
             handleView={handleView}
-            showDelete={true}
-            showEdit={true}
+            showDelete={checked}
+            showEdit={checked}
             showView={true}
             itemName={"đồ ăn"}
           />
@@ -194,6 +196,8 @@ const FoodList = () => {
       onReload={handleReload}
       headerTitle={"Danh sách đồ ăn"}
       create={handleToPageCreate}
+      showFuncOther={false}
+      showCreate={checked}
     />
   );
 
