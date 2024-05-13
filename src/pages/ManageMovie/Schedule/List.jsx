@@ -12,7 +12,10 @@ import TableHeader from "../../../components/TableHeader/TableHeader";
 import { doSetSchedule } from "../../../redux/schedule/scheduleSlice";
 import { callFetchListCinema } from "../../../services/apiCinema";
 import { callFetchListMovie } from "../../../services/apiMovie";
-import { callFetchListShowtime } from "../../../services/apiShowTime";
+import {
+  callDeleteShowtime,
+  callFetchListShowtime,
+} from "../../../services/apiShowTime";
 import { FORMAT_DATE_SEND_SERVER } from "../../../utils/constant";
 import { createColumn } from "../../../utils/createColumn";
 
@@ -143,15 +146,15 @@ const ScheduleList = () => {
   // mặc định #2
   const handleDeleteData = async (dataId) => {
     // thay đổi #1 api call
-    const res = await callDeleteUser(dataId);
-    if (res && res.data) {
+    const res = await callDeleteShowtime(dataId);
+    if (res?.status === 200) {
       // thay đổi #1 message
       message.success("Xoá lịch chiếu thành công!");
       await fetchData();
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra!",
-        description: res.message,
+        description: res.response.data.message,
       });
     }
   };

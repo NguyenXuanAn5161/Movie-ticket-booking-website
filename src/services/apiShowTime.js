@@ -71,6 +71,15 @@ export const callUpdateShowtime = async (data) => {
   }
 };
 
+export const callDeleteShowtime = async (id) => {
+  try {
+    const response = await api.delete(`/api/showtime/${id}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 // get seat trong phòng cho user xem
 export const callGetSeatForUserByShowtimeId = async (id) => {
   try {
