@@ -117,163 +117,162 @@ const PriceDetailModalCreate = (props) => {
   };
 
   return (
-    <>
-      <Modal
-        width={750}
-        title="Thêm mới chi tiết giá"
-        open={openModalCreate}
-        onOk={() => {
-          form.submit();
+    <Modal
+      width={750}
+      title="Thêm mới chi tiết giá"
+      open={openModalCreate}
+      onOk={() => {
+        form.submit();
+      }}
+      onCancel={() => {
+        setOpenModalCreate(false);
+        form.resetFields();
+      }}
+      okText={"Tạo mới"}
+      cancelText={"Hủy"}
+      confirmLoading={isSubmit}
+      maskClosable={false}
+    >
+      <Divider />
+      <Form
+        form={form}
+        name="basic"
+        style={{
+          maxWidth: 750,
+          margin: "0 auto",
         }}
-        onCancel={() => {
-          setOpenModalCreate(false);
-          form.resetFields();
-        }}
-        okText={"Tạo mới"}
-        cancelText={"Hủy"}
-        confirmLoading={isSubmit}
-        maskClosable={false}
+        onFinish={onFinish}
+        autoComplete="true"
       >
-        <Divider />
-        <Form
-          form={form}
-          name="basic"
-          style={{
-            maxWidth: 750,
-            margin: "0 auto",
-          }}
-          onFinish={onFinish}
-          autoComplete="true"
-        >
-          <Row gutter={15}>
-            <Col span={12}>
+        <Row gutter={15}>
+          <Col span={12}>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label="Chọn rạp"
+              name="cinemaId"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn rạp!",
+                },
+              ]}
+            >
+              <DebounceSelect
+                value={cinema}
+                onChange={(newValue) => {
+                  setCinema(newValue);
+                }}
+                placeholder="Chọn rạp"
+                fetchOptions={fetchCinemaList}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label="Giá cho"
+              name="type"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn loại giá!",
+                },
+              ]}
+              initialValue={"TYPE_SEAT"}
+            >
+              <Select
+                showSearch
+                allowClear
+                options={options}
+                onChange={(e) => handleSelectedType(e)}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            {type === "ROOM" ? (
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Chọn rạp"
-                name="cinemaId"
+                label="Chọn phòng chiếu"
+                name="roomId"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn rạp!",
+                    message: "Vui lòng chọn phòng chiếu!",
                   },
                 ]}
               >
                 <DebounceSelect
-                  value={cinema}
+                  value={room}
                   onChange={(newValue) => {
-                    setCinema(newValue);
+                    setRoom(newValue);
                   }}
-                  placeholder="Chọn rạp"
-                  fetchOptions={fetchCinemaList}
+                  placeholder="Chọn phòng chiếu"
+                  fetchOptions={fetchRoomList}
                 />
               </Form.Item>
-            </Col>
-            <Col span={12}>
+            ) : type === "FOOD" ? (
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Giá cho"
-                name="type"
+                label="Đồ ăn"
+                name="foodId"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn loại giá!",
+                    message: "Vui lòng chọn đồ ăn!",
                   },
                 ]}
-                initialValue={"TYPE_SEAT"}
               >
-                <Select
-                  showSearch
-                  allowClear
-                  options={options}
-                  onChange={(e) => handleSelectedType(e)}
+                <DebounceSelect
+                  value={food}
+                  onChange={(newValue) => {
+                    setFood(newValue);
+                  }}
+                  placeholder="Chọn đồ ăn"
+                  fetchOptions={fetchFoodList}
                 />
               </Form.Item>
-            </Col>
-            <Col span={12}>
-              {type === "ROOM" ? (
-                <Form.Item
-                  labelCol={{ span: 24 }}
-                  label="Chọn phòng chiếu"
-                  name="roomId"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn phòng chiếu!",
-                    },
-                  ]}
-                >
-                  <DebounceSelect
-                    value={room}
-                    onChange={(newValue) => {
-                      setRoom(newValue);
-                    }}
-                    placeholder="Chọn phòng chiếu"
-                    fetchOptions={fetchRoomList}
-                  />
-                </Form.Item>
-              ) : type === "FOOD" ? (
-                <Form.Item
-                  labelCol={{ span: 24 }}
-                  label="Đồ ăn"
-                  name="foodId"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn đồ ăn!",
-                    },
-                  ]}
-                >
-                  <DebounceSelect
-                    value={food}
-                    onChange={(newValue) => {
-                      setFood(newValue);
-                    }}
-                    placeholder="Chọn đồ ăn"
-                    fetchOptions={fetchFoodList}
-                  />
-                </Form.Item>
-              ) : (
-                <Form.Item
-                  labelCol={{ span: 24 }}
-                  label="Loại ghế"
-                  name="typeSeatId"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn loại ghế!",
-                    },
-                  ]}
-                >
-                  <Select showSearch allowClear options={typeSeat} />
-                </Form.Item>
-              )}
-            </Col>
-            <Col span={12}>
+            ) : (
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Giá tiền"
-                name="price"
+                label="Loại ghế"
+                name="typeSeatId"
                 rules={[
                   {
                     required: true,
-                    message: "Giá tiền không được để trống!",
+                    message: "Vui lòng chọn loại ghế!",
                   },
                 ]}
               >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  formatter={(value) =>
-                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
-                  min={1000}
-                  addonAfter="VND"
-                />
+                <Select showSearch allowClear options={typeSeat} />
               </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
-    </>
+            )}
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label="Giá tiền"
+              name="price"
+              rules={[
+                {
+                  required: true,
+                  message: "Giá tiền không được để trống!",
+                },
+              ]}
+            >
+              <InputNumber
+                style={{ width: "100%" }}
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                min={1000}
+                max={99999999}
+                addonAfter="VND"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+    </Modal>
   );
 };
 
