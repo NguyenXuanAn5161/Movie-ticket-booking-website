@@ -6,7 +6,6 @@ import {
   Image,
   Row,
   Tag,
-  Typography,
   notification,
 } from "antd";
 import moment from "moment";
@@ -18,11 +17,14 @@ import { doSetMovie } from "../../../redux/movie/movieSlice";
 import { callGetMovieById } from "../../../services/apiMovie";
 import { imageError } from "../../../utils/imageError";
 
-const { Text } = Typography;
-
 const MovieShow = () => {
   const { movieId } = useParams();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   const movie = useSelector((state) => state.movie.movie);
 
   // f5 fetch data
@@ -161,7 +163,12 @@ const MovieShow = () => {
 
   return (
     <>
-      <PageHeader title="Xem chi tiết phim" numberBack={-1} type="show" />
+      <PageHeader
+        title="Xem chi tiết phim"
+        numberBack={-1}
+        type="show"
+        hiddenEdit={!checked}
+      />
       <Divider />
       {/* <div style={{ maxHeight: "480px", overflowY: "auto" }}> */}
       <Card title="Thông tin phim" bordered={false}>

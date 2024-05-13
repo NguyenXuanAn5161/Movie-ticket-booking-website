@@ -25,6 +25,7 @@ import {
   callGetMovieById,
   callUpdateMovie,
 } from "../../../services/apiMovie";
+import { validateMovieName } from "../../../utils/validData";
 
 const MovieEdit = () => {
   // thay đổi #1
@@ -154,6 +155,9 @@ const MovieEdit = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập tên phim!",
+                  },
+                  {
+                    validator: validateMovieName,
                   },
                 ]}
               >
@@ -388,6 +392,10 @@ const MovieEdit = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập link trailer!",
+                  },
+                  {
+                    type: "url",
+                    message: "Vui lòng nhập đúng định dạng link!",
                   },
                 ]}
               >
