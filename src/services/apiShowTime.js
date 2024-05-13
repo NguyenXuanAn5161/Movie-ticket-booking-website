@@ -41,6 +41,36 @@ export const callCreateShowtime = async (data) => {
   }
 };
 
+export const callUpdateShowtime = async (data) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("id", data.id);
+  bodyFormData.append("showDate", data.showDate.format("YYYY-MM-DD"));
+  bodyFormData.append("showTime", data.showTime.format("HH:mm"));
+  if (data?.movieName?.value) {
+    bodyFormData.append("movieId", data.movieName.value);
+  }
+
+  if (data?.roomName?.value) {
+    bodyFormData.append("roomId", data.roomName.value);
+  }
+
+  bodyFormData.append("status", data.status);
+
+  try {
+    const response = await api({
+      method: "put",
+      url: "/api/showtime",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 // get seat trong phòng cho user xem
 export const callGetSeatForUserByShowtimeId = async (id) => {
   try {

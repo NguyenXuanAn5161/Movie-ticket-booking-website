@@ -263,7 +263,7 @@ const ScheduleList = () => {
       setCurrent(1);
     }
 
-    if (sorter && sorter.field) {
+    if (sorter?.field) {
       const q =
         sorter.order === "ascend"
           ? `sort=${sorter.field}`
