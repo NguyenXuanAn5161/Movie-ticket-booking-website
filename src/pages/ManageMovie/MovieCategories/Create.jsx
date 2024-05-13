@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 import { callCreateGenreMovie } from "../../../services/apiMovie";
+import { validateTwoChar } from "../../../utils/validData";
 
 // thay đổi #1
 const MovieGenreCreate = () => {
@@ -55,7 +56,7 @@ const MovieGenreCreate = () => {
           name="basic"
           initialValues={{ remember: true }}
           onFinish={onFinish}
-          autoComplete="true"
+          autoComplete="false"
           style={{ margin: "0 auto" }}
         >
           <Row gutter={[16]}>
@@ -68,6 +69,9 @@ const MovieGenreCreate = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập tên loại phim!",
+                  },
+                  {
+                    validator: validateTwoChar("Tên thể loại"),
                   },
                 ]}
               >

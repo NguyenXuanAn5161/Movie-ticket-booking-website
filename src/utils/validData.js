@@ -46,5 +46,15 @@ export const validatePassword = validateField(
 export const validateMovieName = validateField(
   "Tên phim",
   /^[a-zA-Z0-9_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\ ]{2,}$/,
-  "Tên phim ít nhất 2 ký tự!"
+  "Tên phim ít nhất 2 ký tự!",
+  false
 );
+
+// valid ist nhất 2 ký tự và không chứa ký tự đặc biệt, không chứa ký tự số
+export const validateTwoChar = (field) =>
+  validateField(
+    field,
+    /^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\ ]{2,}$/,
+    `${field} ít nhất 2 ký tự và là chữ cái, không chứa ký tự đặc biệt`,
+    false
+  );

@@ -6,10 +6,16 @@ import { useParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 import { doSetMovieGenre } from "../../../redux/movie/movieGenreSlice";
 import { callGetGenreMovieById } from "../../../services/apiMovie";
+import { FORMAT_DATE_HH_MM_SS } from "../../../utils/constant";
 
 const MovieGenreShow = () => {
   const { categoryMovieId } = useParams();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   // thay đổi #1
   const movieGenre = useSelector((state) => state.movieGenre.movieGenre);
 
@@ -40,15 +46,19 @@ const MovieGenreShow = () => {
     },
     {
       label: "Ngày cập nhật",
-      children: moment(movieGenre?.createdDate).format("DD-MM-YYYY HH:mm:ss"),
+      children: moment(movieGenre?.createdDate).format(FORMAT_DATE_HH_MM_SS),
     },
   ];
 
   return (
     <>
-      <PageHeader title="Xem chi tiết loại phim" numberBack={-1} type="show" />
+      <PageHeader
+        title="Xem chi tiết loại phim"
+        numberBack={-1}
+        type="show"
+        hiddenEdit={!checked}
+      />
       <Divider />
-      {/* <div style={{ maxHeight: "480px", overflowY: "auto" }}> */}
       <Card title="Thông tin loại phim" bordered={false}>
         <Row gutter={16}>
           <Col span={24}>
@@ -70,7 +80,6 @@ const MovieGenreShow = () => {
           </Col>
         </Row>
       </Card>
-      {/* </div> */}
     </>
   );
 };

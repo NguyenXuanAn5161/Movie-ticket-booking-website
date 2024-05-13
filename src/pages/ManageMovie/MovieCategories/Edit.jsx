@@ -17,6 +17,7 @@ import {
   callGetGenreMovieById,
   callUpdateGenreMovie,
 } from "../../../services/apiMovie";
+import { validateTwoChar } from "../../../utils/validData";
 
 const MovieGenreEdit = () => {
   const { categoryMovieId } = useParams();
@@ -99,6 +100,9 @@ const MovieGenreEdit = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập tên loại phim!",
+                  },
+                  {
+                    validator: validateTwoChar("Tên thể loại"),
                   },
                 ]}
               >

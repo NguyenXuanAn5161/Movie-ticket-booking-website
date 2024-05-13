@@ -1,58 +1,26 @@
-import {
-  Button,
-  Col,
-  Popconfirm,
-  Row,
-  Table,
-  message,
-  notification,
-} from "antd";
-import moment from "moment";
+import { Col, Row, Table, message, notification } from "antd";
 import { useEffect, useState } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlineExport,
-  AiOutlineImport,
-  AiOutlinePlus,
-  AiOutlineReload,
-} from "react-icons/ai";
-import { BsEye } from "react-icons/bs";
-import { CiEdit } from "react-icons/ci";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import InputSearch from "../../../components/InputSearch/InputSearch";
+import ActionButtons from "../../../components/Button/ActionButtons";
+import { renderDate } from "../../../components/FunctionRender/FunctionRender";
+import SearchList from "../../../components/InputSearch/SearchList";
+import TableHeader from "../../../components/TableHeader/TableHeader";
 import { doSetMovieGenre } from "../../../redux/movie/movieGenreSlice";
 import {
   callDeleteGenreMovie,
   callFetchListGenreMovie,
 } from "../../../services/apiMovie";
+import { createColumn } from "../../../utils/createColumn";
 
 const MovieGenreList = () => {
-  const genres = [
-    { id: "1", code: "action", nameGenre: "Hành động" },
-    { id: "2", code: "adventure", nameGenre: "Phiêu lưu" },
-    { id: "3", code: "animation", nameGenre: "Hoạt hình" },
-    { id: "4", code: "anime", nameGenre: "Anime" },
-    { id: "5", code: "drama", nameGenre: "Kịch tính" },
-    { id: "6", code: "comedy", nameGenre: "Hài hước" },
-    { id: "7", code: "horror", nameGenre: "Kinh dị" },
-    { id: "8", code: "science_fiction", nameGenre: "Khoa học viễn tưởng" },
-    { id: "9", code: "romance", nameGenre: "Lãng mạn" },
-    { id: "10", code: "thriller", nameGenre: "Hồi hộp" },
-    { id: "11", code: "crime", nameGenre: "Tội phạm" },
-    { id: "12", code: "family", nameGenre: "Gia đình" },
-    { id: "13", code: "war", nameGenre: "Chiến tranh" },
-    { id: "14", code: "martial_arts", nameGenre: "Nghệ thuật đối đầu" },
-    { id: "15", code: "sports", nameGenre: "Thể thao" },
-    { id: "16", code: "superhero", nameGenre: "Siêu anh hùng" },
-    { id: "17", code: "fantasy", nameGenre: "Fantasy" },
-    { id: "18", code: "sci_fi", nameGenre: "Khoa học viễn tưởng" },
-    { id: "19", code: "historical", nameGenre: "Lịch sử" },
-    { id: "20", code: "musical", nameGenre: "Âm nhạc" },
-  ];
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   // mặc định #2
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
@@ -61,8 +29,6 @@ const MovieGenreList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-createdDate"); // default sort by updateAt mới nhất
-  const [openModalImport, setOpenModalImport] = useState(false);
-  const [openModalExport, setOpenModalExport] = useState(false);
 
   // mặc định #2
   useEffect(() => {
@@ -116,114 +82,48 @@ const MovieGenreList = () => {
     navigate(`${url}/${data.id}`);
   };
 
-  // thay đổi #1
   const columns = [
-    {
-      title: "Mã loại phim",
-      dataIndex: "code",
-      width: 100,
-      fixed: "left",
-    },
-    {
-      title: "Loại phim",
-      dataIndex: "name",
-      sorter: true,
-      width: 100,
-      fixed: "left",
-    },
-    {
-      title: "Cập nhật ngày",
-      dataIndex: "createdDate",
-      width: 150,
-      render: (text, record, index) => {
-        return (
-          <span>
-            {moment(record.createdDate).format("DD-MM-YYYY HH:mm:ss")}
-          </span>
-        );
-      },
-      sorter: true,
-    },
+    createColumn("Mã loại phim", "code", 100, false, undefined, "left"),
+    createColumn("Loại phim", "name", 100, false, undefined, "left"),
+    createColumn("Cập nhật ngày", "createdDate", 150, false, renderDate),
     {
       title: "Thao tác",
       width: 100,
       fixed: "right",
       render: (text, record, index) => {
         return (
-          <>
-            <Popconfirm
-              placement="leftTop"
-              // thay đổi #1 sửa title và description
-              title={"Xác nhận xóa loại phim"}
-              description={"Bạn có chắc chắn muốn xóa loại phim này?"}
-              okText="Xác nhận"
-              cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record.id)}
-            >
-              <span>
-                <AiOutlineDelete
-                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
-                />
-              </span>
-            </Popconfirm>
-            <BsEye
-              style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={() => handleView(record, "show")}
-            />
-            <CiEdit
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                handleView(record, "edit");
-              }}
-            />
-          </>
+          <ActionButtons
+            record={record}
+            handleDelete={handleDeleteData}
+            handleView={handleView}
+            showDelete={checked}
+            showEdit={checked}
+            showView={true}
+            itemName={"loại phim"}
+          />
         );
       },
     },
   ];
 
+  const handleReload = () => {
+    setFilter("");
+    setSortQuery("");
+    setCurrent(1);
+  };
+
+  const handleToPageCreate = () => {
+    navigate(`create`);
+  };
+
   const renderHeader = () => (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      {/* thay đổi #1 */}
-      <span style={{ fontWeight: "700", fontSize: "16" }}>
-        Danh sách loại phim
-      </span>
-      <span style={{ display: "flex", gap: 15 }}>
-        <Button
-          icon={<AiOutlineExport />}
-          type="primary"
-          onClick={() => setOpenModalExport(true)}
-        >
-          Export
-        </Button>
-        <Button
-          icon={<AiOutlineImport />}
-          type="primary"
-          onClick={() => setOpenModalImport(true)}
-        >
-          Import
-        </Button>
-        <Button
-          icon={<AiOutlinePlus />}
-          type="primary"
-          onClick={(event) => {
-            // Điều hướng đến trang mới và truyền userId qua URL
-            navigate(`create`);
-          }}
-        >
-          Thêm mới
-        </Button>
-        <Button
-          type="ghost"
-          onClick={() => {
-            setFilter("");
-            setSortQuery("");
-          }}
-        >
-          <AiOutlineReload />
-        </Button>
-      </span>
-    </div>
+    <TableHeader
+      onReload={handleReload}
+      headerTitle={"Danh sách loại phim"}
+      create={handleToPageCreate}
+      showFuncOther={false}
+      showCreate={checked}
+    />
   );
 
   // mặc định #2
@@ -252,7 +152,7 @@ const MovieGenreList = () => {
       setCurrent(1);
     }
 
-    if (sorter && sorter.field) {
+    if (sorter?.field) {
       const q =
         sorter.order === "ascend"
           ? `sort=${sorter.field}`
@@ -268,47 +168,46 @@ const MovieGenreList = () => {
   ];
 
   return (
-    <>
-      <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <InputSearch
-            itemSearch={itemSearch}
-            handleSearch={handleSearch}
-            setFilter={setFilter}
-          />
-        </Col>
-        <Col span={24}>
-          <Table
-            scroll={{
-              x: "100%",
-              y: "64vh",
-            }}
-            title={renderHeader}
-            bordered
-            // thay đổi #1
-            // loading={isLoading}
-            columns={columns}
-            dataSource={listData}
-            onChange={onChange}
-            // thay đổi #1
-            rowKey="code"
-            pagination={{
-              current: current,
-              pageSize: pageSize,
-              showSizeChanger: true,
-              total: total,
-              showTotal: (total, range) => {
-                return (
-                  <div>
-                    {range[0]} - {range[1]} trên {total} dòng
-                  </div>
-                );
-              },
-            }}
-          />
-        </Col>
-      </Row>
-    </>
+    <Row gutter={[20, 20]}>
+      <Col span={24}>
+        <SearchList
+          itemSearch={itemSearch}
+          handleSearch={handleSearch}
+          setFilter={setFilter}
+          filter={filter}
+        />
+      </Col>
+      <Col span={24}>
+        <Table
+          scroll={{
+            x: "100%",
+            y: "64vh",
+          }}
+          title={renderHeader}
+          bordered
+          // thay đổi #1
+          loading={isLoading}
+          columns={columns}
+          dataSource={listData}
+          onChange={onChange}
+          // thay đổi #1
+          rowKey="code"
+          pagination={{
+            current: current,
+            pageSize: pageSize,
+            showSizeChanger: true,
+            total: total,
+            showTotal: (total, range) => {
+              return (
+                <div>
+                  {range[0]} - {range[1]} trên {total} dòng
+                </div>
+              );
+            },
+          }}
+        />
+      </Col>
+    </Row>
   );
 };
 
