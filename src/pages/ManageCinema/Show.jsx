@@ -34,6 +34,10 @@ const CinemaShow = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   // thay đổi #1
   const cinema = useSelector((state) => state.cinema.cinema);
   // fetch lai data cinema khi f5
@@ -156,7 +160,10 @@ const CinemaShow = () => {
     createColumn("Tổng số ghế", "totalSeats", 100),
     createColumn("Trạng thái", "status", 100, false, renderStatus()),
     createColumn("Cập nhật ngày", "createdDate", 100, false, renderDate),
-    {
+  ];
+
+  if (checked) {
+    columns.push({
       title: "Thao tác",
       width: 100,
       fixed: "right",
@@ -173,8 +180,8 @@ const CinemaShow = () => {
           />
         );
       },
-    },
-  ];
+    });
+  }
 
   const handleReload = () => {
     setFilter("");
@@ -199,6 +206,7 @@ const CinemaShow = () => {
       itemSearch={itemSearch}
       create={handleToPageCreate}
       showFuncOther={false}
+      showCreate={checked}
     />
   );
 
@@ -241,7 +249,12 @@ const CinemaShow = () => {
 
   return (
     <>
-      <PageHeader title="Xem chi tiết rạp phim" numberBack={-1} type="show" />
+      <PageHeader
+        title="Xem chi tiết rạp phim"
+        numberBack={-1}
+        type="show"
+        hiddenEdit={checked ? false : true}
+      />
       <Divider />
       {/* <div style={{ maxHeight: "480px", overflowY: "auto" }}> */}
       <Card title="Thông tin rạp phim" bordered={false}>

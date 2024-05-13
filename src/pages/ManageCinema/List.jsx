@@ -1,6 +1,6 @@
 import { Col, Row, Table, message, notification } from "antd";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ActionButtons from "../../components/Button/ActionButtons";
 import {
@@ -22,6 +22,11 @@ import { getErrorMessageCinema } from "../../utils/errorHandling";
 const CinemaList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
+
   // mặc định #2
   const [listData, setListData] = useState([]);
   const [current, setCurrent] = useState(1);
@@ -101,8 +106,8 @@ const CinemaList = () => {
             record={record}
             handleDelete={handleDeleteData}
             handleView={handleView}
-            showDelete={true}
-            showEdit={true}
+            showDelete={checked}
+            showEdit={checked}
             showView={true}
             itemName={"rạp"}
           />
@@ -139,6 +144,7 @@ const CinemaList = () => {
       onReload={handleReload}
       create={handleToPageCreate}
       showFuncOther={false}
+      showCreate={checked}
     />
   );
 
