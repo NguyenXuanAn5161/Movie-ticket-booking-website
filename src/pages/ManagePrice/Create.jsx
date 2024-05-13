@@ -120,9 +120,6 @@ const PriceCreate = () => {
                     required: true,
                     message: "Vui lòng nhập mô tả!",
                   },
-                  {
-                    validator: validateTwoChar("Mô Tả"),
-                  },
                 ]}
               >
                 <Input.TextArea placeholder="Nhập mô tả" />

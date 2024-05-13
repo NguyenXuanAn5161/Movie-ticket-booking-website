@@ -109,9 +109,6 @@ const PromotionCreate = () => {
                     required: true,
                     message: "Vui lòng nhập mô tả!",
                   },
-                  {
-                    validator: validateTwoChar("Mô tả"),
-                  },
                 ]}
               >
                 <Input.TextArea placeholder="Nhập mô tả" />
