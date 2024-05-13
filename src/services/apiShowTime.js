@@ -20,19 +20,21 @@ export const callFetchListShowtime = async (query) => {
 };
 
 export const callCreateShowtime = async (data) => {
-  const { showDate, showTime, movieId, roomId, status } = data;
-  const showDateStr = showDate.format("YYYY-MM-DD");
-  const showTimeStr = showTime.format("HH:mm:ss");
+  const convertedData = data.dateTime.flatMap(({ date, time }) => {
+    return time.map((showTime) => {
+      return {
+        showDate: date.format("YYYY-MM-DD"),
+        showTime: showTime.format("HH:mm"),
+        movieId: data.movieId.value,
+        roomId: data.roomId,
+        status: data.status,
+      };
+    });
+  });
+
+  console.log(convertedData);
   try {
-    const response = await api.post(`/api/showtime`, [
-      {
-        showDate: showDateStr,
-        showTime: showTimeStr,
-        movieId: movieId.value,
-        roomId,
-        status,
-      },
-    ]);
+    const response = await api.post(`/api/showtime`, convertedData);
     return response.data;
   } catch (error) {
     return error;
