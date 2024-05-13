@@ -58,3 +58,12 @@ export const validateTwoChar = (field) =>
     `${field} ít nhất 2 ký tự và là chữ cái, không chứa ký tự đặc biệt`,
     false
   );
+
+// valid cho tên giá, tên khuyến mãi có ít nhất 2 ký tự, có chứa tiếng việt
+export const validateTwoCharVietnamese = (field) =>
+  validateField(
+    field,
+    /^[a-zA-Z0-9_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\ ]{2,}$/,
+    `${field} ít nhất 2 ký tự, không chứa ký tự đặc biệt`,
+    false
+  );

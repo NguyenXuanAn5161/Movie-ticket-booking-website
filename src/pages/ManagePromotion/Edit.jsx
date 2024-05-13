@@ -29,6 +29,7 @@ import {
   defaultStartDate,
   formatDateYYYY_MM_DDT_HH_MM_SS,
 } from "../../utils/date";
+import { validateTwoCharVietnamese } from "../../utils/validData";
 
 const PromotionEdit = () => {
   // thay đổi #1
@@ -133,6 +134,7 @@ const PromotionEdit = () => {
                     required: true,
                     message: "Vui lòng nhập tên khuyến mãi!",
                   },
+                  { validator: validateTwoCharVietnamese("Tên khuyến mãi") },
                 ]}
               >
                 <Input placeholder="Nhập tên khuyến mãi" />
