@@ -129,7 +129,7 @@ const MovieList = () => {
   };
 
   const columns = [
-    createColumn("Tên phim", "name", 250, "left"),
+    createColumn("Tên phim", "name", 250, false, undefined, "left"),
     createColumn("Đạo diễn", "director", 150),
     createColumn("Diễn viên", "cast"),
     createColumn("Ngày sản xuất", "releaseDate", 150, undefined, renderDate),
