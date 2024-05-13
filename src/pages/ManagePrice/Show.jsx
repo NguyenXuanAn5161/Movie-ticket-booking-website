@@ -2,7 +2,6 @@ import {
   Card,
   Descriptions,
   Divider,
-  Popconfirm,
   Table,
   Tag,
   message,
@@ -10,11 +9,9 @@ import {
 } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
-import { BsEye } from "react-icons/bs";
-import { CiEdit } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import ActionButtons from "../../components/Button/ActionButtons";
 import {
   renderCurrency,
   renderDate,
@@ -39,6 +36,10 @@ import PriceDetailModalView from "./PriceDetail/PriceDetailModalView";
 const PriceShow = () => {
   const { priceId } = useParams();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.account.user);
+  const userRoles = user?.roles;
+  const checked = userRoles?.some((role) => role === "ROLE_ADMIN");
 
   const price = useSelector((state) => state.price.price);
   // const priceDetail = useSelector((state) => state.priceDetail.priceDetail);
@@ -202,33 +203,15 @@ const PriceShow = () => {
       fixed: "right",
       render: (text, record, index) => {
         return (
-          <>
-            <Popconfirm
-              placement="leftTop"
-              // thay đổi #1 sửa title và description
-              title={"Xác nhận xóa giá"}
-              description={"Bạn có chắc chắn muốn xóa giá này?"}
-              okText="Xác nhận"
-              cancelText="Hủy"
-              onConfirm={() => handleDeleteData(record.id)}
-            >
-              <span>
-                <AiOutlineDelete
-                  style={{ color: "red", cursor: "pointer", marginRight: 10 }}
-                />
-              </span>
-            </Popconfirm>
-            <BsEye
-              style={{ cursor: "pointer", marginRight: 10 }}
-              onClick={() => handleView(record, "show")}
-            />
-            <CiEdit
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                handleView(record, "edit");
-              }}
-            />
-          </>
+          <ActionButtons
+            record={record}
+            handleDelete={handleDeleteData}
+            handleView={handleView}
+            showDelete={checked}
+            showEdit={checked}
+            showView={true}
+            itemName={"giá"}
+          />
         );
       },
     },
@@ -270,6 +253,8 @@ const PriceShow = () => {
       headerTitle={"Danh sách chi tiết giá"}
       itemSearch={itemSearch}
       create={handleToPageCreate}
+      showFuncOther={false}
+      showCreate={checked}
     />
   );
 
@@ -310,7 +295,12 @@ const PriceShow = () => {
 
   return (
     <>
-      <PageHeader title="Xem chi tiết giá" numberBack={-1} type="show" />
+      <PageHeader
+        title="Xem chi tiết giá"
+        numberBack={-1}
+        type="show"
+        hiddenEdit={!checked}
+      />
       <Divider />
       <div style={{ padding: "0 20px" }}>
         <Card title="Thông tin giá" bordered={false}>
