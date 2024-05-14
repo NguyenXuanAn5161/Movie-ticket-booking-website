@@ -272,17 +272,17 @@ function CustomBreadcrumb(props) {
           children: [
             {
               path: "/show",
-              title: "Xem chi tiết Sự kiện khuyến mãi",
+              title: "Xem chi tiết sự kiện khuyến mãi",
               key: "promotionShow",
             },
             {
               path: "/create",
-              title: "Tạo mới Sự kiện khuyến mãi",
+              title: "Tạo mới sự kiện khuyến mãi",
               key: "promotionCreate",
             },
             {
               path: "/edit",
-              title: "Cập nhật Sự kiện khuyến mãi",
+              title: "Cập nhật sự kiện khuyến mãi",
               key: "promotionEdit",
             },
           ],
