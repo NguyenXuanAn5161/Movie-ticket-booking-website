@@ -69,6 +69,13 @@ const CalendarBooking = () => {
     return date;
   };
 
+  // set selected date when khi quay lại vẫn có
+  useEffect(() => {
+    if (selectedShowTime?.id) {
+      setSelectedDate(moment(selectedShowTime?.showDate).format("YYYY-MM-DD"));
+    }
+  }, [selectedShowTime]);
+
   const handleDateSelect = (date) => {
     setSelectedDate(date);
   };
