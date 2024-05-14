@@ -17,9 +17,15 @@ const validateField = (
   };
 };
 
+//   /^[^\d]{2,}$/, khong chua so
+//   /.{2,}/u, it nhat 2 ky tu
+// /^[^\d\W_]{2,}$/i không chứa số, ký tự đặc biệt, ko chứa khoảng trắng
+// /^[^\d\W_ ]{2,}$/i không chứa số, ký tự đặc biệt, ko chứa khoảng trắng
+// /^(?=[^\d\W_ ]{2,}$).*$/i
+
 export const validateUsername = validateField(
   "Họ và tên",
-  /^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\ ]+$/,
+  /^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳýỵỷỹ\ ]{2,}$/,
   "Họ và tên chỉ chứa chữ cái và dấu cách!",
   false
 );
@@ -45,7 +51,7 @@ export const validatePassword = validateField(
 // valid tên phim ít nhất 2 ký tự
 export const validateMovieName = validateField(
   "Tên phim",
-  /^[a-zA-Z0-9_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\ ]{2,}$/,
+  /.{2,}/u,
   "Tên phim ít nhất 2 ký tự!",
   false
 );
@@ -54,16 +60,16 @@ export const validateMovieName = validateField(
 export const validateTwoChar = (field) =>
   validateField(
     field,
-    /^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\ ]{2,}$/,
+    /^[^\W_]{2,}$/i,
     `${field} ít nhất 2 ký tự và là chữ cái, không chứa ký tự đặc biệt`,
     false
   );
 
-// valid cho tên giá, tên khuyến mãi có ít nhất 2 ký tự, có chứa tiếng việt
+// valid cho tên giá, tên khuyến mãi có ít nhất 2 ký tự
 export const validateTwoCharVietnamese = (field) =>
   validateField(
     field,
-    /^[a-zA-Z0-9_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\ ]{2,}$/,
+    /.{2,}/u,
     `${field} ít nhất 2 ký tự, không chứa ký tự đặc biệt`,
     false
   );
