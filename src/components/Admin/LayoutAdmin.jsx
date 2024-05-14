@@ -247,7 +247,7 @@ const LayoutAdmin = () => {
       >
         <div>
           <Link
-            to="/"
+            to="/dashboard"
             style={{
               height: 32,
               margin: 16,
