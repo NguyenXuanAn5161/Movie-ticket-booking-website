@@ -1,0 +1,34 @@
+.admin-home {
+  text-align: center;
+}
+
+.admin-home h1 {
+  color: #333;
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+.admin-home p {
+  color: #666;
+  font-size: 1.2em;
+}
+
+.admin-home ul {
+  list-style: none;
+  padding: 0;
+}
+
+.admin-home li {
+  margin: 10px 0;
+}
+
+.admin-home a {
+  text-decoration: none;
+  color: #007bff;
+  font-size: 1.1em;
+}
+
+.admin-home a:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}

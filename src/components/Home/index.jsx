@@ -1,15 +1,16 @@
+import { Card } from "antd";
 import React from "react";
-import { Link } from "react-router-dom";
+import "./AdminHome.css";
 
 const AdminHome = () => {
   return (
-    <div>
+    <Card className="admin-home" style={{ height: "100vh" }}>
       <h1>Trang quản trị viên</h1>
       <p>Chào mừng đến với hệ thống quản trị viên!</p>
       <p>
         Bạn có thể quản lý các bộ phim, lịch chiếu, vé xem phim và người dùng.
       </p>
-      <ul>
+      {/* <ul>
         <li>
           <Link to="/dashboard">Dashboard</Link>
         </li>
@@ -22,9 +23,8 @@ const AdminHome = () => {
         <li>
           <Link to="/movie">Quản lý phim</Link>
         </li>
-        {/* Thêm các liên kết khác ở đây tương ứng với các trang bạn muốn */}
-      </ul>
-    </div>
+      </ul> */}
+    </Card>
   );
 };
 

@@ -42,7 +42,7 @@ const SignInForm = (props) => {
       localStorage.setItem("user", JSON.stringify(res.data));
       dispatch(doLoginAction(res.data));
       message.success("Đăng nhập thành công!");
-      navigate("/");
+      navigate("/dashboard");
     } else {
       notification.error({
         message: "Có lỗi xảy ra!",
