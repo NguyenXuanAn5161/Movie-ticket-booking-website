@@ -40,7 +40,7 @@ const PriceCreate = () => {
       description
     );
     if (res?.status === 200) {
-      message.success("Tạo mới giá sản phẩm thành công!");
+      message.success("Tạo mới chương trình quản lý giá thành công!");
       form.resetFields();
       setIsSubmit(false);
       navigate("/price");
@@ -58,9 +58,13 @@ const PriceCreate = () => {
 
   return (
     <>
-      <PageHeader title="Tạo mới giá sản phẩm" numberBack={-1} type="create" />
+      <PageHeader
+        title="Tạo mới chương trình quản lý giá"
+        numberBack={-1}
+        type="create"
+      />
       <Divider />
-      <Card title="Tạo mới giá sản phẩm" bordered={false}>
+      <Card title="Tạo mới chương trình quản lý giá" bordered={false}>
         <Form
           form={form}
           name="basic"
@@ -73,17 +77,21 @@ const PriceCreate = () => {
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tên giá sản phẩm"
+                label="Tên chương trình quản lý giá"
                 name="name"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên giá sản phẩm!",
+                    message: "Vui lòng nhập tên chương trình quản lý giá!",
                   },
-                  { validator: validateTwoCharVietnamese("Tên giá sản phẩm") },
+                  {
+                    validator: validateTwoCharVietnamese(
+                      "Tên chương trình quản lý giá"
+                    ),
+                  },
                 ]}
               >
-                <Input placeholder="Nhập tên giá sản phẩm" />
+                <Input placeholder="Nhập tên chương trình quản lý giá" />
               </Form.Item>
             </Col>
             <Col span={12}>

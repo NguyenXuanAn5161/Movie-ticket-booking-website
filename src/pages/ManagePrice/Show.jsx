@@ -145,11 +145,11 @@ const PriceShow = () => {
   // render thông tin promotion header
   const items = [
     {
-      label: "Mã giá",
+      label: "Mã chương trình quản lý giá",
       children: price?.code,
     },
     {
-      label: "Tên giá",
+      label: "Tên chương trình quản lý giá",
       children: price?.name,
     },
     {
@@ -296,14 +296,14 @@ const PriceShow = () => {
   return (
     <>
       <PageHeader
-        title="Xem chi tiết giá"
+        title="Xem chi tiết chương trình quản lý giá"
         numberBack={-1}
         type="show"
         hiddenEdit={!checked}
       />
       <Divider />
       <div style={{ padding: "0 20px" }}>
-        <Card title="Thông tin giá" bordered={false}>
+        <Card title="Thông tin chương trình quản lý giá" bordered={false}>
           <Descriptions
             labelStyle={{ color: "#333", fontWeight: "700" }}
             layout="vertical"

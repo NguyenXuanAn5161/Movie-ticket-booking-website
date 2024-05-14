@@ -117,7 +117,7 @@ const PromotionShow = () => {
   // render thông tin promotion header
   const items = [
     {
-      label: "Tên khuyến mãi",
+      label: "Tên sự kiện khuyến mãi",
       key: "2",
       children: promotionHeader?.name,
     },
@@ -299,7 +299,7 @@ const PromotionShow = () => {
   return (
     <>
       <PageHeader
-        title="Xem chi tiết khuyến mãi"
+        title="Xem chi tiết sự kiện khuyến mãi"
         numberBack={-1}
         type="show"
         hiddenEdit={!checked}
