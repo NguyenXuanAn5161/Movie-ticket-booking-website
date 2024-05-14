@@ -94,7 +94,7 @@ const PromotionEdit = () => {
     );
     if (res?.status === 200) {
       // thay đổi #1 message và url
-      message.success("Cập nhật khuyến mãi thành công thành công!");
+      message.success("Cập nhật sự kiện khuyến mãi thành công thành công!");
       navigate("/promotion");
     } else {
       notification.error({
@@ -114,7 +114,7 @@ const PromotionEdit = () => {
   return (
     <>
       <PageHeader
-        title="Cập nhật thông tin khuyến mãi"
+        title="Cập nhật thông tin sự kiện khuyến mãi"
         numberBack={-1}
         type="edit"
       />
@@ -127,17 +127,21 @@ const PromotionEdit = () => {
             <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tên khuyến mãi"
+                label="Tên sự kiện khuyến mãi"
                 name="name"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên khuyến mãi!",
+                    message: "Vui lòng nhập tên sự kiện khuyến mãi!",
                   },
-                  { validator: validateTwoCharVietnamese("Tên khuyến mãi") },
+                  {
+                    validator: validateTwoCharVietnamese(
+                      "Tên sự kiện khuyến mãi"
+                    ),
+                  },
                 ]}
               >
-                <Input placeholder="Nhập tên khuyến mãi" />
+                <Input placeholder="Nhập tên sự kiện khuyến mãi" />
               </Form.Item>
             </Col>
             <Col span={8}>

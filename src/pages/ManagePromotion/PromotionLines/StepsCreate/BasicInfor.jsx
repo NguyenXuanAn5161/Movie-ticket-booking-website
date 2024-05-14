@@ -37,11 +37,15 @@ const PromotionBasicInfo = ({ form, dataUpdate, promotionId, type }) => {
         )}
         <Col span={12}>
           <Form.Item
-            label="Tên Chương trình khuyến mãi"
+            label="Tên chương trình khuyến mãi"
             name="name"
             rules={[
               { required: true, message: "Vui lòng nhập tên CTKM!" },
-              { validator: validateTwoCharVietnamese("Tên khuyến mãi") },
+              {
+                validator: validateTwoCharVietnamese(
+                  "Tên chương trình khuyến mãi"
+                ),
+              },
             ]}
           >
             <Input />

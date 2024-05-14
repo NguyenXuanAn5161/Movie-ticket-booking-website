@@ -72,7 +72,7 @@ const PromotionList = () => {
     const res = await callDeleteUser(dataId);
     if (res && res.data) {
       // thay đổi #1 message
-      message.success("Xoá khuyến mãi thành công!");
+      message.success("Xoá sự kiện khuyến mãi thành công!");
       await fetchData();
     } else {
       notification.error({
@@ -89,7 +89,7 @@ const PromotionList = () => {
   };
 
   const columns = [
-    createColumn("Tên khuyến mãi", "name", 150, false, undefined, "left"),
+    createColumn("Tên SKKM", "name", 150, false, undefined, "left"),
     createColumn("Ngày bắt đầu", "startDate", 120, false, renderDate),
     createColumn("Ngày kết thúc", "endDate", 130, false, renderDate),
     createColumn("Mô Tả", "description", 250),
@@ -107,7 +107,7 @@ const PromotionList = () => {
             showDelete={checked}
             showEdit={checked}
             showView={true}
-            itemName={"chương trình khuyến mãi"}
+            itemName={"sự kiện khuyến mãi"}
           />
         );
       },
@@ -131,7 +131,7 @@ const PromotionList = () => {
   const renderHeader = () => (
     <TableHeader
       onReload={handleReload}
-      headerTitle={"Danh sách chương trình khuyến mãi"}
+      headerTitle={"Danh sách sự kiện khuyến mãi (SKKM)"}
       create={handleToPageCreate}
       showFuncOther={false}
       showCreate={checked}

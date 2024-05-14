@@ -31,7 +31,7 @@ const PromotionCreate = () => {
     setIsSubmit(true);
     const res = await callCreatePromotionHeader(values);
     if (res?.status === 200) {
-      message.success("Tạo mới khuyến mãi thành công!");
+      message.success("Tạo mới sự kiện khuyến mãi thành công!");
       form.resetFields();
       setIsSubmit(false);
       navigate("/promotion");
@@ -46,9 +46,13 @@ const PromotionCreate = () => {
 
   return (
     <>
-      <PageHeader title="Tạo mới khuyến mãi" numberBack={-1} type="create" />
+      <PageHeader
+        title="Tạo mới sự kiện khuyến mãi"
+        numberBack={-1}
+        type="create"
+      />
       <Divider />
-      <Card title="Tạo mới khuyến mãi" bordered={false}>
+      <Card title="Tạo mới sự kiện khuyến mãi" bordered={false}>
         <Form
           form={form}
           name="basic"
@@ -61,17 +65,21 @@ const PromotionCreate = () => {
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tên khuyến mãi"
+                label="Tên sự kiện khuyến mãi"
                 name="name"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên khuyến mãi!",
+                    message: "Vui lòng nhập tên sự kiện khuyến mãi!",
                   },
-                  { validator: validateTwoCharVietnamese("Tên khuyến mãi") },
+                  {
+                    validator: validateTwoCharVietnamese(
+                      "Tên sự kiện khuyến mãi"
+                    ),
+                  },
                 ]}
               >
-                <Input placeholder="Nhập tên khuyến mãi" />
+                <Input placeholder="Nhập tên sự kiện khuyến mãi" />
               </Form.Item>
             </Col>
             <Col span={12}>
