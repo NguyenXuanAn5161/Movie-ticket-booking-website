@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ActionButtons from "../../../components/Button/ActionButtons";
 import {
   renderDate,
+  renderDateOnly,
   renderStatus,
 } from "../../../components/FunctionRender/FunctionRender";
 import SearchList from "../../../components/InputSearch/SearchList";
@@ -132,7 +133,13 @@ const MovieList = () => {
     createColumn("Tên phim", "name", 250, false, undefined, "left"),
     createColumn("Đạo diễn", "director", 150),
     createColumn("Diễn viên", "cast"),
-    createColumn("Ngày sản xuất", "releaseDate", 150, undefined, renderDate),
+    createColumn(
+      "Ngày sản xuất",
+      "releaseDate",
+      150,
+      undefined,
+      renderDateOnly
+    ),
     createColumn("Trạng thái", "status", 150, undefined, renderStatus("movie")),
     createColumn("Cập nhật ngày", "createdDate", 150, undefined, renderDate),
     {
