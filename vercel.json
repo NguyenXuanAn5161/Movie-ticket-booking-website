@@ -1,9 +1,8 @@
 {
-  "redirects": [
+  "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "http://infinitycine.id.vn/$1",
-      "permanent": true
+      "destination": "http://infinitycine.id.vn/$1"
     }
   ]
 }
