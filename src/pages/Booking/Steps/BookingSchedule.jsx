@@ -23,9 +23,34 @@ const BookingSchedule = (props) => {
   const showDateByMovieId = useSelector(
     (state) => state.booking.showDateByMovieId
   );
+  const selectedCinema = useSelector((state) => state.booking.selectedCinema);
+  const selectedMovie = useSelector((state) => state.booking.selectedMovie);
+
+  useEffect(() => {
+    if (selectedCinema?.value && selectedMovie?.value) {
+      form.setFieldsValue({
+        cinemaId: selectedCinema,
+        movieName: selectedMovie,
+      });
+    }
+  }, [selectedCinema]);
+
+  // lần đầu vào trang thì reset form
+  useEffect(() => {
+    if (!selectedCinema?.value && !selectedMovie?.value) {
+      form.resetFields(["cinemaId", "movieName"]);
+    }
+  }, [selectedCinema, selectedMovie]);
 
   const [cinema, setCinema] = useState(null);
   const [movie, setMovie] = useState(null);
+
+  // reset movieName khi chọn rạp khác
+  useEffect(() => {
+    if (cinema?.value) {
+      form.resetFields(["movieName"]);
+    }
+  }, [cinema]);
 
   useEffect(() => {
     if (cinema && movie) {
@@ -118,58 +143,56 @@ const BookingSchedule = (props) => {
   }, [showDateByMovieId]);
 
   return (
-    <>
-      <Form form={form} layout="vertical">
-        <Row gutter={[16, 10]} style={{ width: "100%", marginLeft: 1 }}>
-          <Card style={{ width: "100%" }}>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  labelCol={{ span: 24 }}
-                  label="Chọn rạp"
-                  name="cinemaId"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn rạp!",
-                    },
-                  ]}
-                >
-                  <DebounceSelect
-                    style={{ textAlign: "start" }}
-                    value={cinema}
-                    onChange={(newValue) => {
-                      dispatch(doSetSelectedCinema(newValue));
-                      setCinema(newValue);
-                    }}
-                    placeholder="Chọn rạp"
-                    fetchOptions={fetchCinemaList}
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  label="Chọn phim"
-                  name="movieName"
-                  rules={[{ required: true, message: "Vui lòng chọn phim!" }]}
-                >
-                  <DebounceSelect
-                    style={{ textAlign: "start" }}
-                    value={movie}
-                    onChange={(newValue) => {
-                      setMovie(newValue);
-                    }}
-                    placeholder="Chọn phim"
-                    fetchOptions={fetchMovieList}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-          </Card>
-          <CalendarBooking />
-        </Row>
-      </Form>
-    </>
+    <Form form={form} layout="vertical">
+      <Row gutter={[16, 10]} style={{ width: "100%", marginLeft: 1 }}>
+        <Card style={{ width: "100%" }}>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Chọn rạp"
+                name="cinemaId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn rạp!",
+                  },
+                ]}
+              >
+                <DebounceSelect
+                  style={{ textAlign: "start" }}
+                  value={cinema}
+                  onChange={(newValue) => {
+                    dispatch(doSetSelectedCinema(newValue));
+                    setCinema(newValue);
+                  }}
+                  placeholder="Chọn rạp"
+                  fetchOptions={fetchCinemaList}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Chọn phim"
+                name="movieName"
+                rules={[{ required: true, message: "Vui lòng chọn phim!" }]}
+              >
+                <DebounceSelect
+                  style={{ textAlign: "start" }}
+                  value={movie}
+                  onChange={(newValue) => {
+                    setMovie(newValue);
+                  }}
+                  placeholder="Chọn phim"
+                  fetchOptions={fetchMovieList}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Card>
+        <CalendarBooking />
+      </Row>
+    </Form>
   );
 };
 
