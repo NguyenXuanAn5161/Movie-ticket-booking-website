@@ -245,44 +245,44 @@ function CustomBreadcrumb(props) {
         },
         {
           path: "/price",
-          title: "Giá sản phẩm",
+          title: "Chương trình quản lý giá",
           key: "price",
           children: [
             {
               path: "/show",
-              title: "Xem chi tiết giá sản phẩm",
+              title: "Xem chi tiết chương trình quản lý giá",
               key: "priceShow",
             },
             {
               path: "/create",
-              title: "Tạo mới giá sản phẩm",
+              title: "Tạo mới chương trình quản lý giá",
               key: "priceCreate",
             },
             {
               path: "/edit",
-              title: "Cập nhật giá sản phẩm",
+              title: "Cập nhật chương trình quản lý giá",
               key: "priceEdit",
             },
           ],
         },
         {
           path: "/promotion",
-          title: "Khuyến mãi",
+          title: "Sự kiện khuyến mãi",
           key: "promotion",
           children: [
             {
               path: "/show",
-              title: "Xem chi tiết khuyến mãi",
+              title: "Xem chi tiết Sự kiện khuyến mãi",
               key: "promotionShow",
             },
             {
               path: "/create",
-              title: "Tạo mới khuyến mãi",
+              title: "Tạo mới Sự kiện khuyến mãi",
               key: "promotionCreate",
             },
             {
               path: "/edit",
-              title: "Cập nhật khuyến mãi",
+              title: "Cập nhật Sự kiện khuyến mãi",
               key: "promotionEdit",
             },
           ],
