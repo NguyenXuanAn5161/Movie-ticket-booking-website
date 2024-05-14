@@ -130,7 +130,7 @@ const PriceList = () => {
 
   const renderHeader = () => (
     <TableHeader
-      headerTitle={"Danh sách giá"}
+      headerTitle={"Danh sách chương trình quản lý giá"}
       onReload={handleReload}
       create={handleToPageCreate}
       showFuncOther={false}

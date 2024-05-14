@@ -88,7 +88,7 @@ const PriceEdit = () => {
     );
     console.log("res", res);
     if (res?.status === 200) {
-      message.success("cập nhật giá sản phẩm thành công!");
+      message.success("cập nhật chương trình quản lý giá thành công!");
       form.resetFields();
       setIsSubmit(false);
       navigate("/price");
@@ -113,7 +113,11 @@ const PriceEdit = () => {
 
   return (
     <>
-      <PageHeader title="Cập nhật thông tin giá" numberBack={-1} type="edit" />
+      <PageHeader
+        title="Cập nhật thông tin chương trình quản lý giá"
+        numberBack={-1}
+        type="edit"
+      />
       <Card bordered={false}>
         <Form form={form} onFinish={onFinish}>
           <Row gutter={[16]}>
@@ -123,17 +127,21 @@ const PriceEdit = () => {
             <Col span={8}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Tên giá"
+                label="Tên chương trình quản lý giá"
                 name="name"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập tên giá!",
+                    message: "Vui lòng nhập tên chương trình quản lý giá!",
                   },
-                  { validator: validateTwoCharVietnamese("Tên giá sản phẩm") },
+                  {
+                    validator: validateTwoCharVietnamese(
+                      "Tên chương trình quản lý giá"
+                    ),
+                  },
                 ]}
               >
-                <Input placeholder="Nhập tên giá" />
+                <Input placeholder="Nhập tên chương trình quản lý giá" />
               </Form.Item>
             </Col>
             <Col span={8}>
