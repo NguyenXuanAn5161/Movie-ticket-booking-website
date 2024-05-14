@@ -60,7 +60,7 @@ const FoodCreate = () => {
   };
 
   const onFinish = async (values) => {
-    console.log("values create food: ", values);
+    console.log("values create food: ", values.image.file);
     setIsSubmit(true);
     const resImage = await callUploadImage(values.image.file);
     console.log("resImage", resImage);
@@ -242,8 +242,6 @@ const FoodCreate = () => {
                     message: "Vui lòng nhập chọn hình ảnh!",
                   },
                 ]}
-                getValueFromEvent={normFile}
-                valuePropName="fileList"
               >
                 <Upload
                   name="image"
