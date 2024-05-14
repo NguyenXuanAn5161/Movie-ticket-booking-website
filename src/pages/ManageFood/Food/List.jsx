@@ -13,7 +13,10 @@ import SearchList from "../../../components/InputSearch/SearchList";
 import TableHeader from "../../../components/TableHeader/TableHeader";
 import { doSetFoodCategory } from "../../../redux/food/foodCategorySlice";
 import { doSetFood } from "../../../redux/food/foodSlice";
-import { callFetchListCinema } from "../../../services/apiCinema";
+import {
+  callFetchListCinema,
+  callGetCinemaById,
+} from "../../../services/apiCinema";
 import {
   callDeleteFood,
   callFetchListCategoryFood,
@@ -40,6 +43,28 @@ const FoodList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("");
   const [sortQuery, setSortQuery] = useState("sort=-updatedAt"); // default sort by updateAt mới nhất
+  const [selectedCinema, setSelectedCinema] = useState(null);
+
+  useEffect(() => {
+    console.log("selectedCinema", selectedCinema);
+  }, [selectedCinema]);
+
+  const handleSelectedCinema = async () => {
+    if (filter.includes("cinemaId")) {
+      const cinemaId = filter.split("=")[1].split("&")[0];
+      const cinema = await callGetCinemaById(cinemaId);
+      if (cinema) {
+        setSelectedCinema(cinema?.name);
+      }
+    } else {
+      const cinemaId1 = await callGetCinemaById(1);
+      setSelectedCinema(cinemaId1?.name);
+    }
+  };
+
+  useEffect(() => {
+    handleSelectedCinema();
+  }, [filter]);
 
   // fetch tìm theo rạp
   const fetchCinemaList = async (cinemaName) => {
@@ -194,7 +219,12 @@ const FoodList = () => {
   const renderHeader = () => (
     <TableHeader
       onReload={handleReload}
-      headerTitle={"Danh sách đồ ăn"}
+      headerTitle={
+        <>
+          Danh sách đồ ăn tại rạp{" "}
+          <span style={{ color: "#E38601" }}>{selectedCinema}</span>
+        </>
+      }
       create={handleToPageCreate}
       showFuncOther={false}
       showCreate={checked}
