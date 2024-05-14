@@ -170,7 +170,7 @@ const PriceList = () => {
       setCurrent(1);
     }
 
-    if (sorter && sorter.field) {
+    if (sorter?.field) {
       const q =
         sorter.order === "ascend"
           ? `sort=${sorter.field}`
@@ -180,48 +180,46 @@ const PriceList = () => {
   };
 
   return (
-    <>
-      <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <SearchList
-            itemSearch={itemSearch}
-            handleSearch={handleSearch}
-            setFilter={setFilter}
-            filter={filter}
-          />
-        </Col>
-        <Col span={24}>
-          <Table
-            scroll={{
-              x: "100%",
-              y: "64vh",
-            }}
-            title={renderHeader}
-            bordered
-            // thay đổi #1
-            loading={isLoading}
-            columns={columns}
-            dataSource={listData}
-            onChange={onChange}
-            // thay đổi #1
-            rowKey="id"
-            pagination={{
-              current: current,
-              pageSize: pageSize,
-              showSizeChanger: true,
-              total: total,
-              showTotal: (total, range) => {
-                return (
-                  <div>
-                    {range[0]} - {range[1]} trên {total} dòng
-                  </div>
-                );
-              },
-            }}
-          />
-        </Col>
-      </Row>
-    </>
+    <Row gutter={[20, 20]}>
+      <Col span={24}>
+        <SearchList
+          itemSearch={itemSearch}
+          handleSearch={handleSearch}
+          setFilter={setFilter}
+          filter={filter}
+        />
+      </Col>
+      <Col span={24}>
+        <Table
+          scroll={{
+            x: "100%",
+            y: "64vh",
+          }}
+          title={renderHeader}
+          bordered
+          // thay đổi #1
+          loading={isLoading}
+          columns={columns}
+          dataSource={listData}
+          onChange={onChange}
+          // thay đổi #1
+          rowKey="id"
+          pagination={{
+            current: current,
+            pageSize: pageSize,
+            showSizeChanger: true,
+            total: total,
+            showTotal: (total, range) => {
+              return (
+                <div>
+                  {range[0]} - {range[1]} trên {total} dòng
+                </div>
+              );
+            },
+          }}
+        />
+      </Col>
+    </Row>
   );
 };
 

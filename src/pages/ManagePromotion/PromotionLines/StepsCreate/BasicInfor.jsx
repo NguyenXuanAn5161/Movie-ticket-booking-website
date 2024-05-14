@@ -1,5 +1,6 @@
 import { Col, Form, Input, Radio, Row } from "antd";
 import React, { useEffect } from "react";
+import { validateTwoCharVietnamese } from "../../../../utils/validData";
 
 const PromotionBasicInfo = ({ form, dataUpdate, promotionId, type }) => {
   useEffect(() => {
@@ -38,7 +39,10 @@ const PromotionBasicInfo = ({ form, dataUpdate, promotionId, type }) => {
           <Form.Item
             label="Tên Chương trình khuyến mãi"
             name="name"
-            rules={[{ required: true, message: "Vui lòng nhập tên CTKM!" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập tên CTKM!" },
+              { validator: validateTwoCharVietnamese("Tên khuyến mãi") },
+            ]}
           >
             <Input />
           </Form.Item>

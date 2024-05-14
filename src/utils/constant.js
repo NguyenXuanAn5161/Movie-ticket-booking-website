@@ -7,3 +7,4 @@ export const FORMAT_TIME = "HH:mm";
 export const FORMAT_DATE_TIME_SEND_SERVER = "YYYY-MM-DDTHH:mm:ss.SSS";
 export const FORMAT_DATE_TIME_Y_M_DT_H_M_S = "YYYY-MM-DDTHH:mm:ss";
 export const FORMAT_DATE_SEND_SERVER = "YYYY-MM-DD";
+export const FORMAT_DATE_TIME_HHmm = "YYYY-MM-DD HH:mm";

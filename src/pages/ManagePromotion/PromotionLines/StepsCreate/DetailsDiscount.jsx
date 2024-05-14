@@ -10,8 +10,16 @@ const PromotionDetailsDiscount = ({
   const [discountValue, setDiscountValue] = useState(1000);
 
   useEffect(() => {
+    if (typePromotion === "AMOUNT") {
+      form.setFieldsValue({ maxValue: discountValue });
+    }
+  }, [discountValue, form, typePromotion]);
+
+  useEffect(() => {
     form.setFieldsValue(promotionDiscountDetailDto);
-    setTypePromotion(promotionDiscountDetailDto?.typeDiscount);
+    if (promotionDiscountDetailDto?.typeDiscount) {
+      setTypePromotion(promotionDiscountDetailDto.typeDiscount);
+    }
   }, [promotionDiscountDetailDto, form]);
 
   const handleTypeChange = (e) => {
@@ -38,7 +46,7 @@ const PromotionDetailsDiscount = ({
             rules={[{ required: true, message: "Không được để trống!" }]}
             initialValue={"PERCENT"}
           >
-            <Radio.Group disabled={false} onChange={handleTypeChange}>
+            <Radio.Group onChange={handleTypeChange}>
               <Radio value="PERCENT">% Chiết khấu</Radio>
               <Radio value="AMOUNT">Giảm trực tiếp</Radio>
             </Radio.Group>
@@ -81,7 +89,8 @@ const PromotionDetailsDiscount = ({
                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
               }
               style={{ width: "100%" }}
-              min={0}
+              min={1000}
+              max={99999999}
               addonAfter={"VND"}
             />
           </Form.Item>
@@ -94,10 +103,13 @@ const PromotionDetailsDiscount = ({
             initialValue={typePromotion === "AMOUNT" ? discountValue : ""}
           >
             <InputNumber
+              min={1000}
+              max={99999999}
               formatter={(value) =>
                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
               }
-              disabled={typePromotion === "AMOUNT" ? true : false}
+              readOnly={typePromotion === "AMOUNT" ? true : false}
+              // disabled={typePromotion === "AMOUNT" ? true : false}
               style={{ width: "100%" }}
               addonAfter={"VND"}
             />

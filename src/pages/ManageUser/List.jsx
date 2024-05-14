@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ActionButtons from "../../components/Button/ActionButtons";
 import {
-  renderDate,
+  renderDateOnly,
   renderGender,
   renderPhone,
   renderStatus,
@@ -83,7 +83,7 @@ const UserList = () => {
     createColumn("Email", "email", 190),
     createColumn("Số điện thoại", "phone", 120, false, renderPhone),
     createColumn("Giới tính", "gender", 90, false, renderGender),
-    createColumn("Ngày sinh", "birthday", 120, false, renderDate),
+    createColumn("Ngày sinh", "birthday", 120, false, renderDateOnly),
     createColumn("Trạng thái", "enabled", 120, false, renderStatus()),
     {
       title: "Thao tác",

@@ -27,6 +27,7 @@ import {
   formatDateYYYY_MM_DDT_HH_MM_SS,
 } from "../../utils/date";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
+import { validateTwoCharVietnamese } from "../../utils/validData";
 
 const PriceEdit = () => {
   const { priceId } = useParams();
@@ -129,6 +130,7 @@ const PriceEdit = () => {
                     required: true,
                     message: "Vui lòng nhập tên giá!",
                   },
+                  { validator: validateTwoCharVietnamese("Tên giá sản phẩm") },
                 ]}
               >
                 <Input placeholder="Nhập tên giá" />

@@ -80,154 +80,153 @@ const PriceDetailModalUpdate = (props) => {
   };
 
   return (
-    <>
-      <Modal
-        width={750}
-        title="Cập nhật chi tiết giá"
-        open={openModalUpdate}
-        onOk={() => {
-          form.submit();
+    <Modal
+      width={750}
+      title="Cập nhật chi tiết giá"
+      open={openModalUpdate}
+      onOk={() => {
+        form.submit();
+      }}
+      onCancel={() => {
+        setOpenModalUpdate(false);
+        form.resetFields();
+      }}
+      okText={"Cập nhật"}
+      cancelText={"Hủy"}
+      confirmLoading={isSubmit}
+      maskClosable={false}
+    >
+      <Divider />
+      <Form
+        form={form}
+        name="basic"
+        style={{
+          maxWidth: 750,
+          margin: "0 auto",
         }}
-        onCancel={() => {
-          setOpenModalUpdate(false);
-          form.resetFields();
-        }}
-        okText={"Cập nhật"}
-        cancelText={"Hủy"}
-        confirmLoading={isSubmit}
-        maskClosable={false}
+        onFinish={onFinish}
+        autoComplete="true"
       >
-        <Divider />
-        <Form
-          form={form}
-          name="basic"
-          style={{
-            maxWidth: 750,
-            margin: "0 auto",
-          }}
-          onFinish={onFinish}
-          autoComplete="true"
-        >
-          <Row gutter={15}>
-            <Form.Item hidden name="id">
-              <InputNumber />
+        <Row gutter={15}>
+          <Form.Item hidden name="id">
+            <InputNumber />
+          </Form.Item>
+          <Col span={12}>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label="Giá cho"
+              name="type"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn loại giá!",
+                },
+              ]}
+              initialValue={"TYPE_SEAT"}
+            >
+              <Select
+                disabled={true}
+                showSearch
+                allowClear
+                options={options}
+                onChange={(e) => handleSelectedType(e)}
+              />
             </Form.Item>
-            <Col span={12}>
+          </Col>
+          <Col span={12}>
+            {type === "ROOM" ? (
               <Form.Item
                 labelCol={{ span: 24 }}
-                label="Giá cho"
-                name="type"
+                label="Chọn phòng chiếu"
+                name="name"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn loại giá!",
+                    message: "Vui lòng chọn phòng chiếu!",
                   },
                 ]}
-                initialValue={"TYPE_SEAT"}
+              >
+                <Input disabled={true} />
+              </Form.Item>
+            ) : type === "FOOD" ? (
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Đồ ăn"
+                name="name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn đồ ăn!",
+                  },
+                ]}
+              >
+                <Input disabled={true} />
+              </Form.Item>
+            ) : (
+              <Form.Item
+                labelCol={{ span: 24 }}
+                label="Loại ghế"
+                name="typeSeatId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn loại ghế!",
+                  },
+                ]}
               >
                 <Select
                   disabled={true}
                   showSearch
                   allowClear
-                  options={options}
-                  onChange={(e) => handleSelectedType(e)}
+                  options={typeSeat}
                 />
               </Form.Item>
-            </Col>
-            <Col span={12}>
-              {type === "ROOM" ? (
-                <Form.Item
-                  labelCol={{ span: 24 }}
-                  label="Chọn phòng chiếu"
-                  name="name"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn phòng chiếu!",
-                    },
-                  ]}
-                >
-                  <Input disabled={true} />
-                </Form.Item>
-              ) : type === "FOOD" ? (
-                <Form.Item
-                  labelCol={{ span: 24 }}
-                  label="Đồ ăn"
-                  name="name"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn đồ ăn!",
-                    },
-                  ]}
-                >
-                  <Input disabled={true} />
-                </Form.Item>
-              ) : (
-                <Form.Item
-                  labelCol={{ span: 24 }}
-                  label="Loại ghế"
-                  name="typeSeatId"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn loại ghế!",
-                    },
-                  ]}
-                >
-                  <Select
-                    disabled={true}
-                    showSearch
-                    allowClear
-                    options={typeSeat}
-                  />
-                </Form.Item>
-              )}
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Giá tiền"
-                name="price"
-                rules={[
-                  {
-                    required: true,
-                    message: "Giá tiền không được để trống!",
-                  },
-                ]}
-              >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  formatter={(value) =>
-                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
-                  min={1000}
-                  addonAfter="VND"
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Trạng thái"
-                name="status"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn trạng thái!",
-                  },
-                ]}
-              >
-                <Radio.Group>
-                  <Radio value={true}>Hoạt động</Radio>
-                  <Radio value={false}>Không hoạt động</Radio>
-                </Radio.Group>
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
-    </>
+            )}
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label="Giá tiền"
+              name="price"
+              rules={[
+                {
+                  required: true,
+                  message: "Giá tiền không được để trống!",
+                },
+              ]}
+            >
+              <InputNumber
+                style={{ width: "100%" }}
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                min={1000}
+                max={99999999}
+                addonAfter="VND"
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label="Trạng thái"
+              name="status"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn trạng thái!",
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value={true}>Hoạt động</Radio>
+                <Radio value={false}>Không hoạt động</Radio>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+    </Modal>
   );
 };
 
