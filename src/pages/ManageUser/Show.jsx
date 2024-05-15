@@ -15,6 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { doSetUser } from "../../redux/account/userSlice";
 import { callFetchUserById } from "../../services/apiUser";
+import { FORMAT_DATE_HHmm } from "../../utils/constant";
 import { getErrorMessageUser } from "../../utils/errorHandling";
 
 const UserShow = () => {
@@ -88,7 +89,7 @@ const UserShow = () => {
     },
     {
       label: "Tạo ngày",
-      children: moment(user?.createdDate).format("DD-MM-YYYY HH:mm:ss"),
+      children: moment(user?.createdDate).format(FORMAT_DATE_HHmm),
     },
     {
       label: "Trạng thái",

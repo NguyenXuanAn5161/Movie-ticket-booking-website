@@ -27,6 +27,7 @@ import {
   callGetAllPriceDetail,
   callGetPriceHeaderById,
 } from "../../services/apiPrice";
+import { FORMAT_DATE_HHmm } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
 import PriceDetailModalCreate from "./PriceDetail/PriceDetailModalCreate";
@@ -154,11 +155,11 @@ const PriceShow = () => {
     },
     {
       label: "Ngày bắt đầu",
-      children: moment(price?.startDate).format("DD-MM-YYYY HH:mm:ss"),
+      children: moment(price?.startDate).format(FORMAT_DATE_HHmm),
     },
     {
       label: "Ngày kết thúc",
-      children: moment(price?.endDate).format("DD-MM-YYYY HH:mm:ss"),
+      children: moment(price?.endDate).format(FORMAT_DATE_HHmm),
     },
     {
       label: "Trạng thái",

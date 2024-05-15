@@ -28,7 +28,7 @@ import {
   callGetPromotionHeaderById,
   callGetPromotionLineByPromotionId,
 } from "../../services/apiPromotion";
-import { HH_MM_SS_FORMAT_DATE } from "../../utils/constant";
+import { FORMAT_DATE_HHmm } from "../../utils/constant";
 import { createColumn } from "../../utils/createColumn";
 import PromotionLineModalCreate from "./PromotionLines/PromotionLineModalCreate";
 import PromotionLineModalUpdate from "./PromotionLines/PromotionLineModalUpdate";
@@ -124,12 +124,12 @@ const PromotionShow = () => {
     {
       label: "Ngày bắt đầu",
       key: "3",
-      children: moment(promotionHeader?.startDate).format(HH_MM_SS_FORMAT_DATE),
+      children: moment(promotionHeader?.startDate).format(FORMAT_DATE_HHmm),
     },
     {
       label: "Ngày kết thúc",
       key: "4",
-      children: moment(promotionHeader?.endDate).format(HH_MM_SS_FORMAT_DATE),
+      children: moment(promotionHeader?.endDate).format(FORMAT_DATE_HHmm),
     },
     {
       label: "Trạng thái",
