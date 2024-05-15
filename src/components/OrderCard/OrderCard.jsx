@@ -64,7 +64,7 @@ const OrderCard = (props) => {
 
   // lấy giá phòng
   useEffect(() => {
-    if (selectedShowTime) {
+    if (selectedShowTime?.roomId) {
       fetchRoomById(selectedShowTime.roomId);
     }
   }, [selectedShowTime]);
@@ -101,7 +101,7 @@ const OrderCard = (props) => {
 
   // fetch movie để hiện thông tin trong card
   useEffect(() => {
-    if (selectedMovie) {
+    if (selectedMovie?.value) {
       fetchMovie(selectedMovie.value);
     }
   }, [selectedMovie]);

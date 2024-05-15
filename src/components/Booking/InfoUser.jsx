@@ -142,7 +142,7 @@ const InfoUser = (props) => {
         >
           <Radio.Group onChange={onChange} value={value}>
             <Radio value={1}>Đã có tài khoản</Radio>
-            <Radio value={2}>Tạo tài khoản mới</Radio>
+            {/* <Radio value={2}>Tạo tài khoản mới</Radio> */}
             <Radio value={3}>Khách hàng vãng lai</Radio>
           </Radio.Group>
         </Form.Item>
