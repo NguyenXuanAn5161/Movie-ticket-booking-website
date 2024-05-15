@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Col,
+  DatePicker,
   Form,
   Input,
   Radio,
@@ -13,14 +14,13 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import CustomDatePicker from "../../components/DatePicker/CustomDatePicker";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { doSetPrice } from "../../redux/price/priceSlice";
 import {
   callGetPriceHeaderById,
   callUpdateSalePrice,
 } from "../../services/apiPrice";
-import { FORMAT_DATE_HH_MM_SS } from "../../utils/constant";
+import { FORMAT_DATE_HHmm } from "../../utils/constant";
 import {
   defaultEndDate,
   defaultStartDate,
@@ -161,10 +161,10 @@ const PriceEdit = () => {
                     : [defaultStartDate, defaultEndDate]
                 }
               >
-                <CustomDatePicker
+                <DatePicker.RangePicker
                   disabled={[checkStartDate(price?.startDate), false]}
                   showTime
-                  format={FORMAT_DATE_HH_MM_SS}
+                  format={FORMAT_DATE_HHmm}
                   minDate={defaultStartDate}
                   defaultValue={[price?.startDate, price?.endDate]}
                   placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}

@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Col,
+  DatePicker,
   Form,
   Input,
   Radio,
@@ -13,7 +14,6 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import CustomDatePicker from "../../components/DatePicker/CustomDatePicker";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { doSetPromotion } from "../../redux/promotion/promotionSlice";
 import {
@@ -21,7 +21,7 @@ import {
   callUpdatePromotionHeader,
 } from "../../services/apiPromotion";
 import {
-  FORMAT_DATE_HH_MM_SS,
+  FORMAT_DATE_HHmm,
   FORMAT_DATE_TIME_SEND_SERVER,
 } from "../../utils/constant";
 import {
@@ -164,10 +164,10 @@ const PromotionEdit = () => {
                     : [defaultStartDate, defaultEndDate]
                 }
               >
-                <CustomDatePicker
+                <DatePicker.RangePicker
                   disabled={[checkStartDate(promotionHeader?.startDate), false]}
                   showTime
-                  format={FORMAT_DATE_HH_MM_SS}
+                  format={FORMAT_DATE_HHmm}
                   minDate={defaultStartDate}
                   defaultValue={[
                     promotionHeader?.startDate,

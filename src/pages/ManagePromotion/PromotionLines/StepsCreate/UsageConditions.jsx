@@ -1,7 +1,7 @@
 import { Col, DatePicker, Form, InputNumber, Radio, Row } from "antd";
 import dayjs from "dayjs";
 import React from "react";
-import { FORMAT_DATE_HH_MM_SS } from "../../../../utils/constant";
+import { FORMAT_DATE_HHmm } from "../../../../utils/constant";
 
 const defaultStartDate = dayjs().startOf("day").add(1, "day");
 const defaultEndDate = dayjs().endOf("day").add(1, "day");
@@ -30,7 +30,7 @@ const PromotionUsageConditions = ({ form, dataUpdate, type }) => {
             <DatePicker.RangePicker
               style={{ width: "100%" }}
               showTime
-              format={FORMAT_DATE_HH_MM_SS}
+              format={FORMAT_DATE_HHmm}
               minDate={defaultStartDate}
               // defaultValue={[defaultStartDate, defaultEndDate]}
               placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
