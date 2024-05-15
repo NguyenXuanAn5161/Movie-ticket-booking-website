@@ -527,7 +527,7 @@ export const StatisticByReturnInvoice = (listData, dateRanger, userCurrent) => {
   const { workbook, worksheet } = createWorkbook("Thống kê trả vé");
 
   // Tạo một hàng mới cho tiêu đề
-  const titleCount = 5;
+  const titleCount = 7;
   crateTitleRow(titleCount, worksheet, "BẢNG KÊ CHI TIẾT TRẢ VÉ");
 
   const filterRow = worksheet.addRow([]);
@@ -714,9 +714,9 @@ export const StatisticByPromotion = (listData, dateRanger, userCurrent) => {
     "SL tặng",
     "Số tiền chiết khấu",
     "Đơn vị",
-    "Ngân sách tổng",
-    "Ngân sách đã sử dụng",
-    "Ngân sách còn lại",
+    "Tổng số lượng KM",
+    "Số lượng KM đã sử dụng",
+    "Số lượng KM còn lại",
   ];
 
   headerValues.forEach((header) => {
@@ -826,9 +826,9 @@ export const StatisticByPromotion = (listData, dateRanger, userCurrent) => {
   // fix cứng độ rộng cột 9, 10, 11, 12, 13 (chỉ dành cho báo cáo promotion)
   worksheet.getColumn(9).width = 10;
   worksheet.getColumn(10).width = 8;
-  worksheet.getColumn(11).width = 10;
-  worksheet.getColumn(12).width = 10;
-  worksheet.getColumn(13).width = 10;
+  worksheet.getColumn(11).width = 12;
+  worksheet.getColumn(12).width = 12;
+  worksheet.getColumn(13).width = 12;
 
   headerRow.alignment = {
     vertical: "middle",
