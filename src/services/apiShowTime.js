@@ -21,15 +21,13 @@ export const callFetchListShowtime = async (query) => {
 
 export const callCreateShowtime = async (data) => {
   const convertedData = data.dateTime.flatMap(({ date, time }) => {
-    return time.map((showTime) => {
-      return {
-        showDate: date.format("YYYY-MM-DD"),
-        showTime: showTime.format("HH:mm"),
-        movieId: data.movieId.value,
-        roomId: data.roomId,
-        status: data.status,
-      };
-    });
+    return {
+      showDate: date.format("YYYY-MM-DD"),
+      showTime: time.format("HH:mm"),
+      movieId: data.movieId.value,
+      roomId: data.roomId,
+      status: data.status,
+    };
   });
 
   console.log(convertedData);

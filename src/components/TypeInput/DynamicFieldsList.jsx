@@ -53,7 +53,7 @@ const DynamicFieldsList = ({ name, add, remove, rules }) => (
                 style={{ minWidth: 320 }}
               >
                 <TimePicker
-                  multiple={true}
+                  // multiple={true}
                   format="HH:mm"
                   placeholder="Chọn giờ chiếu"
                   defaultOpenValue={dayjs("00:00", "HH:mm")}
