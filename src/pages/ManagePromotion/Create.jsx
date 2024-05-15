@@ -17,7 +17,7 @@ import PageHeader from "../../components/PageHeader/PageHeader";
 import { callCreatePromotionHeader } from "../../services/apiPromotion";
 import { validateTwoCharVietnamese } from "../../utils/validData";
 
-const dateFormat = "DD-MM-YYYY HH:mm:ss";
+const dateFormat = "DD-MM-YYYY HH:mm";
 const defaultStartDate = dayjs().startOf("day").add(1, "day");
 const defaultEndDate = dayjs().endOf("day").add(1, "day");
 
@@ -97,7 +97,7 @@ const PromotionCreate = () => {
               >
                 <DatePicker.RangePicker
                   style={{ width: "100%" }}
-                  showTime
+                  showTime={{ format: "HH:mm" }}
                   format={dateFormat}
                   minDate={defaultStartDate}
                   // defaultValue={[defaultStartDate, defaultEndDate]}

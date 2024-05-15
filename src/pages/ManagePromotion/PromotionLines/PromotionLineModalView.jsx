@@ -3,7 +3,10 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { callGetFoodById } from "../../../services/apiFood";
 import { callFetchTypeSeatById } from "../../../services/apiMovie";
-import { HH_MM_SS_FORMAT_DATE } from "../../../utils/constant";
+import {
+  FORMAT_DATE_HHmm,
+  HH_MM_SS_FORMAT_DATE,
+} from "../../../utils/constant";
 
 const PromotionLineModalView = (props) => {
   const { openViewDetail, setOpenViewDetail, dataViewDetail } = props;
@@ -88,12 +91,12 @@ const PromotionLineModalView = (props) => {
     {
       key: "startDate",
       label: <span style={{ fontWeight: 700 }}>Ngày bắt đầu</span>,
-      children: moment(dataViewDetail?.startDate).format("DD/MM/YYYY"),
+      children: moment(dataViewDetail?.startDate).format(FORMAT_DATE_HHmm),
     },
     {
       key: "endDate",
       label: <span style={{ fontWeight: 700 }}>Ngày kết thúc</span>,
-      children: moment(dataViewDetail?.endDate).format("DD/MM/YYYY"),
+      children: moment(dataViewDetail?.endDate).format(FORMAT_DATE_HHmm),
     },
     {
       key: "typePromotion",

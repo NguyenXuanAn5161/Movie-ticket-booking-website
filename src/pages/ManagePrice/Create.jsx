@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Col,
+  DatePicker,
   Divider,
   Form,
   Input,
@@ -12,13 +13,12 @@ import {
 import dayjs from "dayjs";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CustomDatePicker from "../../components/DatePicker/CustomDatePicker";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import { callCreateSalePrice } from "../../services/apiPrice";
+import { FORMAT_DATE_HHmm } from "../../utils/constant";
 import { getErrorMessageSalePriceHeader } from "../../utils/errorHandling";
 import { validateTwoCharVietnamese } from "../../utils/validData";
 
-const dateFormat = "DD-MM-YYYY HH:mm:ss";
 const defaultStartDate = dayjs().startOf("day").add(1, "day");
 const defaultEndDate = dayjs().endOf("day").add(1, "day");
 
@@ -107,9 +107,9 @@ const PriceCreate = () => {
                 ]}
                 initialValue={[defaultStartDate, defaultEndDate]}
               >
-                <CustomDatePicker
+                <DatePicker.RangePicker
                   showTime
-                  format={dateFormat}
+                  format={FORMAT_DATE_HHmm}
                   minDate={defaultStartDate}
                   defaultValue={[defaultStartDate, defaultEndDate]}
                   placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
