@@ -181,7 +181,8 @@ const BookingPage = () => {
       console.log("resVnPay: ", resVnPay);
       // return;
       if (resVnPay?.status === 200) {
-        window.location.href = resVnPay.message;
+        // window.location.href = resVnPay.message;
+        window.open(resVnPay.message, "_blank"); // '_self' để mở trong cùng một tab, '_blank' để mở trong tab mới
       }
     }
   };
