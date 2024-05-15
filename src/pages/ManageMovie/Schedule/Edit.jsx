@@ -42,8 +42,8 @@ const ScheduleEdit = () => {
     getScheduleById(movieScheduleId);
   }, [movieScheduleId]);
 
-  const getScheduleById = async () => {
-    const res = await callGetShowtimeById(movieScheduleId);
+  const getScheduleById = async (id) => {
+    const res = await callGetShowtimeById(id);
     if (res) {
       dispatch(doSetSchedule(res));
     } else {
