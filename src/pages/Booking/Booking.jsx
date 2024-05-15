@@ -179,7 +179,7 @@ const BookingPage = () => {
         userCurrent.id
       );
       console.log("resVnPay: ", resVnPay);
-      return;
+      // return;
       if (resVnPay?.status === 200) {
         window.location.href = resVnPay.message;
       }
