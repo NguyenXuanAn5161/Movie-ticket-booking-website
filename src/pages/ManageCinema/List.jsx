@@ -90,8 +90,8 @@ const CinemaList = () => {
   };
 
   const columns = [
-    createColumn("Mã rạp", "code", 135, "left"),
-    createColumn("Tên rạp", "name", 150, "left"),
+    createColumn("Mã rạp", "code", 135, false, undefined, "left"),
+    createColumn("Tên rạp", "name", 150, false, undefined, "left"),
     createColumn("Tổng số phòng", "totalRoom", 120),
     createColumn("Địa chỉ", "address", 150, undefined, renderAddress),
     createColumn("Trạng thái", "status", 100, undefined, renderStatus()),
