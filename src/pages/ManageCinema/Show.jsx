@@ -198,7 +198,7 @@ const CinemaShow = () => {
   // Danh sách phòng chiếu phim của {cinema?.name}
   const renderHeader = () => (
     <TableHeader
-      headerTitle={`Danh sách phòng chiếu phim của {cinema?.name}`}
+      headerTitle={`Danh sách phòng chiếu phim của ${cinema?.name}`}
       onReload={handleReload}
       filter={filter}
       setFilter={setFilter}

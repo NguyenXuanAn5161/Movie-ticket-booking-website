@@ -1,5 +1,5 @@
 import { Divider, Form, Modal, Radio, message, notification } from "antd";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { callFetchListTypeSeat } from "../../services/apiMovie";
 import { calculateSeatPosition } from "../../utils/seatCalculations";
 
@@ -253,4 +253,4 @@ const ModalTypeSeat = (props) => {
   );
 };
 
-export default ModalTypeSeat;
+export default memo(ModalTypeSeat);

@@ -27,6 +27,7 @@ import ModalTypeSeat from "../../../components/Seat/ModalTypeSeat";
 import SeatComponent from "../../../components/Seat/SeatComponent";
 import SeatLegend from "../../../components/Seat/SeatLegend";
 import { doSetRoom } from "../../../redux/cinema/room/roomSlice";
+import { callFetchListTypeSeat } from "../../../services/apiMovie";
 import { callFetchRoomById, callUpdateRoom } from "../../../services/apiRoom";
 import { getErrorMessageRoom } from "../../../utils/errorHandling";
 import "./index.scss";
@@ -45,8 +46,20 @@ const RoomEdit = () => {
   const [openModalTypeSeat, setOpenModalTypeSeat] = useState(false);
 
   const room = useSelector((state) => state.room.room);
-  // lần đầu tiên load giao diện setSelectedSeats với giá trị ban đầu của room
 
+  const [typeSeat, setTypeSeat] = useState(null);
+
+  // fetch type seat để so sánh loại ghế
+  useEffect(() => {
+    getTypeSeat();
+  }, []);
+
+  const getTypeSeat = async () => {
+    const resTypeSeat = await callFetchListTypeSeat();
+    setTypeSeat(resTypeSeat);
+  };
+
+  // lần đầu tiên load giao diện setSelectedSeats với giá trị ban đầu của room
   useEffect(() => {
     // f5 lại trang
     window.onbeforeunload = function () {
@@ -408,6 +421,7 @@ const RoomEdit = () => {
                         selectedSeats={selectedSeats}
                         seatRow={item.seatRow}
                         seatColumn={item.seatColumn}
+                        typeSeat={typeSeat}
                       />
                     );
                   })}

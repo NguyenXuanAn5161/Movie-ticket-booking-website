@@ -25,6 +25,7 @@ import PageHeader from "../../../components/PageHeader/PageHeader";
 import ModalTypeSeat from "../../../components/Seat/ModalTypeSeat";
 import SeatComponent from "../../../components/Seat/SeatComponent";
 import SeatLegend from "../../../components/Seat/SeatLegend";
+import { callFetchListTypeSeat } from "../../../services/apiMovie";
 import { callCreateRoom } from "../../../services/apiRoom";
 import { getErrorMessageRoom } from "../../../utils/errorHandling";
 import "./index.scss";
@@ -39,6 +40,17 @@ const RoomCreate = () => {
   const navigate = useNavigate();
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [openModalTypeSeat, setOpenModalTypeSeat] = useState(false);
+  const [typeSeat, setTypeSeat] = useState(null);
+
+  // fetch type seat để so sánh loại ghế
+  useEffect(() => {
+    getTypeSeat();
+  }, []);
+
+  const getTypeSeat = async () => {
+    const resTypeSeat = await callFetchListTypeSeat();
+    setTypeSeat(resTypeSeat);
+  };
 
   useEffect(() => {
     // f5 lại trang
@@ -355,6 +367,7 @@ const RoomCreate = () => {
                         selectedSeats={selectedSeats}
                         seatRow={item.seatRow}
                         seatColumn={item.seatColumn}
+                        typeSeat={typeSeat}
                       />
                     );
                   })}

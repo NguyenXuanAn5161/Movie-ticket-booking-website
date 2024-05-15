@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { callFetchListTypeSeat } from "../../services/apiMovie";
 
 const SeatComponent = ({
   isSelected,
@@ -15,19 +14,9 @@ const SeatComponent = ({
   selectedSeats,
   seatRow,
   seatColumn,
+  typeSeat,
 }) => {
   const [rendered, setRendered] = useState(false);
-  const [typeSeat, setTypeSeat] = useState(null);
-
-  // fetch type seat để so sánh loại ghế
-  useEffect(() => {
-    getTypeSeat();
-  }, []);
-
-  const getTypeSeat = async () => {
-    const resTypeSeat = await callFetchListTypeSeat();
-    setTypeSeat(resTypeSeat);
-  };
 
   // Ánh xạ giữa typeSeat và backgroundColor
   // sửa loại ghế đôi
