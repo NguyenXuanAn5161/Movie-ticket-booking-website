@@ -130,6 +130,7 @@ const MovieList = () => {
   };
 
   const columns = [
+    createColumn("Mã phim", "code", 120, false, undefined, "left"),
     createColumn("Tên phim", "name", 250, false, undefined, "left"),
     createColumn("Đạo diễn", "director", 150),
     createColumn("Diễn viên", "cast"),
@@ -174,6 +175,7 @@ const MovieList = () => {
 
   // fix tìm động rạp
   const itemSearch = [
+    { field: "code", label: "Mã phim" },
     {
       field: "cinemaId",
       label: "Tên rạp",
