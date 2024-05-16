@@ -23,6 +23,7 @@ import {
   callGetFoodById,
   callUpdateFood,
 } from "../../../services/apiFood";
+import { callUploadImage } from "../../../services/apiMovie";
 import {
   getErrorMessageCategoryFood,
   getErrorMessageFood,
