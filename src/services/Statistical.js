@@ -183,6 +183,8 @@ export const callGetTicketGrowthByMonth = async () => {
       responseLastMonth.data.content
     );
 
+    console.log("growth: ", growth);
+
     return growth;
   } catch (error) {
     return error;

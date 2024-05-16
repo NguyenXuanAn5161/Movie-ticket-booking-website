@@ -10,10 +10,15 @@ export const calculateTotalTicket = (data) => {
 
 // tính % vé tăng trưởng
 export const calculateTicketGrowthRate = (current, previous) => {
+  // nếu số vé trước đó = 0 thì sao
   const totalTicketCurrent = calculateTotalTicket(current);
   const totalTicketPrevious = calculateTotalTicket(previous);
   console.log("totalTicketCurrent: ", totalTicketCurrent);
   console.log("totalTicketPrevious: ", totalTicketPrevious);
+  if (totalTicketPrevious === 0) {
+    // If the previous total is zero, growth rate is undefined or can be considered as 100% if current tickets are > 0
+    return totalTicketCurrent > 0 ? 100 : 0;
+  }
   return (totalTicketCurrent - totalTicketPrevious) / totalTicketPrevious;
 };
 
@@ -21,5 +26,9 @@ export const calculateTicketGrowthRate = (current, previous) => {
 export const calculateGrowthRate = (current, previous) => {
   const totalPriceCurrent = calculateTotalMoney(current);
   const totalPricePrevious = calculateTotalMoney(previous);
+  if (totalPricePrevious === 0) {
+    return totalPriceCurrent > 0 ? 100 : 0;
+  }
+
   return (totalPriceCurrent - totalPricePrevious) / totalPricePrevious;
 };
