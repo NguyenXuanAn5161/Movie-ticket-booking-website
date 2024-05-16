@@ -143,7 +143,7 @@ export default PromotionDetailsGiftFood;
 // Hàm fetch danh sách phim
 async function fetchFoodList(foodName) {
   try {
-    let query = `size=5&name=${foodName}`;
+    let query = `size=5&name=${foodName}&cinemaId=1`;
     const res = await callFetchListFood(query);
     const foodRequired = res.content.map((data) => ({
       label: data.name,
