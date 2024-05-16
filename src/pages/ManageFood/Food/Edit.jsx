@@ -90,7 +90,7 @@ const FoodEdit = () => {
 
   const onFinish = async (values) => {
     console.log("values update food: ", values);
-    if (values.image.startsWith("https")) {
+    if (typeof values.image === "string" && values.image.startsWith("https")) {
       const res = await callUpdateFood(values, null);
       handleResponse(res);
     } else {
