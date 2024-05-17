@@ -1,8 +1,5 @@
 import api from "../utils/axios-custom";
-import {
-  FORMAT_DATE_TIME_HHmm,
-  FORMAT_DATE_TIME_Y_M_DT_H_M_S,
-} from "../utils/constant";
+import { FORMAT_DATE_TIME_Y_M_DT_H_M_S } from "../utils/constant";
 
 // promotion header
 export const callGetPromotionHeaderById = async (id) => {
@@ -111,8 +108,8 @@ export const callCreatePromotionLine = async (data, imageUrl) => {
     quantity,
   } = data;
 
-  const startDate = timeValue[0].format(FORMAT_DATE_TIME_HHmm);
-  const endDate = timeValue[1].format(FORMAT_DATE_TIME_HHmm);
+  const startDate = timeValue[0].format(FORMAT_DATE_TIME_Y_M_DT_H_M_S);
+  const endDate = timeValue[1].format(FORMAT_DATE_TIME_Y_M_DT_H_M_S);
   const image = imageUrl;
   let foodPromotion;
   let foodRequired;
