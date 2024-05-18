@@ -297,7 +297,10 @@ const RoomEdit = () => {
                   },
                 ]}
               >
-                <Input placeholder="Nhập tên phòng" />
+                <Input
+                  placeholder="Nhập tên phòng"
+                  style={{ textTransform: "capitalize" }}
+                />
               </Form.Item>
             </Col>
             <Col span={4}>
