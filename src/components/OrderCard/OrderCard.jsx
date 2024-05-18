@@ -44,6 +44,10 @@ const OrderCard = (props) => {
   const [typeSeat, setTypeSeat] = useState(null);
 
   useEffect(() => {
+    setMovie(null);
+  }, []);
+
+  useEffect(() => {
     console.log("selectedSeats: ", selectedSeats);
   }, [selectedSeats]);
 
