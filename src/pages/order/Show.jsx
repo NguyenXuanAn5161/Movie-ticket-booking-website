@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   renderCurrency,
+  renderCurrencyOrderShow,
   renderSeatType,
 } from "../../components/FunctionRender/FunctionRender";
 import PageHeader from "../../components/PageHeader/PageHeader";
@@ -60,7 +61,7 @@ const OrderShow = () => {
 
   const columnsFood = [
     createColumn("Tên đồ ăn", "foodName", 100, false, undefined, "left"),
-    createColumn("Giá", "price", 150, false, renderCurrency),
+    createColumn("Giá", "price", 150, false, renderCurrencyOrderShow),
     createColumn("Số lượng", "quantity", 100),
   ];
   const columnsTicket = [

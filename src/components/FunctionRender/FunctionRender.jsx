@@ -76,6 +76,17 @@ export const renderCurrency = (text, record) => {
   );
 };
 
+export const renderCurrencyOrderShow = (text, record) => {
+  return (
+    <span>
+      {new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      }).format(text ?? 0)}
+    </span>
+  );
+};
+
 export const renderTypePrice = (text, record) => {
   return (
     <span>
