@@ -23,10 +23,11 @@ import { TbDiscount2 } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import avatarDefault from "../../assets/logo/avatarDefault.png";
+import DashBoardShow from "../../pages/dashboard/Show";
 import { doLogoutAction } from "../../redux/account/accountSlice";
 import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
-import Home from "../Home";
 import LogoApp from "../LogoApp/LogoApp";
+import ProtectedRoute from "../ProtectedRoute";
 import "./layout.scss";
 
 const { Content, Footer, Sider, Header } = Layout;
@@ -301,7 +302,13 @@ const LayoutAdmin = () => {
           </div>
         </Header>
         <Content style={{ backgroundColor: "#F5F5F5", padding: 10 }}>
-          {currentPath === "/" ? <Home /> : <CustomBreadcrumb />}
+          {currentPath === "/" ? (
+            <ProtectedRoute>
+              <DashBoardShow />
+            </ProtectedRoute>
+          ) : (
+            <CustomBreadcrumb />
+          )}
           <Outlet />
         </Content>
         <Footer style={{ padding: 0, textAlign: "center" }}>
