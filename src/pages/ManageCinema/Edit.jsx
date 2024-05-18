@@ -91,7 +91,10 @@ const CinemaEdit = () => {
                   },
                 ]}
               >
-                <Input placeholder="Nhập tên rạp phim" />
+                <Input
+                  placeholder="Nhập tên rạp phim"
+                  style={{ textTransform: "capitalize" }}
+                />
               </Form.Item>
             </Col>
             <Col span={8}>

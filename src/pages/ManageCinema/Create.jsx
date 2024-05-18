@@ -77,7 +77,10 @@ const CinemaCreate = () => {
                 name="name"
                 rules={[{ required: true, message: "Vui lòng nhập tên rạp!" }]}
               >
-                <Input placeholder="Nhập tên rạp" />
+                <Input
+                  placeholder="Nhập tên rạp"
+                  style={{ textTransform: "capitalize" }}
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
