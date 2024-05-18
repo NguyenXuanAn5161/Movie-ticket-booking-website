@@ -130,7 +130,10 @@ const CinemaCreate = () => {
                   { required: true, message: "Vui lòng nhập số nhà / đường!" },
                 ]}
               >
-                <Input.TextArea placeholder="Nhập số nhà / đường" />
+                <Input.TextArea
+                  placeholder="Nhập số nhà / đường"
+                  style={{ textTransform: "capitalize" }}
+                />
               </Form.Item>
             </Col>
           </Row>
