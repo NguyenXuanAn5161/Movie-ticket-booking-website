@@ -18,7 +18,6 @@ import PageHeader from "../../components/PageHeader/PageHeader";
 import { callUpdateCinema } from "../../services/apiCinema";
 import addressOptions from "../../utils/data";
 import { getErrorMessageCinema } from "../../utils/errorHandling";
-import { capitalizeWords } from "../../utils/validData";
 
 const CinemaEdit = () => {
   // thay đổi #1
@@ -67,11 +66,6 @@ const CinemaEdit = () => {
     setIsSubmit(false);
   };
 
-  const handleNameChange = (e) => {
-    const value = capitalizeWords(e.target.value);
-    form.setFieldsValue({ name: value });
-  };
-
   return (
     <>
       <PageHeader
@@ -99,7 +93,7 @@ const CinemaEdit = () => {
               >
                 <Input
                   placeholder="Nhập tên rạp phim"
-                  onChange={handleNameChange}
+                  style={{ textTransform: "capitalize" }}
                 />
               </Form.Item>
             </Col>
