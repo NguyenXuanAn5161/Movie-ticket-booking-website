@@ -49,7 +49,7 @@ const BookingUtils = () => {
     promotionFood,
     roomPrice
   ) => {
-    var newTotalPrice = totalPrice;
+    let newTotalPrice = totalPrice;
 
     if (promotionSeat?.promotionTicketDetailDto) {
       newTotalPrice = ApplyTicket(
@@ -73,7 +73,7 @@ const BookingUtils = () => {
   };
 
   const ApplyDiscount = (totalPrice, promotionBill) => {
-    console.log("totalPrice trong discount: ", totalPrice);
+    console.log("totalPrice trong discount: ", promotionBill);
     if (promotionBill?.promotionDiscountDetailDto?.typeDiscount === "PERCENT") {
       const minBillValue =
         promotionBill.promotionDiscountDetailDto.minBillValue;
@@ -81,11 +81,15 @@ const BookingUtils = () => {
         const discountValue =
           promotionBill.promotionDiscountDetailDto.discountValue;
         const maxValue = promotionBill.promotionDiscountDetailDto.maxValue;
-        const discountedPrice = totalPrice * (1 - discountValue / 100);
 
+        const discountedPrice = totalPrice * (discountValue / 100);
+        console.log("discountedPrice: ", discountedPrice);
+        console.log("maxValue: ", maxValue);
         // Kiểm tra nếu giá giảm đã bằng hoặc vượt quá maxValue thì giữ nguyên giá trị tổng giá
         const finalPrice =
-          discountedPrice <= maxValue ? discountedPrice : totalPrice - maxValue;
+          discountedPrice <= maxValue
+            ? totalPrice - discountedPrice
+            : totalPrice - maxValue;
         console.log("totalPrice va promotion bill ko bị reset: ", finalPrice);
         return finalPrice;
       } else {
@@ -107,7 +111,7 @@ const BookingUtils = () => {
 
   const ApplyTicket = (seats, totalPrice, promotionSeat, roomPrice) => {
     // Kiểm tra nếu có thông tin về chi tiết khuyến mãi vé
-    console.log("totalPrice trong roomPrice 1: ", roomPrice);
+    console.log("promotionSeat: ", promotionSeat);
     if (promotionSeat?.promotionTicketDetailDto) {
       const {
         typeSeatRequired,
@@ -133,13 +137,13 @@ const BookingUtils = () => {
           // Kiểm tra nếu có đủ ghế khuyến mãi, cùng loại với ghế yêu cầu
           // nếu ghế khuyến mãi cùng với loại ghế yêu cầu, thì cần trừ số ghế yêu cầu ra khỏi số ghế khuyến mãi đã chọn
           // nếu ghế khuyến mãi khác loại ghế yêu cầu, thì kiểm tra ghế số lượng ghế khuyến mãi đã chọn >= số lượng ghế khuyến mãi
-          if (promotionSeats.length >= 0) {
+          if (promotionSeats?.length >= 0) {
             const promotionSeatPrice =
               promotionSeat.promotionTicketDetailDto.price > 0
                 ? promotionSeat.promotionTicketDetailDto.price
                 : promotionSeats[0].price;
 
-            var discountAmount = 0;
+            let discountAmount = 0;
             // nếu cùng loại ghế yêu cầu và ghế khuyến mãi
             if (typeSeatRequired === typeSeatPromotion) {
               // ghế khuyến mãi đã chọn - số ghế yêu cầu
