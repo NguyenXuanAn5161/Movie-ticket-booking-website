@@ -96,7 +96,7 @@ const FoodEdit = () => {
       handleResponse(res);
     } else {
       const resImage = await callUploadImage(values.image.file);
-      if (resImage?.status === 200) {
+      if (resImage?.data?.status === 200) {
         const res = await callUpdateFood(values, resImage.data.message);
         handleResponse(res);
       }

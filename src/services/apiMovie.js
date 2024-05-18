@@ -1,3 +1,4 @@
+import moment from "moment";
 import api from "../utils/axios-custom";
 
 // ghế
@@ -86,7 +87,7 @@ export const callCreateMovie = async (values, releaseDate, image) => {
   }
 };
 
-export const callUpdateMovie = async (values, image) => {
+export const callUpdateMovie = async (values, imageUrl) => {
   const {
     id,
     name,
@@ -106,11 +107,15 @@ export const callUpdateMovie = async (values, image) => {
   bodyFormData.append("id", id);
   bodyFormData.append("name", name);
   bodyFormData.append("description", description);
-  bodyFormData.append("image", image);
+  if (imageUrl) {
+    bodyFormData.append("image", imageUrl);
+  } else {
+    bodyFormData.append("image", values.imageLink);
+  }
   bodyFormData.append("trailer", trailerLink);
   bodyFormData.append("duration", durationMinutes);
   bodyFormData.append("genreId", genreId);
-  bodyFormData.append("releaseDate", releaseDate);
+  bodyFormData.append("releaseDate", moment(releaseDate).format("YYYY-MM-DD"));
   bodyFormData.append("country", country);
   bodyFormData.append("director", director);
   bodyFormData.append("cast", cast);
