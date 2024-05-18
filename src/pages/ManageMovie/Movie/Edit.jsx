@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   Col,
+  DatePicker,
   Form,
   Input,
   InputNumber,
@@ -13,6 +14,7 @@ import {
   message,
   notification,
 } from "antd";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -24,6 +26,7 @@ import {
   callFetchListGenreMovie,
   callGetMovieById,
   callUpdateMovie,
+  callUploadImage,
 } from "../../../services/apiMovie";
 import { validateMovieName } from "../../../utils/validData";
 
@@ -102,6 +105,7 @@ const MovieEdit = () => {
       // thay đổi #1 [], setfields
       form.setFieldsValue(movie);
       form.setFieldsValue({ cinemaId: cinema });
+      form.setFieldsValue({ releaseDate: moment(movie.releaseDate) });
     }
   }, [movie, form, cinema]);
 
@@ -110,9 +114,26 @@ const MovieEdit = () => {
     setIsSubmit(true);
     // thay đổi #1 api call
     console.log("values update movie: ", values);
-    const res = await callUpdateMovie(values, imageFile);
+    if (
+      typeof values.imageLink === "string" &&
+      values.imageLink.startsWith("https")
+    ) {
+      console.log("values update movie khong anh: ");
+      const res = await callUpdateMovie(values, null);
+      handleResponse(res);
+    } else {
+      const resImage = await callUploadImage(values.imageLink.file);
+      if (resImage?.data?.status === 200) {
+        const res = await callUpdateMovie(values, resImage.data.message);
+        handleResponse(res);
+      }
+    }
+    setIsSubmit(false);
+  };
+
+  const handleResponse = (res) => {
+    console.log("res update: ", res);
     if (res?.status === 200) {
-      // thay đổi #1 message và url
       message.success("Cập nhật phim thành công!");
       navigate("/movie");
     } else {
@@ -121,7 +142,6 @@ const MovieEdit = () => {
         description: res.response.data.message,
       });
     }
-    setIsSubmit(false);
   };
 
   // xử lý ảnh
@@ -272,7 +292,11 @@ const MovieEdit = () => {
                   },
                 ]}
               >
-                <Input type="date" style={{ width: "100%" }} />
+                <DatePicker
+                  style={{ width: "100%" }}
+                  format="DD-MM-YYYY"
+                  placeholder="Chọn ngày sản xuất"
+                />
               </Form.Item>
             </Col>
             <Col span={4}>

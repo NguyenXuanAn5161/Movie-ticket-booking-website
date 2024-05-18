@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ActionButtons from "../../../components/Button/ActionButtons";
 import {
   renderDate,
+  renderDateOnly,
   renderStatus,
 } from "../../../components/FunctionRender/FunctionRender";
 import SearchList from "../../../components/InputSearch/SearchList";
@@ -167,7 +168,7 @@ const ScheduleList = () => {
 
   const columns = [
     createColumn("Tên phim", "movieName", 200, false, undefined, "left"),
-    createColumn("Ngày chiếu", "showDate", 150, false, renderDate),
+    createColumn("Ngày chiếu", "showDate", 150, false, renderDateOnly),
     createColumn("Giờ chiếu", "showTime"),
     createColumn("Rạp chiếu", "cinemaName"),
     createColumn("Phòng chiếu", "roomName"),
