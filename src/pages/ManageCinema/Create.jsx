@@ -18,6 +18,7 @@ import PageHeader from "../../components/PageHeader/PageHeader";
 import { callCreateCinema } from "../../services/apiCinema";
 import addressOptions from "../../utils/data";
 import { getErrorMessageCinema } from "../../utils/errorHandling";
+import { capitalizeWords } from "../../utils/validData";
 
 const { Option } = Select;
 
@@ -56,6 +57,11 @@ const CinemaCreate = () => {
     }
   };
 
+  const handleNameChange = (e) => {
+    const value = capitalizeWords(e.target.value);
+    form.setFieldsValue({ name: value });
+  };
+
   return (
     <>
       <PageHeader title="Tạo mới rạp phim" numberBack={-1} type="create" />
@@ -77,7 +83,7 @@ const CinemaCreate = () => {
                 name="name"
                 rules={[{ required: true, message: "Vui lòng nhập tên rạp!" }]}
               >
-                <Input placeholder="Nhập tên rạp" />
+                <Input placeholder="Nhập tên rạp" onChange={handleNameChange} />
               </Form.Item>
             </Col>
             <Col span={12}>

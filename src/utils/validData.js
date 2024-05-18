@@ -73,3 +73,7 @@ export const validateTwoCharVietnamese = (field) =>
     `${field} ít nhất 2 ký tự, không chứa ký tự đặc biệt`,
     false
   );
+
+export const capitalizeWords = (text) => {
+  return text.replace(/\b\w/g, (char) => char.toUpperCase());
+};
