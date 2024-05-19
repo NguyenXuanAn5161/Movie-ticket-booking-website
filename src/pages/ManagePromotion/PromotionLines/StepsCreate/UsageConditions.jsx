@@ -72,7 +72,7 @@ const PromotionUsageConditions = ({ form, dataUpdate, type }) => {
               style={{ width: "100%", textAlign: "left" }}
             >
               <Radio.Group
-              // disabled={dayjs(dataUpdate?.startDate).isAfter(dayjs())}
+                disabled={dayjs(dataUpdate?.startDate).isAfter(dayjs())}
               >
                 <Radio value={true}>Hoạt động</Radio>
                 <Radio value={false}>Không hoạt động</Radio>

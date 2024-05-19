@@ -189,7 +189,10 @@ const PromotionEdit = () => {
                   },
                 ]}
               >
-                <Radio.Group value={promotionHeader?.status}>
+                <Radio.Group
+                  value={promotionHeader?.status}
+                  disabled={!checkStartDate(promotionHeader?.startDate)}
+                >
                   <Radio value={true}>Hoạt động</Radio>
                   <Radio value={false}>Ngưng hoạt động</Radio>
                 </Radio.Group>
