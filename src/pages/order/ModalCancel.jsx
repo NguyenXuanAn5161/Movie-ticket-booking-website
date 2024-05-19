@@ -26,7 +26,7 @@ const ModalCancel = ({ fetchData, openModal, setOpenModal, invoiceId }) => {
 
   return (
     <Modal
-      title="Hủy đơn hàng"
+      title="Hủy hóa đơn"
       open={openModal}
       onOk={() => {
         form.submit();
