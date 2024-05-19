@@ -756,8 +756,8 @@ export const StatisticByPromotion = (listData, dateRanger, userCurrent) => {
         ? "%"
         : "VNĐ",
       data.totalQuantity === 0 ? " " : data.totalQuantity,
-      data.quantityUsed,
-      data.quantityNotUsed,
+      data.quantityUsed === 0 ? " " : data.quantityUsed,
+      data.quantityNotUsed === 0 ? " " : data.quantityNotUsed,
     ];
   });
 
