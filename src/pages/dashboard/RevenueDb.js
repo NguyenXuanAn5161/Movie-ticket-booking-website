@@ -239,7 +239,7 @@ export const StatisticByUser = (
 
     if (!type) {
       headerValues.push(
-        `Tổng doanh thu sau CK`,
+        `Tổng doanh thu trước CK`,
         `Chiết khấu`,
         `Tổng doanh thu sau CK`
       );
